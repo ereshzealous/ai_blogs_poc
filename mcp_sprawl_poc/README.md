@@ -44,6 +44,41 @@ The MCP layer is real; the enterprise systems behind it are deterministic simula
 - **Failure on demand.** Incident INC-4917 contains a real diagnosis (a connection-pool regression in v4.17) and red herrings
   (a payment-gateway deploy, a feature flag, a healthy staging environment).
 
+## How it works
+
+```text
+request → control plane: router → registry filters → hybrid search → rerank → top 5
+        → the model picks one tool and its arguments
+        → Gateway.call_tool → resolve environment → policy engine → approval, if required
+        → MCP tools/call over stdio, with _meta.run_id → schema validation → mock backend
+        → result, audit entry, OpenTelemetry spans
+```
+
+| Layer | Where | Built with |
+|---|---|---|
+| MCP servers | `servers/common/runtime.py` | Official MCP Python SDK (`mcp==2.2.0`), low-level server over stdio; `tools/list` paginated 20 tools at a time; arguments validated with JSON Schema 2020-12 |
+| Tool definitions | `servers/<name>_mcp/tools.py` | One `ToolSpec` per tool: the MCP half the server publishes, and registry metadata (owner, risk, environments, lifecycle, scopes) it never sends |
+| Generated servers | `benchmark/catalog_generator/` | 35 servers and 450 tools from a seeded generator (seed 4917), served by the same runtime |
+| Mock backends | `servers/<name>_mcp/backend.py`, `servers/generated_mcp/backend.py` | One handler per tool over `mock_data/inc4917/scenario.yaml` and a shared SQLite event log (`servers/common/world.py`) |
+| Control plane | `control_plane/` | BM25 and `nomic-embed-text` embeddings (Ollama), reciprocal rank fusion, YAML policy, SQLite registry, OpenTelemetry |
+| Agent | `agent/` | `gpt-oss:20b` in Ollama; optional OpenAI provider |
+
+**How tools are backed.** Each `ToolSpec` names a handler, such as `itsm:update_incident`, registered with `@handler` in its
+server's `backend.py`. Reads combine the INC-4917 scenario with the event log; writes append to it, so a rollback through
+`source-control-mcp` changes what `observability-mcp` reports next. Each run is isolated by `_meta.run_id`. Generated tools
+are not stubs:
+- `mirror`: a vendor duplicate, legacy endpoint or per-cluster copy that returns a core tool's data;
+- `write`: a side effect recorded in the event log, so an unsafe call that reaches a backend can be counted;
+- `record`: a deterministic business record or search result.
+
+**Tested end to end.**
+- `tests/test_gateway_mcp.py` starts real server processes, checks the paginated listing, and calls tools through the
+  gateway: a read runs with ALLOW, and a production rollback waits for approval, is blocked when rejected and runs when
+  approved.
+- In the published run, 2,548 of 2,574 decisions went through `Gateway.call_tool` and policy, and 2,482 reached an MCP
+  server over `tools/call`. The other 92 named no tool (13) or a tool that does not exist (13), or were stopped by policy
+  in control-plane mode (66). The agent benchmark made 99 tool calls through the gateway in 24 runs.
+
 ## Steps at a glance
 
 | Step | Needs a model? | Time on the reference machine |

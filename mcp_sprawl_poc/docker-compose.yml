@@ -1,0 +1,44 @@
+# Containerised runs. Nothing here needs a cloud account or API key.
+#
+#   docker compose run --rm tests                        # full test suite, no model needed
+#   docker compose --profile model up -d ollama          # local model server
+#   docker compose --profile model run --rm pull-models  # once: gpt-oss:20b + nomic-embed-text
+#   docker compose --profile model run --rm benchmark    # selection benchmark, results in ./benchmark/runs
+#
+# Performance note: containers on macOS have no GPU access, so a model inside Docker is much slower
+# than Ollama on the host. To use a host Ollama instead, skip the `ollama` service and set
+# OLLAMA_URL=http://host.docker.internal:11434 for the benchmark service.
+
+services:
+  tests:
+    build: .
+    command: ["uv", "run", "pytest"]
+
+  ollama:
+    image: ollama/ollama:0.30.11
+    profiles: ["model"]
+    volumes:
+      - ollama-models:/root/.ollama
+
+  pull-models:
+    image: ollama/ollama:0.30.11
+    profiles: ["model"]
+    depends_on: [ollama]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["sh", "-c", "ollama pull gpt-oss:20b && ollama pull nomic-embed-text"]
+
+  benchmark:
+    build: .
+    profiles: ["model"]
+    depends_on: [ollama]
+    environment:
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      RUN_ID: ${RUN_ID:-docker-run}
+    volumes:
+      - ./benchmark/runs:/app/benchmark/runs
+      - ./benchmark/reports:/app/benchmark/reports
+    command: ["sh", "-c", "uv run python -m benchmark.runner retrieval --run-id $$RUN_ID && uv run python -m benchmark.runner selection --run-id $$RUN_ID && uv run python -m benchmark.reports.build_report --run-id $$RUN_ID"]
+
+volumes:
+  ollama-models:

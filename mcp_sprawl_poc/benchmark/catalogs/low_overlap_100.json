@@ -1,0 +1,3383 @@
+{
+ "catalog_id": "low_overlap_100",
+ "seed": 4917,
+ "tool_count": 100,
+ "servers": [
+  "cloud",
+  "cmdb",
+  "collaboration",
+  "database",
+  "facilities",
+  "feature_flags",
+  "finance",
+  "hr",
+  "itsm",
+  "kubernetes",
+  "learning",
+  "legal",
+  "observability",
+  "payroll",
+  "procurement",
+  "source_control"
+ ],
+ "tools": [
+  {
+   "server": "itsm",
+   "name": "get_incident",
+   "description": "Get an incident record by number: title, severity, status, affected service, timeline, linked alerts, linked changes, comments and updates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get incident",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:get_incident",
+   "family": "core",
+   "collision_group": "incident-lookup"
+  },
+  {
+   "server": "observability",
+   "name": "query_latency",
+   "description": "Get request latency percentiles (p50, p95 or p99) for a service's HTTP endpoints over a lookback window, compared with the service's latency SLO.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "percentile": {
+      "type": "string",
+      "enum": [
+       "p50",
+       "p95",
+       "p99"
+      ]
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "percentile"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query latency",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_latency",
+   "family": "core",
+   "collision_group": "latency"
+  },
+  {
+   "server": "observability",
+   "name": "query_metrics",
+   "description": "Query a time series for one application metric of a service over a lookback window. Supports latency percentiles, error rate, throughput, CPU/memory utilisation and database connection-pool metrics (acquire wait, in-use, max, waiting). Returns a summary and a downsampled series.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "metric": {
+      "type": "string",
+      "enum": [
+       "latency_p50_ms",
+       "latency_p95_ms",
+       "error_rate_pct",
+       "requests_per_second",
+       "db_pool_acquire_wait_p95_ms",
+       "db_pool_in_use",
+       "db_pool_max",
+       "db_pool_waiting",
+       "cpu_utilization_pct",
+       "memory_utilization_pct"
+      ]
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "metric",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query metrics",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_metrics",
+   "family": "core",
+   "collision_group": "metrics"
+  },
+  {
+   "server": "observability",
+   "name": "search_logs",
+   "description": "Search application logs emitted by a service's containers. Filter by free-text query, log level and lookback window. Returns matching message patterns with counts and a few sample lines. This is the system of record for application logs.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "query": {
+      "type": "string",
+      "description": "Free-text filter, e.g. timeout."
+     },
+     "level": {
+      "type": "string",
+      "enum": [
+       "DEBUG",
+       "INFO",
+       "WARN",
+       "ERROR"
+      ]
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search application logs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:search_logs",
+   "family": "core",
+   "collision_group": "logs"
+  },
+  {
+   "server": "observability",
+   "name": "get_trace",
+   "description": "Fetch one distributed trace by trace ID, with every span's service, name and duration.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "trace_id": {
+      "type": "string",
+      "description": "32-character hex trace ID."
+     }
+    },
+    "required": [
+     "trace_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get trace",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_trace",
+   "family": "core",
+   "collision_group": "traces"
+  },
+  {
+   "server": "source_control",
+   "name": "search_deployments",
+   "description": "List release-pipeline deployments, newest first, filtered by service, environment and start time. This is the system of record for what version was deployed where and when.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search deployments",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:search_deployments",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_pods",
+   "description": "List the pods backing a service's Kubernetes deployment with phase, readiness, restart count, node, image and current CPU/memory utilisation.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get pods",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_pods",
+   "family": "core",
+   "collision_group": "runtime-state"
+  },
+  {
+   "server": "source_control",
+   "name": "rollback_release",
+   "description": "Roll a service back to a previous release through the release pipeline: redeploys the earlier version to the environment, records a deployment and keeps GitOps state consistent.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "to_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Release version, e.g. v4.16."
+     },
+     "reason": {
+      "type": "string",
+      "description": "Why the rollback is needed; recorded on the deployment."
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "to_version"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Roll back release",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "source_control:rollback_release",
+   "family": "core",
+   "collision_group": "rollback"
+  },
+  {
+   "server": "itsm",
+   "name": "update_incident",
+   "description": "Update fields on an existing incident: status, severity, summary, suspected root cause and resolution notes. Changes are visible to everyone following the incident.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "investigating",
+       "identified",
+       "monitoring",
+       "resolved"
+      ]
+     },
+     "severity": {
+      "type": "string",
+      "enum": [
+       "SEV1",
+       "SEV2",
+       "SEV3",
+       "SEV4"
+      ]
+     },
+     "summary": {
+      "type": "string"
+     },
+     "root_cause": {
+      "type": "string"
+     },
+     "resolution_notes": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update incident",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "itsm:update_incident",
+   "family": "core",
+   "collision_group": "incident-update"
+  },
+  {
+   "server": "collaboration",
+   "name": "post_message",
+   "description": "Post a message to a chat channel as the calling agent.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Channel name including #, e.g. #inc-4917-checkout-latency."
+     },
+     "text": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "required": [
+     "channel",
+     "text"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Post message",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "collaboration:post_message",
+   "family": "core",
+   "collision_group": "chat-write"
+  },
+  {
+   "server": "observability",
+   "name": "query_error_rate",
+   "description": "Get the percentage of failed requests (5xx and timeouts) for a service over a lookback window.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query error rate",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_error_rate",
+   "family": "core",
+   "collision_group": "errors"
+  },
+  {
+   "server": "observability",
+   "name": "get_service_health",
+   "description": "Summarise the current health of an application service: SLO status for latency and availability, active alerts and a healthy/degraded/down verdict.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get service health",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_service_health",
+   "family": "core",
+   "collision_group": "service-health"
+  },
+  {
+   "server": "observability",
+   "name": "get_alerts",
+   "description": "List monitoring alerts, optionally filtered by service, environment and state (firing or resolved).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "state": {
+      "type": "string",
+      "enum": [
+       "firing",
+       "resolved",
+       "any"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Get alerts",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_alerts",
+   "family": "core",
+   "collision_group": "alerts"
+  },
+  {
+   "server": "observability",
+   "name": "search_traces",
+   "description": "Find recent distributed traces for a service, optionally only those slower than a duration threshold. Returns trace IDs with root span, duration and the slowest child span.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "min_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search traces",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:search_traces",
+   "family": "core",
+   "collision_group": "traces"
+  },
+  {
+   "server": "itsm",
+   "name": "search_incidents",
+   "description": "Search incidents by free text, affected service, status and severity. Returns incident numbers with titles and status, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string"
+     },
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "open",
+       "investigating",
+       "resolved",
+       "closed",
+       "any"
+      ]
+     },
+     "severity": {
+      "type": "string",
+      "enum": [
+       "SEV1",
+       "SEV2",
+       "SEV3",
+       "SEV4"
+      ]
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search incidents",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:search_incidents",
+   "family": "core",
+   "collision_group": "incident-lookup"
+  },
+  {
+   "server": "itsm",
+   "name": "add_incident_comment",
+   "description": "Add a work note or customer-visible comment to an incident's activity stream without changing its fields.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     },
+     "comment": {
+      "type": "string",
+      "minLength": 1
+     },
+     "visibility": {
+      "type": "string",
+      "enum": [
+       "work_note",
+       "customer_visible"
+      ]
+     }
+    },
+    "required": [
+     "incident_id",
+     "comment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Add incident comment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:add_incident_comment",
+   "family": "core",
+   "collision_group": "incident-update"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_deployment",
+   "description": "Get the Kubernetes Deployment object for a service: desired/ready replicas, container image, rollout revision, strategy and conditions.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get Kubernetes deployment",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_deployment",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_pod_logs",
+   "description": "Read the most recent stdout/stderr lines of a single pod's container, like kubectl logs.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pod": {
+      "type": "string",
+      "description": "Pod name, e.g. checkout-api-7d9f8c6b5-2kq8x."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "tail_lines": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+     }
+    },
+    "required": [
+     "pod",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get pod logs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_pod_logs",
+   "family": "core",
+   "collision_group": "logs"
+  },
+  {
+   "server": "kubernetes",
+   "name": "restart_deployment",
+   "description": "Trigger a rolling restart of every pod in a service's deployment (kubectl rollout restart). Pods are replaced gradually with the same image and configuration.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Restart deployment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:restart_deployment",
+   "family": "core",
+   "collision_group": "restart"
+  },
+  {
+   "server": "kubernetes",
+   "name": "rollback_deployment",
+   "description": "Roll a Kubernetes deployment back to a previous ReplicaSet revision (kubectl rollout undo). Acts on the cluster object directly, outside the release pipeline.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "to_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Revision number; defaults to the previous revision."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Roll back Kubernetes deployment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:rollback_deployment",
+   "family": "core",
+   "collision_group": "rollback"
+  },
+  {
+   "server": "source_control",
+   "name": "get_diff",
+   "description": "Get the unified diff introduced by a commit.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Commit SHA (7-40 hex characters)."
+     },
+     "repository": {
+      "type": "string",
+      "description": "Repository as org/name, e.g. shop/checkout-api."
+     }
+    },
+    "required": [
+     "sha"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get diff",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_diff",
+   "family": "core",
+   "collision_group": "code-history"
+  },
+  {
+   "server": "source_control",
+   "name": "get_deployment",
+   "description": "Get one release-pipeline deployment record by ID: service, environment, version, previous version, commit, change request, start/finish time and status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "deployment_id": {
+      "type": "string",
+      "pattern": "^DEP-[0-9]+$"
+     }
+    },
+    "required": [
+     "deployment_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get deployment record",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_deployment",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "database",
+   "name": "get_connection_pool_stats",
+   "description": "Get a service's database connection-pool statistics as reported by its database client: max connections, in use, idle, waiting requests, acquire-wait p95 and acquire timeouts.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get connection pool stats",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "database:get_connection_pool_stats",
+   "family": "core",
+   "collision_group": "db-read"
+  },
+  {
+   "server": "cloud",
+   "name": "describe_resource",
+   "description": "Describe any cloud resource by ID: type, status, configuration, recent provider events and key metrics such as CPU and active connections.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "resource_id": {
+      "type": "string",
+      "description": "Cloud resource ID, e.g. orders-db-prod or i-0c41e7a9d2b3f5812."
+     }
+    },
+    "required": [
+     "resource_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Describe cloud resource",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:describe_resource",
+   "family": "core",
+   "collision_group": "infra-read"
+  },
+  {
+   "server": "feature_flags",
+   "name": "list_flag_changes",
+   "description": "List recent feature flag changes (who changed what, when) in an environment, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "List flag changes",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "feature_flags:list_flag_changes",
+   "family": "core",
+   "collision_group": "flags-read"
+  },
+  {
+   "server": "observability",
+   "name": "get_dashboard",
+   "description": "Get the standard service dashboard: current values of the golden-signal panels (latency, errors, traffic, saturation) for a service.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get dashboard",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_dashboard",
+   "family": "core",
+   "collision_group": "dashboards"
+  },
+  {
+   "server": "itsm",
+   "name": "create_change",
+   "description": "Create a change request (standard, normal or emergency) for a service and environment, optionally linked to an incident. Required before planned production changes.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "change_type": {
+      "type": "string",
+      "enum": [
+       "standard",
+       "normal",
+       "emergency"
+      ]
+     },
+     "summary": {
+      "type": "string"
+     },
+     "linked_incident": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "change_type",
+     "summary"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create change request",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:create_change",
+   "family": "core",
+   "collision_group": "change-management"
+  },
+  {
+   "server": "itsm",
+   "name": "close_incident",
+   "description": "Close an incident with a resolution code and resolution notes. Closed incidents leave the active queue and trigger the post-incident review workflow.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     },
+     "resolution_code": {
+      "type": "string",
+      "enum": [
+       "fixed",
+       "rolled_back",
+       "workaround",
+       "no_action",
+       "duplicate"
+      ]
+     },
+     "resolution_notes": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "incident_id",
+     "resolution_code"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Close incident",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:close_incident",
+   "family": "core",
+   "collision_group": "incident-update"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_events",
+   "description": "List recent Kubernetes events (scaling, rollouts, probe failures, OOM kills, evictions) for a service's workloads.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get Kubernetes events",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_events",
+   "family": "core",
+   "collision_group": "runtime-state"
+  },
+  {
+   "server": "kubernetes",
+   "name": "restart_pod",
+   "description": "Delete one pod so its ReplicaSet recreates it. Use to recover a single stuck or unhealthy pod.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pod": {
+      "type": "string",
+      "description": "Pod name, e.g. checkout-api-7d9f8c6b5-2kq8x."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "pod",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Restart pod",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": false,
+   "open_world_hint": false,
+   "handler": "kubernetes:restart_pod",
+   "family": "core",
+   "collision_group": "restart"
+  },
+  {
+   "server": "kubernetes",
+   "name": "scale_deployment",
+   "description": "Change the number of replicas of a service's deployment.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "replicas": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "replicas"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Scale deployment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "kubernetes:scale_deployment",
+   "family": "core",
+   "collision_group": "scale"
+  },
+  {
+   "server": "source_control",
+   "name": "get_commit",
+   "description": "Get a commit by SHA: message, author, timestamp and the list of files changed.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Commit SHA (7-40 hex characters)."
+     },
+     "repository": {
+      "type": "string",
+      "description": "Repository as org/name, e.g. shop/checkout-api."
+     }
+    },
+    "required": [
+     "sha"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get commit",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_commit",
+   "family": "core",
+   "collision_group": "code-history"
+  },
+  {
+   "server": "source_control",
+   "name": "search_commits",
+   "description": "Search a repository's commit history by message text and date.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "repository": {
+      "type": "string",
+      "description": "Repository as org/name, e.g. shop/checkout-api."
+     },
+     "query": {
+      "type": "string"
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time"
+     }
+    },
+    "required": [
+     "repository"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search commits",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:search_commits",
+   "family": "core",
+   "collision_group": "code-history"
+  },
+  {
+   "server": "source_control",
+   "name": "get_release",
+   "description": "Get a service release by version: release ID, commit and the commits included since the previous release.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Release version, e.g. v4.16."
+     }
+    },
+    "required": [
+     "service",
+     "version"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get release",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_release",
+   "family": "core",
+   "collision_group": "release-lookup"
+  },
+  {
+   "server": "cloud",
+   "name": "get_instance",
+   "description": "Get a virtual machine instance: state, instance type, region and CPU utilisation.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "instance_id": {
+      "type": "string",
+      "pattern": "^i-[0-9a-f]{8,17}$",
+      "description": "VM instance ID."
+     }
+    },
+    "required": [
+     "instance_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get instance",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:get_instance",
+   "family": "core",
+   "collision_group": "infra-read"
+  },
+  {
+   "server": "cloud",
+   "name": "get_service_health",
+   "description": "Get the cloud provider's own status for its services (compute, managed databases, load balancing) in a region. Reports provider-side outages, not the health of your applications.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "region": {
+      "type": "string",
+      "description": "Region, e.g. eu-west-1."
+     },
+     "provider_service": {
+      "type": "string",
+      "description": "Provider service, e.g. managed-postgres."
+     }
+    },
+    "required": [
+     "region"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get cloud provider status",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:get_service_health",
+   "family": "core",
+   "collision_group": "service-health"
+  },
+  {
+   "server": "cloud",
+   "name": "query_cloud_logs",
+   "description": "Query provider-level logs for a cloud resource (database engine logs, load balancer access logs, VM system logs).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "resource_id": {
+      "type": "string",
+      "description": "Cloud resource ID, e.g. orders-db-prod or i-0c41e7a9d2b3f5812."
+     },
+     "query": {
+      "type": "string"
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "resource_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query cloud logs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:query_cloud_logs",
+   "family": "core",
+   "collision_group": "logs"
+  },
+  {
+   "server": "cloud",
+   "name": "restart_instance",
+   "description": "Reboot a virtual machine instance. The instance is unavailable for one to three minutes.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "instance_id": {
+      "type": "string",
+      "pattern": "^i-[0-9a-f]{8,17}$",
+      "description": "VM instance ID."
+     }
+    },
+    "required": [
+     "instance_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Restart instance",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:restart_instance",
+   "family": "core",
+   "collision_group": "restart"
+  },
+  {
+   "server": "cloud",
+   "name": "restart_task",
+   "description": "Stop a running container task so the service scheduler starts a replacement.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "task_id": {
+      "type": "string",
+      "pattern": "^task-[a-z0-9-]+$",
+      "description": "Container task ID."
+     }
+    },
+    "required": [
+     "task_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Restart task",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:restart_task",
+   "family": "core",
+   "collision_group": "restart"
+  },
+  {
+   "server": "cloud",
+   "name": "terminate_instance",
+   "description": "Permanently terminate a virtual machine instance and delete its local storage. This cannot be undone.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "instance_id": {
+      "type": "string",
+      "pattern": "^i-[0-9a-f]{8,17}$",
+      "description": "VM instance ID."
+     }
+    },
+    "required": [
+     "instance_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Terminate instance",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:terminate_instance",
+   "family": "core",
+   "collision_group": "terminate"
+  },
+  {
+   "server": "collaboration",
+   "name": "search_messages",
+   "description": "Search chat messages across channels by text, optionally within one channel. Returns author, channel and time.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "minLength": 1
+     },
+     "channel": {
+      "type": "string",
+      "description": "Channel name including #, e.g. #inc-4917-checkout-latency."
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search messages",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "collaboration:search_messages",
+   "family": "core",
+   "collision_group": "chat-read"
+  },
+  {
+   "server": "collaboration",
+   "name": "get_channel",
+   "description": "Get a chat channel's topic, creation time and most recent messages.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Channel name including #, e.g. #inc-4917-checkout-latency."
+     }
+    },
+    "required": [
+     "channel"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get channel",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "collaboration:get_channel",
+   "family": "core",
+   "collision_group": "chat-read"
+  },
+  {
+   "server": "collaboration",
+   "name": "create_incident_channel",
+   "description": "Create a dedicated incident chat channel named after the incident and invite the assignment group.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$"
+     },
+     "topic": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create incident channel",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "collaboration:create_incident_channel",
+   "family": "core",
+   "collision_group": "chat-write"
+  },
+  {
+   "server": "database",
+   "name": "list_slow_queries",
+   "description": "List the slowest statements on a database cluster by mean execution time, with call rates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "database_id": {
+      "type": "string",
+      "description": "Database cluster ID, e.g. orders-db-prod."
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+     }
+    },
+    "required": [
+     "database_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "List slow queries",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "database:list_slow_queries",
+   "family": "core",
+   "collision_group": "db-read"
+  },
+  {
+   "server": "database",
+   "name": "kill_session",
+   "description": "Terminate a database backend session (connection) by session ID, rolling back its open transaction.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "database_id": {
+      "type": "string",
+      "description": "Database cluster ID, e.g. orders-db-prod."
+     },
+     "session_id": {
+      "type": "integer",
+      "minimum": 1
+     }
+    },
+    "required": [
+     "database_id",
+     "session_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Kill database session",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "database:kill_session",
+   "family": "core",
+   "collision_group": "db-write"
+  },
+  {
+   "server": "database",
+   "name": "failover_cluster",
+   "description": "Force a failover of a database cluster to its standby. Connections drop during promotion and in-flight transactions are lost.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "database_id": {
+      "type": "string",
+      "description": "Database cluster ID, e.g. orders-db-prod."
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "database_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Fail over database cluster",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "database:failover_cluster",
+   "family": "core",
+   "collision_group": "db-write"
+  },
+  {
+   "server": "feature_flags",
+   "name": "get_flag",
+   "description": "Get a feature flag's current state in an environment: enabled, rollout percentage, owner and description.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "key": {
+      "type": "string",
+      "description": "Flag key, e.g. new-pricing-engine."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "key",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get feature flag",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "feature_flags:get_flag",
+   "family": "core",
+   "collision_group": "flags-read"
+  },
+  {
+   "server": "feature_flags",
+   "name": "set_flag",
+   "description": "Enable or disable a feature flag, or change its rollout percentage, in one environment. Takes effect for all traffic within seconds.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "key": {
+      "type": "string",
+      "description": "Flag key, e.g. new-pricing-engine."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "enabled": {
+      "type": "boolean"
+     },
+     "rollout_pct": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+     }
+    },
+    "required": [
+     "key",
+     "environment",
+     "enabled"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Set feature flag",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "feature_flags:set_flag",
+   "family": "core",
+   "collision_group": "flags-write"
+  },
+  {
+   "server": "cmdb",
+   "name": "get_service",
+   "description": "Get a service's configuration item: owning team, support group, tier and business service.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     }
+    },
+    "required": [
+     "service"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get service record",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "cmdb:get_service",
+   "family": "core",
+   "collision_group": "ownership"
+  },
+  {
+   "server": "cmdb",
+   "name": "get_dependencies",
+   "description": "List the upstream dependencies of a service (databases, caches, other services) with their owners.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     }
+    },
+    "required": [
+     "service"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get service dependencies",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "cmdb:get_dependencies",
+   "family": "core",
+   "collision_group": "ownership"
+  },
+  {
+   "server": "hr",
+   "name": "update_employee",
+   "description": "Update fields on an existing employee in the HR information system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "employee_id": {
+      "type": "string"
+     },
+     "department": {
+      "type": "string"
+     },
+     "manager_id": {
+      "type": "string"
+     },
+     "location": {
+      "type": "string"
+     },
+     "job_title": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "employee_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update employee",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "search_time_off_requests",
+   "description": "Search time off requests in the HR information system by employee id or start date. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "start_date": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search time off requests",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|time_off_request",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "create_time_off_request",
+   "description": "Create a new time off request in the HR information system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "employee_id": {
+      "type": "string"
+     },
+     "start_date": {
+      "type": "string"
+     },
+     "end_date": {
+      "type": "string"
+     },
+     "type": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "employee_id",
+     "start_date"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create time off request",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "update_time_off_request",
+   "description": "Update fields on an existing time off request in the HR information system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "request_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "start_date": {
+      "type": "string"
+     },
+     "end_date": {
+      "type": "string"
+     },
+     "type": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update time off request",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "search_performance_reviews",
+   "description": "Search performance reviews in the HR information system by employee id or cycle. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "cycle": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search performance reviews",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|performance_review",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "create_performance_review",
+   "description": "Create a new performance review in the HR information system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "employee_id": {
+      "type": "string"
+     },
+     "cycle": {
+      "type": "string"
+     },
+     "rating": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "employee_id",
+     "cycle"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create performance review",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "hr",
+   "name": "delete_performance_review",
+   "description": "Delete a performance review from the HR information system. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "review_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "review_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete performance review",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "update_expense_report",
+   "description": "Update fields on an existing expense report in the ERP general ledger.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "report_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "total": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "report_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update expense report",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "delete_expense_report",
+   "description": "Delete a expense report from the ERP general ledger. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "report_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "report_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete expense report",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "delete_purchase_order",
+   "description": "Delete a purchase order from the ERP general ledger. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "po_number": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "po_number"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete purchase order",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "get_journal_entry",
+   "description": "Get a journal entry by ID from the ERP general ledger, including account, amount, period.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "entry_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "entry_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get journal entry",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|journal_entry",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "search_journal_entries",
+   "description": "Search journal entries in the ERP general ledger by account or amount. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "account": {
+      "type": "string"
+     },
+     "amount": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search journal entries",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|journal_entry",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "approve_expense_report",
+   "description": "Approve a submitted expense report in the ERP general ledger.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "report_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "report_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Approve expense report",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "finance",
+   "name": "pay_invoice",
+   "description": "Schedule payment of an approved supplier invoice in the ERP general ledger.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "invoice_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "invoice_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Pay invoice",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "facilities",
+   "name": "update_desk_booking",
+   "description": "Update fields on an existing desk booking in the workplace management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "booking_id": {
+      "type": "string"
+     },
+     "site": {
+      "type": "string"
+     },
+     "date": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "booking_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update desk booking",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "facilities",
+   "name": "search_meeting_rooms",
+   "description": "Search meeting rooms in the workplace management system by site or capacity. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "site": {
+      "type": "string"
+     },
+     "capacity": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search meeting rooms",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|meeting_room",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "facilities",
+   "name": "search_visitor_passes",
+   "description": "Search visitor passes in the workplace management system by visitor name or host id. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "visitor_name": {
+      "type": "string"
+     },
+     "host_id": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search visitor passes",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|visitor_pass",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "facilities",
+   "name": "get_maintenance_request",
+   "description": "Get a maintenance request by ID from the workplace management system, including site, category, status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get maintenance request",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|maintenance_request",
+   "family": "business",
+   "collision_group": "near-miss"
+  },
+  {
+   "server": "facilities",
+   "name": "search_maintenance_requests",
+   "description": "Search maintenance requests in the workplace management system by site or category. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "site": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search maintenance requests",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|maintenance_request",
+   "family": "business",
+   "collision_group": "near-miss"
+  },
+  {
+   "server": "facilities",
+   "name": "update_maintenance_request",
+   "description": "Update fields on an existing maintenance request in the workplace management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "request_id": {
+      "type": "string"
+     },
+     "site": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update maintenance request",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "get_course",
+   "description": "Get a course by ID from the learning management system, including title, category, duration hours.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "course_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "course_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get course",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|course",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "create_course",
+   "description": "Create a new course in the learning management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "duration_hours": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "category"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create course",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "get_enrollment",
+   "description": "Get a enrollment by ID from the learning management system, including course id, employee id, status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "enrollment_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "enrollment_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get enrollment",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|enrollment",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "search_enrollments",
+   "description": "Search enrollments in the learning management system by course id or employee id. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "course_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search enrollments",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|enrollment",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "update_enrollment",
+   "description": "Update fields on an existing enrollment in the learning management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "enrollment_id": {
+      "type": "string"
+     },
+     "course_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "enrollment_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update enrollment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "search_certifications",
+   "description": "Search certifications in the learning management system by employee id or name. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search certifications",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|certification",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "delete_certification",
+   "description": "Delete a certification from the learning management system. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "certification_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "certification_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete certification",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "search_learning_paths",
+   "description": "Search learning paths in the learning management system by title or audience. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "title": {
+      "type": "string"
+     },
+     "audience": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search learning paths",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|learning_path",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "create_learning_path",
+   "description": "Create a new learning path in the learning management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "audience": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "audience"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create learning path",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "update_learning_path",
+   "description": "Update fields on an existing learning path in the learning management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "audience": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "path_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update learning path",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "learning",
+   "name": "assign_course",
+   "description": "Assign a course to an employee with a due date in the learning management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "course_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "course_id",
+     "employee_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Assign course",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "search_pay_runs",
+   "description": "Search pay runs in the payroll platform by period or entity. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "period": {
+      "type": "string"
+     },
+     "entity": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search pay runs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|pay_run",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "create_pay_run",
+   "description": "Create a new pay run in the payroll platform.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "period": {
+      "type": "string"
+     },
+     "entity": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "period",
+     "entity"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create pay run",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "delete_payslip",
+   "description": "Delete a payslip from the payroll platform. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "payslip_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "payslip_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete payslip",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "update_tax_form",
+   "description": "Update fields on an existing tax form in the payroll platform.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "form_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "tax_year": {
+      "type": "string"
+     },
+     "form_type": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "form_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update tax form",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "get_compensation_change",
+   "description": "Get a compensation change by ID from the payroll platform, including employee id, effective date, amount.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "change_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "change_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get compensation change",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|compensation_change",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "payroll",
+   "name": "update_compensation_change",
+   "description": "Update fields on an existing compensation change in the payroll platform.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "change_id": {
+      "type": "string"
+     },
+     "employee_id": {
+      "type": "string"
+     },
+     "effective_date": {
+      "type": "string"
+     },
+     "amount": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "change_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update compensation change",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "procurement",
+   "name": "update_rfq",
+   "description": "Update fields on an existing RFQ in the procurement suite.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "rfq_id": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "due_date": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "rfq_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update rfq",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "procurement",
+   "name": "delete_rfq",
+   "description": "Delete a RFQ from the procurement suite. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "rfq_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "rfq_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete rfq",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "get_matter",
+   "description": "Get a matter by ID from the legal matter management system, including title, practice area, status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "matter_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "matter_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get matter",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|matter",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "search_matters",
+   "description": "Search matters in the legal matter management system by title or practice area. Returns matching records, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Free-text query."
+     },
+     "title": {
+      "type": "string"
+     },
+     "practice_area": {
+      "type": "string"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search matters",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|matter",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "create_matter",
+   "description": "Create a new matter in the legal matter management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "practice_area": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "practice_area"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create matter",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "get_nda",
+   "description": "Get a NDA by ID from the legal matter management system, including counterparty, effective date, status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "nda_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "nda_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get nda",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|nda",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "create_nda",
+   "description": "Create a new NDA in the legal matter management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "counterparty": {
+      "type": "string"
+     },
+     "effective_date": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "counterparty",
+     "effective_date"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create nda",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "update_nda",
+   "description": "Update fields on an existing NDA in the legal matter management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "nda_id": {
+      "type": "string"
+     },
+     "counterparty": {
+      "type": "string"
+     },
+     "effective_date": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "nda_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update nda",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "get_contract_review",
+   "description": "Get a contract review by ID from the legal matter management system, including contract id, reviewer, status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "review_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "review_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get contract review",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:record|contract_review",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "delete_contract_review",
+   "description": "Delete a contract review from the legal matter management system. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "review_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "review_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete contract review",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "create_policy_document",
+   "description": "Create a new policy document in the legal matter management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "owner": {
+      "type": "string"
+     },
+     "version": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "owner"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Create policy document",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "delete_policy_document",
+   "description": "Delete a policy document from the legal matter management system. Deleted records cannot be restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "document_id": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "document_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Delete policy document",
+   "read_only_hint": false,
+   "destructive_hint": true,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  },
+  {
+   "server": "legal",
+   "name": "sign_nda",
+   "description": "Countersign an NDA on behalf of the company in the legal matter management system.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "nda_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "nda_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Sign nda",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "generated:write",
+   "family": "business",
+   "collision_group": null
+  }
+ ]
+}

@@ -1,0 +1,127 @@
+# Deterministic execution policy for the MCP capability control plane.
+#
+# Inputs come from the registry (never from MCP tool annotations), the resolved environment and the
+# caller's identity. Rules are evaluated top to bottom; the first match wins; nothing matched = DENY.
+version: 1
+default_decision: DENY
+
+# Scope grants use shell-style patterns. Effective scopes for a call are the required scopes that are
+# granted to BOTH the human user and the agent: an agent can never exceed the person it acts for.
+roles:
+  sre-oncall:
+    - "observability.*"
+    - "itsm.incident.*"
+    - "itsm.change.write"
+    - "itsm.read"
+    - "itsm.write"
+    - "k8s.*"
+    - "runtime.*"
+    - "source.read"
+    - "delivery.*"
+    - "deploy.rollback"
+    - "cloud.*"
+    - "chat.*"
+    - "db.read"
+    - "database.read"
+    - "database.write"
+    - "flags.*"
+    - "feature-flags.*"
+    - "cmdb.read"
+    - "incident-response.*"
+    - "incident-communication.*"
+    - "knowledge.read"
+    - "security.read"
+    - "network.read"
+    - "analytics.read"
+    - "finops.read"
+  developer:
+    - "observability.read"
+    - "itsm.incident.read"
+    - "k8s.read"
+    - "runtime.read"
+    - "source.read"
+    - "delivery.read"
+    - "chat.*"
+    - "cmdb.read"
+    - "knowledge.read"
+
+agents:
+  incident-agent:
+    - "observability.read"
+    - "observability.write"
+    - "itsm.incident.read"
+    - "itsm.incident.write"
+    - "itsm.change.write"
+    - "itsm.read"
+    - "itsm.write"
+    - "k8s.read"
+    - "k8s.workload.write"
+    - "k8s.deployment.write"
+    - "runtime.read"
+    - "runtime.write"
+    - "source.read"
+    - "delivery.read"
+    - "delivery.write"
+    - "deploy.rollback"
+    - "cloud.read"
+    - "cloud.compute.write"
+    - "cloud.write"
+    - "chat.read"
+    - "chat.write"
+    - "db.read"
+    - "database.read"
+    - "database.write"
+    - "flags.read"
+    - "flags.write"
+    - "feature-flags.read"
+    - "feature-flags.write"
+    - "cmdb.read"
+    - "incident-response.read"
+    - "incident-response.write"
+    - "knowledge.read"
+    - "security.read"
+    - "network.read"
+    - "analytics.read"
+    - "finops.read"
+
+rules:
+  - id: unregistered-tool
+    when: { registered: false }
+    decision: DENY
+    reason: "Tool is not in the capability registry."
+  - id: shadow-or-retired
+    when: { lifecycle: [shadow, retired] }
+    decision: DENY
+    reason: "Tool lifecycle is {lifecycle}."
+  - id: deprecated-tool
+    when: { deprecated: true }
+    decision: DENY
+    reason: "Tool is deprecated; use {replaced_by}."
+  - id: environment-not-allowed
+    when: { environment_allowed: false }
+    decision: DENY
+    reason: "Tool is not approved for {environment}."
+  - id: missing-scope
+    when: { scopes_satisfied: false }
+    decision: DENY
+    reason: "Missing scopes: {missing_scopes}."
+  - id: destructive-in-production
+    when: { destructive: true, environment: [production] }
+    decision: DENY
+    reason: "Destructive operations in production are not permitted for agents."
+  - id: high-risk-write-in-production
+    when: { risk: [HIGH_RISK_WRITE], environment: [production] }
+    decision: REQUIRE_APPROVAL
+    reason: "High-risk write in production requires human approval."
+  - id: high-risk-write-outside-production
+    when: { risk: [HIGH_RISK_WRITE], environment: [staging, development] }
+    decision: ALLOW
+    reason: "High-risk write outside production."
+  - id: low-risk-write
+    when: { risk: [LOW_RISK_WRITE] }
+    decision: ALLOW
+    reason: "Low-risk write with required scopes."
+  - id: read-only
+    when: { risk: [READ_ONLY] }
+    decision: ALLOW
+    reason: "Read-only operation with required scopes."

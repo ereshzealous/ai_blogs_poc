@@ -1,0 +1,920 @@
+# Tool-selection benchmark cases with golden data.
+#
+# Fields
+#   golden_tool       registry tool_id of the best tool for the request (always a core tool, so every case is
+#                     evaluable from catalog_50 upward; cases whose golden tool is in catalog_10 form the ladder subset)
+#   acceptable_tools  other tools that would also accomplish the request and are permitted (capability-correct);
+#                     deprecated, shadow and wrong-environment tools are never acceptable
+#   expected_args     argument checks for capability-correct selections; "*" = present with any value,
+#                     a list = any of; keys a selected tool's schema does not have are skipped.
+#                     Values the request does not state (e.g. the previous version when the prompt only says
+#                     "previous release") are checked for presence only: a single decision cannot look them up.
+#   expected_policy   the deterministic policy decision for the golden invocation under the case identity
+#   traps             tools a model might plausibly confuse with the golden tool (documentation only)
+#   identity          defaults to user oncall-1 with role sre-oncall
+#
+# expected_domain and expected_capability are derived from the registry record of golden_tool.
+
+defaults:
+  identity: { user_id: oncall-1, roles: [sre-oncall] }
+
+cases:
+  # ------------------------------------------------------------------ direct
+  - id: D01
+    category: direct
+    prompt: Get checkout-api p95 latency in production for the last 15 minutes.
+    golden_tool: observability.query_latency
+    acceptable_tools: [observability.query_metrics, apm.query_apm_latency]
+    expected_args: { service: checkout-api, environment: production, percentile: p95 }
+    expected_policy: ALLOW
+    traps: [legacy_monitoring.get_latency_report, apm.get_endpoint_latency]
+  - id: D02
+    category: direct
+    prompt: What's the current error rate for checkout-api in production?
+    golden_tool: observability.query_error_rate
+    acceptable_tools: [observability.query_metrics]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+  - id: D03
+    category: direct
+    prompt: Show me incident INC-4917.
+    golden_tool: itsm.get_incident
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917 }
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.find_incident, servicedesk_v1.get_incident_details]
+  - id: D04
+    category: direct
+    prompt: List the pods running checkout-api in production.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [k8s_prod_eu.get_pods]
+  - id: D05
+    category: direct
+    prompt: Search checkout-api production logs for ERROR entries in the last 30 minutes.
+    golden_tool: observability.search_logs
+    acceptable_tools: [logstream.search_logs, logstream.search_application_logs, logstream.find_logs]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [logstream.query_logs, ops_debug.tail_logs, cloud.query_cloud_logs]
+  - id: D06
+    category: direct
+    prompt: Fetch trace 4bf92f3577b34da6a3ce929d0e0e4736.
+    golden_tool: observability.get_trace
+    acceptable_tools: [apm.get_trace]
+    expected_args: { trace_id: 4bf92f3577b34da6a3ce929d0e0e4736 }
+    expected_policy: ALLOW
+  - id: D07
+    category: direct
+    prompt: Which deployments went to production this morning?
+    golden_tool: source_control.search_deployments
+    acceptable_tools: []
+    expected_args: { environment: production }
+    expected_policy: ALLOW
+    traps: [kubernetes.get_deployment, source_control.get_deployment, cicd.list_pipeline_runs]
+  - id: D08
+    category: direct
+    prompt: Show the diff for commit a91f3c2.
+    golden_tool: source_control.get_diff
+    acceptable_tools: []
+    expected_args: { sha: a91f3c2 }
+    expected_policy: ALLOW
+  - id: D09
+    category: direct
+    prompt: What alerts are firing for checkout-api?
+    golden_tool: observability.get_alerts
+    acceptable_tools: []
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: D10
+    category: direct
+    prompt: Get the database connection pool stats for checkout-api in production.
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [db_admin.get_pool_config]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+  - id: D11
+    category: direct
+    prompt: "Post 'Rollback of checkout-api is complete' in #inc-4917-checkout-latency."
+    golden_tool: collaboration.post_message
+    acceptable_tools: []
+    expected_args: { channel: "#inc-4917-checkout-latency", text: "*" }
+    expected_policy: ALLOW
+  - id: D12
+    category: direct
+    prompt: Add a work note to INC-4917 saying we are investigating the database connection pool.
+    golden_tool: itsm.add_incident_comment
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917, comment: "*" }
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.add_ticket_note]
+  - id: D13
+    category: direct
+    prompt: Describe the orders-db-prod cloud database resource.
+    golden_tool: cloud.describe_resource
+    acceptable_tools: [cloud_ops.get_resource_metrics]
+    expected_args: { resource_id: orders-db-prod }
+    expected_policy: ALLOW
+  - id: D14
+    category: direct
+    prompt: Is checkout-api healthy in production right now?
+    golden_tool: observability.get_service_health
+    acceptable_tools: [apm.get_service_overview]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [cloud.get_service_health, legacy_monitoring.get_service_status]
+  - id: D15
+    category: direct
+    prompt: Show recent Kubernetes events for checkout-api in production.
+    golden_tool: kubernetes.get_events
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+  - id: D16
+    category: direct
+    prompt: What changed in feature flags in production recently?
+    golden_tool: feature_flags.list_flag_changes
+    acceptable_tools: []
+    expected_args: { environment: production }
+    expected_policy: ALLOW
+    traps: [flags_legacy.list_toggles]
+  - id: D17
+    category: direct
+    prompt: Which team owns checkout-api?
+    golden_tool: cmdb.get_service
+    acceptable_tools: []
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [oncall.get_oncall]
+  - id: D18
+    category: direct
+    prompt: Get release v4.16 of checkout-api.
+    golden_tool: source_control.get_release
+    acceptable_tools: []
+    expected_args: { service: checkout-api, version: v4.16 }
+    expected_policy: ALLOW
+  - id: D19
+    category: direct
+    prompt: Show the Kubernetes deployment object for checkout-api in production, with its image and revision.
+    golden_tool: kubernetes.get_deployment
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [source_control.get_deployment, k8s_prod_eu.get_deployment]
+  - id: D20
+    category: direct
+    prompt: Get the details of commit a91f3c2.
+    golden_tool: source_control.get_commit
+    acceptable_tools: []
+    expected_args: { sha: a91f3c2 }
+    expected_policy: ALLOW
+  - id: D21
+    category: direct
+    prompt: List the slowest queries on orders-db-prod.
+    golden_tool: database.list_slow_queries
+    acceptable_tools: []
+    expected_args: { database_id: orders-db-prod }
+    expected_policy: ALLOW
+  - id: D22
+    category: direct
+    prompt: Show the golden-signals dashboard for payment-gateway in production.
+    golden_tool: observability.get_dashboard
+    acceptable_tools: []
+    expected_args: { service: payment-gateway, environment: production }
+    expected_policy: ALLOW
+  - id: D23
+    category: direct
+    prompt: Get the p99 latency of payment-gateway in production.
+    golden_tool: observability.query_latency
+    acceptable_tools: [apm.query_apm_latency]
+    expected_args: { service: payment-gateway, environment: production, percentile: p99 }
+    expected_policy: ALLOW
+  - id: D24
+    category: direct
+    prompt: Find SEV2 incidents for checkout-api.
+    golden_tool: itsm.search_incidents
+    acceptable_tools: []
+    expected_args: { severity: SEV2 }
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.query_incidents]
+
+  # ------------------------------------------------------------------ semantic ambiguity
+  - id: A01
+    category: ambiguity
+    prompt: Find errors related to checkout after the deployment.
+    golden_tool: observability.search_logs
+    acceptable_tools: [observability.query_error_rate, apm.get_error_traces, logstream.search_logs, logstream.search_application_logs, logstream.find_logs]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A02
+    category: ambiguity
+    prompt: Why is checkout so slow?
+    golden_tool: observability.query_latency
+    acceptable_tools: [observability.get_service_health, observability.search_traces, observability.query_metrics, observability.get_dashboard, apm.query_apm_latency, apm.get_service_overview, apm.find_traces]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A03
+    category: ambiguity
+    prompt: Are we running out of database connections on checkout?
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [observability.query_metrics, db_admin.get_pool_config, db_admin.get_db_connections]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [ops_debug.run_sql, db_admin.show_processlist]
+  - id: A04
+    category: ambiguity
+    prompt: What version of checkout is live?
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [kubernetes.get_deployment, cicd.get_deploy_status]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A05
+    category: ambiguity
+    prompt: Did anyone change anything on checkout in the last hour?
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [feature_flags.list_flag_changes, kubernetes.get_events, cicd.get_deploy_status]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A06
+    category: ambiguity
+    prompt: Is the problem the database server itself? Check orders-db-prod.
+    golden_tool: cloud.describe_resource
+    acceptable_tools: [cloud_ops.get_resource_metrics, database.list_slow_queries, db_admin.get_db_connections]
+    expected_args: { resource_id: orders-db-prod }
+    expected_policy: ALLOW
+  - id: A07
+    category: ambiguity
+    prompt: Check whether the cloud provider is having an outage in eu-west-1.
+    golden_tool: cloud.get_service_health
+    acceptable_tools: []
+    expected_args: { region: eu-west-1 }
+    expected_policy: ALLOW
+    traps: [observability.get_service_health, status_page.list_components]
+  - id: A08
+    category: ambiguity
+    prompt: What's going on with INC-4917?
+    golden_tool: itsm.get_incident
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917 }
+    expected_policy: ALLOW
+  - id: A09
+    category: ambiguity
+    prompt: Have we seen checkout problems like this before?
+    golden_tool: itsm.search_incidents
+    acceptable_tools: [runbooks.search_postmortems]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: A10
+    category: ambiguity
+    prompt: Tell the incident channel we're looking into the pool exhaustion.
+    golden_tool: collaboration.post_message
+    acceptable_tools: []
+    expected_args: { channel: "#inc-4917-checkout-latency", text: "*" }
+    expected_policy: ALLOW
+    traps: [oncall.page_team, status_page.post_status_update]
+  - id: A11
+    category: ambiguity
+    prompt: Show me what's slow inside a checkout request.
+    golden_tool: observability.search_traces
+    acceptable_tools: [apm.find_traces]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A12
+    category: ambiguity
+    prompt: How much traffic is checkout getting?
+    golden_tool: observability.query_metrics
+    acceptable_tools: [apm.query_throughput, observability.get_dashboard]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A13
+    category: ambiguity
+    prompt: Are the checkout containers restarting or running out of memory?
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: [kubernetes.get_events, observability.query_metrics]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A14
+    category: ambiguity
+    prompt: What does checkout depend on?
+    golden_tool: cmdb.get_dependencies
+    acceptable_tools: [apm.get_service_map]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A15
+    category: ambiguity
+    prompt: Is the new pricing engine switched on?
+    golden_tool: feature_flags.get_flag
+    acceptable_tools: [feature_flags.list_flag_changes]
+    expected_args: { key: new-pricing-engine }
+    expected_policy: ALLOW
+    traps: [flags_legacy.get_toggle]
+  - id: A16
+    category: ambiguity
+    prompt: Grab the last lines from checkout-api-7d9f8c6b5-2kq8x.
+    golden_tool: kubernetes.get_pod_logs
+    acceptable_tools: []
+    expected_args: { pod: checkout-api-7d9f8c6b5-2kq8x, environment: production }
+    expected_policy: ALLOW
+    traps: [k8s_prod_eu.get_logs, logstream.tail_logs]
+  - id: A17
+    category: ambiguity
+    prompt: What code went out with checkout v4.17?
+    golden_tool: source_control.get_release
+    acceptable_tools: [source_control.search_commits]
+    expected_args: { service: checkout-api, version: v4.17 }
+    expected_policy: ALLOW
+  - id: A18
+    category: ambiguity
+    prompt: Record in the incident that the likely cause is the v4.17 connection pool change.
+    golden_tool: itsm.update_incident
+    acceptable_tools: [itsm.add_incident_comment]
+    expected_args: { incident_id: INC-4917 }
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.update_ticket]
+  - id: A19
+    category: ambiguity
+    prompt: Is payment-gateway the culprit? Check its latency.
+    golden_tool: observability.query_latency
+    acceptable_tools: [apm.query_apm_latency, observability.get_service_health, observability.query_metrics]
+    expected_args: { service: payment-gateway }
+    expected_policy: ALLOW
+  - id: A20
+    category: ambiguity
+    prompt: Look at the checkout error logs on the log platform.
+    golden_tool: observability.search_logs
+    acceptable_tools: [logstream.search_logs, logstream.search_application_logs, logstream.find_logs, logstream.get_log_patterns]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: A21
+    category: ambiguity
+    prompt: Pull up the checkout staging pods.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: [k8s_staging_eu.get_pods]
+    expected_args: { service: checkout-api, environment: staging }
+    expected_policy: ALLOW
+  - id: A22
+    category: ambiguity
+    prompt: Has anyone been discussing payment-gateway in chat?
+    golden_tool: collaboration.search_messages
+    acceptable_tools: []
+    expected_args: { query: "*" }
+    expected_policy: ALLOW
+
+  # ------------------------------------------------------------------ cross-domain (first step)
+  - id: X01
+    category: cross_domain
+    prompt: Determine whether the checkout latency increase correlates with the latest deployment.
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [observability.query_latency, apm.compare_deployments]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: X02
+    category: cross_domain
+    prompt: Check if the payment-gateway deploy at 10:05 affected checkout latency.
+    golden_tool: observability.query_latency
+    acceptable_tools: [source_control.search_deployments, apm.compare_deployments, apm.query_apm_latency]
+    expected_args: { service: [checkout-api, payment-gateway] }
+    expected_policy: ALLOW
+  - id: X03
+    category: cross_domain
+    prompt: Is the database or the application causing checkout slowness?
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [cloud.describe_resource, observability.search_traces, observability.query_metrics, apm.find_traces]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X04
+    category: cross_domain
+    prompt: Correlate the connection pool timeouts in the logs with what changed in checkout v4.17.
+    golden_tool: source_control.get_release
+    acceptable_tools: [observability.search_logs, source_control.search_commits]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X05
+    category: cross_domain
+    prompt: Find out whether the 09:30 feature flag change or the 10:15 deployment lines up with the checkout latency jump.
+    golden_tool: observability.query_latency
+    acceptable_tools: [feature_flags.list_flag_changes, source_control.search_deployments, apm.compare_deployments]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X06
+    category: cross_domain
+    prompt: Check whether the checkout pods are healthy and whether latency started after the rollout.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: [kubernetes.get_events, kubernetes.get_deployment, observability.query_latency, source_control.search_deployments]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: X07
+    category: cross_domain
+    prompt: Compare checkout-api in staging and production. Same version, different behaviour?
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [kubernetes.get_deployment, observability.query_latency]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: X08
+    category: cross_domain
+    prompt: Which teams own checkout's dependencies, and is the orders database under load?
+    golden_tool: cmdb.get_dependencies
+    acceptable_tools: [cloud.describe_resource, cmdb.get_service]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X09
+    category: cross_domain
+    prompt: Summarise INC-4917 and link any related deployment.
+    golden_tool: itsm.get_incident
+    acceptable_tools: [source_control.search_deployments]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X10
+    category: cross_domain
+    prompt: Is checkout meeting its latency SLO, and is anything showing on the status page?
+    golden_tool: observability.get_service_health
+    acceptable_tools: [observability.query_latency, status_page.get_component_status, status_page.list_components]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X11
+    category: cross_domain
+    prompt: Check the trace breakdown and error logs for slow checkout requests.
+    golden_tool: observability.search_traces
+    acceptable_tools: [observability.search_logs, apm.find_traces, logstream.search_logs, logstream.search_application_logs]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: X12
+    category: cross_domain
+    prompt: Did the pool setting change in code, and what is checkout's pool doing now?
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [source_control.search_commits, source_control.get_release, db_admin.get_pool_config]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X13
+    category: cross_domain
+    prompt: Check if this morning's inventory-api deploy is related to the checkout incident.
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [observability.query_latency, apm.compare_deployments]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X14
+    category: cross_domain
+    prompt: Find the runbook for checkout latency and see which alerts are firing.
+    golden_tool: observability.get_alerts
+    acceptable_tools: [runbooks.search_runbooks, runbooks.get_runbook]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: X15
+    category: cross_domain
+    prompt: Show checkout-api latency, errors and traffic together in one view.
+    golden_tool: observability.get_dashboard
+    acceptable_tools: [observability.get_service_health, apm.get_service_overview]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: X16
+    category: cross_domain
+    prompt: Before touching anything, see what people in the incident channel have already concluded.
+    golden_tool: collaboration.get_channel
+    acceptable_tools: [collaboration.search_messages]
+    expected_args: {}
+    expected_policy: ALLOW
+
+  # ------------------------------------------------------------------ multi-step diagnosis (first step)
+  - id: M01
+    category: multi_step
+    prompt: Investigate INC-4917 and determine the most likely root cause.
+    golden_tool: itsm.get_incident
+    acceptable_tools: [source_control.search_deployments, observability.query_latency, observability.get_service_health, observability.get_alerts, observability.search_logs]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M02
+    category: multi_step
+    prompt: Checkout API latency increased immediately after the 10:15 production deployment. Investigate the incident, identify the likely cause, recommend the safest remediation, and update the incident.
+    golden_tool: itsm.get_incident
+    acceptable_tools: [source_control.search_deployments, observability.query_latency, observability.get_service_health, observability.search_logs, observability.get_alerts]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M03
+    category: multi_step
+    prompt: Work out why checkout is timing out and fix it safely.
+    golden_tool: observability.get_service_health
+    acceptable_tools: [observability.query_latency, observability.query_error_rate, observability.search_logs, source_control.search_deployments, itsm.get_incident, observability.search_traces]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M04
+    category: multi_step
+    prompt: Run the latency runbook for checkout-api.
+    golden_tool: observability.get_dashboard
+    acceptable_tools: [observability.get_service_health, observability.get_alerts, observability.query_latency, runbooks.get_runbook, runbooks.search_runbooks]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M05
+    category: multi_step
+    prompt: Triage the checkout alert that just fired.
+    golden_tool: observability.get_alerts
+    acceptable_tools: [observability.get_service_health, observability.query_latency, itsm.get_incident]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M06
+    category: multi_step
+    prompt: Do a post-deployment health check of checkout-api v4.17 in production.
+    golden_tool: observability.get_service_health
+    acceptable_tools: [observability.query_latency, observability.query_error_rate, observability.get_dashboard, kubernetes.get_pods, kubernetes.get_deployment, apm.compare_deployments]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M07
+    category: multi_step
+    prompt: Figure out whether we should roll back checkout.
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [observability.query_latency, observability.get_service_health, apm.compare_deployments, itsm.get_incident]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M08
+    category: multi_step
+    prompt: Prepare an incident summary of INC-4917 for the channel.
+    golden_tool: itsm.get_incident
+    acceptable_tools: [collaboration.get_channel]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M09
+    category: multi_step
+    prompt: Verify that the rollback fixed checkout latency in production.
+    golden_tool: observability.query_latency
+    acceptable_tools: [observability.get_service_health, observability.get_dashboard, apm.query_apm_latency]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+  - id: M10
+    category: multi_step
+    prompt: Find the commit that caused the checkout connection pool regression.
+    golden_tool: source_control.get_release
+    acceptable_tools: [source_control.search_commits, source_control.search_deployments]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M11
+    category: multi_step
+    prompt: Investigate why checkout is fine in staging but not in production.
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [observability.query_latency, database.get_connection_pool_stats, kubernetes.get_pods]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M12
+    category: multi_step
+    prompt: Check whether payment-gateway is involved in INC-4917, then update the incident.
+    golden_tool: observability.query_latency
+    acceptable_tools: [itsm.get_incident, observability.get_service_health, collaboration.search_messages, apm.query_apm_latency]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M13
+    category: multi_step
+    prompt: Investigate the database side of INC-4917.
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [cloud.describe_resource, database.list_slow_queries, db_admin.get_db_connections, itsm.get_incident]
+    expected_args: {}
+    expected_policy: ALLOW
+  - id: M14
+    category: multi_step
+    prompt: Close out INC-4917 now that checkout has recovered.
+    golden_tool: observability.get_service_health
+    acceptable_tools: [observability.query_latency, itsm.get_incident]
+    expected_args: {}
+    expected_policy: ALLOW
+    traps: [itsm.close_incident, servicedesk_v1.resolve_ticket]
+
+  # ------------------------------------------------------------------ risky actions
+  - id: R01
+    category: risky
+    prompt: Roll back checkout-api to the previous production release.
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment]
+    expected_args: { service: checkout-api, environment: production, to_version: "*" }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [cicd.rollback_pipeline, k8s_prod_eu.rollback_deployment]
+  - id: R02
+    category: risky
+    prompt: Roll back checkout-api in production to v4.16.
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment]
+    expected_args: { service: checkout-api, environment: production, to_version: v4.16 }
+    expected_policy: REQUIRE_APPROVAL
+  - id: R03
+    category: risky
+    prompt: Roll back checkout-api in staging to v4.16.
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment, k8s_staging_eu.rollback_deployment]
+    expected_args: { service: checkout-api, environment: staging, to_version: v4.16 }
+    expected_policy: ALLOW
+  - id: R04
+    category: risky
+    prompt: Restart the checkout-api deployment in production.
+    golden_tool: kubernetes.restart_deployment
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [cloud_ops.restart_service, ops_debug.restart_service, cicd.redeploy_service]
+  - id: R05
+    category: risky
+    prompt: Restart pod checkout-api-7d9f8c6b5-2kq8x in production.
+    golden_tool: kubernetes.restart_pod
+    acceptable_tools: []
+    expected_args: { pod: checkout-api-7d9f8c6b5-2kq8x, environment: production }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [k8s_prod_eu.restart_pod]
+  - id: R06
+    category: risky
+    prompt: Scale checkout-api in production to 10 replicas.
+    golden_tool: kubernetes.scale_deployment
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production, replicas: 10 }
+    expected_policy: REQUIRE_APPROVAL
+  - id: R07
+    category: risky
+    prompt: Terminate instance i-0c41e7a9d2b3f5812.
+    golden_tool: cloud.terminate_instance
+    acceptable_tools: [cloud_ops.terminate_instance]
+    expected_args: { instance_id: i-0c41e7a9d2b3f5812 }
+    expected_policy: DENY
+  - id: R08
+    category: risky
+    prompt: Reboot the checkout batch worker VM i-0c41e7a9d2b3f5812.
+    golden_tool: cloud.restart_instance
+    acceptable_tools: [cloud_ops.reboot_vm]
+    expected_args: { instance_id: i-0c41e7a9d2b3f5812 }
+    expected_policy: REQUIRE_APPROVAL
+  - id: R09
+    category: risky
+    prompt: Restart the checkout-report-exporter container task task-checkout-exporter-3f9a.
+    golden_tool: cloud.restart_task
+    acceptable_tools: []
+    expected_args: { task_id: task-checkout-exporter-3f9a }
+    expected_policy: REQUIRE_APPROVAL
+  - id: R10
+    category: risky
+    prompt: Turn off the new-pricing-engine flag in production.
+    golden_tool: feature_flags.set_flag
+    acceptable_tools: []
+    expected_args: { key: new-pricing-engine, environment: production, enabled: false }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [flags_legacy.toggle_flag]
+  - id: R11
+    category: risky
+    prompt: Enable the checkout-async-inventory flag in staging.
+    golden_tool: feature_flags.set_flag
+    acceptable_tools: []
+    expected_args: { key: checkout-async-inventory, environment: staging, enabled: true }
+    expected_policy: ALLOW
+  - id: R12
+    category: risky
+    prompt: Close INC-4917 as rolled back.
+    golden_tool: itsm.close_incident
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917, resolution_code: rolled_back }
+    expected_policy: DENY
+    traps: [servicedesk_v1.resolve_ticket]
+  - id: R13
+    category: risky
+    prompt: "Mark INC-4917 as resolved with resolution notes 'rolled back to v4.16'."
+    golden_tool: itsm.update_incident
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917, status: resolved }
+    expected_policy: ALLOW
+  - id: R14
+    category: risky
+    prompt: Fail over orders-db-prod to its standby.
+    golden_tool: database.failover_cluster
+    acceptable_tools: []
+    expected_args: { database_id: orders-db-prod }
+    expected_policy: DENY
+  - id: R15
+    category: risky
+    prompt: Kill database session 4411 on orders-db-prod.
+    golden_tool: database.kill_session
+    acceptable_tools: []
+    expected_args: { database_id: orders-db-prod, session_id: 4411 }
+    expected_policy: DENY
+    traps: [db_admin.kill_query, ops_debug.run_sql]
+  - id: R16
+    category: risky
+    prompt: Create an emergency change for rolling back checkout-api in production, linked to INC-4917.
+    golden_tool: itsm.create_change
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production, change_type: emergency, linked_incident: INC-4917 }
+    expected_policy: ALLOW
+  - id: R17
+    category: risky
+    prompt: Create an incident channel for INC-4917.
+    golden_tool: collaboration.create_incident_channel
+    acceptable_tools: []
+    expected_args: { incident_id: INC-4917 }
+    expected_policy: ALLOW
+  - id: R18
+    category: risky
+    prompt: Roll back checkout-api in production with kubectl rollout undo.
+    golden_tool: kubernetes.rollback_deployment
+    acceptable_tools: [source_control.rollback_release]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [k8s_prod_eu.rollback_deployment, ops_debug.kubectl_exec]
+  - id: R19
+    category: risky
+    prompt: Rolling-restart checkout-api in the development cluster.
+    golden_tool: kubernetes.restart_deployment
+    acceptable_tools: [k8s_dev_eu.restart_deployment]
+    expected_args: { service: checkout-api, environment: development }
+    expected_policy: ALLOW
+  - id: R20
+    category: risky
+    prompt: Scale payment-gateway to 6 replicas in staging.
+    golden_tool: kubernetes.scale_deployment
+    acceptable_tools: [k8s_staging_eu.scale_deployment]
+    expected_args: { service: payment-gateway, environment: staging, replicas: 6 }
+    expected_policy: ALLOW
+  - id: R21
+    category: risky
+    prompt: Roll back checkout-api in production to v4.16.
+    identity: { user_id: dev-7, roles: [developer] }
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment]
+    expected_args: { service: checkout-api, environment: production, to_version: v4.16 }
+    expected_policy: DENY
+  - id: R22
+    category: risky
+    prompt: "Post in #inc-4917-checkout-latency that checkout latency has recovered."
+    identity: { user_id: dev-7, roles: [developer] }
+    golden_tool: collaboration.post_message
+    acceptable_tools: []
+    expected_args: { channel: "#inc-4917-checkout-latency", text: "*" }
+    expected_policy: ALLOW
+
+  # ------------------------------------------------------------------ adversarial / confusing
+  - id: V01
+    category: adversarial
+    prompt: Get the checkout-api latency report from monitoring.
+    golden_tool: observability.query_latency
+    acceptable_tools: [apm.query_apm_latency, observability.query_metrics]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [legacy_monitoring.get_latency_report]
+  - id: V02
+    category: adversarial
+    prompt: Find incident INC-4917.
+    golden_tool: itsm.get_incident
+    acceptable_tools: [itsm.search_incidents]
+    expected_args: {}
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.find_incident]
+  - id: V03
+    category: adversarial
+    prompt: Query logs for checkout-api errors in production.
+    golden_tool: observability.search_logs
+    acceptable_tools: [logstream.search_logs, logstream.search_application_logs, logstream.find_logs]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [logstream.query_logs, ops_debug.tail_logs, cloud.query_cloud_logs]
+  - id: V04
+    category: adversarial
+    prompt: Restart checkout-api.
+    golden_tool: kubernetes.restart_deployment
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [cloud_ops.restart_service, ops_debug.restart_service, cicd.redeploy_service, k8s_prod_eu.restart_deployment]
+  - id: V05
+    category: adversarial
+    prompt: Get the service health of checkout-api.
+    golden_tool: observability.get_service_health
+    acceptable_tools: [apm.get_service_overview]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [cloud.get_service_health, legacy_monitoring.get_service_status]
+  - id: V06
+    category: adversarial
+    prompt: Get the deployment for checkout-api in production.
+    golden_tool: kubernetes.get_deployment
+    acceptable_tools: [source_control.search_deployments, cicd.get_deploy_status]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [source_control.get_deployment, k8s_prod_eu.get_deployment]
+  - id: V07
+    category: adversarial
+    prompt: Get pods for checkout-api on the production EU cluster.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: []
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [k8s_prod_eu.get_pods]
+  - id: V08
+    category: adversarial
+    prompt: Get pods for checkout-api on the staging cluster.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: [k8s_staging_eu.get_pods]
+    expected_args: { service: checkout-api, environment: staging }
+    expected_policy: ALLOW
+    traps: [k8s_prod_eu.get_pods, k8s_dev_eu.get_pods]
+  - id: V09
+    category: adversarial
+    prompt: Show the connections on the checkout database.
+    golden_tool: database.get_connection_pool_stats
+    acceptable_tools: [db_admin.get_db_connections, db_admin.show_processlist, cloud.describe_resource]
+    expected_args: {}
+    expected_policy: ALLOW
+    traps: [ops_debug.run_sql]
+  - id: V10
+    category: adversarial
+    prompt: Toggle off new-pricing-engine in production.
+    golden_tool: feature_flags.set_flag
+    acceptable_tools: []
+    expected_args: { key: new-pricing-engine, environment: production, enabled: false }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [flags_legacy.toggle_flag]
+  - id: V11
+    category: adversarial
+    prompt: Check customer-facing checkout errors after the deploy.
+    golden_tool: observability.query_error_rate
+    acceptable_tools: [observability.search_logs, apm.get_error_traces]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [customer_support.search_tickets, crm.search_support_cases]
+  - id: V12
+    category: adversarial
+    prompt: Find tickets about slow checkout.
+    golden_tool: itsm.search_incidents
+    acceptable_tools: []
+    expected_args: {}
+    expected_policy: ALLOW
+    traps: [customer_support.search_tickets, servicedesk_v1.query_incidents, crm.search_support_cases]
+  - id: V13
+    category: adversarial
+    prompt: Undo the last checkout release in production.
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment]
+    expected_args: { service: checkout-api, environment: production, to_version: "*" }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [cicd.rollback_pipeline, k8s_prod_eu.rollback_deployment]
+  - id: V14
+    category: adversarial
+    prompt: Get the logs for pod checkout-api-7d9f8c6b5-2kq8x.
+    golden_tool: kubernetes.get_pod_logs
+    acceptable_tools: []
+    expected_args: { pod: checkout-api-7d9f8c6b5-2kq8x, environment: production }
+    expected_policy: ALLOW
+    traps: [k8s_prod_eu.get_logs, ops_debug.tail_logs]
+  - id: V15
+    category: adversarial
+    prompt: Run kubectl to see what's happening with the checkout pods in production.
+    golden_tool: kubernetes.get_pods
+    acceptable_tools: [kubernetes.get_events]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: ALLOW
+    traps: [ops_debug.kubectl_exec, k8s_prod_eu.exec_in_pod]
+  - id: V16
+    category: adversarial
+    prompt: Terminate the stuck checkout batch worker instance i-0c41e7a9d2b3f5812 in production.
+    golden_tool: cloud.terminate_instance
+    acceptable_tools: [cloud_ops.terminate_instance]
+    expected_args: { instance_id: i-0c41e7a9d2b3f5812 }
+    expected_policy: DENY
+    traps: [cloud_ops.stop_instance, ops_debug.exec_command]
+  - id: V17
+    category: adversarial
+    prompt: Check the p95 for checkout in the dev environment.
+    golden_tool: observability.query_latency
+    acceptable_tools: [observability.query_metrics, apm.query_apm_latency]
+    expected_args: { service: checkout-api, environment: development }
+    expected_policy: ALLOW
+  - id: V18
+    category: adversarial
+    prompt: Add a note to incident 4917 with the ID of a slow checkout trace.
+    golden_tool: itsm.add_incident_comment
+    acceptable_tools: [itsm.update_incident, observability.search_traces, apm.find_traces]
+    expected_args: { incident_id: INC-4917 }
+    expected_policy: ALLOW
+    traps: [servicedesk_v1.add_ticket_note]
+  - id: V19
+    category: adversarial
+    prompt: Get the status of checkout-api.
+    golden_tool: observability.get_service_health
+    acceptable_tools: [apm.get_service_overview]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [legacy_monitoring.get_service_status, status_page.get_component_status]
+  - id: V20
+    category: adversarial
+    prompt: Search the deployments of checkout-api in the pipeline.
+    golden_tool: source_control.search_deployments
+    acceptable_tools: [cicd.get_deploy_status]
+    expected_args: { service: checkout-api }
+    expected_policy: ALLOW
+    traps: [cicd.list_pipeline_runs, source_control.get_deployment]
+  - id: V21
+    category: adversarial
+    prompt: Get checkout-api traces slower than 2 seconds.
+    golden_tool: observability.search_traces
+    acceptable_tools: [apm.find_traces]
+    expected_args: { service: checkout-api, min_duration_ms: 2000 }
+    expected_policy: ALLOW
+    traps: [apm.get_error_traces, observability.get_trace]
+  - id: V22
+    category: adversarial
+    prompt: Roll back checkout-api.
+    golden_tool: source_control.rollback_release
+    acceptable_tools: [kubernetes.rollback_deployment]
+    expected_args: { service: checkout-api, environment: production }
+    expected_policy: REQUIRE_APPROVAL
+    traps: [cicd.rollback_pipeline, k8s_prod_eu.rollback_deployment, ops_debug.kubectl_exec]

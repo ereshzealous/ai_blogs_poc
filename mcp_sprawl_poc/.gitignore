@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local caches (rebuilt deterministically)
+benchmark/.cache/
+*.sqlite-journal
+
+# Scratch benchmark runs; published runs are committed under benchmark/runs/
+benchmark/runs/_scratch*/
+benchmark/runs/smoke-*/
+benchmark/reports/_scratch*/
+# Mock-world state databases are rebuilt by rerunning; the JSONL files are the evidence
+benchmark/runs/*/*.sqlite*
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets never belong in this repository
+.env
+.env.*
+!.env.example
+
+# Not part of this repository: article, diagrams and research material live outside it
+*.excalidraw
+/assets/
+/diagrams/
+/docs/images/
+/docs/research/
+/inputs/

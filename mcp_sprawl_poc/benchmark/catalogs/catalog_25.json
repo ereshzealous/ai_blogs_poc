@@ -1,0 +1,999 @@
+{
+ "catalog_id": "catalog_25",
+ "seed": 4917,
+ "tool_count": 25,
+ "servers": [
+  "cloud",
+  "collaboration",
+  "database",
+  "feature_flags",
+  "itsm",
+  "kubernetes",
+  "observability",
+  "source_control"
+ ],
+ "tools": [
+  {
+   "server": "itsm",
+   "name": "get_incident",
+   "description": "Get an incident record by number: title, severity, status, affected service, timeline, linked alerts, linked changes, comments and updates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get incident",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:get_incident",
+   "family": "core",
+   "collision_group": "incident-lookup"
+  },
+  {
+   "server": "observability",
+   "name": "query_latency",
+   "description": "Get request latency percentiles (p50, p95 or p99) for a service's HTTP endpoints over a lookback window, compared with the service's latency SLO.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "percentile": {
+      "type": "string",
+      "enum": [
+       "p50",
+       "p95",
+       "p99"
+      ]
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "percentile"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query latency",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_latency",
+   "family": "core",
+   "collision_group": "latency"
+  },
+  {
+   "server": "observability",
+   "name": "query_metrics",
+   "description": "Query a time series for one application metric of a service over a lookback window. Supports latency percentiles, error rate, throughput, CPU/memory utilisation and database connection-pool metrics (acquire wait, in-use, max, waiting). Returns a summary and a downsampled series.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "metric": {
+      "type": "string",
+      "enum": [
+       "latency_p50_ms",
+       "latency_p95_ms",
+       "error_rate_pct",
+       "requests_per_second",
+       "db_pool_acquire_wait_p95_ms",
+       "db_pool_in_use",
+       "db_pool_max",
+       "db_pool_waiting",
+       "cpu_utilization_pct",
+       "memory_utilization_pct"
+      ]
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "metric",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query metrics",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_metrics",
+   "family": "core",
+   "collision_group": "metrics"
+  },
+  {
+   "server": "observability",
+   "name": "search_logs",
+   "description": "Search application logs emitted by a service's containers. Filter by free-text query, log level and lookback window. Returns matching message patterns with counts and a few sample lines. This is the system of record for application logs.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "query": {
+      "type": "string",
+      "description": "Free-text filter, e.g. timeout."
+     },
+     "level": {
+      "type": "string",
+      "enum": [
+       "DEBUG",
+       "INFO",
+       "WARN",
+       "ERROR"
+      ]
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search application logs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:search_logs",
+   "family": "core",
+   "collision_group": "logs"
+  },
+  {
+   "server": "observability",
+   "name": "get_trace",
+   "description": "Fetch one distributed trace by trace ID, with every span's service, name and duration.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "trace_id": {
+      "type": "string",
+      "description": "32-character hex trace ID."
+     }
+    },
+    "required": [
+     "trace_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get trace",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_trace",
+   "family": "core",
+   "collision_group": "traces"
+  },
+  {
+   "server": "source_control",
+   "name": "search_deployments",
+   "description": "List release-pipeline deployments, newest first, filtered by service, environment and start time. This is the system of record for what version was deployed where and when.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search deployments",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:search_deployments",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_pods",
+   "description": "List the pods backing a service's Kubernetes deployment with phase, readiness, restart count, node, image and current CPU/memory utilisation.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get pods",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_pods",
+   "family": "core",
+   "collision_group": "runtime-state"
+  },
+  {
+   "server": "source_control",
+   "name": "rollback_release",
+   "description": "Roll a service back to a previous release through the release pipeline: redeploys the earlier version to the environment, records a deployment and keeps GitOps state consistent.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "to_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Release version, e.g. v4.16."
+     },
+     "reason": {
+      "type": "string",
+      "description": "Why the rollback is needed; recorded on the deployment."
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "to_version"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Roll back release",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "source_control:rollback_release",
+   "family": "core",
+   "collision_group": "rollback"
+  },
+  {
+   "server": "itsm",
+   "name": "update_incident",
+   "description": "Update fields on an existing incident: status, severity, summary, suspected root cause and resolution notes. Changes are visible to everyone following the incident.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "investigating",
+       "identified",
+       "monitoring",
+       "resolved"
+      ]
+     },
+     "severity": {
+      "type": "string",
+      "enum": [
+       "SEV1",
+       "SEV2",
+       "SEV3",
+       "SEV4"
+      ]
+     },
+     "summary": {
+      "type": "string"
+     },
+     "root_cause": {
+      "type": "string"
+     },
+     "resolution_notes": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Update incident",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": true,
+   "open_world_hint": false,
+   "handler": "itsm:update_incident",
+   "family": "core",
+   "collision_group": "incident-update"
+  },
+  {
+   "server": "collaboration",
+   "name": "post_message",
+   "description": "Post a message to a chat channel as the calling agent.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Channel name including #, e.g. #inc-4917-checkout-latency."
+     },
+     "text": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "required": [
+     "channel",
+     "text"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Post message",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "collaboration:post_message",
+   "family": "core",
+   "collision_group": "chat-write"
+  },
+  {
+   "server": "observability",
+   "name": "query_error_rate",
+   "description": "Get the percentage of failed requests (5xx and timeouts) for a service over a lookback window.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Query error rate",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:query_error_rate",
+   "family": "core",
+   "collision_group": "errors"
+  },
+  {
+   "server": "observability",
+   "name": "get_service_health",
+   "description": "Summarise the current health of an application service: SLO status for latency and availability, active alerts and a healthy/degraded/down verdict.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get service health",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_service_health",
+   "family": "core",
+   "collision_group": "service-health"
+  },
+  {
+   "server": "observability",
+   "name": "get_alerts",
+   "description": "List monitoring alerts, optionally filtered by service, environment and state (firing or resolved).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "state": {
+      "type": "string",
+      "enum": [
+       "firing",
+       "resolved",
+       "any"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Get alerts",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:get_alerts",
+   "family": "core",
+   "collision_group": "alerts"
+  },
+  {
+   "server": "observability",
+   "name": "search_traces",
+   "description": "Find recent distributed traces for a service, optionally only those slower than a duration threshold. Returns trace IDs with root span, duration and the slowest child span.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "min_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "time_range": {
+      "type": "string",
+      "description": "Relative lookback window ending now, e.g. 15m, 1h, 6h.",
+      "pattern": "^[0-9]+[mh]$"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Search traces",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "observability:search_traces",
+   "family": "core",
+   "collision_group": "traces"
+  },
+  {
+   "server": "itsm",
+   "name": "search_incidents",
+   "description": "Search incidents by free text, affected service, status and severity. Returns incident numbers with titles and status, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string"
+     },
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "open",
+       "investigating",
+       "resolved",
+       "closed",
+       "any"
+      ]
+     },
+     "severity": {
+      "type": "string",
+      "enum": [
+       "SEV1",
+       "SEV2",
+       "SEV3",
+       "SEV4"
+      ]
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "Search incidents",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:search_incidents",
+   "family": "core",
+   "collision_group": "incident-lookup"
+  },
+  {
+   "server": "itsm",
+   "name": "add_incident_comment",
+   "description": "Add a work note or customer-visible comment to an incident's activity stream without changing its fields.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4,6}$",
+      "description": "Incident number, e.g. INC-4917."
+     },
+     "comment": {
+      "type": "string",
+      "minLength": 1
+     },
+     "visibility": {
+      "type": "string",
+      "enum": [
+       "work_note",
+       "customer_visible"
+      ]
+     }
+    },
+    "required": [
+     "incident_id",
+     "comment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Add incident comment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "itsm:add_incident_comment",
+   "family": "core",
+   "collision_group": "incident-update"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_deployment",
+   "description": "Get the Kubernetes Deployment object for a service: desired/ready replicas, container image, rollout revision, strategy and conditions.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get Kubernetes deployment",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_deployment",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "kubernetes",
+   "name": "get_pod_logs",
+   "description": "Read the most recent stdout/stderr lines of a single pod's container, like kubectl logs.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pod": {
+      "type": "string",
+      "description": "Pod name, e.g. checkout-api-7d9f8c6b5-2kq8x."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "tail_lines": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+     }
+    },
+    "required": [
+     "pod",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get pod logs",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:get_pod_logs",
+   "family": "core",
+   "collision_group": "logs"
+  },
+  {
+   "server": "kubernetes",
+   "name": "restart_deployment",
+   "description": "Trigger a rolling restart of every pod in a service's deployment (kubectl rollout restart). Pods are replaced gradually with the same image and configuration.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Restart deployment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:restart_deployment",
+   "family": "core",
+   "collision_group": "restart"
+  },
+  {
+   "server": "kubernetes",
+   "name": "rollback_deployment",
+   "description": "Roll a Kubernetes deployment back to a previous ReplicaSet revision (kubectl rollout undo). Acts on the cluster object directly, outside the release pipeline.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "to_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Revision number; defaults to the previous revision."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Roll back Kubernetes deployment",
+   "read_only_hint": false,
+   "destructive_hint": false,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "kubernetes:rollback_deployment",
+   "family": "core",
+   "collision_group": "rollback"
+  },
+  {
+   "server": "source_control",
+   "name": "get_diff",
+   "description": "Get the unified diff introduced by a commit.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Commit SHA (7-40 hex characters)."
+     },
+     "repository": {
+      "type": "string",
+      "description": "Repository as org/name, e.g. shop/checkout-api."
+     }
+    },
+    "required": [
+     "sha"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get diff",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_diff",
+   "family": "core",
+   "collision_group": "code-history"
+  },
+  {
+   "server": "source_control",
+   "name": "get_deployment",
+   "description": "Get one release-pipeline deployment record by ID: service, environment, version, previous version, commit, change request, start/finish time and status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "deployment_id": {
+      "type": "string",
+      "pattern": "^DEP-[0-9]+$"
+     }
+    },
+    "required": [
+     "deployment_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get deployment record",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "source_control:get_deployment",
+   "family": "core",
+   "collision_group": "deployment-lookup"
+  },
+  {
+   "server": "database",
+   "name": "get_connection_pool_stats",
+   "description": "Get a service's database connection-pool statistics as reported by its database client: max connections, in use, idle, waiting requests, acquire-wait p95 and acquire timeouts.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "type": "string",
+      "description": "Service name as registered in the service catalogue, e.g. checkout-api."
+     },
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Get connection pool stats",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "database:get_connection_pool_stats",
+   "family": "core",
+   "collision_group": "db-read"
+  },
+  {
+   "server": "cloud",
+   "name": "describe_resource",
+   "description": "Describe any cloud resource by ID: type, status, configuration, recent provider events and key metrics such as CPU and active connections.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "resource_id": {
+      "type": "string",
+      "description": "Cloud resource ID, e.g. orders-db-prod or i-0c41e7a9d2b3f5812."
+     }
+    },
+    "required": [
+     "resource_id"
+    ],
+    "additionalProperties": false
+   },
+   "title": "Describe cloud resource",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": true,
+   "handler": "cloud:describe_resource",
+   "family": "core",
+   "collision_group": "infra-read"
+  },
+  {
+   "server": "feature_flags",
+   "name": "list_flag_changes",
+   "description": "List recent feature flag changes (who changed what, when) in an environment, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "environment": {
+      "type": "string",
+      "enum": [
+       "production",
+       "staging",
+       "development"
+      ],
+      "description": "Deployment environment."
+     },
+     "since": {
+      "type": "string",
+      "format": "date-time"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "title": "List flag changes",
+   "read_only_hint": true,
+   "destructive_hint": null,
+   "idempotent_hint": null,
+   "open_world_hint": false,
+   "handler": "feature_flags:list_flag_changes",
+   "family": "core",
+   "collision_group": "flags-read"
+  }
+ ]
+}

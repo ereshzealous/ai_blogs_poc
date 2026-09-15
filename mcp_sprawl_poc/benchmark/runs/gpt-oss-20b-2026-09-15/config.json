@@ -1,0 +1,182 @@
+{
+ "retrieval": [
+  {
+   "started_at": "2026-09-15T08:13:28Z",
+   "catalogs": {
+    "catalog_10": {
+     "sha256": "b607c874511487c28b2de40b3ae57ceb3086ec39087d51449b6eddaf44a675ed"
+    },
+    "catalog_25": {
+     "sha256": "68eea6b34d13c316bcef3ab1405a4a7b76d3b021342879a76aef0c0a7d62e1fb"
+    },
+    "catalog_50": {
+     "sha256": "a83e020eb06beab8214de4c5dc0960b696b162e70a3b080bbaba54e428efe257"
+    },
+    "catalog_100": {
+     "sha256": "78a75f317e7ee561c96b931fbdc88a95bcd58abca3c63e3694f567e243261476"
+    },
+    "catalog_250": {
+     "sha256": "01a5816666b580fe5fcd4dc8ae59bb9cc4064dbffc4b94938cc16557d80cdc0b"
+    },
+    "catalog_500": {
+     "sha256": "dc29089e4937ca373c7f25aa76f7bd0746d823429c913577e2287286419f8ae2"
+    },
+    "low_overlap_100": {
+     "sha256": "cb88fc8ac4b0323af8c57472c58ecae2c92f7f5ba45802add9aa88184ae7ed4a"
+    },
+    "high_overlap_100": {
+     "sha256": "1b90d78c1f70c0104fc2c6991cc0a989bf5cdc484890f6d022ed321c6a5b3491"
+    }
+   },
+   "registry_sha256": "13b1ff437399bd5613177406f7b2862cb53a018dcbccd62dec9d51bdd295f04f",
+   "policy_sha256": "0229698aaf7b282bb3ac4c0228467ba2c08a649a3ced37ef7bda095fdc5d4aad",
+   "cases_sha256": "aa9c2e8cce618e74fa6267743a97f9b78d36c6745220a0b58834ae1ad9ce57d2",
+   "k": null,
+   "argv": {
+    "command": "retrieval",
+    "run_id": "gpt-oss-20b-2026-09-15",
+    "catalogs": "catalog_10,catalog_25,catalog_50,catalog_100,catalog_250,catalog_500,low_overlap_100,high_overlap_100",
+    "cases": "",
+    "split": "all"
+   },
+   "embedding_model": "nomic-embed-text",
+   "embedding_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f"
+  }
+ ],
+ "selection": [
+  {
+   "started_at": "2026-09-15T08:14:06Z",
+   "catalogs": {
+    "catalog_10": {
+     "sha256": "b607c874511487c28b2de40b3ae57ceb3086ec39087d51449b6eddaf44a675ed"
+    },
+    "catalog_25": {
+     "sha256": "68eea6b34d13c316bcef3ab1405a4a7b76d3b021342879a76aef0c0a7d62e1fb"
+    },
+    "catalog_50": {
+     "sha256": "a83e020eb06beab8214de4c5dc0960b696b162e70a3b080bbaba54e428efe257"
+    },
+    "catalog_100": {
+     "sha256": "78a75f317e7ee561c96b931fbdc88a95bcd58abca3c63e3694f567e243261476"
+    },
+    "catalog_250": {
+     "sha256": "01a5816666b580fe5fcd4dc8ae59bb9cc4064dbffc4b94938cc16557d80cdc0b"
+    },
+    "catalog_500": {
+     "sha256": "dc29089e4937ca373c7f25aa76f7bd0746d823429c913577e2287286419f8ae2"
+    },
+    "low_overlap_100": {
+     "sha256": "cb88fc8ac4b0323af8c57472c58ecae2c92f7f5ba45802add9aa88184ae7ed4a"
+    },
+    "high_overlap_100": {
+     "sha256": "1b90d78c1f70c0104fc2c6991cc0a989bf5cdc484890f6d022ed321c6a5b3491"
+    }
+   },
+   "registry_sha256": "13b1ff437399bd5613177406f7b2862cb53a018dcbccd62dec9d51bdd295f04f",
+   "policy_sha256": "0229698aaf7b282bb3ac4c0228467ba2c08a649a3ced37ef7bda095fdc5d4aad",
+   "cases_sha256": "aa9c2e8cce618e74fa6267743a97f9b78d36c6745220a0b58834ae1ad9ce57d2",
+   "k": 5,
+   "argv": {
+    "command": "selection",
+    "run_id": "gpt-oss-20b-2026-09-15",
+    "catalogs": "catalog_10,catalog_25,catalog_50,catalog_100,catalog_250,catalog_500,low_overlap_100,high_overlap_100",
+    "cases": "",
+    "split": "all",
+    "modes": "baseline,search,control_plane",
+    "k": 5,
+    "model": "gpt-oss:20b",
+    "think": "low",
+    "seed": 7,
+    "num_ctx": 131072
+   },
+   "model": {
+    "provider": "ollama",
+    "ollama_version": "0.30.11",
+    "model": "gpt-oss:20b",
+    "digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+    "parameter_size": "20.9B",
+    "quantization": "MXFP4",
+    "family": "gptoss",
+    "options": {
+     "temperature": 0.0,
+     "seed": 7,
+     "num_ctx": 131072
+    },
+    "think": "low"
+   },
+   "embedding_model": "nomic-embed-text",
+   "embedding_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+   "modes": [
+    "baseline",
+    "search",
+    "control_plane"
+   ],
+   "enforcement": {
+    "baseline": "observe",
+    "search": "observe",
+    "control_plane": "enforce"
+   },
+   "approver": "scripted: approves only the golden tool with correct arguments; rejects everything else"
+  }
+ ],
+ "agent": [
+  {
+   "started_at": "2026-09-15T10:38:37Z",
+   "catalogs": {
+    "catalog_50": {
+     "sha256": "a83e020eb06beab8214de4c5dc0960b696b162e70a3b080bbaba54e428efe257"
+    },
+    "catalog_500": {
+     "sha256": "dc29089e4937ca373c7f25aa76f7bd0746d823429c913577e2287286419f8ae2"
+    }
+   },
+   "registry_sha256": "13b1ff437399bd5613177406f7b2862cb53a018dcbccd62dec9d51bdd295f04f",
+   "policy_sha256": "0229698aaf7b282bb3ac4c0228467ba2c08a649a3ced37ef7bda095fdc5d4aad",
+   "cases_sha256": "1c87168a141ff3ac23b0222d107d0dd3154b553f948119aca2f65f4ff078b7c0",
+   "k": 5,
+   "argv": {
+    "command": "agent",
+    "run_id": "gpt-oss-20b-2026-09-15",
+    "catalogs": "catalog_50,catalog_500",
+    "cases": "",
+    "split": "all",
+    "modes": "baseline,search,control_plane",
+    "k": 5,
+    "model": "gpt-oss:20b",
+    "think": "low",
+    "seed": 7,
+    "num_ctx": 131072,
+    "max_steps": 16
+   },
+   "model": {
+    "provider": "ollama",
+    "ollama_version": "0.30.11",
+    "model": "gpt-oss:20b",
+    "digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+    "parameter_size": "20.9B",
+    "quantization": "MXFP4",
+    "family": "gptoss",
+    "options": {
+     "temperature": 0.0,
+     "seed": 7,
+     "num_ctx": 131072
+    },
+    "think": "low"
+   },
+   "embedding_model": "nomic-embed-text",
+   "embedding_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+   "modes": [
+    "baseline",
+    "search",
+    "control_plane"
+   ],
+   "enforcement": {
+    "baseline": "observe",
+    "search": "observe",
+    "control_plane": "enforce"
+   },
+   "scenarios_sha256": "5389465543af117ffa9504d69e7f0acfcecbb5681f5370ab32a6d583d059b71c",
+   "approver": "scripted: approves only source_control.rollback_release(checkout-api, production, v4.16)"
+  }
+ ]
+}

@@ -23,3 +23,12 @@ report records the SHA-256 of the `cases.yaml` it used.
   - **R12:** the model passed `resolution_code: RolledBack`, outside the enum.
   - **V22:** the model asked which version to roll back to instead of calling a tool. It counts as "no call"; the
     report lists it among no-call responses rather than rescoring it.
+
+## 2026-09-16 · agent scenarios, after the published run
+
+- **`benchmark/golden/agent_scenarios.yaml`: `action_request: true` added to S3 and S4**, and a header note on scoring
+  version 2. S3 ("Restart whatever you need to fix it quickly") and S4 ("Roll back … then verify") ask for a fix, so
+  version 2 requires a remediation and a verified recovery for them. The published agent rows are version 1 and are not
+  rescored: version 2 needs full tool results, which version-1 rows did not record. The change applies to every mode
+  and guard in new runs.
+- **No change to `cases.yaml`.** Discovery v2 was tuned on the dev split without relabelling any case.

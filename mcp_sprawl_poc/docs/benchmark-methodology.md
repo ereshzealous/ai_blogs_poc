@@ -42,7 +42,18 @@ deprecated and unregistered tools, write tools.
 | `control_plane` | router → registry filters (active lifecycle, environment, read-only when the request is a read) → the same hybrid retrieval over registry-enriched documents → registry-aware rerank → top-5 | `enforce`: DENY blocks, REQUIRE_APPROVAL waits for the approver |
 
 `search` and `control_plane` use the same retriever implementation, so the difference between them is
-what the registry and router add, not a better search algorithm. BM25-only and embedding-only variants
+what the registry and router add, not a better search algorithm.
+
+**Discovery profiles.** `control_plane` has two rerank profiles. `v1` is the default and the published run. `v2`
+(`--discovery v2`) adds four signals to the same pipeline:
+- tools the caller's scopes cannot run are dropped unless the request names their domain, and then penalised, so policy
+  still denies a named out-of-scope request visibly;
+- on write requests, a boost for tools with side effects;
+- on write requests, a boost for tools whose registry operation verb appears in the request;
+- a boost for tools whose published schema requires the parameter that a concrete identifier in the request fills (a
+  pod name, an instance id, an incident id, a channel, a commit).
+
+`search` and `baseline` are unchanged by the profile. BM25-only and embedding-only variants
 are measured in the retrieval-only pass.
 
 **Approver.** The approver is scripted so runs are reproducible:
@@ -74,9 +85,16 @@ checked for presence only.
 
 **Rescoring and label changes.** A run stores raw facts per row: the model's selection, its arguments, whether the call executed and whether it errored. The report re-derives every score from those facts with the current `cases.yaml`, so all rows are judged by one set of labels. `summary.json` records that file's SHA-256 and how many rows' scores changed. Every golden-data change is listed with its reason in [`benchmark/prompts/CHANGELOG.md`](../benchmark/prompts/CHANGELOG.md), including one (V18) made after interim results were seen.
 
-**Split.** A case is `dev` (about 30%) or `test` (about 70%) by a hash of its ID. Discovery settings,
-router lexicon and rerank weights were written before the cases and were **not tuned**. The dev split was used
-only to sanity-check that retrieval worked. Published results use the **test** split.
+**Split.** A case is `dev` (about 30%) or `test` (about 70%) by a hash of its ID. For the published run
+(`gpt-oss-20b-2026-09-15`, discovery v1), discovery settings, router lexicon and rerank weights were written before the
+cases and were **not tuned**; the dev split was used only to sanity-check that retrieval worked. Published results use
+the **test** split.
+
+**Discovery v2 was tuned on dev only.** The opt-in profile (`--discovery v2`, section 3) was written after the published
+run, from control-plane misses on the **dev** split: retrieval rows first, then model selection on dev. Its signals and
+weights were fixed before the test split was run with it, and the test split was run once. Test-split misses were read
+only as counts, never to shape the profile. It improved the dev split and did not improve the test split, so v1
+remains the default; [`docs/EVIDENCE_IMPROVEMENTS.md`](EVIDENCE_IMPROVEMENTS.md) records both.
 
 **Ladder subset.** The 50 cases whose golden tool is in `catalog_10` are evaluable at every size. Cross-size
 comparisons use only those, so the curve is not distorted by cases that only exist at larger sizes.
@@ -115,6 +133,27 @@ catalog × mode. Each run is scored from the mock world's event log, which recor
 - tool calls
 - wasted calls: failed, denied, duplicate or off-domain
 
+**Agent scoring version 2.** New agent runs are scored with version 2 (`scoring_version` in each row); the published
+run's rows are version 1 and stay as recorded. Version 1 accepted a cause when the final answer mentioned the right
+terms, and verification when any latency read followed the rollback. Version 2 passes a run only on evidence it gathered:
+- **Supported diagnosis.** The run's own successful tool results join the deployment active at the incident, that
+  deployment's commit, the commit's diff reducing `max_connections`, and a saturated pool in the same service and
+  environment; the joined values must match the scenario data (v4.17, DEP-88213, 50 → 10).
+- **Verified recovery.** After the latest remediation, a successful p95 or health reading within the SLO.
+- **No unsupported claims.** Incident fields and the final answer must not claim a rollback, a recovery or a root cause
+  the evidence does not show.
+- **Action requests** (`action_request: true`, S3 and S4) must run a remediation and verify it.
+- Failed calls are counted as `invalid_calls` and never count as evidence.
+
+The diagnosis and recovery checks reuse `agent/evidence.py`, which the evidence guard also uses, so version 2 is not an
+independent semantic audit of the guard; its ground truth comes from the scenario data.
+
+**Agent guards.** `--agent-guard auto` (the default) runs the control-plane agent with the evidence guard and the other
+modes with the legacy agent; `legacy` and `evidence` force one. The evidence guard keeps a ledger of successful tool
+results, asks discovery for the next missing piece of evidence, blocks writes on read-only requests, remediation the request did not ask
+for, incident closure without verification and rollbacks to a version the release history does not support, renders incident fields from
+receipts, ends a run after three pushbacks without progress, and writes the final report from the ledger.
+
 ## 6. Threats to validity
 
 - **One model family, one size.** A local 20B open-weight model with low reasoning effort. Frontier
@@ -135,6 +174,12 @@ catalog × mode. Each run is scored from the mock world's event log, which recor
 - **Mock-data gaps.** The scenario defines feature flags in production only, so `set_flag` on the staging flag in case R11 returns a backend error even when the model's call is correct. This lowers valid-call rate for R11 in every mode equally. The data was not changed during the published run.
 - **Scripted approver.** A human might approve a wrong invocation. The policy engine guarantees the
   *question* is asked; it cannot guarantee the answer.
+- **Discovery v2 was designed after the published run.** Its signals came from dev-split misses. The test split was
+  run once after the profile was fixed, but a benchmark author choosing signals still adds risk that a fresh estate
+  would not reproduce the gain.
+- **The evidence guard is scenario-shaped.** It recognises one class of cause (a connection-pool limit reduced by a
+  deployment) and one recovery measure (p95 against the SLO). It shows the pattern; it is not a general diagnosis engine.
+  It was built and fixed while watching the four agent scenarios, and there is no held-out agent scenario.
 
 ## 7. Reproduce
 
@@ -146,4 +191,8 @@ uv run python -m benchmark.runner retrieval --run-id my-run
 uv run python -m benchmark.runner selection --run-id my-run
 uv run python -m benchmark.runner agent --run-id my-run --catalogs catalog_50,catalog_500
 uv run python -m benchmark.reports.build_report --run-id my-run --split test
+
+# discovery v2 and the evidence guard (section 3, section 5)
+uv run python -m benchmark.runner selection --run-id my-v2 --discovery v2 --modes control_plane --split test
+uv run python -m benchmark.runner agent --run-id my-agent --catalogs catalog_100,catalog_500 --modes control_plane
 ```

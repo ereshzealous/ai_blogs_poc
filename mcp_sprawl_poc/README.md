@@ -31,6 +31,7 @@ The full design (components, naming, the INC-4917 scenario, catalog, registry, d
 | Discovery and authorization are separate | `control_plane/discovery` vs `control_plane/policy`; the gateway evaluates policy on every call, whatever discovery surfaced |
 | Writes cannot bypass policy | `Gateway.call_tool` is the only path to a server; tested for DENY, pending, rejected and approved rollbacks |
 | The effect is measured, not asserted | `benchmark/`: 120 golden cases × 8 catalogs × 3 modes, plus multi-step agent runs, all raw results committed |
+| An agent's report is built from evidence | `agent/evidence.py`: the evidence guard joins tool results into a diagnosis, verifies recovery after a fix, and writes incident fields and the final report from receipts |
 
 ## Why mock backends
 
@@ -61,7 +62,7 @@ request → control plane: router → registry filters → hybrid search → rer
 | Generated servers | `benchmark/catalog_generator/` | 35 servers and 450 tools from a seeded generator (seed 4917), served by the same runtime |
 | Mock backends | `servers/<name>_mcp/backend.py`, `servers/generated_mcp/backend.py` | One handler per tool over `mock_data/inc4917/scenario.yaml` and a shared SQLite event log (`servers/common/world.py`) |
 | Control plane | `control_plane/` | BM25 and `nomic-embed-text` embeddings (Ollama), reciprocal rank fusion, YAML policy, SQLite registry, OpenTelemetry |
-| Agent | `agent/` | `gpt-oss:20b` in Ollama; optional OpenAI provider |
+| Agent | `agent/` | `gpt-oss:20b` in Ollama; optional OpenAI provider; evidence guard (`agent/evidence.py`) in control-plane mode |
 
 **How tools are backed.** Each `ToolSpec` names a handler, such as `itsm:update_incident`, registered with `@handler` in its
 server's `backend.py`. Reads combine the INC-4917 scenario with the event log; writes append to it, so a rollback through
@@ -84,7 +85,7 @@ are not stubs:
 | Step | Needs a model? | Time on the reference machine |
 |---|---|---|
 | [1. Set up](#1-set-up) | no | |
-| [2. Run the tests](#2-run-the-tests) | no | about 5 s |
+| [2. Run the tests](#2-run-the-tests) | no | about 50 s |
 | [3. Explore the control plane](#3-explore-the-control-plane-no-model) | no | seconds |
 | [4. Talk to one MCP server directly](#4-talk-to-one-mcp-server-directly) | no | seconds |
 | [5. Run the incident agent](#5-run-the-incident-agent) | local Ollama | about 70 s for one run |
@@ -202,11 +203,32 @@ to open the Inspector's web UI instead.
 ```bash
 ollama pull gpt-oss:20b && ollama pull nomic-embed-text
 uv run mcpcp demo --catalog catalog_500 --mode control_plane
+uv run mcpcp demo --catalog catalog_500 --mode control_plane --discovery v2   # experimental discovery profile
 ```
 
 The agent investigates INC-4917 through the gateway. Every step prints the tool, its arguments, what happened and the policy
 decision. When policy returns REQUIRE_APPROVAL, the demo stops and asks you to approve or reject that exact invocation.
 `--auto-approve` skips the prompt, and `--mode baseline` or `--mode search` runs the same request without the control plane.
+
+**The evidence guard.** In control-plane mode the agent runs with the evidence guard (`--agent-guard auto`). The model
+still chooses every tool call; the guard decides what counts as evidence and what may be written:
+- **Receipts.** Every successful structured tool result becomes a numbered receipt (E1, E2, …). Failed calls are
+  recorded but never used as evidence.
+- **Guided discovery.** Before each model turn the guard asks discovery for the next missing piece of evidence, and the
+  model sees at most 12 tools plus `find_tools`.
+- **Pushback.** If the model answers before the evidence exists, it is sent back with what is still missing. Three
+  pushbacks in a row without a tool call end the run.
+- **Write gates.** A read-only request cannot write, and a request that asks only for a recommendation cannot run a
+  fix. An incident cannot be closed before a verified recovery. A rollback
+  target must come from the release history, so a guessed version never reaches the approver. Incident fields are
+  written from receipts, not from the model's prose, and an incident updated before the cause was proven must be
+  updated again.
+- **Report.** The final answer is built from receipts: the cause (deployment, commit, diff and pool, joined in one
+  service and environment), the fix performed or recommended, the recovery check (p95 against the SLO, after the fix),
+  the incident update, the evidence list and the actions that did not run. If the run ends early, the report says
+  what is missing.
+
+`--agent-guard legacy` runs the earlier agent, which returns the model's own final answer.
 
 An excerpt from one local run:
 
@@ -222,8 +244,10 @@ FINAL ANSWER (final_answer):
 audit and spans: benchmark/.cache/demo-<id>
 ```
 
-The model's path differs from run to run, and it does not always reach the rollback; that is what the agent benchmark
-measures. Each demo writes to `benchmark/.cache/demo-<id>/`:
+The model's path differs from run to run; that is what the agent benchmark measures. Each demo writes to
+`benchmark/.cache/demo-<id>/`:
+- `run.json`: every step, with full tool results, the receipts, the diagnosis and the verification;
+- `final_answer.md`: the report;
 - `audit.jsonl`: one entry per policy decision and per execution;
 - `spans.jsonl`: OpenTelemetry spans;
 - `world.sqlite`: the mock world's event log, showing what actually reached a backend.
@@ -271,6 +295,25 @@ stopped. `config.json` records catalog, registry, policy and case hashes, the mo
 | `--seed` | 7 | |
 | `--num-ctx` | 131072 | Ollama context window; large enough that no prompt is truncated |
 | `--max-steps` | 16 | agent benchmark only |
+| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run) or `v2` (experimental; tuned on dev, no gain on test) |
+| `--agent-guard` | `auto` | agent benchmark only: `auto` (evidence guard in control-plane mode), `legacy` or `evidence` |
+
+### Compare discovery profiles and agent guards
+
+```bash
+# discovery v1 against v2, control plane only, test split (the dev split was used to tune v2)
+uv run python -m benchmark.runner selection --run-id sel-v1 --discovery v1 --modes control_plane --split test
+uv run python -m benchmark.runner selection --run-id sel-v2 --discovery v2 --modes control_plane --split test
+uv run python -m benchmark.reports.compare_discovery --published gpt-oss-20b-2026-09-15 --v1 sel-v1 --v2 sel-v2
+
+# the legacy agent against the evidence guard (agent scoring version 2)
+uv run python -m benchmark.runner agent --run-id ag-legacy --modes control_plane --agent-guard legacy --catalogs catalog_100,catalog_500
+uv run python -m benchmark.runner agent --run-id ag-evidence --modes control_plane --agent-guard evidence --catalogs catalog_100,catalog_500
+uv run python -m benchmark.reports.compare_agent_evidence --before ag-legacy --after ag-evidence
+```
+
+Each comparison writes `comparison.md`, `comparison.json` and a chart to `benchmark/reports/<run-id>/`. The discovery
+comparison takes baseline and tool search from the published run, and pairs v1 with v2 case by case.
 
 ### Optional: run on an OpenAI model
 
@@ -388,6 +431,27 @@ Published run `gpt-oss-20b-2026-09-15`: `gpt-oss:20b` through Ollama, temperatur
 - **Sample size.** Agent runs are one per cell: a demonstration, not a statistic.
 <!-- RESULTS:END -->
 
+### After the published run
+
+Two changes were measured after the published run. Details, dev-split evidence and limits are in
+[`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
+
+| Multi-step agent in control-plane mode, scoring version 2 (4 scenarios, one run each) | Legacy agent | Evidence guard |
+|---|---|---|
+| Scenarios passed at 100 tools | 0/4 | 4/4 |
+| Scenarios passed at 500 tools | 1/4 | 4/4 |
+| Unsupported claims in the incident or the answer (both sizes) | 2 | 0 |
+| Mean input tokens per run (100 / 500 tools) | 8,126 / 3,598 | 24,210 / 17,333 |
+
+![Scenario outcomes, input tokens and wall time for the legacy agent and the evidence guard at 100 and 500 tools.](benchmark/reports/agent-v2-evidence-2026-09-16/evidence-comparison.png)
+
+- **Stricter scoring.** Scoring version 2 passes a run only on evidence it gathered, so these agent numbers are not
+  comparable with the version-1 table above.
+- **Scenario-shaped guard.** The guard was built while watching these four scenarios; they show that it does what it
+  was designed to do, not how it would do on new incidents.
+- **Discovery v2 did not help.** It improved the dev split by 3 to 12 points of capability accuracy and changed the
+  test split by −2.3 to +3.2 points, with fixed and broken cases balanced. v1 stays the default.
+
 ## Repository structure
 
 ```text
@@ -397,7 +461,8 @@ Published run `gpt-oss-20b-2026-09-15`: `gpt-oss:20b` through Ollama, temperatur
 ├── .env.example                 template for optional settings (.env is git-ignored)
 ├── docs/
 │   ├── DESIGN.md                components, naming, scenario, catalog, registry, discovery, policy, benchmark
-│   └── benchmark-methodology.md metrics, split, rescoring, threats to validity
+│   ├── benchmark-methodology.md metrics, split, rescoring, threats to validity
+│   └── EVIDENCE_IMPROVEMENTS.md evidence guard, agent scoring v2 and discovery v2: what changed and what it measured
 ├── mock_data/inc4917/           the deterministic incident scenario
 ├── servers/
 │   ├── common/                  MCP runtime (low-level SDK server), world state, tool specs
@@ -413,14 +478,14 @@ Published run `gpt-oss-20b-2026-09-15`: `gpt-oss:20b` through Ollama, temperatur
 │   ├── gateway/                 MCP gateway: stdio client pool, policy on every call
 │   ├── telemetry/               OpenTelemetry spans (JSONL) and audit log
 │   └── cli.py                   mcpcp
-├── agent/                       LLM providers (Ollama, OpenAI), tool selection, multi-step incident agent
+├── agent/                       LLM providers (Ollama, OpenAI), tool selection, multi-step incident agent, evidence guard
 ├── benchmark/
 │   ├── catalog_generator/       deterministic 500-tool generator (seed 4917)
 │   ├── catalogs/                generated manifests and registry (committed)
 │   ├── prompts/                 cases.yaml (120 cases with golden data), CHANGELOG.md
 │   ├── golden/                  agent scenarios and success criteria
 │   ├── evaluator/               scoring and aggregation
-│   ├── reports/                 build_report.py, <run-id>/ (summary.json, report.md, charts)
+│   ├── reports/                 build_report.py, compare_discovery.py, compare_agent_evidence.py, <run-id>/ (reports, charts)
 │   ├── runner.py, agent_runner.py
 │   └── runs/<run-id>/           raw results (committed evidence)
 └── tests/
@@ -442,6 +507,11 @@ Published run `gpt-oss-20b-2026-09-15`: `gpt-oss:20b` through Ollama, temperatur
   authorization-scoped tool lists are out of scope. In production the gateway must be an enforced path, backed by credential
   isolation and network egress controls.
 - **Latency under prefix caching.** Local prompt caching makes warm latency optimistic for large catalogs; token counts are the portable measure.
+- **Discovery v2 came after the published run.** Its signals were chosen from dev-split misses, and the test split was
+  run once afterwards. A different estate may need different signals or weights.
+- **The evidence guard knows one kind of cause.** It joins a deployment, a diff that lowers a connection-pool limit and a
+  saturated pool, and it measures recovery as p95 against the SLO. It demonstrates the pattern; it is not a general
+  diagnosis engine. Agent scoring version 2 reuses its checks, with ground truth from the scenario data.
 
 ## Future work
 

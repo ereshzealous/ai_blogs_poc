@@ -30,7 +30,7 @@ defined here. Change this file first if a name changes.
 | Execution | Approval store (bound to an invocation digest) | `control_plane/policy/approvals.py` | yes |
 | Execution | MCP gateway (client pool, policy on every call) | `control_plane/gateway/` | yes |
 | Cross-cutting | Audit log + OpenTelemetry spans | `control_plane/telemetry/` | yes |
-| Agent | LLM providers, tool-selection step, incident agent loop | `agent/` | model-dependent |
+| Agent | LLM providers, tool-selection step, incident agent loop, evidence guard | `agent/` | model-dependent; the guard is deterministic |
 | MCP servers | One process per server, real MCP over stdio | `servers/` | yes |
 | Backends | Deterministic mock enterprise systems | `servers/*/backend.py`, `mock_data/` | yes |
 | Benchmark | Catalog generator, cases, runner, evaluator, reports | `benchmark/` | yes except the LLM |
@@ -130,6 +130,14 @@ lexicon + rules classifier. The case set is split `dev` (≈30%) / `test` (≈70
 id. The router lexicon and rerank weights were written before the cases and frozen without tuning; `dev` was used only
 to sanity-check that retrieval worked, and published results use `test`.
 
+**Discovery profiles.** The rerank above is profile `v1`, the default and the published run. Profile `v2`
+(`--discovery v2`, written later from dev-split misses) adds four signals: tools the caller's scopes cannot run are
+dropped unless their domain is routed, and then penalised; on write requests, tools with side effects and tools whose
+registry operation verb appears in the request are boosted; and tools whose published schema requires the parameter a
+named identifier fills (pod, instance, incident, channel, commit) are boosted. Policy is unchanged: v2 changes only what
+the model is shown. It is experimental: it improved the dev split but not the test split. See
+[`EVIDENCE_IMPROVEMENTS.md`](EVIDENCE_IMPROVEMENTS.md).
+
 ## 8. Policy
 
 Inputs: user identity and roles, agent identity, delegated scopes (**effective scopes = user scopes ∩
@@ -159,7 +167,11 @@ audit log.
 - **Selection benchmark:** one decision per case. The model gets the system prompt, the tools for
   the mode and catalog, and the request, and must return one tool call. The call is executed
   through the gateway (real MCP), in an isolated backend session keyed by `_meta.run_id`.
-- **Agent benchmark:** multi-step incident runs through the gateway with approval handling.
+- **Agent benchmark:** multi-step incident runs through the gateway with approval handling. In control-plane mode the
+  agent runs with the evidence guard (`agent/evidence.py`): successful tool results become receipts, the guard asks
+  discovery for the next missing piece of evidence, blocks writes the request does not allow, renders incident fields
+  from receipts and builds the final report from them. New runs use agent scoring version 2, which passes a run only on
+  evidence it gathered.
 - **LLM:** local open-weight models through Ollama, temperature 0, fixed seed. Model name and
   digest are recorded in every run. No API keys are required. An optional OpenAI provider
   (`--provider openai`) exists; no published result uses it.

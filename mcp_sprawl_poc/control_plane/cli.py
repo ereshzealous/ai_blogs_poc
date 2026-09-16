@@ -22,6 +22,7 @@ from control_plane.policy.environment import ResourceInventory, resolve_environm
 from control_plane.registry.registry import CapabilityRegistry
 
 IDENTITY = Identity("oncall-1", ("sre-oncall",))
+DISCOVERY_HELP = "control-plane discovery profile: v1 (published) or v2 (experimental: scope-, write- and identifier-aware rerank)"
 FLAGSHIP = ("Checkout API latency increased immediately after the 10:15 production deployment. Investigate the incident, "
             "identify the likely cause, recommend the safest remediation, and update the incident.")
 
@@ -52,8 +53,11 @@ def cmd_discover(args: argparse.Namespace) -> None:
 
     manifest = json.loads((CATALOG_DIR / f"{args.catalog}.json").read_text())
     tools = {f"{t['server']}.{t['name']}": (t["server"], t["name"], t["description"], t["input_schema"]) for t in manifest["tools"]}
-    service = DiscoveryService(tools, CapabilityRegistry.load(), None if args.lexical_only else OllamaEmbedder())
-    res = service.search(args.request, k=args.k) if args.mode == "search" else service.control_plane(args.request, k=args.k)
+    service = DiscoveryService(tools, CapabilityRegistry.load(), None if args.lexical_only else OllamaEmbedder(),
+                               profile=args.discovery, policy=PolicyEngine.load())
+    identity = Identity(args.user, tuple(args.roles.split(",")))
+    res = (service.search(args.request, k=args.k) if args.mode == "search"
+           else service.control_plane(args.request, k=args.k, identity=identity))
     print(json.dumps(res.to_dict(), indent=1))
 
 
@@ -76,6 +80,7 @@ async def _demo(args: argparse.Namespace) -> None:
     from control_plane.telemetry import AuditLog, configure_tracing
 
     llm = make_llm(args.provider, args.model, think=args.think)  # fails fast on a missing key, before any server starts
+    guard = args.agent_guard if args.agent_guard != "auto" else ("evidence" if args.mode == "control_plane" else "legacy")
     run_id = f"demo-{uuid.uuid4().hex[:8]}"
     out_dir = CACHE_DIR / run_id
     configure_tracing(out_dir / "spans.jsonl")
@@ -93,20 +98,26 @@ async def _demo(args: argparse.Namespace) -> None:
     async with Gateway(CATALOG_DIR / f"{args.catalog}.json", registry, policy, audit=AuditLog(out_dir / "audit.jsonl"),
                        world_db=out_dir / "world.sqlite") as gw:
         published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
-        discovery = DiscoveryService(published, registry, OllamaEmbedder())
+        discovery = DiscoveryService(published, registry, OllamaEmbedder(), profile=args.discovery, policy=policy)
 
         def discover(q: str) -> list[str]:
-            res = discovery.search(q, k=args.k) if args.mode == "search" else discovery.control_plane(q, k=args.k)
+            res = (discovery.search(q, k=args.k) if args.mode == "search"
+                   else discovery.control_plane(q, k=args.k, identity=IDENTITY))
             return [t.replace(".", "__", 1) for t in res.tool_ids]
 
         ctx = InvocationContext(run_id, run_id, IDENTITY, "enforce" if args.mode == "control_plane" else "observe", approver)
         print(f"{len(gw.tools)} tools on {len(gw._clients)} MCP servers; mode={args.mode}; request:\n  {args.request}\n")
-        run = await run_incident_agent(llm, gw,args.request, ctx, mode=args.mode,
-                                       discover=None if args.mode == "baseline" else discover)
+        run = await run_incident_agent(llm, gw, args.request, ctx, mode=args.mode,
+                                       discover=None if args.mode == "baseline" else discover, guard=guard)
     for s in run.steps:
         if s.tool:
-            print(f"  step {s.index}: {s.tool} {json.dumps(s.arguments)} -> {s.status} {s.policy or ''}")
-    print(f"\nFINAL ANSWER ({run.stopped}):\n{run.final_answer}\n\naudit and spans: {out_dir}")
+            error = "  TOOL ERROR: " + s.result_preview[:160] if s.is_error else ""
+            print(f"  step {s.index}: {s.tool} {json.dumps(s.arguments)} -> {s.status} {s.policy or ''}{error}")
+        elif s.status == "guard_continue":
+            print(f"  step {s.index}: evidence guard: {s.result_preview}")
+    (out_dir / "run.json").write_text(json.dumps(run.to_dict(), indent=1, default=str) + "\n")
+    (out_dir / "final_answer.md").write_text((run.final_answer or "") + "\n")
+    print(f"\nFINAL ANSWER ({run.stopped}, guard={guard}):\n{run.final_answer}\n\nrun, audit and spans: {out_dir}")
 
 
 def main() -> None:
@@ -122,6 +133,9 @@ def main() -> None:
     p.add_argument("--mode", default="control_plane", choices=["search", "control_plane"])
     p.add_argument("--k", type=int, default=5)
     p.add_argument("--lexical-only", action="store_true", help="skip embeddings (no Ollama needed)")
+    p.add_argument("--discovery", default="v1", choices=["v1", "v2"], help=DISCOVERY_HELP)
+    p.add_argument("--user", default="oncall-1", help="caller whose scopes discovery v2 checks")
+    p.add_argument("--roles", default="sre-oncall")
     p.set_defaults(fn=cmd_discover)
     p = sub.add_parser("policy")
     p.add_argument("tool_id")
@@ -137,6 +151,9 @@ def main() -> None:
                    help="openai reads the key from OPENAI_API_KEY (use `uv run --env-file .env`)")
     p.add_argument("--model", default=None, help="default gpt-oss:20b for ollama; required for openai")
     p.add_argument("--think", default=None, help="ollama think level (default low) or openai reasoning_effort")
+    p.add_argument("--agent-guard", default="auto", choices=["auto", "legacy", "evidence"],
+                   help="auto: the evidence guard in control_plane mode, the legacy agent elsewhere")
+    p.add_argument("--discovery", default="v1", choices=["v1", "v2"], help=DISCOVERY_HELP)
     p.add_argument("--k", type=int, default=5)
     p.add_argument("--auto-approve", action="store_true")
     p.set_defaults(fn=lambda a: anyio.run(_demo, a))

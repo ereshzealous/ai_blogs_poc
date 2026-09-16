@@ -110,7 +110,7 @@ def run_retrieval(args: argparse.Namespace) -> None:
     run_dir = RUNS_DIR / args.run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     catalogs = args.catalogs.split(",")
-    registry = CapabilityRegistry.load()
+    registry, policy = CapabilityRegistry.load(), PolicyEngine.load()
     embedder = OllamaEmbedder()
     cases = _select_cases(args)
     _write_config(run_dir, "retrieval", _base_config(args, catalogs) | {"embedding_model": embedder.model, "embedding_digest": embedder.digest})
@@ -119,7 +119,7 @@ def run_retrieval(args: argparse.Namespace) -> None:
     for catalog in catalogs:
         tools = _manifest_tools(catalog)
         t0 = time.perf_counter()
-        service = DiscoveryService(tools, registry, embedder)
+        service = DiscoveryService(tools, registry, embedder, profile=args.discovery, policy=policy)
         print(f"[retrieval] {catalog}: index built in {time.perf_counter() - t0:.1f}s", flush=True)
         for case in cases:
             if case.golden_tool not in tools:
@@ -131,11 +131,11 @@ def run_retrieval(args: argparse.Namespace) -> None:
                     if mode == "search":
                         res = service.search(case.prompt, k=10, retrieval=retrieval)
                     else:
-                        res = service.control_plane(case.prompt, k=10, retrieval=retrieval)
+                        res = service.control_plane(case.prompt, k=10, retrieval=retrieval, identity=Identity(case.user_id, case.roles))
                     rec = registry.get(case.golden_tool)
                     route = res.route
                     out.write({
-                        "run_id": args.run_id, "catalog": catalog, "catalog_size": len(tools), "mode": mode, "retrieval": retrieval,
+                        "run_id": args.run_id, "catalog": catalog, "catalog_size": len(tools), "mode": mode, "retrieval": retrieval, "discovery": args.discovery,
                         "case_id": case.id, "category": case.category, "split": case.split, "ladder_subset": case.golden_tool in c10,
                         "golden_tool": case.golden_tool, "candidates": res.tool_ids, "latency_ms": round(res.latency_ms, 3),
                         "stages": res.stages,
@@ -195,7 +195,8 @@ async def run_selection(args: argparse.Namespace) -> None:
         async with Gateway(manifest, registry, policy, audit=audit, world_db=world_db) as gw:
             published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
             by_tool_id = {p.tool_id: p for p in gw.tools.values()}
-            discovery = DiscoveryService(published, registry, embedder) if any(m != "baseline" for m, _ in pending) else None
+            discovery = (DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy)
+                         if any(m != "baseline" for m, _ in pending) else None)
             all_defs = [p.definition() for p in gw.tools.values()]
             for mode in modes:
                 block = [c for m, c in pending if m == mode]
@@ -217,7 +218,8 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
             defs = all_defs
         else:
             assert discovery is not None
-            disc = discovery.search(case.prompt, k=args.k) if mode == "search" else discovery.control_plane(case.prompt, k=args.k)
+            disc = (discovery.search(case.prompt, k=args.k) if mode == "search"
+                    else discovery.control_plane(case.prompt, k=args.k, identity=identity))
             defs = [by_tool_id[t].definition() for t in disc.tool_ids if t in by_tool_id]
             s.set_attribute("discovery.candidates", ",".join(disc.tool_ids))
             s.set_attribute("discovery.latency_ms", round(disc.latency_ms, 3))
@@ -242,7 +244,7 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
         "prompt": case.prompt, "golden_tool": case.golden_tool, "expected_policy": case.expected_policy,
         "arguments": sel.arguments, "tool_calls_returned": sel.tool_call_count, **score,
         "candidates": disc.tool_ids if disc else None, "discovery_latency_ms": round(disc.latency_ms, 3) if disc else None,
-        "discovery_stages": disc.stages if disc else None, "route": disc.route.to_dict() if disc and disc.route else None,
+        "discovery": args.discovery, "discovery_stages": disc.stages if disc else None, "route": disc.route.to_dict() if disc and disc.route else None,
         **({f"retrieval_{k}": v for k, v in retrieval_scores(case, disc.tool_ids, ks=(1, 3, 5)).items()} if disc else {}),
         "golden_in_prompt": (case.golden_tool in disc.tool_ids) if disc else True,
         "tools_in_prompt": len(all_defs) if mode == "baseline" else len(disc.tool_ids) if disc else 0,
@@ -274,6 +276,8 @@ def main() -> None:
     for name in ("retrieval", "selection", "agent"):
         p = sub.add_parser(name)
         p.add_argument("--run-id", required=True)
+        p.add_argument("--discovery", default="v1", choices=["v1", "v2"],
+                       help="control-plane discovery profile: v1 (published) or v2 (experimental: scope-, write- and identifier-aware rerank)")
         p.add_argument("--catalogs", default=",".join(LADDER + OVERLAP))
         p.add_argument("--cases", default="")
         p.add_argument("--split", default="all", choices=["all", "dev", "test"])
@@ -289,6 +293,8 @@ def main() -> None:
             p.add_argument("--num-ctx", type=int, default=131072, help="ollama only")
         if name == "agent":
             p.add_argument("--max-steps", type=int, default=16)
+            p.add_argument("--agent-guard", default="auto", choices=["auto", "legacy", "evidence"],
+                           help="auto: the evidence guard in control_plane mode, the legacy agent elsewhere")
     args = parser.parse_args()
     try:
         if args.command == "retrieval":

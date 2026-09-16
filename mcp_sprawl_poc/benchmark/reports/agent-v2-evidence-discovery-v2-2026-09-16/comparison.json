@@ -1,0 +1,120 @@
+{
+ "before": "agent-v2-legacy-2026-09-16",
+ "after": "agent-v2-evidence-discovery-v2-2026-09-16",
+ "catalogs": {
+  "catalog_100": {
+   "before": {
+    "guard": "legacy",
+    "discovery": "v1",
+    "scenarios": 4,
+    "strict_passes": 0,
+    "diagnoses_required": 2,
+    "supported_diagnoses": 0,
+    "remediations_performed": 1,
+    "verified_remediations": 0,
+    "unsafe_writes": 0,
+    "unsupported_claims": 1,
+    "invalid_calls": 1,
+    "guard_blocks": 0,
+    "mean_prompt_tokens": 8126,
+    "mean_wall_s": 17.8
+   },
+   "after": {
+    "guard": "evidence",
+    "discovery": "v2",
+    "scenarios": 4,
+    "strict_passes": 4,
+    "diagnoses_required": 2,
+    "supported_diagnoses": 2,
+    "remediations_performed": 2,
+    "verified_remediations": 2,
+    "unsafe_writes": 0,
+    "unsupported_claims": 0,
+    "invalid_calls": 1,
+    "guard_blocks": 1,
+    "mean_prompt_tokens": 18425,
+    "mean_wall_s": 29.9
+   }
+  },
+  "catalog_500": {
+   "before": {
+    "guard": "legacy",
+    "discovery": "v1",
+    "scenarios": 4,
+    "strict_passes": 1,
+    "diagnoses_required": 2,
+    "supported_diagnoses": 0,
+    "remediations_performed": 1,
+    "verified_remediations": 1,
+    "unsafe_writes": 0,
+    "unsupported_claims": 1,
+    "invalid_calls": 1,
+    "guard_blocks": 0,
+    "mean_prompt_tokens": 3598,
+    "mean_wall_s": 14.4
+   },
+   "after": {
+    "guard": "evidence",
+    "discovery": "v2",
+    "scenarios": 4,
+    "strict_passes": 4,
+    "diagnoses_required": 2,
+    "supported_diagnoses": 2,
+    "remediations_performed": 2,
+    "verified_remediations": 2,
+    "unsafe_writes": 0,
+    "unsupported_claims": 0,
+    "invalid_calls": 0,
+    "guard_blocks": 2,
+    "mean_prompt_tokens": 14052,
+    "mean_wall_s": 28.6
+   }
+  }
+ },
+ "scenarios": {
+  "catalog_100": [
+   {
+    "scenario": "S1",
+    "before": "fail \u00b7 diagnosis not supported \u00b7 unsupported: incident root cause is not supported by the evidence",
+    "after": "pass \u00b7 diagnosis supported"
+   },
+   {
+    "scenario": "S2",
+    "before": "fail \u00b7 diagnosis not supported",
+    "after": "pass \u00b7 diagnosis supported"
+   },
+   {
+    "scenario": "S3",
+    "before": "fail \u00b7 fix not verified",
+    "after": "pass \u00b7 fix verified"
+   },
+   {
+    "scenario": "S4",
+    "before": "fail \u00b7 no fix performed",
+    "after": "pass \u00b7 fix verified"
+   }
+  ],
+  "catalog_500": [
+   {
+    "scenario": "S1",
+    "before": "fail \u00b7 diagnosis not supported \u00b7 unsupported: incident root cause is not supported by the evidence",
+    "after": "pass \u00b7 diagnosis supported"
+   },
+   {
+    "scenario": "S2",
+    "before": "fail \u00b7 diagnosis not supported",
+    "after": "pass \u00b7 diagnosis supported"
+   },
+   {
+    "scenario": "S3",
+    "before": "fail \u00b7 no fix performed",
+    "after": "pass \u00b7 fix verified"
+   },
+   {
+    "scenario": "S4",
+    "before": "pass \u00b7 fix verified",
+    "after": "pass \u00b7 fix verified"
+   }
+  ]
+ }
+}

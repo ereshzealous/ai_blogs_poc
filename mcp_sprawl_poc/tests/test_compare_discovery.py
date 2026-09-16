@@ -106,3 +106,8 @@ def test_end_labels_are_spread_apart():
     from benchmark.reports.compare_discovery import spread
     assert spread([80.2, 77.9, 76.7, 58.1], gap=4) == [80.2, 76.2, 72.2, 58.1]
     assert spread([10, 50], gap=4) == [10, 50]
+
+
+def test_a_run_without_rows_for_the_mode_is_named(tmp_path):
+    with pytest.raises(FileNotFoundError, match="no control_plane rows in run 'never-ran'"):
+        load_arm("never-ran", "control_plane", runs_dir=tmp_path)

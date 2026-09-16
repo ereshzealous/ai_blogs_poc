@@ -7,6 +7,7 @@ import yaml
 from agent.evidence import (
     EvidenceLedger,
     NotExecuted,
+    describe,
     diagnose,
     gate_call,
     missing_requirements,
@@ -280,6 +281,17 @@ def test_writes_without_a_version_are_not_version_checked(world, registry):
     intent = parse_intent(SCENARIOS["S3"]["prompt"], **CONTEXT)
     record = registry.get("kubernetes.restart_deployment")
     assert gate_call(intent, "kubernetes.restart_deployment", {**PROD, "deployment": "checkout-api"}, record, EvidenceLedger()).allowed
+
+
+def test_the_evidence_list_says_what_each_receipt_shows(world):
+    s = Session(world)
+    s.run("source_control.get_commit", {"repository": "shop/checkout-api", "sha": "a91f3c2"})
+    s.rollback()
+    s.run("observability.query_error_rate", {**PROD, "time_range": "15m"})
+    commit, rollback, errors = (describe(r, "checkout-api", "production") for r in s.ledger.receipts)
+    assert commit == "commit a91f3c2: Migrate order persistence to orders-client v3"
+    assert rollback.startswith("rolled checkout-api in production back from v4.17 to v4.16 through the release pipeline")
+    assert errors.startswith("production error_rate_pct ")
 
 
 def test_the_report_lists_actions_that_did_not_run(world):

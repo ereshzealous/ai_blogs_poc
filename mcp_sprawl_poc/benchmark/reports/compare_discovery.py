@@ -33,7 +33,11 @@ CATALOG_ORDER = LADDER + ["low_overlap_100", "high_overlap_100"]
 
 
 def load_arm(run_id: str, mode: str, runs_dir: Path | None = None) -> list[dict[str, Any]]:
-    rows = [r for r in _read_jsonl(Path(runs_dir or RUNS_DIR) / run_id / "selection.jsonl") if r["mode"] == mode]
+    path = Path(runs_dir or RUNS_DIR) / run_id / "selection.jsonl"
+    rows = [r for r in _read_jsonl(path) if r["mode"] == mode]
+    if not rows:
+        raise FileNotFoundError(f"no {mode} rows in run '{run_id}' ({path}); run "
+                                f"`python -m benchmark.runner selection --run-id {run_id} --modes {mode} ...` first")
     rescore_selection(rows)
     return rows
 
@@ -244,12 +248,18 @@ def main() -> None:
     parser.add_argument("--split", default="test", choices=["test", "dev", "all"])
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
-    arms = {"baseline": load_arm(args.published, "baseline"), "search": load_arm(args.published, "search"),
-            "control_plane_v1": load_arm(args.v1, "control_plane"), "control_plane_v2": load_arm(args.v2, "control_plane")}
+    try:
+        arms = {"baseline": load_arm(args.published, "baseline"), "search": load_arm(args.published, "search"),
+                "control_plane_v1": load_arm(args.v1, "control_plane"), "control_plane_v2": load_arm(args.v2, "control_plane")}
+    except FileNotFoundError as exc:
+        raise SystemExit(f"error: {exc}") from None
     run_ids = {"baseline": args.published, "search": args.published, "control_plane_v1": args.v1, "control_plane_v2": args.v2}
     if args.published not in (args.v1, args.v2):
-        arms[REFERENCE_ARM] = load_arm(args.published, "control_plane")
-        run_ids[REFERENCE_ARM] = args.published
+        try:
+            arms[REFERENCE_ARM] = load_arm(args.published, "control_plane")
+            run_ids[REFERENCE_ARM] = args.published
+        except FileNotFoundError:
+            pass  # the reference column is optional
     for name in ("control_plane_v1", "control_plane_v2"):
         profiles = {r.get("discovery", "v1") for r in arms[name]}
         if profiles != {name[-2:]}:

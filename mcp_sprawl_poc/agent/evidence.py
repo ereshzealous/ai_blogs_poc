@@ -499,6 +499,11 @@ def describe(receipt: Receipt, service: str, environment: str) -> str:
         change = pool_change(res["diff"])
         extra = f", max_connections {change[0]} -> {change[1]}" if change else ""
         return f"commit {res['sha']}: {res.get('message', '')}{extra}"
+    fixes = remediations(EvidenceLedger(receipts=[receipt]), service, environment)
+    if fixes:
+        return fixes[0].description
+    if {"sha", "message"} <= res.keys():
+        return f"commit {res['sha']}: {res['message']}"
     if is_pool(res):
         return f"{res.get('environment')} pool: max {res['max_connections']}, in use {res['in_use']}, waiting {res['waiting']}"
     reading = p95_reading(res)
@@ -506,6 +511,9 @@ def describe(receipt: Receipt, service: str, environment: str) -> str:
         return f"{res.get('environment')} p95 {reading[0]} ms (SLO {reading[1]} ms) at {res.get('end') or res.get('as_of')}"
     if res.get("incident_id") and "updated" in res:
         return f"incident {res['incident_id']} fields updated: {', '.join(sorted(res['updated']))}"
+    summary = res.get("summary")
+    if res.get("metric") and isinstance(summary, dict) and "last" in summary:
+        return f"{res.get('environment')} {res['metric']} {summary['last']} at {res.get('end')}"
     return "result recorded"
 
 

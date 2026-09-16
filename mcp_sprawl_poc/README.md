@@ -141,8 +141,8 @@ works.
 uv run pytest
 ```
 
-177 tests. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
-The gateway tests start real MCP server processes over stdio. The suite also pins the catalog facts this README states,
+289 tests. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
+The gateway and evidence-guard tests start real MCP server processes over stdio. The suite also pins the catalog facts this README states,
 checks every golden case's expected policy decision against the engine, and tests the OpenAI provider against a mock
 transport.
 

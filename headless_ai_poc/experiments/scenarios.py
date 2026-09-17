@@ -238,6 +238,11 @@ def _wait_message(log: Path, status: str, timeout: float = 60) -> dict[str, Any]
     raise TimeoutError(f"no Slack message for {status}")
 
 
+def _distinct_in_order(statuses: list[str]) -> list[str]:
+    """Collapse repeats: ["A", "A", "B"] -> ["A", "B"]. A redelivery is not a new update."""
+    return [s for i, s in enumerate(statuses) if i == 0 or statuses[i - 1] != s]
+
+
 def _handoff(out: Path, kill_slack: bool) -> dict[str, Any]:
     from experiments import procs
 
@@ -316,13 +321,18 @@ def _handoff(out: Path, kill_slack: bool) -> dict[str, Any]:
         "completed": record["view"]["status"] == "COMPLETED" and cli_body["status"] == "COMPLETED"
                      and rest["status"] == "COMPLETED" and status.returncode == 0,
         "work_spanned_two_processes": len(pids) >= 2,
-        "thread_got_both_updates": [m["text"].split()[-1] for m in _messages(msg_log)] == ["WAITING_APPROVAL", "COMPLETED"],
+        # The outbox is at-least-once: a process killed between posting and recording the delivery posts again on
+        # restart. What must hold is that the thread saw both statuses, in order, and nothing else.
+        "thread_saw_both_updates_in_order": _distinct_in_order([m["text"].split()[-1] for m in _messages(msg_log)])
+                                            == ["WAITING_APPROVAL", "COMPLETED"],
         "platform_evals_pass": bool(record["eval"].get("ok")),
     }
     facts: dict[str, Any] = {"workflow_id": wf, "timeline": timeline, "checkpoint_pids": pids,
                              "interactions": [{k: i[k] for k in ("channel", "principal_id", "operation", "action_id",
                                                                  "outcome", "status")} for i in interactions],
                              "slack_messages": [{"text": m["text"], "thread_ts": m.get("thread_ts")} for m in _messages(msg_log)],
+                             "redeliveries": len(_messages(msg_log)) - len(_distinct_in_order(
+                                 [m["text"].split()[-1] for m in _messages(msg_log)])),
                              "outbox_before_restart": outbox_before_restart, "outbox_after": outbox_after,
                              "spans": len(record["trace"]), "model_calls": len(record["usage"]),
                              "eval_checks": f"{record['eval'].get('passed')}/{record['eval'].get('total')}"}

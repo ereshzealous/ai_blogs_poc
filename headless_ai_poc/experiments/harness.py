@@ -27,16 +27,17 @@ def replay_tape(directory: Path, workflows: int, source: Path = DEMO_TAPE) -> Pa
 def prepare_env(base: Path, *, replay_workflows: int | None = None, record_to: Path | None = None,
                 replay_from: Path | None = None) -> dict[str, str]:
     """Fresh databases under `base`; model answers replayed, recorded, or (neither given) live from Ollama."""
+    base = Path(base).resolve()  # relative paths would land inside the layered platform's own folder
     base.mkdir(parents=True, exist_ok=True)
     env = {"LAP_PLATFORM_DB": str(base / "platform.db"), "LAP_ENTERPRISE_DB": str(base / "enterprise.db"),
            "HAI_HEADLESS_DB": str(base / "headless.db")}
     reset_enterprise(base / "enterprise.db")
     if replay_from is not None:
-        env["LAP_MODEL_TRAFFIC"] = f"replay:{replay_from}"
+        env["LAP_MODEL_TRAFFIC"] = f"replay:{Path(replay_from).resolve()}"
     elif replay_workflows:
         env["LAP_MODEL_TRAFFIC"] = f"replay:{replay_tape(base / 'tape', replay_workflows)}"
     elif record_to is not None:
-        env["LAP_MODEL_TRAFFIC"] = f"record:{record_to}"
+        env["LAP_MODEL_TRAFFIC"] = f"record:{Path(record_to).resolve()}"
     else:
         os.environ.pop("LAP_MODEL_TRAFFIC", None)
     return env

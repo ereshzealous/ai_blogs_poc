@@ -20,7 +20,7 @@ The proof of concept behind **"Your AI Shouldn't Live Inside the UI"**, Part 3 o
 | H6 | Does rendering need reasoning? | No. 0 model, tool, policy or workflow activity across 250 renders per channel |
 | H7 | What happens when the Slack adapter dies mid-workflow? | The workflow completes on the web. The Slack update waits in the outbox and arrives after a restart (26.7 s outage) |
 
-7/7 experiments and 52/52 checks pass · 44 tests · 5 import contracts kept.
+7/7 experiments and 52/52 checks pass · 45 tests · 5 import contracts kept.
 
 ## Layout
 
@@ -50,7 +50,7 @@ headless_ai_poc/
 | Capability | 1 | 95 | `incident.remediation`: contract ↔ platform view, available actions |
 | Gateway and interaction state | 3 | 285 | validation, dispatch, subscriptions, outbox, idempotency |
 | Identity resolution | 2 | 70 | channel subject → enterprise principal |
-| Platform adapter | 2 | 92 | the only code that imports Part 2 (its facade) |
+| Platform adapter | 2 | 99 | the only code that imports Part 2 (its facade) |
 | Channel adapters | 7 | 355 | Slack, web, REST, CLI, event |
 | Web console | 3 | 116 | static HTML/JS/CSS, no build step |
 | Renderers | 5 | 115 | Slack blocks, web card, CLI text, API JSON |

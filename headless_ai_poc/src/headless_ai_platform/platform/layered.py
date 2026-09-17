@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from collections.abc import Coroutine
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, AsyncIterator
 
 from agent_platform.contracts import ApprovalDecision, StartInvestigation
@@ -24,12 +25,19 @@ class LayeredPlatform:
     def __init__(self, svc: PlatformService):
         self.svc = svc
 
+    # The layered platform resolves a relative LAP_* path against ITS OWN folder, so a relative value here would write
+    # into Part 2's tree. Everything this POC passes is absolute, and this refuses anything that is not.
+    PATH_VARS = ("LAP_PLATFORM_DB", "LAP_ENTERPRISE_DB", "LAP_RUNS_DIR", "LAP_KNOWLEDGE_INDEX")
+
     @classmethod
     @asynccontextmanager
     async def open(cls, settings: Settings | None = None) -> AsyncIterator[LayeredPlatform]:
         s = settings or load_settings()
         for key, value in s.platform_env().items():
             os.environ.setdefault(key, value)
+        relative = {k: os.environ[k] for k in cls.PATH_VARS if os.environ.get(k) and not Path(os.environ[k]).is_absolute()}
+        if relative:
+            raise ValueError(f"these must be absolute paths, or the layered platform writes inside its own folder: {relative}")
         s.platform_db.parent.mkdir(parents=True, exist_ok=True)
         async with PlatformService.open() as svc:
             yield cls(svc)

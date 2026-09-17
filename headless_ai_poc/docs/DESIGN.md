@@ -81,8 +81,11 @@ None of it is workflow state. The platform's SQLite database holds that.
 ## Notifications
 
 Each server process delivers the channels it hosts, polling the outbox every 0.5 s. A failed delivery stays `PENDING`
-and is retried (50 attempts). After any command the gateway *reconciles*: for every subscriber whose last seen status
-differs from the workflow's, it queues one message.
+and is retried (50 attempts). Delivery is **at least once**: a process killed between posting a message and recording
+it will post again on restart, so a channel that cannot tolerate a repeat needs its own de-duplication key.
+
+After any command the gateway *reconciles*: for every subscriber whose last seen status differs from the workflow's,
+it queues one message.
 
 ## Experiments
 

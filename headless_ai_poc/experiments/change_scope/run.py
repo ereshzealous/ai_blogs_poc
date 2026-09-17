@@ -61,7 +61,8 @@ def scratch(tmp: Path) -> Path:
     for d in ("agent_platform", "config", "mock_enterprise", "traffic"):
         shutil.copytree(LAYERED / d, tmp / "layered" / d, ignore=ignore)
     (tmp / "layered" / "var").mkdir()
-    shutil.copy(LAYERED / "var" / "knowledge_index.json", tmp / "layered" / "var" / "knowledge_index.json")
+    # Our own copy of the runbook index, so a fresh clone needs neither Ollama nor a built index in the layered POC.
+    shutil.copy(ROOT / "data" / "knowledge_index.json", tmp / "layered" / "var" / "knowledge_index.json")
     for d in ("src", "config", "baseline", "experiments"):
         shutil.copytree(ROOT / d, tmp / "headless" / d, ignore=ignore)
     shutil.copy(ROOT / ".importlinter", tmp / "headless" / ".importlinter")

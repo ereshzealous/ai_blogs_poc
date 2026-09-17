@@ -21,8 +21,8 @@ dev = ["pytest>=8.3", "import-linter>=2.1"]
 hai = "headless_ai_platform.channels.cli:main"
 hai-exp = "experiments.run:main"
 
-# Part 2 is used as an editable path dependency: it reads its config, runbooks and mock enterprise systems from its
-# own folder, so this POC needs the whole repository, not this folder alone.
+# Part 2 is used as an editable path dependency: it reads its config and runbooks from its own folder.
+# It needs the whole ai_blogs_poc repository, not this folder alone.
 [tool.uv.sources]
 layered-agent-platform = { path = "../layered_agent_poc", editable = true }
 

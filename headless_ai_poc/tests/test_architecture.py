@@ -49,3 +49,23 @@ def test_part_2_is_used_as_installed_not_copied():
 
     part2 = Path(agent_platform.__file__).resolve().parents[1]
     assert (part2 / "config" / "policies.yaml").exists() and part2 != ROOT
+
+
+def test_relative_platform_paths_are_refused():
+    """A relative LAP_* path would make the layered platform write inside its own folder, not ours."""
+    import asyncio
+    import os
+    from unittest import mock
+
+    from headless_ai_platform.platform.layered import LayeredPlatform
+
+    async def go() -> str:
+        with mock.patch.dict(os.environ, {"LAP_RUNS_DIR": "runs/2026-09-17-recorded/h2/traces"}):
+            try:
+                async with LayeredPlatform.open():
+                    return "opened"
+            except ValueError as exc:
+                return str(exc)
+
+    message = asyncio.run(go())
+    assert "must be absolute" in message and "LAP_RUNS_DIR" in message

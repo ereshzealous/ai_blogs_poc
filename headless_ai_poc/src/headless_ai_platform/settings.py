@@ -30,6 +30,7 @@ class Settings:
     platform_db: Path
     enterprise_db: Path
     runs_dir: Path
+    knowledge_index: Path
     raw: dict[str, Any]
 
     def capability(self, name: str) -> dict[str, Any] | None:
@@ -38,7 +39,7 @@ class Settings:
     def platform_env(self) -> dict[str, str]:
         """Environment for the layered platform. Values already set by the caller win."""
         return {"LAP_PLATFORM_DB": str(self.platform_db), "LAP_ENTERPRISE_DB": str(self.enterprise_db),
-                "LAP_RUNS_DIR": str(self.runs_dir)}
+                "LAP_RUNS_DIR": str(self.runs_dir), "LAP_KNOWLEDGE_INDEX": str(self.knowledge_index)}
 
 
 def load_settings() -> Settings:
@@ -48,6 +49,7 @@ def load_settings() -> Settings:
                     platform_db=_path(os.environ.get("LAP_PLATFORM_DB", p["platform_db"]), "HAI_PLATFORM_DB"),
                     enterprise_db=_path(os.environ.get("LAP_ENTERPRISE_DB", p["enterprise_db"]), "HAI_ENTERPRISE_DB"),
                     runs_dir=_path(os.environ.get("LAP_RUNS_DIR", p["runs_dir"]), "HAI_RUNS_DIR"),
+                    knowledge_index=_path(os.environ.get("LAP_KNOWLEDGE_INDEX", p["knowledge_index"]), "HAI_KNOWLEDGE_INDEX"),
                     raw=raw)
 
 

@@ -4,6 +4,9 @@ paths:
   platform_db: var/platform.db       # passed to the layered platform as LAP_PLATFORM_DB
   enterprise_db: var/enterprise.db   # the simulated enterprise systems (LAP_ENTERPRISE_DB)
   runs_dir: runs/traces              # LAP_RUNS_DIR: platform traces
+  # LAP_KNOWLEDGE_INDEX. The layered platform's runbook index, embedded with nomic-embed-text. It ships here so
+  # a replay needs no Ollama and nothing is written inside the layered platform's own folder.
+  knowledge_index: data/knowledge_index.json
 
 capabilities:
   incident.remediation:

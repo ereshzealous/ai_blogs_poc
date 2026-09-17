@@ -2,13 +2,14 @@
 
 It connects to every server in a catalog manifest over stdio with the official MCP client, aggregates
 `tools/list` (following pagination cursors) under collision-free exposed names, and runs every
-`tools/call` through the deterministic policy engine first:
+`tools/call` through argument checks and the deterministic policy engine first:
 
-    agent -> Gateway.call_tool -> resolve environment -> PolicyEngine -> (approval) -> MCP tools/call
+    agent -> Gateway.call_tool -> validate + canonicalize arguments -> resolve environment -> PolicyEngine
+          -> (approval bound to the canonical arguments) -> MCP tools/call with those same arguments
 
-`enforcement="enforce"` blocks DENY and waits for approval on REQUIRE_APPROVAL. `enforcement="observe"`
-records the same decision but executes anyway; the benchmark uses it to model ungoverned modes and to
-count unsafe invocations that reached a backend.
+`enforcement="enforce"` stops invalid arguments before policy, blocks DENY and waits for approval on
+REQUIRE_APPROVAL. `enforcement="observe"` records the same checks and decision but executes anyway; the
+benchmark uses it to model ungoverned modes and to count unsafe invocations that reached a backend.
 """
 
 from __future__ import annotations
@@ -27,6 +28,7 @@ import mcp_types as types
 from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
+from control_plane.gateway.arguments import ArgumentChecker, CheckedArguments, canonical_json
 from control_plane.paths import REPO_ROOT
 from control_plane.policy.approvals import ApprovalRequest, ApprovalStatus, ApprovalStore
 from control_plane.policy.engine import Decision, Identity, PolicyEngine, PolicyInput, PolicyResult
@@ -73,7 +75,7 @@ class InvocationOutcome:
     arguments: dict[str, Any]
     policy: PolicyResult | None
     executed: bool
-    status: str  # executed | denied | approval_rejected | approval_pending | unknown_tool
+    status: str  # executed | invalid_arguments | denied | approval_rejected | approval_pending | unknown_tool
     result: Any = None
     is_error: bool = False
     latency_ms: float = 0.0
@@ -100,6 +102,7 @@ class Gateway:
         self._stack: AsyncExitStack | None = None
         self._clients: dict[str, Client] = {}
         self.tools: dict[str, PublishedTool] = {}
+        self.arguments = ArgumentChecker()
 
     # -- lifecycle ----------------------------------------------------------------------------
     async def __aenter__(self) -> Gateway:
@@ -136,6 +139,7 @@ class Gateway:
                 if not cursor:
                     break
         self.tools = tools
+        self.arguments.clear()
         return tools
 
     def published_annotations(self) -> dict[str, dict[str, Any]]:
@@ -143,6 +147,12 @@ class Gateway:
                 for p in self.tools.values()}
 
     # -- invocation ---------------------------------------------------------------------------
+    def check_arguments(self, exposed_name: str, arguments: dict[str, Any]) -> CheckedArguments | None:
+        published = self.tools.get(exposed_name)
+        if published is None:
+            return None
+        return self.arguments.check(exposed_name, published.tool.input_schema, arguments)
+
     def evaluate(self, exposed_name: str, arguments: dict[str, Any], ctx: InvocationContext) -> PolicyResult | None:
         published = self.tools.get(exposed_name)
         if published is None:
@@ -159,6 +169,17 @@ class Gateway:
                                      result=f"Unknown tool: {exposed_name}")
         with span("gateway.call_tool", request_id=ctx.request_id, tool_id=published.tool_id, arguments=arguments,
                   enforcement=ctx.enforcement) as s:
+            checked = self.check_arguments(exposed_name, arguments)
+            assert checked is not None
+            s.set_attribute("arguments.valid", checked.valid)
+            if checked.valid:
+                arguments = checked.arguments  # a private canonical copy: policy, approval and the call all use it
+            else:
+                self.audit.write("arguments.invalid", request_id=ctx.request_id, run_id=ctx.run_id, tool_id=published.tool_id,
+                                 enforcement=ctx.enforcement, arguments=arguments, problems=list(checked.problems))
+                if ctx.enforcement == "enforce":
+                    return InvocationOutcome(exposed_name, published.tool_id, arguments, None, False, "invalid_arguments",
+                                             result=checked.message, is_error=True)
             decision = self.evaluate(exposed_name, arguments, ctx)
             assert decision is not None
             s.set_attribute("policy.decision", decision.decision.value)
@@ -192,7 +213,7 @@ class Gateway:
                                      bool(result.is_error), latency, approval_state.value if approval_state else None)
 
     async def _approve(self, tool_id: str, arguments: dict[str, Any], decision: PolicyResult, ctx: InvocationContext) -> ApprovalStatus:
-        req = ApprovalRequest(decision.invocation_digest, ctx.request_id, tool_id, json.dumps(arguments, sort_keys=True),
+        req = ApprovalRequest(decision.invocation_digest, ctx.request_id, tool_id, canonical_json(arguments),
                               decision.environment, decision.reason)
         status = self.approvals.request(req)
         self.audit.write("approval.requested", request_id=ctx.request_id, tool_id=tool_id, digest=req.digest, status=status.value)

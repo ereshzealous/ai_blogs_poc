@@ -169,8 +169,8 @@ def _notes(split: str, candidate: str) -> tuple[str, str, str]:
                   "general registry and schema signals, but a different estate may need different weights.")
         return split_note, limits, "discovery v2 tuned on the dev split only"
     if split in ("holdout", "holdout2"):
-        split_note = (f"The held-out cases were written after the published run by a separate agent without access to the failure "
-                      f"analysis or the discovery code, and frozen before this run. Both profiles were measured on them once.")
+        split_note = ("The held-out cases were written after the published run by a separate agent without access to the failure "
+                      "analysis or the discovery code, and frozen before this run. Both profiles were measured on them once.")
         footer = f"discovery {candidate} measured on held-out cases"
     else:
         split_note = (f"Discovery {candidate} was written after the dev and test failures were analysed, so this split is not an "

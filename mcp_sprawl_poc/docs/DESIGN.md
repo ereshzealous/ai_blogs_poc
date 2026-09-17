@@ -28,18 +28,19 @@ defined here. Change this file first if a name changes.
 | Discovery | Hybrid fusion (RRF) + metadata filter + rerank | `control_plane/discovery/hybrid.py`, `control_plane/ranking/` | yes |
 | Execution | Policy engine (ALLOW / REQUIRE_APPROVAL / DENY) | `control_plane/policy/` | yes |
 | Execution | Approval store (bound to an invocation digest) | `control_plane/policy/approvals.py` | yes |
-| Execution | MCP gateway (client pool, policy on every call) | `control_plane/gateway/` | yes |
+| Execution | Argument checks (JSON Schema validation, canonical form) | `control_plane/gateway/arguments.py` | yes |
+| Execution | MCP gateway (client pool, argument checks and policy on every call) | `control_plane/gateway/` | yes |
 | Cross-cutting | Audit log + OpenTelemetry spans | `control_plane/telemetry/` | yes |
 | Agent | LLM providers, tool-selection step, incident agent loop, evidence guard | `agent/` | model-dependent; the guard is deterministic |
 | MCP servers | One process per server, real MCP over stdio | `servers/` | yes |
 | Backends | Deterministic mock enterprise systems | `servers/*/backend.py`, `mock_data/` | yes |
 | Benchmark | Catalog generator, cases, runner, evaluator, reports | `benchmark/` | yes except the LLM |
 
-Rule: **every tool invocation goes through `Gateway.call_tool`**, which evaluates policy before it
-opens the MCP request. There is no code path from the agent to a server that skips the gateway.
+Rule: **every tool invocation goes through `Gateway.call_tool`**, which checks the arguments and evaluates policy
+before it opens the MCP request. There is no code path from the agent to a server that skips the gateway.
 In the benchmark's baseline and search modes the gateway runs with `enforcement="observe"`: the
-policy decision is computed and recorded, but not enforced, which is what "no governance" means and
-lets us count unsafe invocations that would have reached a backend.
+argument check and the policy decision are computed and recorded, but not enforced, which is what "no governance"
+means and lets us count unsafe invocations that would have reached a backend.
 
 ## 3. Naming
 
@@ -172,12 +173,27 @@ Rules are YAML (`control_plane/policy/policies.yaml`), evaluated in order, first
 9. `low-risk-write` → ALLOW
 10. `read-only` → ALLOW
 
-The environment is resolved before evaluation: explicit argument, else the registry when a tool can only touch one
-environment, else the resource inventory, else **production** (an unknown target can only make a decision stricter).
+**Order in the gateway** (`Gateway.call_tool`):
 
-An approval is bound to the SHA-256 of `(tool_id, canonical arguments, environment, request_id)`;
-changing any argument after approval invalidates it. Approve and reject decisions are written to the
-audit log.
+```text
+validate + canonicalize arguments → resolve environment → policy → approval, if required → MCP tools/call
+```
+
+1. **Arguments first.** The gateway validates the arguments against the tool's published input schema (JSON Schema
+   2020-12, the same check the servers run) and puts them in canonical form: schema defaults filled in for omitted
+   properties, keys sorted, and a private copy. Nothing is repaired; an invalid value is rejected. In enforce mode an
+   invalid call stops here with status `invalid_arguments`, so it never reaches policy or an approver.
+2. **Environment.** Resolved from the canonical arguments: explicit argument, else the registry when a tool can only
+   touch one environment, else the resource inventory, else **production** (an unknown target can only make a
+   decision stricter).
+3. **Policy and approval** see the canonical arguments. An approval is bound to the SHA-256 of
+   `(tool_id, canonical arguments, environment, request_id)`, so a different argument, environment or request needs
+   its own approval. Approve and reject decisions are written to the audit log.
+4. **The call** sends that same canonical copy. A caller that changes its own arguments while an approval is open
+   changes nothing that runs (`tests/test_gateway_arguments.py`).
+
+Runs made before 2026-09-17, including the published run and both held-out sets, used the earlier order: policy and
+approval saw the raw arguments, and only the server validated them, after policy.
 
 ## 9. Benchmark
 

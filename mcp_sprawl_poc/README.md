@@ -5,15 +5,17 @@ ecosystems. It is the companion POC for the article *Your AI Agent Has 500 MCP T
 
 ## Problem
 
-MCP standardises how an agent discovers and calls tools. It does not decide which of 500 overlapping tools an agent should see,
-which one is authoritative, or whether a particular invocation may run. The MCP specification says so itself: annotations are
+MCP standardises how an agent discovers and calls tools. A server publishes each tool's name, description, input schema,
+optional output schema and annotations such as `readOnlyHint`. MCP does not decide which of 500 overlapping tools an agent
+should see, which one is authoritative, or whether a particular invocation may run. The MCP specification says so itself: annotations are
 untrusted hints, name collisions are left to aggregators, and "MCP itself cannot enforce these security principles at the protocol level".
 
 This repository builds that missing layer as a reference architecture (it is not an MCP specification component) and measures it:
 
 - **Discovery plane**: intent routing, a capability registry, hybrid retrieval (BM25 + embeddings), metadata filters, reranking, top-K.
-- **Execution governance plane**: a deterministic policy engine (ALLOW / REQUIRE_APPROVAL / DENY), approvals bound to an
-  invocation digest, and an MCP gateway that every call must pass through.
+- **Execution governance plane**: argument validation before policy, a deterministic policy engine (ALLOW /
+  REQUIRE_APPROVAL / DENY), approvals bound to a digest of the canonical arguments, and an MCP gateway that every call
+  must pass through.
 - **Evidence**: OpenTelemetry spans, an audit log and a reproducible benchmark.
 
 > Discovery may be probabilistic. Authorization must be deterministic.
@@ -29,7 +31,7 @@ The full design (components, naming, the INC-4917 scenario, catalog, registry, d
 | Tool sprawl with real semantic collisions | 500 deterministic tools: 59 share a name with another tool, 30 are deprecated, 5 come from an unregistered "shadow" server, 2 publish false `readOnlyHint` annotations |
 | The registry adds what server-published metadata alone does not | owner, domain, risk tier, environments, lifecycle, authority, scopes; drift detection against what servers publish |
 | Discovery and authorization are separate | `control_plane/discovery` vs `control_plane/policy`; the gateway evaluates policy on every call, whatever discovery surfaced |
-| Writes cannot bypass policy | `Gateway.call_tool` is the only path to a server; tested for DENY, pending, rejected and approved rollbacks |
+| Writes cannot bypass policy | `Gateway.call_tool` is the only path to a server; tested for invalid arguments, DENY, pending, rejected and approved rollbacks, and for an approval covering exactly the arguments that run |
 | The effect is measured, not asserted | `benchmark/`: 120 golden cases × 8 catalogs × 3 modes, plus multi-step agent runs, all raw results committed |
 | An agent's report is built from evidence | `agent/evidence.py`: the evidence guard joins tool results into a diagnosis, verifies recovery after a fix, and writes incident fields and the final report from receipts |
 
@@ -48,10 +50,11 @@ The MCP layer is real; the enterprise systems behind it are deterministic simula
 ## How it works
 
 ```text
-request → control plane: router → registry filters → hybrid search → rerank → top 5
+request → control plane: router → registry filters → hybrid search → rerank → top 5 (5 to 8 with --discovery v3/v4)
         → the model picks one tool and its arguments
-        → Gateway.call_tool → resolve environment → policy engine → approval, if required
-        → MCP tools/call over stdio, with _meta.run_id → schema validation → mock backend
+        → Gateway.call_tool → validate + canonicalize arguments → resolve environment → policy engine
+        → approval of those exact arguments, if required
+        → MCP tools/call over stdio with the same arguments, with _meta.run_id → mock backend
         → result, audit entry, OpenTelemetry spans
 ```
 
@@ -61,7 +64,7 @@ request → control plane: router → registry filters → hybrid search → rer
 | Tool definitions | `servers/<name>_mcp/tools.py` | One `ToolSpec` per tool: the MCP half the server publishes, and registry metadata (owner, risk, environments, lifecycle, scopes) it never sends |
 | Generated servers | `benchmark/catalog_generator/` | 35 servers and 450 tools from a seeded generator (seed 4917), served by the same runtime |
 | Mock backends | `servers/<name>_mcp/backend.py`, `servers/generated_mcp/backend.py` | One handler per tool over `mock_data/inc4917/scenario.yaml` and a shared SQLite event log (`servers/common/world.py`) |
-| Control plane | `control_plane/` | BM25 and `nomic-embed-text` embeddings (Ollama), reciprocal rank fusion, YAML policy, SQLite registry, OpenTelemetry |
+| Control plane | `control_plane/` | BM25 and `nomic-embed-text` embeddings (Ollama), reciprocal rank fusion, JSON Schema argument checks (`jsonschema`), YAML policy, SQLite registry, OpenTelemetry |
 | Agent | `agent/` | `gpt-oss:20b` in Ollama; optional OpenAI provider; evidence guard (`agent/evidence.py`) in control-plane mode |
 
 **How tools are backed.** Each `ToolSpec` names a handler, such as `itsm:update_incident`, registered with `@handler` in its
@@ -76,9 +79,12 @@ are not stubs:
 - `tests/test_gateway_mcp.py` starts real server processes, checks the paginated listing, and calls tools through the
   gateway: a read runs with ALLOW, and a production rollback waits for approval, is blocked when rejected and runs when
   approved.
+- `tests/test_gateway_arguments.py` checks the order: invalid arguments stop before policy and never reach an
+  approver, and a caller that changes its arguments while an approval is open does not change what runs.
 - In the published run, 2,548 of 2,574 decisions went through `Gateway.call_tool` and policy, and 2,482 reached an MCP
   server over `tools/call`. The other 92 named no tool (13) or a tool that does not exist (13), or were stopped by policy
-  in control-plane mode (66). The agent benchmark made 99 tool calls through the gateway in 24 runs.
+  in control-plane mode (66). That run, and the held-out runs below, predate the argument check: the servers validated
+  arguments after policy. The agent benchmark made 99 tool calls through the gateway in 24 runs.
 
 ## Steps at a glance
 
@@ -141,7 +147,7 @@ works.
 uv run pytest
 ```
 
-796 tests, most of them per-case checks of the 280 benchmark cases. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
+807 tests, most of them per-case checks of the 280 benchmark cases. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
 The gateway and evidence-guard tests start real MCP server processes over stdio. The suite also pins the catalog facts this README states,
 checks every golden case's expected policy decision against the engine, and tests the OpenAI provider against a mock
 transport.
@@ -460,27 +466,39 @@ Two changes were measured after the published run. Details, dev-split evidence a
   test split by −2.3 to +3.2 points, with fixed and broken cases balanced. v1 stays the default.
 
 **Discovery v4 on 100 new requests (held-out set 2).** The requests were written independently, and frozen together
-with the v4 code before anything was measured on them. The v4 control plane lets the model restate the request as a
-concrete first step before discovery, collapses look-alike tools to the authoritative one, and adds tools whose
-schema takes an identifier named in the request.
+with the v4 code before anything was measured on them. The tools, catalogs, policy and model are the ones used during
+development. The v4 control plane lets the model restate the request as a concrete first step before discovery,
+collapses look-alike tools to the authoritative one, and adds tools whose schema takes an identifier named in the
+request. It shows 5 to 8 tools, 6.7–6.9 on average.
 
-![Right capability by discovery profile on held-out set 2.](benchmark/reports/holdout2-2026-09-17/accuracy-by-profile.png)
+![Right capability on held-out set 2 for the baseline, plain search with 5 and 7 tools, and control planes v1, v3 and v4.](benchmark/reports/holdout2-search-k7-2026-09-17/accuracy-by-profile.png)
 
-| Right capability, held-out set 2 (100 cases) | Baseline (all tools) | Tool search | Control plane v1 | Control plane v4 | v4, may ask the user |
-|---|---|---|---|---|---|
-| 50 tools | 98% | 85% | 75% | 96% | 96% |
-| 100 tools | 92% | 79% | 73% | 95% | 96% |
-| 250 tools | 85% | 74% | 72% | 93% | 95% |
-| 500 tools | 70% | 58% | 71% | 92% | 91% |
-| Input tokens per decision at 500 tools | 24,564 | 537 | 590 | 1,364 | 1,476 |
-| Unsafe calls executed at 500 tools | 14 | 17 | 2 | 1 | 1 |
+| Held-out set 2 (100 cases per size) | Baseline (all tools) | Search, 5 tools | Search, 7 tools | Control plane v1 | Control plane v4 | v4, may ask the user |
+|---|---|---|---|---|---|---|
+| Right capability, 50 tools | 98% | 85% | 85% | 75% | 96% | 96% |
+| Right capability, 100 tools | 92% | 79% | 84% | 73% | 95% | 96% |
+| Right capability, 250 tools | 85% | 74% | 75% | 72% | 93% | 95% |
+| Right capability, 500 tools | 70% | 58% | 63% | 71% | 92% | 91% |
+| Right tool (exact), 500 tools | 63% | 50% | 53% | 66% | 84% | 82% |
+| Valid call, 500 tools | 56% | 48% | 53% | 55% | 72% | 70% |
+| Input tokens per decision, 500 tools | 24,564 | 537 | 649 | 590 | 1,364 | 1,476 |
+| Unsafe selections / sent to a server, 500 tools | 14 / 14 | 17 / 17 | 18 / 18 | 5 / 2 | 5 / 1 | 4 / 1 |
+
+*Right capability*: the golden tool or an accepted alternative. *Right tool*: the golden tool. *Valid call*: right
+capability, and the call ran without error. v4's tokens include its rewrite call (648 of the 1,364).
 
 - **From 100 tools up, v4 is more accurate than showing every tool,** and uses 4–18× fewer input tokens. It is 22
-  points ahead at 500 tools.
+  points ahead at 500 tools on right capability and 21 on right tool. At 50 tools, showing every tool is still ahead.
+- **Showing more tools is not the explanation.** Plain search with 7 tools gains 0–5 points over 5 tools; v4 is 11–29
+  points ahead of it, with 13–30 cases fixed and 1–2 broken per size (paired p < 0.01).
 - **v4 against v1.** On the same cases it fixes 22–24 and breaks 1–3 per size (exact McNemar p < 0.001).
+- **Unsafe calls.** v4's one sent call is the same harmless case at every size: an incident comment instead of a chat
+  message, which the server rejected for an invalid `visibility` value. The gateway now stops such a call before
+  policy.
 - **Asking the user.** When the model may ask, it asks in 1–3% of cases. A question helps only when discovery showed
   the right tool.
-- **Right tool is not yet a successful call.** Across modes, 14–23 points separate the two: the model sends
+- **Right capability is not yet a successful call.** Across arms and sizes, 10–24 points separate the two (20–23 for
+  v4): the model sends
   arguments the schema rejects, and some cases name resources the mock backends lack.
 
 Full method, development evidence and limits: [`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
@@ -523,7 +541,7 @@ frozen before this measurement.
 │   ├── discovery/               BM25, embeddings, hybrid fusion, discovery pipelines
 │   ├── ranking/                 registry-aware rerank
 │   ├── policy/                  policy engine, policies.yaml, environment resolution, approvals
-│   ├── gateway/                 MCP gateway: stdio client pool, policy on every call
+│   ├── gateway/                 MCP gateway: stdio client pool, argument checks and policy on every call
 │   ├── telemetry/               OpenTelemetry spans (JSONL) and audit log
 │   └── cli.py                   mcpcp
 ├── agent/                       LLM providers (Ollama, OpenAI), tool selection, multi-step incident agent, evidence guard
@@ -546,8 +564,16 @@ frozen before this measurement.
   result uses it.
 - **A synthetic estate.** The generated tools are designed to be realistic, not sampled from a real company.
 - **Judgement in golden labels.** Several requests have more than one reasonable first step; capability accuracy exists for that reason.
+  Reports call it "right capability" (the golden tool or an accepted alternative) and give exact accuracy ("right tool")
+  alongside it.
+- **"New" requests, known tools.** The held-out sets are new requests. The tools, catalogs, policy and model are the
+  ones used while discovery was developed.
 - **A scripted human.** Approvals are decided by a fixed table so runs are reproducible. Policy guarantees that the question is asked, not
-  that a human answers it well.
+  that a human answers it well. With `--clarify`, the simulated user picks from tool names and always knows the answer;
+  a product should ask about meaning instead.
+- **Inferred equivalence.** Discovery v4 collapses tools whose registry fields match; nobody declared them
+  substitutable. Where a group has no authoritative member (the Kubernetes tools and their per-cluster copies), it keeps
+  the best-ranked copy.
 - **Tool-level policy.** Rules match the tool's registry record, the target environment and the caller's scopes. Apart from
   resolving the environment, they do not read argument values. In the benchmark, one `itsm.update_incident` call with
   `status: "closed"` was allowed as a low-risk write and stopped only by schema validation.
@@ -567,6 +593,8 @@ frozen before this measurement.
 - Make policy argument-aware for operations whose risk depends on the values, such as closing an incident through an update.
 - Repair schema-invalid arguments by returning the validation error to the model once, and run a second discovery pass
   when the user says none of the offered tools fits. Measure both on a fresh held-out set.
+- Replace inferred equivalence with an explicit substitutes field and one canonical tool per job in the registry, and
+  ask clarifying questions about meaning rather than tool names.
 - Replace one mock backend with a real system (for example GitHub or a local kind cluster) without changing the architecture.
 - Serve the gateway itself as an MCP server over Streamable HTTP, with authorization-scoped `tools/list`.
 - Learn rerank weights and K from telemetry instead of fixing them by hand.

@@ -126,7 +126,8 @@ async def test_exposed_tools_stay_bounded_while_evidence_is_gathered(tmp_path, r
 async def test_failed_calls_are_recorded_but_are_not_evidence(tmp_path, registry, policy, oncall):
     bad = ("observability__query_latency", {**PROD, "percentile": "p90"})
     result, _, _ = await run(tmp_path, registry, policy, oncall, "S2", bad, DEPLOYMENTS, DIFF, POOL)
-    assert result.steps[0].is_error and result.steps[0].result is not None
+    assert result.steps[0].is_error and result.steps[0].status == "invalid_arguments" and result.steps[0].policy is None
+    assert "p90" in result.steps[0].result["message"]
     assert [e["tool_id"] for e in result.evidence] == ["source_control.search_deployments", "source_control.get_diff",
                                                      "database.get_connection_pool_stats"]
     assert "Failed calls, not used as evidence: 1" in result.final_answer

@@ -211,7 +211,7 @@ async def run_incident_agent(llm: ChatModel, gateway: Gateway, request: str, ctx
                 status, is_error = outcome.status, outcome.is_error
                 result = outcome.result if outcome.executed else {"status": outcome.status, "message": outcome.result}
                 content = json.dumps(result, default=str)[:MAX_RESULT_CHARS]
-                if outcome.executed and outcome.tool_id:
+                if outcome.tool_id and (outcome.executed or outcome.status == "invalid_arguments"):  # a bad call is a failed call
                     ledger.record(i, outcome.tool_id, arguments, outcome.result, outcome.is_error)
         if evidence and status in NOT_EXECUTED:
             tool_id = published.tool_id if published is not None else call.name.replace("__", ".", 1)

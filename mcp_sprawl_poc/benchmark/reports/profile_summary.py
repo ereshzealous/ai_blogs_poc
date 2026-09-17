@@ -19,10 +19,18 @@ from typing import Any
 from benchmark.reports.build_report import AXIS, INK, INK2, LADDER, MODE_COLOR, MUTED, SIZES, _save, _style
 from benchmark.reports.compare_discovery import CATALOG_ORDER, _cell, _summary, load_arm, spread
 
-# Validated with the dataviz palette validator (light surface): violet, orange, blue, aqua. The control-plane
-# profiles share the blue and differ by line style; the arm that may ask the user is aqua and always direct-labelled.
+# Validated with the dataviz palette validator (light surface): violet, orange, blue, aqua. Arms of one mode share its
+# colour and differ by line style; the fourth control-plane arm (the one that may ask the user) is aqua. Every line is
+# direct-labelled.
+ASK_COLOR = "#1baf7a"
 STYLES = [(MODE_COLOR["baseline"], "-"), (MODE_COLOR["search"], "-"), (MODE_COLOR["control_plane"], "--"),
-          (MODE_COLOR["control_plane"], ":"), (MODE_COLOR["control_plane"], "-"), ("#1baf7a", "-")]
+          (MODE_COLOR["control_plane"], ":"), (MODE_COLOR["control_plane"], "-"), (ASK_COLOR, "-")]
+MODE_STYLES = {
+    "baseline": [(MODE_COLOR["baseline"], "-"), (MODE_COLOR["baseline"], "--")],
+    "search": [(MODE_COLOR["search"], "-"), (MODE_COLOR["search"], "--")],
+    "control_plane": [(MODE_COLOR["control_plane"], "--"), (MODE_COLOR["control_plane"], ":"),
+                      (MODE_COLOR["control_plane"], "-"), (ASK_COLOR, "-")],
+}
 ROWS = (("Right capability", "capability_correct", "pct"), ("Right tool (exact)", "exact", "pct"),
         ("Valid call", "valid_call", "pct"), ("Golden tool in the prompt", "golden_in_prompt", "pct"),
         ("Mean input tokens per decision", "mean_prompt_tokens", "tokens"), ("Unsafe selections", "unsafe_selections", "int"),
@@ -36,6 +44,21 @@ def parse_arm(text: str) -> tuple[str, str, str]:
     if not (sep and sep2 and label and run and mode):
         raise ValueError(f"expected LABEL=RUN:MODE, got {text!r}")
     return label, run, mode
+
+
+def arm_styles(labels: list[str], sources: dict[str, str]) -> list[tuple[str, str]]:
+    """Colour by the arm's mode (from its `run:mode` source), line style by its order within that mode."""
+    seen: dict[str, int] = {}
+    styles = []
+    for i, label in enumerate(labels):
+        mode = sources.get(label, "").rpartition(":")[2]
+        if mode in MODE_STYLES:
+            options = MODE_STYLES[mode]
+            styles.append(options[seen.get(mode, 0) % len(options)])
+            seen[mode] = seen.get(mode, 0) + 1
+        else:
+            styles.append(STYLES[i % len(STYLES)])
+    return styles
 
 
 def summarize(arms: dict[str, list[dict[str, Any]]], split: str) -> dict[str, Any]:
@@ -69,7 +92,7 @@ def render_markdown(result: dict[str, Any], sources: dict[str, str]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def plot(result: dict[str, Any], out_dir: Path) -> None:
+def plot(result: dict[str, Any], out_dir: Path, sources: dict[str, str] | None = None) -> None:
     import matplotlib
 
     matplotlib.use("Agg")
@@ -79,7 +102,7 @@ def plot(result: dict[str, Any], out_dir: Path) -> None:
     ladder = [(c, s) for c, s in zip(LADDER, SIZES) if c in result["catalogs"]]
     fig, ax = plt.subplots(figsize=(10.5, 5.2))
     ends = []
-    for (label, (color, style)) in zip(result["arms"], STYLES):
+    for (label, (color, style)) in zip(result["arms"], arm_styles(result["arms"], sources or {})):
         points = [(s, 100 * result["catalogs"][c][label]["capability_correct"]) for c, s in ladder if label in result["catalogs"][c]]
         if not points:
             continue
@@ -112,7 +135,7 @@ def write_outputs(result: dict[str, Any], sources: dict[str, str], out_dir: Path
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "summary.json").write_text(json.dumps({"sources": sources} | result, indent=2, sort_keys=True) + "\n")
     (out_dir / "summary.md").write_text(render_markdown(result, sources))
-    plot(result, out_dir)
+    plot(result, out_dir, sources)
 
 
 def main() -> None:

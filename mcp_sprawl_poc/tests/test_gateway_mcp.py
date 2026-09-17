@@ -1,4 +1,4 @@
-"""Real MCP over stdio: servers, listing with pagination, and policy enforced on every call."""
+"""Real MCP over stdio: servers, listing with pagination, and argument checks and policy enforced on every call."""
 
 from __future__ import annotations
 
@@ -53,7 +53,9 @@ async def test_listing_matches_manifest_and_policy_is_enforced(registry, policy,
         assert unknown.status == "unknown_tool" and not unknown.executed
 
         invalid = await gw.call_tool("observability__query_latency", {"service": "checkout-api"}, InvocationContext("r9", "run-1", oncall))
-        assert invalid.is_error and "required" in str(invalid.result)
+        assert (invalid.status, invalid.is_error, invalid.policy) == ("invalid_arguments", True, None)
+        assert "required" in str(invalid.result)
 
     events = [e["event"] for e in gw.audit.entries]
-    assert events.count("policy.decision") == 8 and "approval.decided" in events
+    assert events.count("policy.decision") == 7 and "approval.decided" in events  # invalid arguments never reach policy
+    assert events[-1] == "arguments.invalid"

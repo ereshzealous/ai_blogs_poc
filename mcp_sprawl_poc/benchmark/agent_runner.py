@@ -14,7 +14,6 @@ import json
 import re
 import time
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
 import yaml
@@ -84,7 +83,7 @@ def score_agent_run(scenario: dict[str, Any], run: dict[str, Any], events: list[
         seen.add(key)
         tool_id = s["tool"].replace("__", ".", 1)
         family = catalog_families.get(tool_id)
-        failed = s["status"] in ("unknown_tool", "denied", "approval_rejected", "approval_pending") or s.get("is_error", False)
+        failed = s["status"] in ("unknown_tool", "invalid_arguments", "denied", "approval_rejected", "approval_pending") or s.get("is_error", False)
         if failed or family in OFF_TASK_FAMILIES:
             wasted += 1
     wasted += duplicates

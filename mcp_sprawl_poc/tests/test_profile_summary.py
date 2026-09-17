@@ -6,7 +6,8 @@ import json
 
 import pytest
 
-from benchmark.reports.profile_summary import parse_arm, render_markdown, summarize, write_outputs
+from benchmark.reports.build_report import MODE_COLOR
+from benchmark.reports.profile_summary import STYLES, arm_styles, parse_arm, render_markdown, summarize, write_outputs
 
 
 def row(case, catalog="catalog_100", *, right=True, tokens=600, asked=None, split="holdout2", extra_tokens=None):
@@ -60,3 +61,21 @@ def test_outputs_are_written(tmp_path):
     assert json.loads((tmp_path / "summary.json").read_text())["catalogs"]["catalog_500"]["Control plane v4"]["n"] == 1
     for name in ("summary.md", "accuracy-by-profile.png", "accuracy-by-profile.svg"):
         assert (tmp_path / name).stat().st_size > 0
+
+
+def test_line_styles_follow_each_arm_mode():
+    sources = {"Baseline": "r1:baseline", "Search, top 5": "r1:search", "Search, top 7": "r2:search",
+               "v1": "r1:control_plane", "v3": "r3:control_plane", "v4": "r4:control_plane"}
+    assert arm_styles(list(sources), sources) == [
+        (MODE_COLOR["baseline"], "-"), (MODE_COLOR["search"], "-"), (MODE_COLOR["search"], "--"),
+        (MODE_COLOR["control_plane"], "--"), (MODE_COLOR["control_plane"], ":"), (MODE_COLOR["control_plane"], "-")]
+
+
+def test_the_published_arm_order_keeps_its_styles():
+    sources = {"Baseline": "r:baseline", "Search": "r:search", "v1": "r:control_plane", "v3": "r3:control_plane",
+               "v4": "r4:control_plane", "v4, may ask": "r5:control_plane"}
+    assert arm_styles(list(sources), sources) == STYLES
+
+
+def test_arms_without_a_known_mode_are_styled_by_position():
+    assert arm_styles(["a", "b"], {}) == STYLES[:2]

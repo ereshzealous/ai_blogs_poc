@@ -1,6 +1,11 @@
 # Evidence guard, agent scoring v2 and discovery v2
 
-This document records three changes made after the published run `gpt-oss-20b-2026-09-15`. For each one it gives the
+This document records the changes made after the published run `gpt-oss-20b-2026-09-15`.
+
+**Headline.** On 100 new requests written and frozen before the measurement (held-out set 2), control plane v4 chose
+the right capability in 96% of cases at 50 tools, 95% at 100, 93% at 250 and 92% at 500. Showing the model every tool
+scored 98%, 92%, 85% and 70%, and v4 used 4–18× fewer input tokens from 100 tools up. The published control plane
+(v1) scored 75%, 73%, 72% and 71% on the same requests. For each one it gives the
 reason, the change itself and what it measured. The published run and its report are unchanged. Every number below
 comes from the run files named with it, and the commands at the end rebuild the reports from those files.
 
@@ -9,6 +14,8 @@ comes from the run files named with it, and the commands at the end rebuild the 
 | Evidence guard for the incident agent | `agent/evidence.py`, `agent/incident_agent.py` | on in control-plane mode (`--agent-guard auto`) |
 | Agent scoring version 2 | `benchmark/agent_runner.py` | every new agent run |
 | Discovery v2 | `control_plane/ranking/reranker.py`, `control_plane/discovery/pipeline.py` | opt-in (`--discovery v2`) |
+| Discovery v3 | `control_plane/routing/router.py`, `control_plane/discovery/pipeline.py` | opt-in (`--discovery v3`) |
+| Discovery v4 and asking the user | `control_plane/discovery/rewrite.py`, `agent/selection.py` | opt-in (`--discovery v4`, `--clarify`) |
 
 ## 1. Why
 
@@ -239,7 +246,284 @@ The table shows right-capability rates. Baseline and tool search come from the p
   boost should be limited to authoritative tools and to single-step write requests before it is tried again, on a fresh
   case set.
 
-## 6. Rebuild the reports
+## 6. Discovery v3 and a held-out case set
+
+### Why
+
+After studying the control-plane failures on the main test split at 100 tools, 8 of the 12 misses were discovery
+misses:
+- **Wrong read guess (3).** The router took a write request for a read ("add a work note…", "record in the incident…",
+  "undo the last release"), and the read-only filter removed the right tool, which no ranking can recover.
+- **Ranked just outside the top 5 (4).**
+- **Misrouted (1).** "tickets" did not match the incident vocabulary, because the lexicon ignored plurals.
+
+Because those test cases had now been studied case by case, they could no longer measure a fix honestly. So the fixes
+were measured on a new, held-out case set instead.
+
+### The held-out set
+
+`benchmark/prompts/holdout_cases.yaml` holds 60 cases (H001–H060) with the same fields and category mix as the main
+set. A separate agent wrote them without access to the failure analysis, the router, ranking or discovery code, the v3
+tests, or any run. The file was frozen before any run used it; its hash, what the writer saw, and one overlap in
+example wording are recorded in [`benchmark/prompts/CHANGELOG.md`](../benchmark/prompts/CHANGELOG.md). Run it with
+`--case-set holdout`, and report it with `--split holdout`.
+
+### What v3 changes
+
+`--discovery v3` is opt-in, and v1 stays the default and unchanged. v3 keeps v1's rerank weights, drops v2's write
+boost, and changes three things.
+
+- **Router (`IntentRouter(profile="v3")`):**
+  - domain terms also match their plurals, and a plural that is listed separately counts once;
+  - three new write signals: "add … note/comment" with words in between, "record", "undo";
+  - a check before an action ("whether", "should we", "is it safe to", "do we need to") is a read;
+  - "A, then B" is classified by A;
+  - each route records where its read/write decision came from.
+- **Adaptive top-K.** Up to 7 tools, adding runners-up whose score is within 0.1 of the 5th tool.
+- **One write slot.** When the router assumed a read without any signal, discovery also shows the best write tool,
+  found by a separate search over write tools and placed after the reads, so it can never push out a read.
+  - A first version instead kept write tools in the main search with a penalty. On the main set, those tools crowded
+    the right read tools out of the search window at 250 and 500 tools, so that design was dropped.
+  - The write slot showed no coverage gain on the main set, because the router fixes already caught those requests. It
+    is kept as a guard against write phrasings the router does not know, and it costs 0.64 extra tools per decision
+    on average.
+
+**Settings were chosen on the main set only.** A sweep over the margin, the maximum K and the write slots measured
+whether the right tool was among those shown for all 480 main-set retrievals (dev and test, catalogs 50–500). The
+held-out set was not read.
+
+| Setting | Right tool shown: dev (136) | Right tool shown: test (344) | Mean tools shown |
+|---|---:|---:|---:|
+| v3 router only, top 5 | 124 | 325 | 5.00 |
+| margin 0.05, up to 7, 1 write slot | 127 | 329 | 6.63 |
+| margin 0.1, up to 7, 2 write slots | 130 | 331 | 7.67 |
+| margin 0.1, up to 8, 2 write slots | 130 | 331 | 8.11 |
+| margin 0.1, up to 7, no write slot | 130 | 331 | 6.39 |
+| **chosen:** margin 0.1, up to 7, 1 write slot | 130 | 331 | 7.03 |
+
+For comparison, v1 (top 5) showed the right tool in 124 of 136 dev and 310 of 344 test retrievals.
+
+### Results on the held-out set
+
+Runs: `holdout-v1-2026-09-17` (baseline, tool search and control plane v1) and `holdout-v3-2026-09-17` (control plane
+v3), 60 cases per catalog, run once in the same session. Report:
+[`benchmark/reports/holdout-v3-2026-09-17/comparison.md`](../benchmark/reports/holdout-v3-2026-09-17/comparison.md).
+
+![Exact and capability accuracy against catalog size on the held-out set.](../benchmark/reports/holdout-v3-2026-09-17/discovery-v3-accuracy.png)
+
+| Catalog | Baseline (all tools) | Tool search | Control plane v1 | Control plane v3 | v3 against v1: fixed · broke | Input tokens, v1 → v3 |
+|---|---:|---:|---:|---:|---|---|
+| catalog_50 | 90.0% | 71.7% | 66.7% | **75.0%** | 6 · 1 | 660 → 825 |
+| catalog_100 | 93.3% | 66.7% | 66.7% | **76.7%** | 6 · 0 | 658 → 820 |
+| catalog_250 | 88.3% | 61.7% | 70.0% | **76.7%** | 5 · 1 | 625 → 768 |
+| catalog_500 | 75.0% | 50.0% | 56.7% | **66.7%** | 7 · 1 | 578 → 719 |
+
+The table shows right-capability rates, 60 cases each.
+
+- **v3 is better than v1 at every size, by 6.7 to 10 points.** Summed over sizes, 24 case results were fixed and 3
+  broken. Five cases (H039, H043, H053, H056, H059) were fixed at every size, so the gain is consistent, but it rests
+  on a handful of request types. Per-size exact McNemar p-values are 0.12, 0.03, 0.22 and
+  0.07; sizes share cases, so they are not independent tests.
+- **Where the gain came from:**
+  - the right tool now reaches the model more often (golden tool in the prompt 70–72% → 78–80% at 50–250 tools,
+    58% → 70% at 500);
+  - the new write signals ("undo", "record") route requests like "Undo the 4.17 rollout…" and "Move INC-4917 to
+    identified and record…" as writes;
+  - the write slot surfaced `kubernetes.restart_pod` for "Recycle checkout-api-7d9f8c6b5-2kq8x…" and
+    `database.kill_session` for "Run pg_terminate_backend(48213)…".
+- **Disclosure check on "undo".** Two of the consistently fixed cases (H039, H059) route as writes only because of
+  "undo", a word the case writer's brief also used as an example. With "undo" removed from the v3 router, discovery
+  still shows the right tool, through the write slot, in 3 of those 4 case-and-size pairs; the exception is H039 at
+  500 tools.
+- **What it costs:**
+  - **Tokens.** Input tokens rise by 23–25%, still about 7× fewer than the baseline at 100 tools and 34× fewer at
+    500.
+  - **Unsafe selections rise:** 17 across the four sizes against 4 for v1. Most came through the write slot, for
+    example `source_control.rollback_release` offered for "let #inc-4917-checkout-latency know we're rolling
+    checkout-api back…", and `kubernetes.restart_pod` for "Nuke it". Policy stopped all but one: an
+    `itsm.add_incident_comment` that is an allowed low-risk write. Unsafe calls that executed are 4 for v3 and 3 for
+    v1.
+- **The baseline is still more accurate on these requests, at every size including 500 tools** (75.0% against 66.7%).
+  This does not match the main test split, where the control plane led at 500 tools (81% against 77%). On requests
+  written independently of the router's vocabulary, the published advantage in accuracy does not hold. The advantages
+  that do hold are tokens (34× fewer at 500 tools) and governance: with v1, 1 unsafe call executed at 500 tools,
+  against 6 for the baseline and 13 for tool search.
+- **What is left at 100 tools.** v3 misses 14 of 60 cases. In 12 of them the right tool was not shown:
+  - **Vocabulary gaps:** "war room" for an incident channel, "what went out to production" for deployments, "nuke
+    it" for terminate, "switch … back off" for a feature flag, "let #channel know" for a message.
+  - **Identifiers with no domain words:** an instance id ("is i-0c41… even up?"), channel names ("#prod-deploys",
+    "#inc-4917-…") and a staging pod name. v2's identifier signal targets exactly these.
+  - **Nouns read as actions:** "the session cache failover last time" was read as a failover request.
+  - **Writes with no signal the router knows** ("Note in INC-4917 that…"), where the single write slot offered a
+    different write tool.
+
+  The other 2 misses are the model's choice with the right tool shown.
+- **Decision.** v3 stays opt-in, and v1 remains the default for the published results. v3 is the better control-plane
+  profile on new requests, but the price is more unsafe selections, and the baseline still leads on accuracy. The next
+  steps are:
+  - combine v3 with v2's identifier signal, without v2's write boost;
+  - restrict the write slot to authoritative tools;
+  - widen the vocabulary from real request logs;
+  - measure again on a new held-out set, because this one has now been studied.
+
+## 7. Discovery v4 and asking the user
+
+### Why
+
+On the first held-out set, v3 still left the right tool out of what the model saw in 12 of 60 cases at 100 tools. The
+causes were vocabulary the router did not know ("war room", "nuke it", "what went out to production"), identifiers
+with no domain words (an instance id, a channel name), and requests whose read/write intent the keyword router
+misjudged. More keywords would only fit the cases already seen. v4 changes how discovery reads a request, and adds a
+deterministic answer for the cases it still cannot settle: ask the user.
+
+### What v4 changes
+
+`--discovery v4` is opt-in. It keeps v3's router and adaptive top-K, and adds the following.
+
+- **A model-written first step** (`control_plane/discovery/rewrite.py`). One small call per request, without any tool
+  definitions, returns:
+  - the concrete first action, in standard operations terms;
+  - whether it reads or writes;
+  - which system it runs on, chosen from a described list;
+  - the environment it targets.
+
+  Retrieval searches with that action as well as the request. The route takes the model's system, operation and
+  environment, with two limits: an explicit "do not change anything" still forces a read, and a write signal in the
+  request itself keeps write tools available.
+- **Equivalent tools collapse to one.** Tools with the same collision group, resource type, operations and side
+  effect do the same job; examples are vendor mirrors and per-cluster copies. Discovery shows one of them, the
+  authoritative one when it is a candidate, at the group's best rank.
+  - The registry's `capability` and `collision_group` fields alone are too coarse for this: `workload-read` covers
+    pods, deployments, events and pod logs.
+  - In none of the 180 main and first-held-out cases would the golden tool be collapsed into an authoritative
+    sibling that is not also an acceptable alternative.
+- **Tools that take a named identifier join the candidates.** A request that names an incident, a channel, a pod, an
+  instance or a commit adds the tools whose published schema requires that parameter, from a separate search. They
+  enter at the lowest retrieval score and rise only through the identifier and registry signals.
+- **Scoring.** The ranking uses v1's weights plus the named-identifier signal. v2's write boost is not used.
+- **One write slot.** It appears when the model judged the request a read and the request does not forbid changes.
+  This guards against a misread write.
+
+**The rewrite call's cost counts with every decision.** Its tokens are recorded in each row
+(`discovery_prompt_tokens`), and the reports add them to the input tokens.
+
+### Asking the user (`--clarify`)
+
+With `--clarify`, the selection model also gets an `ask_user` tool and one instruction: if no tool clearly fits, or
+two fit equally well, list the two or three best tools instead of guessing.
+
+- **The simulated user** knows what they asked for. They pick the first listed tool that would do the job, or say
+  none of these is right. The scripted approver works the same way.
+- **The second call.** The model then calls the chosen tool, or chooses again from the same list. It can ask only
+  once.
+- **Scoring.** A case counts as right only if the tool that finally ran is right.
+- **Reporting.** The report shows the ask rate and "right without asking" next to the accuracy, because a system that
+  asked every time could reach any accuracy.
+
+### Development evidence (main set and held-out set 1, both studied)
+
+**Right tool shown.** Counted over the cases evaluable at each catalog: 34 dev, 86 test and 60 from held-out set 1.
+The rewrites are saved in `benchmark/runs/_dev-v4b-coverage/rewrites.json`, and
+`python -m benchmark.dev.v4_coverage benchmark/runs/_dev-v4b-coverage/rewrites.json` reproduces the table.
+
+| Catalog | v1 (top 5) | v3 | v4 | Mean tools shown, v4 |
+|---|---|---|---|---|
+| catalog_50 | 155/180 | 167/180 | 177/180 | 7.1 |
+| catalog_100 | 153/180 | 167/180 | 177/180 | 7.1 |
+| catalog_250 | 150/180 | 162/180 | 175/180 | 7.1 |
+| catalog_500 | 139/180 | 152/180 | 172/180 | 7.1 |
+
+The model's read/write judgement matched the golden tool's side effect in 176 of 180 cases.
+
+**End to end at 100 tools.** Runs: `_dev-v4b-test`, `_dev-v4b-ho1`, `_dev-v4b-clarify-test` and
+`_dev-v4b-clarify-ho1`.
+
+| Set | Control plane v1 | Control plane v4 | v4, may ask | Asked | Input tokens per decision, v4 |
+|---|---|---|---|---|---|
+| main test split (86) | 74 (86.0%) | 80 (93.0%) | 81 (94.2%) | 3 | 1,480 |
+| held-out set 1 (60) | 40 (66.7%) | 57 (95.0%) | 57 (95.0%) | 2 | 1,463 |
+
+The v1 numbers come from `selection-test-v1-2026-09-16` and `holdout-v1-2026-09-17`. With v4, the right tool was shown
+in every main-set case, so the six remaining misses are the model's choice:
+- the two trap cases, which try to close the incident and which policy denied;
+- three requests whose right first step is the deployment history;
+- a near-duplicate latency tool.
+
+Every case where the model asked was resolved to the right tool. Earlier v4 development runs (`_dev-v4a-*`), made
+before the identifier candidates, the environment field and the write slot were added, are not committed.
+
+### Results on held-out set 2 (100 new cases, measured once)
+
+Runs: `holdout2-v1-2026-09-17` (baseline, tool search and control plane v1), `holdout2-v3-2026-09-17`,
+`holdout2-v4-2026-09-17` and `holdout2-v4-ask-2026-09-17`. Every run's `config.json` records the frozen discovery code
+hash `7cc869037b41…`.
+
+Reports:
+- [`benchmark/reports/holdout2-2026-09-17/summary.md`](../benchmark/reports/holdout2-2026-09-17/summary.md): every arm
+  side by side;
+- [`benchmark/reports/holdout2-v4-2026-09-17/comparison.md`](../benchmark/reports/holdout2-v4-2026-09-17/comparison.md):
+  v1 against v4, paired.
+
+![Right capability by discovery profile on held-out set 2.](../benchmark/reports/holdout2-2026-09-17/accuracy-by-profile.png)
+
+**Right capability** (100 cases per catalog):
+
+| Catalog | Baseline (all tools) | Tool search | Control plane v1 | Control plane v3 | Control plane v4 | v4, may ask |
+|---|---:|---:|---:|---:|---:|---:|
+| catalog_50 | 98% | 85% | 75% | 85% | **96%** | 96% |
+| catalog_100 | 92% | 79% | 73% | 83% | **95%** | 96% |
+| catalog_250 | 85% | 74% | 72% | 85% | **93%** | 95% |
+| catalog_500 | 70% | 58% | 71% | 79% | **92%** | 91% |
+
+**Cost and safety:**
+
+| | Baseline, 100 tools | v4, 100 tools | Baseline, 500 tools | v4, 500 tools |
+|---|---:|---:|---:|---:|
+| Input tokens per decision, including v4's rewrite call | 6,233 | 1,442 | 24,564 | 1,364 |
+| Unsafe selections / executed | 3 / 3 | 2 / 1 | 14 / 14 | 5 / 1 |
+| Valid call | 73% | 72% | 56% | 72% |
+
+- **v4 against v1, paired on the same cases.**
+  - Right capability: 22–24 cases fixed and 1–3 broken at each size, exact McNemar p < 0.001 at every size.
+  - Exact tool: 22 fixed and 1–4 broken.
+- **v4 against the baseline.**
+  - At 50 tools, showing all tools is still slightly ahead (98% against 96%).
+  - From 100 tools up, v4 is more accurate, by 3 points at 100, 8 at 250 and 22 at 500. It uses 4× fewer input tokens
+    at 100 tools and 18× fewer at 500.
+  - At 500 tools, 1 unsafe call executed under v4, against 14 for the baseline.
+- **The right tool was shown** in 97, 97, 98 and 96 of 100 cases, counting golden or acceptable tools. Of v4's misses:
+  - 12 of 24 across the four sizes are cases where the right tool was not shown. Two cases miss at every size: H170, a
+    feature-flag change the model read as a Kubernetes action, and H162, whose first step is a chat message and which
+    the model read as an incident note.
+  - The rest are the model's choice among shown tools, mostly near-duplicates such as a legacy restart tool, a
+    log-search mirror or the Kubernetes rollback instead of the release rollback.
+- **Asking the user.**
+  - The model asked in 1–3% of cases (9 questions over 400 decisions).
+  - In 4 of them the right tool was among the options, and the user's choice ran. The model had also chosen right
+    without asking in those cases.
+  - In the other 5, the right tool was not among the options, so the user said none and the case stayed wrong.
+  - The differences between the two v4 runs (+1, +2 and −1 points) are within run-to-run variation: 0–3 cases per
+    catalog changed between the runs.
+  - Asking resolves ties among shown tools but cannot recover a tool discovery never showed. The next step for that
+    case is a second discovery pass when the user says none of the options fits.
+- **Valid calls.** Choosing the right tool is not yet a successful call. Across modes and sizes, 14–23 points
+  separate right capability from valid call. A replay of v4's 88 right-but-failed calls finds two causes:
+  - **Schema-invalid arguments:** `prod` for `production`, empty strings in optional fields, `high` as a severity,
+    invented incident statuses.
+  - **Gaps in the mock data:** the new cases reference deployments and flags the simulated backends do not have, such
+    as a `payment-gateway` deployment in staging.
+
+  An argument-repair step (return the schema error to the model once) is the next change. It must be measured on
+  another fresh case set.
+- **The 95% target.** On requests nobody tuned against, v4 reaches 96% at 50 tools and 95% at 100 tools. With asking,
+  it reaches 95–96% up to 250 tools. At 500 tools it reaches 92% (91% with asking), 22 points above showing every tool.
+- **Limits.**
+  - One model (gpt-oss:20b, low reasoning) and one run per case.
+  - A synthetic estate, and cases written by a model.
+  - The rewrite call adds about 290 input tokens and 3 seconds per request on the reference machine.
+  - The first held-out set and the main set shaped v4, so only this set is an unbiased estimate.
+
+## 8. Rebuild the reports
 
 Every report below is rebuilt from the committed run files, without a model.
 
@@ -248,6 +532,8 @@ uv run python -m benchmark.reports.compare_agent_evidence --before agent-v2-lega
 uv run python -m benchmark.reports.compare_agent_evidence --before agent-v2-legacy-2026-09-16 --after agent-v2-evidence-discovery-v2-2026-09-16
 uv run python -m benchmark.reports.compare_discovery --published gpt-oss-20b-2026-09-15 --v1 selection-dev-v1-2026-09-16 --v2 selection-dev-v2-2026-09-16 --split dev
 uv run python -m benchmark.reports.compare_discovery --published gpt-oss-20b-2026-09-15 --v1 selection-test-v1-2026-09-16 --v2 selection-test-v2-2026-09-16 --split test
+uv run python -m benchmark.reports.compare_discovery --published holdout-v1-2026-09-17 --v1 holdout-v1-2026-09-17 --v3 holdout-v3-2026-09-17 --split holdout
+uv run python -m benchmark.reports.build_report --run-id holdout-v1-2026-09-17 --split holdout
 ```
 
 Rerun the benchmarks themselves (local Ollama; on the reference machine, about 26 minutes per selection run and 12
@@ -261,4 +547,9 @@ uv run python -m benchmark.runner selection --run-id my-test-v2 --discovery v2 -
 uv run python -m benchmark.runner agent --run-id my-legacy $AG --agent-guard legacy
 uv run python -m benchmark.runner agent --run-id my-evidence $AG --agent-guard evidence
 uv run python -m benchmark.runner agent --run-id my-evidence-v2 $AG --agent-guard evidence --discovery v2
+
+# the held-out measurement (about 40 minutes on the reference machine)
+CATS=catalog_50,catalog_100,catalog_250,catalog_500
+uv run python -m benchmark.runner selection --run-id my-holdout-v1 --case-set holdout --discovery v1 --catalogs $CATS --num-ctx 32768
+uv run python -m benchmark.runner selection --run-id my-holdout-v3 --case-set holdout --discovery v3 --modes control_plane --catalogs $CATS --num-ctx 32768
 ```

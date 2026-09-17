@@ -48,11 +48,12 @@ def rescore_selection(rows: list[dict[str, Any]]) -> dict[str, Any]:
     """
     import hashlib
 
-    from benchmark.evaluator.metrics import CASES_FILE, load_cases, retrieval_scores, score_selection
+    from benchmark.evaluator import metrics
+    from benchmark.evaluator.metrics import CASES_FILE, load_all_cases, retrieval_scores, score_selection
     from control_plane.paths import CATALOG_DIR
     from control_plane.registry.registry import CapabilityRegistry
 
-    cases = {c.id: c for c in load_cases()}
+    cases = {c.id: c for c in load_all_cases()}
     registry = CapabilityRegistry.load()
     manifests: dict[str, dict[str, dict[str, Any]]] = {}
     changed = 0
@@ -74,8 +75,13 @@ def rescore_selection(rows: list[dict[str, Any]]) -> dict[str, Any]:
             changed += 1
         r.update(new)
         r["expected_policy"] = case.expected_policy
-    return {"cases_sha256": hashlib.sha256(CASES_FILE.read_bytes()).hexdigest(), "rows_rescored": len(rows),
-            "rows_with_changed_scores": changed, "derived_metrics_added": ["valid_call"]}
+    out = {"cases_sha256": hashlib.sha256(CASES_FILE.read_bytes()).hexdigest(), "rows_rescored": len(rows),
+           "rows_with_changed_scores": changed, "derived_metrics_added": ["valid_call"]}
+    if any(cases[r["case_id"]].split == "holdout" for r in rows):
+        out["holdout_sha256"] = hashlib.sha256(metrics.HOLDOUT_FILE.read_bytes()).hexdigest()
+    if any(cases[r["case_id"]].split == "holdout2" for r in rows):
+        out["holdout2_sha256"] = hashlib.sha256(metrics.HOLDOUT2_FILE.read_bytes()).hexdigest()
+    return out
 
 
 def _pct(x: float | None) -> str:
@@ -372,7 +378,7 @@ def build_markdown(summary: dict[str, Any], meta: dict[str, Any], charts: list[s
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--split", default="test", choices=["test", "dev", "all"])
+    parser.add_argument("--split", default="test", choices=["test", "dev", "holdout", "holdout2", "all"])
     args = parser.parse_args()
     run_dir = RUNS_DIR / args.run_id
     out_dir = REPORTS_DIR / args.run_id

@@ -23,9 +23,10 @@ import anyio
 import httpx
 
 from agent.llm import PROVIDERS, ChatModel, ProviderError, describe_connect_error, make_llm, temperature_arg
-from agent.selection import select_tool
-from benchmark.evaluator.metrics import Case, load_cases, retrieval_scores, score_selection
+from agent.selection import exposed_to_tool_id, select_tool
+from benchmark.evaluator.metrics import Case, case_file, load_cases, retrieval_scores, score_selection
 from control_plane.discovery.pipeline import DiscoveryService
+from control_plane.discovery.rewrite import QueryRewriter
 from control_plane.discovery.semantic import OllamaEmbedder
 from control_plane.gateway.gateway import Gateway, InvocationContext
 from control_plane.paths import CATALOG_DIR, REPO_ROOT
@@ -81,20 +82,35 @@ def _write_config(run_dir: Path, section: str, config: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=1, default=str) + "\n")
 
 
+DISCOVERY_CODE = ("control_plane/discovery", "control_plane/ranking", "control_plane/routing", "agent/selection.py",
+                  "agent/prompts.py")
+
+
+def discovery_code_sha256() -> str:
+    """One hash over the code that decides what the model is shown and how it selects."""
+    digest = hashlib.sha256()
+    for entry in DISCOVERY_CODE:
+        path = REPO_ROOT / entry
+        for f in sorted(path.rglob("*.py")) if path.is_dir() else [path]:
+            digest.update(str(f.relative_to(REPO_ROOT)).encode() + b"\0" + f.read_bytes())
+    return digest.hexdigest()
+
+
 def _base_config(args: argparse.Namespace, catalogs: list[str]) -> dict[str, Any]:
     return {
         "started_at": _now(),
         "catalogs": {c: {"sha256": _sha256(CATALOG_DIR / f"{c}.json")} for c in catalogs},
         "registry_sha256": _sha256(CATALOG_DIR / "registry.json"),
         "policy_sha256": _sha256(REPO_ROOT / "control_plane" / "policy" / "policies.yaml"),
-        "cases_sha256": _sha256(REPO_ROOT / "benchmark" / "prompts" / "cases.yaml"),
+        "cases_sha256": _sha256(case_file(getattr(args, "case_set", "main"))),
+        "discovery_code_sha256": discovery_code_sha256(),
         "k": getattr(args, "k", None),
         "argv": vars(args),
     }
 
 
 def _select_cases(args: argparse.Namespace) -> list[Case]:
-    cases = load_cases()
+    cases = load_cases(case_file(getattr(args, "case_set", "main")))
     if args.cases:
         wanted = set(args.cases.split(","))
         cases = [c for c in cases if c.id in wanted]
@@ -172,6 +188,7 @@ async def run_selection(args: argparse.Namespace) -> None:
     no_tool_tokens: dict[str, int] = json.loads(tokens_path.read_text()) if tokens_path.exists() else {}
     c10 = set(_manifest_tools("catalog_10"))
     world_db = run_dir / "world.sqlite"
+    rewriter = QueryRewriter(llm) if args.discovery == "v4" else None  # one cache for every catalog
 
     for case in cases:  # prompt size without any tool definitions, measured once per case
         if case.id not in no_tool_tokens:
@@ -195,7 +212,7 @@ async def run_selection(args: argparse.Namespace) -> None:
         async with Gateway(manifest, registry, policy, audit=audit, world_db=world_db) as gw:
             published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
             by_tool_id = {p.tool_id: p for p in gw.tools.values()}
-            discovery = (DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy)
+            discovery = (DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy, rewriter=rewriter)
                          if any(m != "baseline" for m, _ in pending) else None)
             all_defs = [p.definition() for p in gw.tools.values()]
             for mode in modes:
@@ -223,8 +240,13 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
             defs = [by_tool_id[t].definition() for t in disc.tool_ids if t in by_tool_id]
             s.set_attribute("discovery.candidates", ",".join(disc.tool_ids))
             s.set_attribute("discovery.latency_ms", round(disc.latency_ms, 3))
+        def simulated_user(options: list[str], question: str) -> str | None:
+            # the user knows what they asked for: they pick the first option that would do it, or none
+            return next((o for o in options if exposed_to_tool_id(o) in case.correct_tools), None)
+
         with span("agent.select_tool", tools_in_prompt=len(defs)):
-            sel = select_tool(llm, defs, case.prompt, identity)
+            sel = select_tool(llm, defs, case.prompt, identity,
+                              ask_user=simulated_user if args.clarify and mode != "baseline" else None)
         s.set_attribute("selected_tool", sel.tool_id or "")
         props = by_tool_id[sel.tool_id].tool.input_schema.get("properties", {}) if sel.tool_id in by_tool_id else {}
         score = score_selection(case, sel.tool_id, sel.arguments, registry=registry, catalog_tool_ids=set(by_tool_id),
@@ -245,6 +267,9 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
         "arguments": sel.arguments, "tool_calls_returned": sel.tool_call_count, **score,
         "candidates": disc.tool_ids if disc else None, "discovery_latency_ms": round(disc.latency_ms, 3) if disc else None,
         "discovery": args.discovery, "discovery_stages": disc.stages if disc else None, "route": disc.route.to_dict() if disc and disc.route else None,
+        **({"discovery_rewrite": disc.rewrite, "discovery_rewrite_usage": disc.rewrite_usage,
+            "discovery_prompt_tokens": disc.rewrite_usage["prompt_tokens"],
+            "discovery_completion_tokens": disc.rewrite_usage["completion_tokens"]} if disc and disc.rewrite_usage else {}),
         **({f"retrieval_{k}": v for k, v in retrieval_scores(case, disc.tool_ids, ks=(1, 3, 5)).items()} if disc else {}),
         "golden_in_prompt": (case.golden_tool in disc.tool_ids) if disc else True,
         "tools_in_prompt": len(all_defs) if mode == "baseline" else len(disc.tool_ids) if disc else 0,
@@ -254,8 +279,10 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
         "executed": bool(outcome and outcome.executed), "execution_error": bool(outcome and outcome.is_error),
         "execution_latency_ms": round(outcome.latency_ms, 2) if outcome else None,
         "unsafe_execution": bool(score["unsafe_selection"] and outcome and outcome.executed),
-        "prompt_tokens": resp.prompt_tokens, "completion_tokens": resp.completion_tokens,
-        "total_tokens": (resp.prompt_tokens or 0) + (resp.completion_tokens or 0) if resp.prompt_tokens is not None else None,
+        "prompt_tokens": sel.prompt_tokens, "completion_tokens": sel.completion_tokens,
+        "total_tokens": (sel.prompt_tokens or 0) + (sel.completion_tokens or 0) if sel.prompt_tokens is not None else None,
+        **({"asked": sel.clarification is not None, "clarification": sel.clarification, "selection_calls": sel.calls}
+           if args.clarify and mode != "baseline" else {}),
         "prompt_tokens_without_tools": no_tool_tokens.get(case.id),
         "tool_definition_tokens": (resp.prompt_tokens - no_tool_tokens[case.id]) if resp.prompt_tokens and case.id in no_tool_tokens else None,
         "llm_latency_ms": round(resp.latency_ms, 1), "prompt_eval_ms": round(resp.prompt_eval_ms, 1) if resp.prompt_eval_ms else None,
@@ -276,11 +303,16 @@ def main() -> None:
     for name in ("retrieval", "selection", "agent"):
         p = sub.add_parser(name)
         p.add_argument("--run-id", required=True)
-        p.add_argument("--discovery", default="v1", choices=["v1", "v2"],
-                       help="control-plane discovery profile: v1 (published) or v2 (experimental: scope-, write- and identifier-aware rerank)")
+        p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4"],
+                       help="control-plane discovery profile: v1 (published), v2 (experimental rerank signals), "
+                            "v3 (router fixes, adaptive top-K) or v4 (v3 plus a model-written query and duplicate collapse)")
         p.add_argument("--catalogs", default=",".join(LADDER + OVERLAP))
         p.add_argument("--cases", default="")
         p.add_argument("--split", default="all", choices=["all", "dev", "test"])
+        p.add_argument("--clarify", action="store_true",
+                       help="selection only: the model may ask the user to choose between tools (search and control-plane modes)")
+        p.add_argument("--case-set", default="main", choices=["main", "holdout", "holdout2"],
+                       help="main: cases.yaml (dev/test split); holdout, holdout2: held-out sets written after the published run")
         if name != "retrieval":
             p.add_argument("--modes", default=",".join(MODES))
             p.add_argument("--k", type=int, default=5)

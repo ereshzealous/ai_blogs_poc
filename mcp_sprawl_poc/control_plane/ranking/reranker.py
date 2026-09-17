@@ -13,13 +13,16 @@ failures before the test split was run:
   request fills (a pod, an instance, an incident, a channel, a commit).
 With the default weights these terms are zero, so v1 rankings are unchanged. v2 did not improve the test split
 (docs/EVIDENCE_IMPROVEMENTS.md); the write-intent boost lifted non-authoritative write tools.
+
+Discovery v3 (opt-in) keeps v1's weights. `adaptive_cut` returns up to `max_k` tools when the runners-up score within
+`margin` of the k-th tool.
 """
 
 from __future__ import annotations
 
 import re
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from control_plane.discovery.hybrid import Scored
 from control_plane.registry.registry import CapabilityRegistry, RegistryRecord
@@ -41,6 +44,9 @@ class RerankWeights:
 
 V2_WEIGHTS = RerankWeights(scope_mismatch=0.3, exclude_unrunnable_off_domain=True, write_side_effect=0.2, verb_match=0.25,
                            identifier_param=0.25)
+
+V3_MAX_K, V3_MARGIN, V3_WRITE_SLOTS = 7, 0.1, 1  # chosen on the main case set; see docs/EVIDENCE_IMPROVEMENTS.md
+V4_WEIGHTS = RerankWeights(identifier_param=0.25)  # v1's weights plus the named-identifier signal (no write boost)
 
 # Identifier shapes and the parameter names they fill in published tool schemas.
 IDENTIFIER_SHAPES: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
@@ -103,3 +109,30 @@ def rerank(candidates: list[Scored], registry: CapabilityRegistry, route: Route,
         ranked.append(Ranked(c.tool_id, round(score, 6), round(retrieval, 6), in_domain, authoritative, scope_ok, verb, identifier))
     ranked.sort(key=lambda r: (-r.score, r.tool_id))
     return ranked
+
+
+def adaptive_cut(ranked: list[Ranked], k: int, max_k: int, margin: float) -> list[Ranked]:
+    """The top k, plus runners-up (up to max_k in total) whose score is within `margin` of the k-th."""
+    if len(ranked) <= k:
+        return ranked
+    floor = ranked[k - 1].score - margin
+    extra = [r for r in ranked[k:max_k] if r.score >= floor]
+    return ranked[:k] + extra[: max(0, max_k - k)]
+
+
+def equivalence_key(rec: RegistryRecord) -> tuple:
+    """Tools with the same key do the same job on the same kind of resource: vendor mirrors, per-cluster copies."""
+    return (rec.collision_group or rec.tool_id, rec.resource_type, tuple(sorted(rec.operations)), rec.side_effect)
+
+
+def collapse_equivalents(ranked: list[Ranked], registry: CapabilityRegistry) -> list[Ranked]:
+    """Discovery v4: one tool per equivalence group, the authoritative one if present, at the group's best rank and score."""
+    groups: dict[tuple, list[Ranked]] = {}
+    for r in ranked:
+        rec = registry.get(r.tool_id)
+        groups.setdefault(equivalence_key(rec) if rec else ("unregistered", r.tool_id), []).append(r)
+    out = []
+    for members in groups.values():
+        keep = next((m for m in members if m.authoritative), members[0])
+        out.append(replace(keep, score=members[0].score))
+    return out

@@ -135,7 +135,24 @@ to sanity-check that retrieval worked, and published results use `test`.
 dropped unless their domain is routed, and then penalised; on write requests, tools with side effects and tools whose
 registry operation verb appears in the request are boosted; and tools whose published schema requires the parameter a
 named identifier fills (pod, instance, incident, channel, commit) are boosted. Policy is unchanged: v2 changes only what
-the model is shown. It is experimental: it improved the dev split but not the test split. See
+the model is shown. It is experimental: it improved the dev split but not the test split. Profile `v3`
+(`--discovery v3`) keeps v1's weights and changes the router, as follows:
+- domain terms match plurals;
+- "add … note", "record" and "undo" count as writes;
+- a check before an action counts as a read;
+- "A, then B" is routed by A.
+
+v3 also uses an adaptive top-K of up to 7 tools, and shows one write tool after the reads when the router assumed a
+read without a signal. It was measured on a held-out case set, where it beat v1 at every catalog size.
+
+Profile `v4` (`--discovery v4`) lets the model read the request before retrieval. A small call without tool
+definitions names the first step, its read/write intent, the system and the environment, and discovery searches with
+that step. v4 then:
+- collapses equivalent tools (vendor mirrors, per-cluster copies) to the authoritative one;
+- adds tools whose schema takes an identifier named in the request;
+- shows one write tool when the model judged the request a read.
+
+With `--clarify`, the model may ask the user to choose between two or three tools instead of guessing. See
 [`EVIDENCE_IMPROVEMENTS.md`](EVIDENCE_IMPROVEMENTS.md).
 
 ## 8. Policy

@@ -1,0 +1,60 @@
+{
+ "selection": [
+  {
+   "started_at": "2026-09-16T21:19:57Z",
+   "catalogs": {
+    "catalog_100": {
+     "sha256": "78a75f317e7ee561c96b931fbdc88a95bcd58abca3c63e3694f567e243261476"
+    }
+   },
+   "registry_sha256": "13b1ff437399bd5613177406f7b2862cb53a018dcbccd62dec9d51bdd295f04f",
+   "policy_sha256": "0229698aaf7b282bb3ac4c0228467ba2c08a649a3ced37ef7bda095fdc5d4aad",
+   "cases_sha256": "1c87168a141ff3ac23b0222d107d0dd3154b553f948119aca2f65f4ff078b7c0",
+   "k": 5,
+   "argv": {
+    "command": "selection",
+    "run_id": "_dev-v4b-test",
+    "discovery": "v4",
+    "catalogs": "catalog_100",
+    "cases": "",
+    "split": "test",
+    "clarify": false,
+    "case_set": "main",
+    "modes": "control_plane",
+    "k": 5,
+    "provider": "ollama",
+    "model": null,
+    "think": null,
+    "temperature": 0.0,
+    "seed": 7,
+    "num_ctx": 32768
+   },
+   "model": {
+    "provider": "ollama",
+    "ollama_version": "0.30.11",
+    "model": "gpt-oss:20b",
+    "digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+    "parameter_size": "20.9B",
+    "quantization": "MXFP4",
+    "family": "gptoss",
+    "options": {
+     "temperature": 0.0,
+     "seed": 7,
+     "num_ctx": 32768
+    },
+    "think": "low"
+   },
+   "embedding_model": "nomic-embed-text",
+   "embedding_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+   "modes": [
+    "control_plane"
+   ],
+   "enforcement": {
+    "baseline": "observe",
+    "search": "observe",
+    "control_plane": "enforce"
+   },
+   "approver": "scripted: approves only the golden tool with correct arguments; rejects everything else"
+  }
+ ]
+}

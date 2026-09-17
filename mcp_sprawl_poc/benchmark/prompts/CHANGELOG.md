@@ -32,3 +32,37 @@ report records the SHA-256 of the `cases.yaml` it used.
   rescored: version 2 needs full tool results, which version-1 rows did not record. The change applies to every mode
   and guard in new runs.
 - **No change to `cases.yaml`.** Discovery v2 was tuned on the dev split without relabelling any case.
+
+## 2026-09-17 · held-out case set, frozen before discovery v3 was measured
+
+- **`benchmark/prompts/holdout_cases.yaml`: 60 new cases (H001–H060), split `holdout`.** Frozen at SHA-256
+  `332d9234901c3f7216df127a9a93e17c0e2929b6a74c450b7263a03a7a32c2f8`, before any run used them. The mix follows the main
+  set: 12 direct, 11 ambiguity, 8 cross-domain, 7 multi-step, 11 risky and 11 adversarial. Policy decisions are 47 ALLOW,
+  7 REQUIRE_APPROVAL and 6 DENY, and every core tool is a golden tool at least once.
+- **How they were written.** A separate agent wrote them without access to the failure analysis of the main set, the
+  router, ranking or discovery code, the v3 tests, or any run or report. It did not run discovery or a model. Every
+  expected policy was computed with the policy engine, and the case tests check tools, arguments and identities.
+- **What it did see:**
+  - the scoring code (`benchmark/evaluator/metrics.py`);
+  - policy code and two test files (`tests/test_case_sets.py`, `tests/test_policy.py`);
+  - this changelog, which names a few main-set case ids.
+- **Disclosure.** The brief asked for writes phrased without obvious verbs, with examples: "note in the incident
+  that…", "let the team know…", "undo…", "bring back…", "flip…", "log that…". Discovery v3 independently adds "undo"
+  as a write signal, from main-set case V13. None of the other example phrasings is a v3 signal.
+- **No change to `cases.yaml`.**
+
+## 2026-09-17 · second held-out set, frozen before discovery v4 was measured
+
+- **`benchmark/prompts/holdout2_cases.yaml`: 100 new cases (H101–H200), split `holdout2`.** Frozen at SHA-256
+  `fa577c03d3292d6577dc74b8cfd9760478324a716fb21d99a850a4174225edc6`, before any run used them. The mix is 20 direct, 18 ambiguity, 13 cross-domain, 12 multi-step, 19 risky and
+  18 adversarial. Policy decisions are 82 ALLOW, 10 REQUIRE_APPROVAL and 8 DENY; every core tool is a golden tool at
+  least once, and three cases use the developer identity.
+- **How they were written.** A separate agent wrote them with a brief that contained no example phrasings. It had no
+  access to any other case file, the changelog, the docs, the router, ranking or discovery code, the tests other than
+  the two validation files, or any run or report. It did not run discovery or a model, and it computed every
+  expected policy with the policy engine. It saw only the file names in `benchmark/prompts/`.
+- **Why a second set.** The first held-out set was studied case by case while discovery v4 was designed, so it no
+  longer measures v4 without bias. This set does.
+- **Discovery v4 frozen before this set was run.** Discovery and selection code hash
+  (`benchmark.runner.discovery_code_sha256`) `7cc869037b415f0806ad907a63a4c7ee0cd52407113df4c5b6d411aecf989f1a`, recorded
+  at 21:46 UTC on 2026-09-16. Each final run's `config.json` records the hash it ran with.

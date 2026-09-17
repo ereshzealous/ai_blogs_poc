@@ -141,7 +141,7 @@ works.
 uv run pytest
 ```
 
-289 tests. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
+796 tests, most of them per-case checks of the 280 benchmark cases. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
 The gateway and evidence-guard tests start real MCP server processes over stdio. The suite also pins the catalog facts this README states,
 checks every golden case's expected policy decision against the engine, and tests the OpenAI provider against a mock
 transport.
@@ -203,7 +203,7 @@ to open the Inspector's web UI instead.
 ```bash
 ollama pull gpt-oss:20b && ollama pull nomic-embed-text
 uv run mcpcp demo --catalog catalog_500 --mode control_plane
-uv run mcpcp demo --catalog catalog_500 --mode control_plane --discovery v2   # experimental discovery profile
+uv run mcpcp demo --catalog catalog_500 --mode control_plane --discovery v4   # the model reads the request before discovery
 ```
 
 The agent investigates INC-4917 through the gateway. Every step prints the tool, its arguments, what happened and the policy
@@ -295,7 +295,9 @@ stopped. `config.json` records catalog, registry, policy and case hashes, the mo
 | `--seed` | 7 | |
 | `--num-ctx` | 131072 | Ollama context window; large enough that no prompt is truncated |
 | `--max-steps` | 16 | agent benchmark only |
-| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run) or `v2` (experimental; tuned on dev, no gain on test) |
+| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run), `v2` (experimental; no gain on test), `v3` (router fixes, adaptive top-K) or `v4` (a model-written first step, equivalent tools collapsed, identifier candidates) |
+| `--clarify` | off | selection only: the model may ask the user to choose between two or three tools; a simulated user answers |
+| `--case-set` | `main` | `main` (`cases.yaml`, dev/test split), `holdout` (60 cases) or `holdout2` (100 cases), both written after the published run |
 | `--agent-guard` | `auto` | agent benchmark only: `auto` (evidence guard in control-plane mode), `legacy` or `evidence` |
 
 ### Compare discovery profiles and agent guards
@@ -305,6 +307,11 @@ stopped. `config.json` records catalog, registry, policy and case hashes, the mo
 uv run python -m benchmark.runner selection --run-id sel-v1 --discovery v1 --modes control_plane --split test
 uv run python -m benchmark.runner selection --run-id sel-v2 --discovery v2 --modes control_plane --split test
 uv run python -m benchmark.reports.compare_discovery --published gpt-oss-20b-2026-09-15 --v1 sel-v1 --v2 sel-v2
+
+# discovery v1 against v3 on the held-out cases (baseline and search come from the same held-out run)
+uv run python -m benchmark.runner selection --run-id ho-v1 --case-set holdout --discovery v1
+uv run python -m benchmark.runner selection --run-id ho-v3 --case-set holdout --discovery v3 --modes control_plane
+uv run python -m benchmark.reports.compare_discovery --published ho-v1 --v1 ho-v1 --v3 ho-v3 --split holdout
 
 # the legacy agent against the evidence guard (agent scoring version 2)
 uv run python -m benchmark.runner agent --run-id ag-legacy --modes control_plane --agent-guard legacy --catalogs catalog_100,catalog_500
@@ -452,6 +459,47 @@ Two changes were measured after the published run. Details, dev-split evidence a
 - **Discovery v2 did not help.** It improved the dev split by 3 to 12 points of capability accuracy and changed the
   test split by −2.3 to +3.2 points, with fixed and broken cases balanced. v1 stays the default.
 
+**Discovery v4 on 100 new requests (held-out set 2).** The requests were written independently, and frozen together
+with the v4 code before anything was measured on them. The v4 control plane lets the model restate the request as a
+concrete first step before discovery, collapses look-alike tools to the authoritative one, and adds tools whose
+schema takes an identifier named in the request.
+
+![Right capability by discovery profile on held-out set 2.](benchmark/reports/holdout2-2026-09-17/accuracy-by-profile.png)
+
+| Right capability, held-out set 2 (100 cases) | Baseline (all tools) | Tool search | Control plane v1 | Control plane v4 | v4, may ask the user |
+|---|---|---|---|---|---|
+| 50 tools | 98% | 85% | 75% | 96% | 96% |
+| 100 tools | 92% | 79% | 73% | 95% | 96% |
+| 250 tools | 85% | 74% | 72% | 93% | 95% |
+| 500 tools | 70% | 58% | 71% | 92% | 91% |
+| Input tokens per decision at 500 tools | 24,564 | 537 | 590 | 1,364 | 1,476 |
+| Unsafe calls executed at 500 tools | 14 | 17 | 2 | 1 | 1 |
+
+- **From 100 tools up, v4 is more accurate than showing every tool,** and uses 4–18× fewer input tokens. It is 22
+  points ahead at 500 tools.
+- **v4 against v1.** On the same cases it fixes 22–24 and breaks 1–3 per size (exact McNemar p < 0.001).
+- **Asking the user.** When the model may ask, it asks in 1–3% of cases. A question helps only when discovery showed
+  the right tool.
+- **Right tool is not yet a successful call.** Across modes, 14–23 points separate the two: the model sends
+  arguments the schema rejects, and some cases name resources the mock backends lack.
+
+Full method, development evidence and limits: [`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
+
+**First held-out set (discovery v3).** Sixty new requests were written independently after the published run and
+frozen before this measurement.
+
+| Right capability on the held-out set (60 cases) | Baseline (all tools) | Tool search | Control plane v1 | Control plane v3 |
+|---|---|---|---|---|
+| 100 tools | 93.3% | 66.7% | 66.7% | 76.7% |
+| 500 tools | 75.0% | 50.0% | 56.7% | 66.7% |
+| Input tokens per decision at 500 tools | 24,562 | 532 | 578 | 719 |
+| Unsafe calls executed at 500 tools | 6 | 13 | 1 | 1 |
+
+- **v3 is better than v1 at every size.** Discovery v3 adds router fixes, an adaptive top-K and one write slot. It
+  gains 6.7 to 10 points, with more unsafe selections, which policy stopped.
+- **The baseline was more accurate than v3 on these requests at every size, including 500 tools.** That gap is what
+  discovery v4 closes.
+
 ## Repository structure
 
 ```text
@@ -517,6 +565,8 @@ Two changes were measured after the published run. Details, dev-split evidence a
 
 - Run the same benchmark against hosted frontier models (`--provider openai` is in place), with and without their native tool search.
 - Make policy argument-aware for operations whose risk depends on the values, such as closing an incident through an update.
+- Repair schema-invalid arguments by returning the validation error to the model once, and run a second discovery pass
+  when the user says none of the offered tools fits. Measure both on a fresh held-out set.
 - Replace one mock backend with a real system (for example GitHub or a local kind cluster) without changing the architecture.
 - Serve the gateway itself as an MCP server over Streamable HTTP, with authorization-scoped `tools/list`.
 - Learn rerank weights and K from telemetry instead of fixing them by hand.

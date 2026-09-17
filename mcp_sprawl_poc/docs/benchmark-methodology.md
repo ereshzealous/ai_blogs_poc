@@ -53,7 +53,31 @@ what the registry and router add, not a better search algorithm.
 - a boost for tools whose published schema requires the parameter that a concrete identifier in the request fills (a
   pod name, an instance id, an incident id, a channel, a commit).
 
-`search` and `baseline` are unchanged by the profile. BM25-only and embedding-only variants
+`search` and `baseline` are unchanged by the profile.
+
+`v3` (`--discovery v3`) keeps v1's weights and changes the router and the cut: domain terms match plurals, "add …
+note", "record" and "undo" are write signals, a check before an action ("whether", "should we") is a read, and
+"A, then B" is routed by A. It shows up to 7 tools when runners-up score within 0.1 of the fifth. When the router
+assumed a read without any signal, it also shows the best write tool after the reads. It is measured on the held-out
+set.
+
+`v4` (`--discovery v4`) adds the following:
+- **A model-written first step.** One small model call per request, with no tool definitions, returns the concrete
+  first action, whether it reads or writes, the system and the target environment. Retrieval searches with that
+  action as well as the request, and the route follows the model's judgement unless the request explicitly forbids
+  changes.
+- **A collapse of equivalent tools** to the authoritative one. Tools are equivalent when they share the collision
+  group, resource type, operations and side effect.
+- **Tools that take an identifier named in the request** (an incident, channel, pod, instance or commit) join the
+  candidates, and the named-identifier signal applies.
+- **One write slot** when the model judged the request a read.
+
+The rewrite call's tokens are recorded per decision and included in the reported input tokens.
+
+**Asking the user (`--clarify`).** The selection model also gets an `ask_user` tool, to use when no tool clearly fits
+or two fit equally well. A simulated user, who knows what they asked for, picks the first listed tool that would do
+the job, or says none is right. The model then makes the call. A case is right only if the tool that finally ran is
+right. The report gives the ask rate and "right without asking" next to the accuracy. BM25-only and embedding-only variants
 are measured in the retrieval-only pass.
 
 **Approver.** The approver is scripted so runs are reproducible:
@@ -95,6 +119,18 @@ run, from control-plane misses on the **dev** split: retrieval rows first, then 
 weights were fixed before the test split was run with it, and the test split was run once. Test-split misses were read
 only as counts, never to shape the profile. It improved the dev split and did not improve the test split, so v1
 remains the default; [`docs/EVIDENCE_IMPROVEMENTS.md`](EVIDENCE_IMPROVEMENTS.md) records both.
+
+**Held-out set.** `benchmark/prompts/holdout_cases.yaml` has 60 more cases with the same fields and category mix,
+written after the published run by a separate agent that had no access to the failure analysis or the discovery code,
+and frozen before any run used them (hash in the prompts CHANGELOG). Its rows carry the split `holdout`. It exists
+because the main test split was studied case by case while discovery v3 was designed, so it can no longer measure v3
+without bias. Use `--case-set holdout` to run it and `--split holdout` to report it.
+
+**Second held-out set.** `benchmark/prompts/holdout2_cases.yaml` has 100 more cases (split `holdout2`), written by a
+separate agent from a brief with no example phrasings. The agent had no access to the other case files, the docs,
+the discovery code or any run. The set was frozen, together with the discovery v4 code hash, before any run used it.
+It measures discovery v4, which was developed on the main set and the first held-out set. Use
+`--case-set holdout2` and `--split holdout2`.
 
 **Ladder subset.** The 50 cases whose golden tool is in `catalog_10` are evaluable at every size. Cross-size
 comparisons use only those, so the curve is not distorted by cases that only exist at larger sizes.

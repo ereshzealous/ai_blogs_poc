@@ -94,11 +94,14 @@ def test_a_dev_split_report_says_it_is_the_tuning_split():
     assert "used to tune discovery v2" in md and "run once" not in md
 
 
-def test_the_size_curve_uses_only_cases_evaluable_at_every_size():
-    v1 = V1 + [row("C5", capability=True, ladder=False)]
-    result = compare({"control_plane_v1": v1, "control_plane_v2": V2})
+def test_the_size_curve_uses_only_cases_present_at_every_size():
+    at_100 = lambda rows: [r | {"catalog": "catalog_100"} for r in rows]
+    v1 = V1 + at_100(V1) + [row("C5", capability=True)]  # C5 only at 500 tools
+    v2 = V2 + at_100(V2)
+    result = compare({"control_plane_v1": v1, "control_plane_v2": v2})
     assert result["catalogs"]["catalog_500"]["control_plane_v1"]["n"] == 5
     assert result["ladder"]["catalog_500"]["control_plane_v1"]["n"] == 4
+    assert result["ladder"]["catalog_100"]["control_plane_v1"]["n"] == 4
     assert "overlap" not in "".join(result["ladder"])
 
 
@@ -111,3 +114,61 @@ def test_end_labels_are_spread_apart():
 def test_a_run_without_rows_for_the_mode_is_named(tmp_path):
     with pytest.raises(FileNotFoundError, match="no control_plane rows in run 'never-ran'"):
         load_arm("never-ran", "control_plane", runs_dir=tmp_path)
+
+
+def test_the_candidate_profile_is_named(result, tmp_path):
+    md = render_markdown(result, {"control_plane_v1": "a", "control_plane_v2": "b"}, candidate="v3")
+    assert md.startswith("# Discovery v3 comparison") and "Control plane, discovery v3" in md
+    assert "Control plane, discovery v2" not in md
+    write_outputs(result, {"control_plane_v1": "a", "control_plane_v2": "b"}, tmp_path, candidate="v3")
+    assert (tmp_path / "discovery-v3-accuracy.png").stat().st_size > 0
+
+
+def test_a_holdout_report_explains_the_held_out_cases():
+    md = render_markdown(compare({"control_plane_v1": V1, "control_plane_v2": V2}, split="holdout"), {}, candidate="v3")
+    assert "held-out" in md and "tuned on the dev split only" not in md
+
+
+def test_a_v3_report_names_the_run_baseline_came_from(result):
+    md = render_markdown(result, {"baseline": "holdout-run", "search": "holdout-run"}, candidate="v3")
+    assert "Baseline and tool search come from `holdout-run`" in md and "published run;" not in md
+
+
+def test_catalogs_one_profile_did_not_run_are_left_out_of_the_size_curve(tmp_path):
+    only_v1 = [r | {"catalog": "catalog_10"} for r in V1]
+    result = compare({"control_plane_v1": V1 + only_v1, "control_plane_v2": V2})
+    assert list(result["ladder"]) == ["catalog_500"] and result["ladder"]["catalog_500"]["control_plane_v1"]["n"] == 4
+    write_outputs(result, {}, tmp_path, candidate="v3")
+    assert (tmp_path / "discovery-v3-accuracy.png").exists()
+
+
+def test_v4_input_tokens_include_the_rewrite_call():
+    v2 = [r | {"discovery_prompt_tokens": 150} for r in V2]
+    tokens = compare({"control_plane_v1": V1, "control_plane_v2": v2})["catalogs"]["catalog_500"]
+    assert tokens["control_plane_v1"]["mean_prompt_tokens"] == 600
+    assert tokens["control_plane_v2"]["mean_prompt_tokens"] == 750
+    md = render_markdown(compare({"control_plane_v1": V1, "control_plane_v2": v2}), {}, candidate="v4")
+    assert "include the rewrite call" in md
+
+
+def test_asking_the_user_is_reported_next_to_accuracy():
+    asked = [r | {"asked": r["case_id"] == "C3"} for r in V2]
+    result = compare({"control_plane_v1": V1, "control_plane_v2": asked})
+    arm = result["catalogs"]["catalog_500"]["control_plane_v2"]
+    assert (arm["asked"], arm["right_without_asking"], arm["capability_correct"]) == (0.25, 0.5, 0.75)
+    assert "asked" not in result["catalogs"]["catalog_500"]["control_plane_v1"]
+    md = render_markdown(result, {}, candidate="v4")
+    assert "| Asked the user | n/a | 25.0% |" in md and "| Right without asking | n/a | 50.0% |" in md
+
+
+def test_a_failed_model_call_is_left_out_of_the_token_mean():
+    rows = V1[:3] + [row("C4") | {"prompt_tokens": None}]
+    assert compare({"control_plane_v1": rows, "control_plane_v2": V2})["catalogs"]["catalog_500"]["control_plane_v1"]["mean_prompt_tokens"] == 600
+
+
+def test_a_very_small_p_value_is_not_printed_as_zero():
+    from benchmark.reports.compare_discovery import _paired_line
+    p = {"capability": {"n": 100, "fixed": 22, "broke": 1, "both_right": 74, "both_wrong": 3}, "capability_mcnemar_p": 0.0000057,
+         "exact": {"fixed": 22, "broke": 1}, "exact_mcnemar_p": 0.0000057, "fixed_cases": [], "broken_cases": []}
+    line = _paired_line(p, "v4")
+    assert "p < 0.001" in line and "p = 0.00" not in line

@@ -31,6 +31,6 @@ def test_discover_runs_profile_v2_for_the_given_caller(monkeypatch, capsys):
 
 
 def test_discover_rejects_an_unknown_profile(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["mcpcp", "discover", REQUEST, "--discovery", "v3"])
+    monkeypatch.setattr(sys, "argv", ["mcpcp", "discover", REQUEST, "--discovery", "v9"])
     with pytest.raises(SystemExit):
         cli.main()

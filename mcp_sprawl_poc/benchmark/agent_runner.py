@@ -24,6 +24,7 @@ from agent.incident_agent import ACTIVE_INCIDENT, run_incident_agent
 from agent.llm import make_llm
 from benchmark.runner import ENFORCEMENT, RUNS_DIR, JsonlWriter, _base_config, _now, _write_config
 from control_plane.discovery.pipeline import DiscoveryService
+from control_plane.discovery.rewrite import QueryRewriter
 from control_plane.discovery.semantic import OllamaEmbedder
 from control_plane.gateway.gateway import Gateway, InvocationContext
 from control_plane.paths import CATALOG_DIR, REPO_ROOT
@@ -305,7 +306,9 @@ async def run_agent_benchmark(args: argparse.Namespace) -> None:
         families = {f"{t['server']}.{t['name']}": t["family"] for t in json.loads(manifest.read_text())["tools"]}
         async with Gateway(manifest, registry, policy, audit=audit, world_db=world_db) as gw:
             published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
-            discovery = DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy)
+            rewriter = QueryRewriter(llm) if args.discovery == "v4" else None
+            discovery = DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy,
+                                         rewriter=rewriter)
             for mode, scenario in pending:
                 run_id = f"{args.run_id}:agent:{catalog}:{mode}:{scenario['id']}"
                 world.reset(run_id)

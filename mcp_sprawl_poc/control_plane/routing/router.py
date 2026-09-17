@@ -4,6 +4,16 @@ It answers four questions about a request before any tool is retrieved: which do
 is the operation a read or a write, which environment, which service. It is deliberately simple and
 inspectable; every decision lists the terms that caused it. The lexicon was written from the domain
 definitions before the benchmark cases, and may only be tuned on the `dev` split.
+
+Profile `v3` (opt-in, used by discovery v3) was written after the published run from analysed failures:
+* domain terms also match their plurals ("tickets");
+* extra write signals: "add ... note/comment" with words in between, "record", "undo";
+* a check before an action ("whether", "should we", "is it safe to") is a read, and a request of the form
+  "A, then B" is classified by A;
+* every route says where its operation came from: `terms` (a write signal), `evaluate` (a check first),
+  `read_only` (the request forbids changes) or `default` (no signal, read assumed). Discovery v3 removes write
+  tools only for `read_only`.
+The v1 lexicon and rules are unchanged.
 """
 
 from __future__ import annotations
@@ -37,6 +47,13 @@ WRITE_PATTERNS = [
     r"\bbump\b", r"\bincrease\b", r"\braise\b", r"\bsilence\b", r"\backnowledge\b", r"\bchange the\b", r"\bdrain\b",
 ]
 
+V3_EXTRA_WRITE_PATTERNS = [r"\badd\b(?:\s+[\w-]+){0,3}\s+(?:comment|note)s?\b", r"\brecord\b", r"\bundo\b"]
+EVALUATE_PATTERNS = [r"\bwhether\b", r"\bshould (?:we|i)\b", r"\bis it safe to\b", r"\bdo we need to\b"]
+READ_ONLY_PATTERNS = [r"\b(?:do not|don't|dont|never)\s+(?:change|modify|touch|write|update|restart|roll)\w*",
+                      r"\bchange nothing\b", r"\bno changes\b", r"\bread[- ]only\b", r"\bwithout (?:changing|modifying)\b"]
+THEN_RE = re.compile(r",?\s*\b(?:and )?then\b")
+PROFILES = ("v1", "v3")
+
 ENVIRONMENTS = {"production": [r"\bprod(?:uction)?\b", r"\blive\b"], "staging": [r"\bstag(?:e|ing)\b"],
                 "development": [r"\bdev(?:elopment)?\b"]}
 SERVICE_RE = re.compile(r"\b([a-z]+(?:-[a-z]+)*-(?:api|gateway|service|worker))\b")
@@ -50,31 +67,47 @@ class Route:
     environment: str | None
     service: str | None
     matched: dict[str, list[str]] = field(default_factory=dict)
+    operation_source: str = "default"  # terms | evaluate | read_only | default
 
     def to_dict(self) -> dict:
         return {"domains": self.domains, "domain_scores": self.domain_scores, "operation": self.operation,
-                "environment": self.environment, "service": self.service, "matched": self.matched}
+                "operation_source": self.operation_source, "environment": self.environment, "service": self.service,
+                "matched": self.matched}
 
 
 class IntentRouter:
-    def __init__(self, lexicon: dict[str, list[str]] | None = None, max_domains: int = 3):
+    def __init__(self, lexicon: dict[str, list[str]] | None = None, max_domains: int = 3, profile: str = "v1"):
+        if profile not in PROFILES:
+            raise ValueError(f"unknown router profile {profile!r}")
         self.lexicon = lexicon or DOMAIN_LEXICON
         self.max_domains = max_domains
-        self._patterns = {d: [(t, re.compile(r"(?<![a-z0-9])" + re.escape(t) + (r"(?![a-z0-9])" if t[-1].isalnum() else ""))) for t in terms]
+        self.profile = profile
+        plural = r"(?:e?s)?" if profile == "v3" else ""
+        self._patterns = {d: [(t, re.compile(r"(?<![a-z0-9])" + re.escape(t)
+                                             + ((plural if t[-1].isalpha() else "") + r"(?![a-z0-9])" if t[-1].isalnum() else "")))
+                              for t in terms]
                           for d, terms in self.lexicon.items()}
+        self._write = WRITE_PATTERNS + (V3_EXTRA_WRITE_PATTERNS if profile == "v3" else [])
 
     def route(self, request: str, default_environment: str | None = None) -> Route:
         text = request.lower()
         scores: dict[str, float] = {}
         matched: dict[str, list[str]] = {}
         for domain, patterns in self._patterns.items():
-            hits = [term for term, pat in patterns if pat.search(text)]
+            if self.profile == "v1":
+                hits = [term for term, pat in patterns if pat.search(text)]
+            else:  # a plural form must not count twice when both "pod" and "pods" are listed
+                spans: dict[tuple[int, int], str] = {}
+                for term, pat in patterns:
+                    for m in pat.finditer(text):
+                        spans.setdefault(m.span(), term)
+                hits = list(dict.fromkeys(spans.values()))
             if hits:
                 # multi-word phrases are stronger evidence than single words
                 scores[domain] = round(sum(1.5 if " " in h else 1.0 for h in hits), 2)
                 matched[domain] = hits
         domains = [d for d, _ in sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))][: self.max_domains]
-        write_hits = [p for p in WRITE_PATTERNS if re.search(p, text)]
+        operation, source, write_hits = self._operation(text)
         if write_hits:
             matched["_write"] = write_hits
         environment = default_environment
@@ -83,4 +116,16 @@ class IntentRouter:
                 environment = env
                 break
         m = SERVICE_RE.search(text)
-        return Route(domains, scores, "write" if write_hits else "read", environment, m.group(1) if m else None, matched)
+        return Route(domains, scores, operation, environment, m.group(1) if m else None, matched, source)
+
+    def _operation(self, text: str) -> tuple[str, str, list[str]]:
+        if self.profile == "v1":
+            hits = [p for p in self._write if re.search(p, text)]
+            return ("write", "terms", hits) if hits else ("read", "default", [])
+        if any(re.search(p, text) for p in READ_ONLY_PATTERNS):
+            return "read", "read_only", []
+        first = THEN_RE.split(text, maxsplit=1)[0]
+        if any(re.search(p, first) for p in EVALUATE_PATTERNS):
+            return "read", "evaluate", []
+        hits = [p for p in self._write if re.search(p, first)]
+        return ("write", "terms", hits) if hits else ("read", "default", [])

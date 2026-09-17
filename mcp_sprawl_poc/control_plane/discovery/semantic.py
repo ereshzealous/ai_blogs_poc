@@ -26,7 +26,8 @@ class OllamaEmbedder:
                  document_prefix: str = "search_document: ", query_prefix: str = "search_query: "):
         self.model, self.base_url = model, base_url
         self.document_prefix, self.query_prefix = document_prefix, query_prefix
-        self._client = httpx.Client(timeout=120)
+        # a shared Ollama may be swapping models; a slow load is not a failure
+        self._client = httpx.Client(timeout=httpx.Timeout(900, connect=10))
         self.digest = self._digest()
         self._db = None
         if cache_path:

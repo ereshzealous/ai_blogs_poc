@@ -1,0 +1,3224 @@
+{
+ "Get checkout-api p95 latency in production for the last 15 minutes.": {
+  "rewrite": {
+   "first_step": "query checkout\u2011api p95 latency",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 640,
+   "completion_tokens": 54,
+   "latency_ms": 2367.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 54,
+   "latency_ms": 2367.5,
+   "usable": true
+  }
+ },
+ "What's the current error rate for checkout-api in production?": {
+  "rewrite": {
+   "first_step": "query service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 636,
+   "completion_tokens": 35,
+   "latency_ms": 996.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 35,
+   "latency_ms": 996.6,
+   "usable": true
+  }
+ },
+ "Show me incident INC-4917.": {
+  "rewrite": {
+   "first_step": "retrieve incident record",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 633,
+   "completion_tokens": 41,
+   "latency_ms": 1212.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 41,
+   "latency_ms": 1212.7,
+   "usable": true
+  }
+ },
+ "List the pods running checkout-api in production.": {
+  "rewrite": {
+   "first_step": "list pods for checkout-api",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 634,
+   "completion_tokens": 53,
+   "latency_ms": 1548.7,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 53,
+   "latency_ms": 1548.7,
+   "usable": true
+  }
+ },
+ "Search checkout-api production logs for ERROR entries in the last 30 minutes.": {
+  "rewrite": {
+   "first_step": "search logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 640,
+   "completion_tokens": 46,
+   "latency_ms": 1264.8,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 46,
+   "latency_ms": 1264.8,
+   "usable": true
+  }
+ },
+ "Fetch trace 4bf92f3577b34da6a3ce929d0e0e4736.": {
+  "rewrite": {
+   "first_step": "retrieve trace by ID",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 650,
+   "completion_tokens": 42,
+   "latency_ms": 1158.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 650,
+   "completion_tokens": 42,
+   "latency_ms": 1158.2,
+   "usable": true
+  }
+ },
+ "Which deployments went to production this morning?": {
+  "rewrite": {
+   "first_step": "query recent releases",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 633,
+   "completion_tokens": 46,
+   "latency_ms": 1148.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 46,
+   "latency_ms": 1148.8,
+   "usable": true
+  }
+ },
+ "Show the diff for commit a91f3c2.": {
+  "rewrite": {
+   "first_step": "view diff of commit a91f3c2",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 637,
+   "completion_tokens": 66,
+   "latency_ms": 1680.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 66,
+   "latency_ms": 1680.6,
+   "usable": true
+  }
+ },
+ "What alerts are firing for checkout-api?": {
+  "rewrite": {
+   "first_step": "query alert status for checkout-api",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 633,
+   "completion_tokens": 43,
+   "latency_ms": 1166.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 43,
+   "latency_ms": 1166.6,
+   "usable": true
+  }
+ },
+ "Get the database connection pool stats for checkout-api in production.": {
+  "rewrite": {
+   "first_step": "retrieve database connection pool stats",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 637,
+   "completion_tokens": 51,
+   "latency_ms": 1338.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 51,
+   "latency_ms": 1338.6,
+   "usable": true
+  }
+ },
+ "Post 'Rollback of checkout-api is complete' in #inc-4917-checkout-latency.": {
+  "rewrite": {
+   "first_step": "post message",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 646,
+   "completion_tokens": 42,
+   "latency_ms": 1164.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 646,
+   "completion_tokens": 42,
+   "latency_ms": 1164.9,
+   "usable": true
+  }
+ },
+ "Add a work note to INC-4917 saying we are investigating the database connection pool.": {
+  "rewrite": {
+   "first_step": "add note to incident record",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 643,
+   "completion_tokens": 48,
+   "latency_ms": 1286.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 48,
+   "latency_ms": 1286.0,
+   "usable": true
+  }
+ },
+ "Describe the orders-db-prod cloud database resource.": {
+  "rewrite": {
+   "first_step": "retrieve details of orders-db-prod",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1343.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1343.0,
+   "usable": true
+  }
+ },
+ "Is checkout-api healthy in production right now?": {
+  "rewrite": {
+   "first_step": "check service health",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 40,
+   "latency_ms": 1075.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 40,
+   "latency_ms": 1075.5,
+   "usable": true
+  }
+ },
+ "Show recent Kubernetes events for checkout-api in production.": {
+  "rewrite": {
+   "first_step": "list recent events for checkout-api",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 635,
+   "completion_tokens": 56,
+   "latency_ms": 1418.1,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 56,
+   "latency_ms": 1418.1,
+   "usable": true
+  }
+ },
+ "What changed in feature flags in production recently?": {
+  "rewrite": {
+   "first_step": "check recent changes to feature flags",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1323.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1323.5,
+   "usable": true
+  }
+ },
+ "Which team owns checkout-api?": {
+  "rewrite": {
+   "first_step": "search service owner for checkout-api",
+   "operation": "read",
+   "system": "service catalog",
+   "domain": "service-catalog",
+   "prompt_tokens": 631,
+   "completion_tokens": 54,
+   "latency_ms": 1309.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 631,
+   "completion_tokens": 54,
+   "latency_ms": 1309.0,
+   "usable": true
+  }
+ },
+ "Get release v4.16 of checkout-api.": {
+  "rewrite": {
+   "first_step": "retrieve release v4.16 of checkout-api",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 635,
+   "completion_tokens": 65,
+   "latency_ms": 1569.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 65,
+   "latency_ms": 1569.4,
+   "usable": true
+  }
+ },
+ "Show the Kubernetes deployment object for checkout-api in production, with its image and revision.": {
+  "rewrite": {
+   "first_step": "retrieve deployment details",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 642,
+   "completion_tokens": 51,
+   "latency_ms": 1333.1,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 51,
+   "latency_ms": 1333.1,
+   "usable": true
+  }
+ },
+ "Get the details of commit a91f3c2.": {
+  "rewrite": {
+   "first_step": "retrieve commit details",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 637,
+   "completion_tokens": 45,
+   "latency_ms": 1165.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 45,
+   "latency_ms": 1165.9,
+   "usable": true
+  }
+ },
+ "List the slowest queries on orders-db-prod.": {
+  "rewrite": {
+   "first_step": "query slow query log",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 635,
+   "completion_tokens": 50,
+   "latency_ms": 1273.3,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 50,
+   "latency_ms": 1273.3,
+   "usable": true
+  }
+ },
+ "Show the golden-signals dashboard for payment-gateway in production.": {
+  "rewrite": {
+   "first_step": "view golden\u2011signals dashboard",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 638,
+   "completion_tokens": 51,
+   "latency_ms": 1310.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 51,
+   "latency_ms": 1310.5,
+   "usable": true
+  }
+ },
+ "Get the p99 latency of payment-gateway in production.": {
+  "rewrite": {
+   "first_step": "query p99 latency",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 637,
+   "completion_tokens": 50,
+   "latency_ms": 1264.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 50,
+   "latency_ms": 1264.2,
+   "usable": true
+  }
+ },
+ "Find SEV2 incidents for checkout-api.": {
+  "rewrite": {
+   "first_step": "search SEV2 incidents for checkout-api",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 634,
+   "completion_tokens": 59,
+   "latency_ms": 1416.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 59,
+   "latency_ms": 1416.0,
+   "usable": true
+  }
+ },
+ "Find errors related to checkout after the deployment.": {
+  "rewrite": {
+   "first_step": "search for error logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 42,
+   "latency_ms": 1072.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 42,
+   "latency_ms": 1072.4,
+   "usable": true
+  }
+ },
+ "Why is checkout so slow?": {
+  "rewrite": {
+   "first_step": "check service latency and error rates",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 631,
+   "completion_tokens": 53,
+   "latency_ms": 1255.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 631,
+   "completion_tokens": 53,
+   "latency_ms": 1255.8,
+   "usable": true
+  }
+ },
+ "Are we running out of database connections on checkout?": {
+  "rewrite": {
+   "first_step": "check connection pool usage",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 635,
+   "completion_tokens": 48,
+   "latency_ms": 1227.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 48,
+   "latency_ms": 1227.5,
+   "usable": true
+  }
+ },
+ "What version of checkout is live?": {
+  "rewrite": {
+   "first_step": "check current deployed version of checkout service",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 632,
+   "completion_tokens": 78,
+   "latency_ms": 1762.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 78,
+   "latency_ms": 1762.0,
+   "usable": true
+  }
+ },
+ "Did anyone change anything on checkout in the last hour?": {
+  "rewrite": {
+   "first_step": "search recent commits for checkout",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 636,
+   "completion_tokens": 60,
+   "latency_ms": 1458.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 60,
+   "latency_ms": 1458.7,
+   "usable": true
+  }
+ },
+ "Is the problem the database server itself? Check orders-db-prod.": {
+  "rewrite": {
+   "first_step": "check status of orders-db-prod",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 638,
+   "completion_tokens": 38,
+   "latency_ms": 1022.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 38,
+   "latency_ms": 1022.0,
+   "usable": true
+  }
+ },
+ "Check whether the cloud provider is having an outage in eu-west-1.": {
+  "rewrite": {
+   "first_step": "check cloud provider status",
+   "operation": "read",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 640,
+   "completion_tokens": 50,
+   "latency_ms": 1255.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 50,
+   "latency_ms": 1255.9,
+   "usable": true
+  }
+ },
+ "What's going on with INC-4917?": {
+  "rewrite": {
+   "first_step": "check status of incident",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 634,
+   "completion_tokens": 56,
+   "latency_ms": 1332.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 56,
+   "latency_ms": 1332.2,
+   "usable": true
+  }
+ },
+ "Have we seen checkout problems like this before?": {
+  "rewrite": {
+   "first_step": "search for similar incidents",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 634,
+   "completion_tokens": 42,
+   "latency_ms": 1053.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 42,
+   "latency_ms": 1053.4,
+   "usable": true
+  }
+ },
+ "Tell the incident channel we're looking into the pool exhaustion.": {
+  "rewrite": {
+   "first_step": "post message to incident channel",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 636,
+   "completion_tokens": 59,
+   "latency_ms": 1405.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 59,
+   "latency_ms": 1405.6,
+   "usable": true
+  }
+ },
+ "Show me what's slow inside a checkout request.": {
+  "rewrite": {
+   "first_step": "query checkout request latency metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 57,
+   "latency_ms": 1368.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 57,
+   "latency_ms": 1368.8,
+   "usable": true
+  }
+ },
+ "How much traffic is checkout getting?": {
+  "rewrite": {
+   "first_step": "query service metrics for checkout",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 632,
+   "completion_tokens": 42,
+   "latency_ms": 1036.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 42,
+   "latency_ms": 1036.7,
+   "usable": true
+  }
+ },
+ "Are the checkout containers restarting or running out of memory?": {
+  "rewrite": {
+   "first_step": "check pod status",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 636,
+   "completion_tokens": 58,
+   "latency_ms": 1410.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 58,
+   "latency_ms": 1410.0,
+   "usable": true
+  }
+ },
+ "What does checkout depend on?": {
+  "rewrite": {
+   "first_step": "query dependency graph for checkout",
+   "operation": "read",
+   "system": "service catalog",
+   "domain": "service-catalog",
+   "prompt_tokens": 631,
+   "completion_tokens": 68,
+   "latency_ms": 1538.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 631,
+   "completion_tokens": 68,
+   "latency_ms": 1538.9,
+   "usable": true
+  }
+ },
+ "Is the new pricing engine switched on?": {
+  "rewrite": {
+   "first_step": "check status of pricing engine feature flag",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 633,
+   "completion_tokens": 41,
+   "latency_ms": 1030.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 41,
+   "latency_ms": 1030.9,
+   "usable": true
+  }
+ },
+ "Grab the last lines from checkout-api-7d9f8c6b5-2kq8x.": {
+  "rewrite": {
+   "first_step": "read last lines of pod logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 649,
+   "completion_tokens": 60,
+   "latency_ms": 1511.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 649,
+   "completion_tokens": 60,
+   "latency_ms": 1511.4,
+   "usable": true
+  }
+ },
+ "What code went out with checkout v4.17?": {
+  "rewrite": {
+   "first_step": "search release history",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 636,
+   "completion_tokens": 54,
+   "latency_ms": 1289.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 54,
+   "latency_ms": 1289.4,
+   "usable": true
+  }
+ },
+ "Record in the incident that the likely cause is the v4.17 connection pool change.": {
+  "rewrite": {
+   "first_step": "add note to incident",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 643,
+   "completion_tokens": 54,
+   "latency_ms": 1354.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 54,
+   "latency_ms": 1354.1,
+   "usable": true
+  }
+ },
+ "Is payment-gateway the culprit? Check its latency.": {
+  "rewrite": {
+   "first_step": "check latency of payment-gateway",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 636,
+   "completion_tokens": 52,
+   "latency_ms": 1256.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 52,
+   "latency_ms": 1256.5,
+   "usable": true
+  }
+ },
+ "Look at the checkout error logs on the log platform.": {
+  "rewrite": {
+   "first_step": "search checkout error logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 636,
+   "completion_tokens": 54,
+   "latency_ms": 1300.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 54,
+   "latency_ms": 1300.9,
+   "usable": true
+  }
+ },
+ "Pull up the checkout staging pods.": {
+  "rewrite": {
+   "first_step": "list checkout pods",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 632,
+   "completion_tokens": 49,
+   "latency_ms": 1164.9,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 49,
+   "latency_ms": 1164.9,
+   "usable": true
+  }
+ },
+ "Has anyone been discussing payment-gateway in chat?": {
+  "rewrite": {
+   "first_step": "search chat for payment-gateway",
+   "operation": "read",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 635,
+   "completion_tokens": 52,
+   "latency_ms": 1258.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 52,
+   "latency_ms": 1258.7,
+   "usable": true
+  }
+ },
+ "Determine whether the checkout latency increase correlates with the latest deployment.": {
+  "rewrite": {
+   "first_step": "query service metrics for checkout latency and deployment timeline",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 638,
+   "completion_tokens": 50,
+   "latency_ms": 1251.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 50,
+   "latency_ms": 1251.7,
+   "usable": true
+  }
+ },
+ "Check if the payment-gateway deploy at 10:05 affected checkout latency.": {
+  "rewrite": {
+   "first_step": "query service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 641,
+   "completion_tokens": 41,
+   "latency_ms": 1063.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 641,
+   "completion_tokens": 41,
+   "latency_ms": 1063.0,
+   "usable": true
+  }
+ },
+ "Is the database or the application causing checkout slowness?": {
+  "rewrite": {
+   "first_step": "check service latency",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 637,
+   "completion_tokens": 55,
+   "latency_ms": 1338.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 55,
+   "latency_ms": 1338.6,
+   "usable": true
+  }
+ },
+ "Correlate the connection pool timeouts in the logs with what changed in checkout v4.17.": {
+  "rewrite": {
+   "first_step": "read connection pool timeout logs",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 646,
+   "completion_tokens": 71,
+   "latency_ms": 1814.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 646,
+   "completion_tokens": 71,
+   "latency_ms": 1814.4,
+   "usable": true
+  }
+ },
+ "Find out whether the 09:30 feature flag change or the 10:15 deployment lines up with the checkout latency jump.": {
+  "rewrite": {
+   "first_step": "query feature flag status and deployment history",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 651,
+   "completion_tokens": 48,
+   "latency_ms": 1268.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 651,
+   "completion_tokens": 48,
+   "latency_ms": 1268.8,
+   "usable": true
+  }
+ },
+ "Check whether the checkout pods are healthy and whether latency started after the rollout.": {
+  "rewrite": {
+   "first_step": "check health of checkout pods",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 640,
+   "completion_tokens": 44,
+   "latency_ms": 1110.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 44,
+   "latency_ms": 1110.3,
+   "usable": true
+  }
+ },
+ "Compare checkout-api in staging and production. Same version, different behaviour?": {
+  "rewrite": {
+   "first_step": "check logs for checkout-api",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 639,
+   "completion_tokens": 60,
+   "latency_ms": 1419.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 60,
+   "latency_ms": 1419.3,
+   "usable": true
+  }
+ },
+ "Which teams own checkout's dependencies, and is the orders database under load?": {
+  "rewrite": {
+   "first_step": "query service catalog for checkout dependencies",
+   "operation": "read",
+   "system": "service catalog",
+   "domain": "service-catalog",
+   "prompt_tokens": 640,
+   "completion_tokens": 74,
+   "latency_ms": 1748.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 74,
+   "latency_ms": 1748.0,
+   "usable": true
+  }
+ },
+ "Summarise INC-4917 and link any related deployment.": {
+  "rewrite": {
+   "first_step": "search for incident record",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 638,
+   "completion_tokens": 52,
+   "latency_ms": 1309.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 52,
+   "latency_ms": 1309.7,
+   "usable": true
+  }
+ },
+ "Is checkout meeting its latency SLO, and is anything showing on the status page?": {
+  "rewrite": {
+   "first_step": "check service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 642,
+   "completion_tokens": 40,
+   "latency_ms": 1063.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 40,
+   "latency_ms": 1063.9,
+   "usable": true
+  }
+ },
+ "Check the trace breakdown and error logs for slow checkout requests.": {
+  "rewrite": {
+   "first_step": "view trace breakdown and error logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 637,
+   "completion_tokens": 44,
+   "latency_ms": 1102.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 44,
+   "latency_ms": 1102.6,
+   "usable": true
+  }
+ },
+ "Did the pool setting change in code, and what is checkout's pool doing now?": {
+  "rewrite": {
+   "first_step": "check code for pool setting changes",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 642,
+   "completion_tokens": 59,
+   "latency_ms": 1433.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 59,
+   "latency_ms": 1433.8,
+   "usable": true
+  }
+ },
+ "Check if this morning's inventory-api deploy is related to the checkout incident.": {
+  "rewrite": {
+   "first_step": "search deployment logs",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 640,
+   "completion_tokens": 65,
+   "latency_ms": 1556.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 65,
+   "latency_ms": 1556.5,
+   "usable": true
+  }
+ },
+ "Find the runbook for checkout latency and see which alerts are firing.": {
+  "rewrite": {
+   "first_step": "search runbook for checkout latency",
+   "operation": "read",
+   "system": "runbooks and postmortems",
+   "domain": "knowledge",
+   "prompt_tokens": 639,
+   "completion_tokens": 50,
+   "latency_ms": 1259.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 50,
+   "latency_ms": 1259.0,
+   "usable": true
+  }
+ },
+ "Show checkout-api latency, errors and traffic together in one view.": {
+  "rewrite": {
+   "first_step": "query metrics dashboard",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 638,
+   "completion_tokens": 41,
+   "latency_ms": 1063.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 41,
+   "latency_ms": 1063.5,
+   "usable": true
+  }
+ },
+ "Before touching anything, see what people in the incident channel have already concluded.": {
+  "rewrite": {
+   "first_step": "search messages",
+   "operation": "read",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 640,
+   "completion_tokens": 34,
+   "latency_ms": 1007.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 34,
+   "latency_ms": 1007.0,
+   "usable": true
+  }
+ },
+ "Investigate INC-4917 and determine the most likely root cause.": {
+  "rewrite": {
+   "first_step": "search for incident details",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 639,
+   "completion_tokens": 39,
+   "latency_ms": 1069.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 39,
+   "latency_ms": 1069.5,
+   "usable": true
+  }
+ },
+ "Checkout API latency increased immediately after the 10:15 production deployment. Investigate the incident, identify the likely cause, recommend the safest remediation, and update the incident.": {
+  "rewrite": {
+   "first_step": "check service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 659,
+   "completion_tokens": 41,
+   "latency_ms": 1032.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 659,
+   "completion_tokens": 41,
+   "latency_ms": 1032.4,
+   "usable": true
+  }
+ },
+ "Work out why checkout is timing out and fix it safely.": {
+  "rewrite": {
+   "first_step": "check checkout service latency and error rates",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 637,
+   "completion_tokens": 65,
+   "latency_ms": 1434.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 65,
+   "latency_ms": 1434.2,
+   "usable": true
+  }
+ },
+ "Run the latency runbook for checkout-api.": {
+  "rewrite": {
+   "first_step": "read latency runbook for checkout-api",
+   "operation": "read",
+   "system": "runbooks and postmortems",
+   "domain": "knowledge",
+   "prompt_tokens": 634,
+   "completion_tokens": 67,
+   "latency_ms": 1610.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 67,
+   "latency_ms": 1610.7,
+   "usable": true
+  }
+ },
+ "Triage the checkout alert that just fired.": {
+  "rewrite": {
+   "first_step": "review service metrics and error logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 48,
+   "latency_ms": 1208.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 48,
+   "latency_ms": 1208.8,
+   "usable": true
+  }
+ },
+ "Do a post-deployment health check of checkout-api v4.17 in production.": {
+  "rewrite": {
+   "first_step": "check service health",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 642,
+   "completion_tokens": 55,
+   "latency_ms": 1379.1,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 55,
+   "latency_ms": 1379.1,
+   "usable": true
+  }
+ },
+ "Figure out whether we should roll back checkout.": {
+  "rewrite": {
+   "first_step": "check recent deployments for checkout service",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 634,
+   "completion_tokens": 49,
+   "latency_ms": 1169.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 49,
+   "latency_ms": 1169.9,
+   "usable": true
+  }
+ },
+ "Prepare an incident summary of INC-4917 for the channel.": {
+  "rewrite": {
+   "first_step": "search incident records",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 638,
+   "completion_tokens": 37,
+   "latency_ms": 984.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 37,
+   "latency_ms": 984.1,
+   "usable": true
+  }
+ },
+ "Verify that the rollback fixed checkout latency in production.": {
+  "rewrite": {
+   "first_step": "check checkout latency",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 635,
+   "completion_tokens": 48,
+   "latency_ms": 1175.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 48,
+   "latency_ms": 1175.4,
+   "usable": true
+  }
+ },
+ "Find the commit that caused the checkout connection pool regression.": {
+  "rewrite": {
+   "first_step": "search for recent commits affecting checkout connection pool",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 636,
+   "completion_tokens": 50,
+   "latency_ms": 1234.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 50,
+   "latency_ms": 1234.7,
+   "usable": true
+  }
+ },
+ "Investigate why checkout is fine in staging but not in production.": {
+  "rewrite": {
+   "first_step": "check application logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 638,
+   "completion_tokens": 50,
+   "latency_ms": 1268.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 50,
+   "latency_ms": 1268.7,
+   "usable": true
+  }
+ },
+ "Check whether payment-gateway is involved in INC-4917, then update the incident.": {
+  "rewrite": {
+   "first_step": "query incident records for INC-4917",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 643,
+   "completion_tokens": 47,
+   "latency_ms": 1220.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 47,
+   "latency_ms": 1220.2,
+   "usable": true
+  }
+ },
+ "Investigate the database side of INC-4917.": {
+  "rewrite": {
+   "first_step": "query database logs",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 636,
+   "completion_tokens": 39,
+   "latency_ms": 1013.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 39,
+   "latency_ms": 1013.2,
+   "usable": true
+  }
+ },
+ "Close out INC-4917 now that checkout has recovered.": {
+  "rewrite": {
+   "first_step": "close incident INC-4917",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 637,
+   "completion_tokens": 64,
+   "latency_ms": 1556.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 64,
+   "latency_ms": 1556.4,
+   "usable": true
+  }
+ },
+ "Roll back checkout-api to the previous production release.": {
+  "rewrite": {
+   "first_step": "rollback checkout-api to previous release",
+   "operation": "write",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 635,
+   "completion_tokens": 62,
+   "latency_ms": 1429.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 62,
+   "latency_ms": 1429.4,
+   "usable": true
+  }
+ },
+ "Roll back checkout-api in production to v4.16.": {
+  "rewrite": {
+   "first_step": "rollback checkout-api to version 4.16",
+   "operation": "write",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 637,
+   "completion_tokens": 66,
+   "latency_ms": 1534.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 66,
+   "latency_ms": 1534.0,
+   "usable": true
+  }
+ },
+ "Roll back checkout-api in staging to v4.16.": {
+  "rewrite": {
+   "first_step": "rollback checkout-api deployment",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 637,
+   "completion_tokens": 60,
+   "latency_ms": 1440.4,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 60,
+   "latency_ms": 1440.4,
+   "usable": true
+  }
+ },
+ "Restart the checkout-api deployment in production.": {
+  "rewrite": {
+   "first_step": "restart checkout-api deployment",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 633,
+   "completion_tokens": 50,
+   "latency_ms": 1241.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 50,
+   "latency_ms": 1241.0,
+   "usable": true
+  }
+ },
+ "Restart pod checkout-api-7d9f8c6b5-2kq8x in production.": {
+  "rewrite": {
+   "first_step": "restart pod checkout-api-7d9f8c6b5-2kq8x",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 648,
+   "completion_tokens": 85,
+   "latency_ms": 2007.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 648,
+   "completion_tokens": 85,
+   "latency_ms": 2007.2,
+   "usable": true
+  }
+ },
+ "Scale checkout-api in production to 10 replicas.": {
+  "rewrite": {
+   "first_step": "scale checkout-api to 10 replicas",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 635,
+   "completion_tokens": 59,
+   "latency_ms": 1412.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 59,
+   "latency_ms": 1412.2,
+   "usable": true
+  }
+ },
+ "Terminate instance i-0c41e7a9d2b3f5812.": {
+  "rewrite": {
+   "first_step": "terminate the specified VM instance",
+   "operation": "write",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 644,
+   "completion_tokens": 51,
+   "latency_ms": 1368.3,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 51,
+   "latency_ms": 1368.3,
+   "usable": true
+  }
+ },
+ "Reboot the checkout batch worker VM i-0c41e7a9d2b3f5812.": {
+  "rewrite": {
+   "first_step": "reboot VM i-0c41e7a9d2b3f5812",
+   "operation": "write",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 649,
+   "completion_tokens": 80,
+   "latency_ms": 1940.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 649,
+   "completion_tokens": 80,
+   "latency_ms": 1940.2,
+   "usable": true
+  }
+ },
+ "Restart the checkout-report-exporter container task task-checkout-exporter-3f9a.": {
+  "rewrite": {
+   "first_step": "restart container task task-checkout-exporter-3f9a",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 644,
+   "completion_tokens": 60,
+   "latency_ms": 1509.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 60,
+   "latency_ms": 1509.1,
+   "usable": true
+  }
+ },
+ "Turn off the new-pricing-engine flag in production.": {
+  "rewrite": {
+   "first_step": "disable new-pricing-engine flag",
+   "operation": "write",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 636,
+   "completion_tokens": 58,
+   "latency_ms": 1402.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 58,
+   "latency_ms": 1402.0,
+   "usable": true
+  }
+ },
+ "Enable the checkout-async-inventory flag in staging.": {
+  "rewrite": {
+   "first_step": "toggle checkout-async-inventory flag",
+   "operation": "write",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 636,
+   "completion_tokens": 60,
+   "latency_ms": 1458.3,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 60,
+   "latency_ms": 1458.3,
+   "usable": true
+  }
+ },
+ "Close INC-4917 as rolled back.": {
+  "rewrite": {
+   "first_step": "close incident INC-4917",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 634,
+   "completion_tokens": 84,
+   "latency_ms": 1963.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 84,
+   "latency_ms": 1963.7,
+   "usable": true
+  }
+ },
+ "Mark INC-4917 as resolved with resolution notes 'rolled back to v4.16'.": {
+  "rewrite": {
+   "first_step": "update incident status",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 644,
+   "completion_tokens": 49,
+   "latency_ms": 1295.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 49,
+   "latency_ms": 1295.6,
+   "usable": true
+  }
+ },
+ "Fail over orders-db-prod to its standby.": {
+  "rewrite": {
+   "first_step": "failover orders-db-prod to standby",
+   "operation": "write",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 634,
+   "completion_tokens": 52,
+   "latency_ms": 1235.7,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 52,
+   "latency_ms": 1235.7,
+   "usable": true
+  }
+ },
+ "Kill database session 4411 on orders-db-prod.": {
+  "rewrite": {
+   "first_step": "kill session 4411",
+   "operation": "write",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 636,
+   "completion_tokens": 55,
+   "latency_ms": 1363.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 55,
+   "latency_ms": 1363.5,
+   "usable": true
+  }
+ },
+ "Create an emergency change for rolling back checkout-api in production, linked to INC-4917.": {
+  "rewrite": {
+   "first_step": "create emergency change record",
+   "operation": "write",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 644,
+   "completion_tokens": 55,
+   "latency_ms": 1459.7,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 55,
+   "latency_ms": 1459.7,
+   "usable": true
+  }
+ },
+ "Create an incident channel for INC-4917.": {
+  "rewrite": {
+   "first_step": "create channel",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 635,
+   "completion_tokens": 49,
+   "latency_ms": 1210.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 49,
+   "latency_ms": 1210.7,
+   "usable": true
+  }
+ },
+ "Roll back checkout-api in production with kubectl rollout undo.": {
+  "rewrite": {
+   "first_step": "undo deployment of checkout-api",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 637,
+   "completion_tokens": 55,
+   "latency_ms": 1468.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 55,
+   "latency_ms": 1468.0,
+   "usable": true
+  }
+ },
+ "Rolling-restart checkout-api in the development cluster.": {
+  "rewrite": {
+   "first_step": "restart pods of checkout-api",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 635,
+   "completion_tokens": 55,
+   "latency_ms": 1348.5,
+   "environment": "development"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 55,
+   "latency_ms": 1348.5,
+   "usable": true
+  }
+ },
+ "Scale payment-gateway to 6 replicas in staging.": {
+  "rewrite": {
+   "first_step": "scale payment-gateway to 6 replicas",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 636,
+   "completion_tokens": 62,
+   "latency_ms": 1483.6,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 62,
+   "latency_ms": 1483.6,
+   "usable": true
+  }
+ },
+ "Post in #inc-4917-checkout-latency that checkout latency has recovered.": {
+  "rewrite": {
+   "first_step": "post message",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 643,
+   "completion_tokens": 42,
+   "latency_ms": 1169.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 42,
+   "latency_ms": 1169.3,
+   "usable": true
+  }
+ },
+ "Get the checkout-api latency report from monitoring.": {
+  "rewrite": {
+   "first_step": "retrieve checkout-api latency report",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 51,
+   "latency_ms": 1260.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 51,
+   "latency_ms": 1260.4,
+   "usable": true
+  }
+ },
+ "Find incident INC-4917.": {
+  "rewrite": {
+   "first_step": "search for incident by ID",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1091.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1091.8,
+   "usable": true
+  }
+ },
+ "Query logs for checkout-api errors in production.": {
+  "rewrite": {
+   "first_step": "query logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 46,
+   "latency_ms": 1167.7,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 46,
+   "latency_ms": 1167.7,
+   "usable": true
+  }
+ },
+ "Restart checkout-api.": {
+  "rewrite": {
+   "first_step": "restart checkout-api",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 629,
+   "completion_tokens": 53,
+   "latency_ms": 1261.9,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 629,
+   "completion_tokens": 53,
+   "latency_ms": 1261.9,
+   "usable": true
+  }
+ },
+ "Get the service health of checkout-api.": {
+  "rewrite": {
+   "first_step": "check service health",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 633,
+   "completion_tokens": 48,
+   "latency_ms": 1212.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 48,
+   "latency_ms": 1212.1,
+   "usable": true
+  }
+ },
+ "Get the deployment for checkout-api in production.": {
+  "rewrite": {
+   "first_step": "read deployment",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 634,
+   "completion_tokens": 48,
+   "latency_ms": 1200.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 48,
+   "latency_ms": 1200.2,
+   "usable": true
+  }
+ },
+ "Get pods for checkout-api on the production EU cluster.": {
+  "rewrite": {
+   "first_step": "list pods for checkout-api",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 636,
+   "completion_tokens": 52,
+   "latency_ms": 1274.7,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 52,
+   "latency_ms": 1274.7,
+   "usable": true
+  }
+ },
+ "Get pods for checkout-api on the staging cluster.": {
+  "rewrite": {
+   "first_step": "list pods",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 635,
+   "completion_tokens": 47,
+   "latency_ms": 1093.1,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 47,
+   "latency_ms": 1093.1,
+   "usable": true
+  }
+ },
+ "Show the connections on the checkout database.": {
+  "rewrite": {
+   "first_step": "list database connections",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 633,
+   "completion_tokens": 53,
+   "latency_ms": 1338.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 53,
+   "latency_ms": 1338.8,
+   "usable": true
+  }
+ },
+ "Toggle off new-pricing-engine in production.": {
+  "rewrite": {
+   "first_step": "disable new-pricing-engine",
+   "operation": "write",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 634,
+   "completion_tokens": 63,
+   "latency_ms": 1569.9,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 63,
+   "latency_ms": 1569.9,
+   "usable": true
+  }
+ },
+ "Check customer-facing checkout errors after the deploy.": {
+  "rewrite": {
+   "first_step": "search application log for checkout errors",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 634,
+   "completion_tokens": 44,
+   "latency_ms": 1153.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 44,
+   "latency_ms": 1153.8,
+   "usable": true
+  }
+ },
+ "Find tickets about slow checkout.": {
+  "rewrite": {
+   "first_step": "search for tickets",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 631,
+   "completion_tokens": 42,
+   "latency_ms": 1069.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 631,
+   "completion_tokens": 42,
+   "latency_ms": 1069.1,
+   "usable": true
+  }
+ },
+ "Undo the last checkout release in production.": {
+  "rewrite": {
+   "first_step": "rollback last release",
+   "operation": "write",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 633,
+   "completion_tokens": 69,
+   "latency_ms": 1643.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 633,
+   "completion_tokens": 69,
+   "latency_ms": 1643.2,
+   "usable": true
+  }
+ },
+ "Get the logs for pod checkout-api-7d9f8c6b5-2kq8x.": {
+  "rewrite": {
+   "first_step": "retrieve pod logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 649,
+   "completion_tokens": 43,
+   "latency_ms": 1271.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 649,
+   "completion_tokens": 43,
+   "latency_ms": 1271.2,
+   "usable": true
+  }
+ },
+ "Run kubectl to see what's happening with the checkout pods in production.": {
+  "rewrite": {
+   "first_step": "list checkout pods",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 639,
+   "completion_tokens": 49,
+   "latency_ms": 1299.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 49,
+   "latency_ms": 1299.4,
+   "usable": true
+  }
+ },
+ "Terminate the stuck checkout batch worker instance i-0c41e7a9d2b3f5812 in production.": {
+  "rewrite": {
+   "first_step": "terminate instance i-0c41e7a9d2b3f5812",
+   "operation": "write",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 651,
+   "completion_tokens": 87,
+   "latency_ms": 2154.3,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 651,
+   "completion_tokens": 87,
+   "latency_ms": 2154.3,
+   "usable": true
+  }
+ },
+ "Check the p95 for checkout in the dev environment.": {
+  "rewrite": {
+   "first_step": "check p95 latency",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 636,
+   "completion_tokens": 51,
+   "latency_ms": 1330.5,
+   "environment": "development"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 51,
+   "latency_ms": 1330.5,
+   "usable": true
+  }
+ },
+ "Add a note to incident 4917 with the ID of a slow checkout trace.": {
+  "rewrite": {
+   "first_step": "add note to incident",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 642,
+   "completion_tokens": 55,
+   "latency_ms": 1464.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 55,
+   "latency_ms": 1464.3,
+   "usable": true
+  }
+ },
+ "Get the status of checkout-api.": {
+  "rewrite": {
+   "first_step": "check service health",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1124.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1124.5,
+   "usable": true
+  }
+ },
+ "Search the deployments of checkout-api in the pipeline.": {
+  "rewrite": {
+   "first_step": "search deployments",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 635,
+   "completion_tokens": 50,
+   "latency_ms": 1284.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 50,
+   "latency_ms": 1284.8,
+   "usable": true
+  }
+ },
+ "Get checkout-api traces slower than 2 seconds.": {
+  "rewrite": {
+   "first_step": "query service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 635,
+   "completion_tokens": 41,
+   "latency_ms": 1103.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 41,
+   "latency_ms": 1103.9,
+   "usable": true
+  }
+ },
+ "Roll back checkout-api.": {
+  "rewrite": {
+   "first_step": "Check current release version of checkout-api",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 630,
+   "completion_tokens": 66,
+   "latency_ms": 1535.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 630,
+   "completion_tokens": 66,
+   "latency_ms": 1535.2,
+   "usable": true
+  }
+ },
+ "Pull up INC-4890. I want to see how we handled the session cache failover last time.": {
+  "rewrite": {
+   "first_step": "retrieve incident record",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 647,
+   "completion_tokens": 37,
+   "latency_ms": 1166.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 647,
+   "completion_tokens": 37,
+   "latency_ms": 1166.9,
+   "usable": true
+  }
+ },
+ "What's checkout-api's p99 latency in production over the last 30 minutes?": {
+  "rewrite": {
+   "first_step": "query p99 latency for checkout-api",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 641,
+   "completion_tokens": 52,
+   "latency_ms": 1401.1,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 641,
+   "completion_tokens": 52,
+   "latency_ms": 1401.1,
+   "usable": true
+  }
+ },
+ "Show me the diff for commit 7c4e1b9 in shop/checkout-api.": {
+  "rewrite": {
+   "first_step": "retrieve diff of commit 7c4e1b9",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 645,
+   "completion_tokens": 54,
+   "latency_ms": 1450.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 645,
+   "completion_tokens": 54,
+   "latency_ms": 1450.0,
+   "usable": true
+  }
+ },
+ "List the payment-gateway pods in production along with their restart counts.": {
+  "rewrite": {
+   "first_step": "list pods",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 639,
+   "completion_tokens": 43,
+   "latency_ms": 1213.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 43,
+   "latency_ms": 1213.6,
+   "usable": true
+  }
+ },
+ "Can you fetch the release-pipeline record for DEP-88190?": {
+  "rewrite": {
+   "first_step": "retrieve release-pipeline record",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 639,
+   "completion_tokens": 45,
+   "latency_ms": 1227.9,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 45,
+   "latency_ms": 1227.9,
+   "usable": true
+  }
+ },
+ "Which alerts are currently firing for checkout-api in production?": {
+  "rewrite": {
+   "first_step": "query current alerts",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 636,
+   "completion_tokens": 47,
+   "latency_ms": 1245.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 636,
+   "completion_tokens": 47,
+   "latency_ms": 1245.4,
+   "usable": true
+  }
+ },
+ "Who owns inventory-api, and which support group should I route things to?": {
+  "rewrite": {
+   "first_step": "search service owners for inventory-api",
+   "operation": "read",
+   "system": "service catalog",
+   "domain": "service-catalog",
+   "prompt_tokens": 640,
+   "completion_tokens": 44,
+   "latency_ms": 1233.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 44,
+   "latency_ms": 1233.7,
+   "usable": true
+  }
+ },
+ "Give me the status and instance class of orders-db-staging.": {
+  "rewrite": {
+   "first_step": "query database instance details",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 638,
+   "completion_tokens": 40,
+   "latency_ms": 1148.4,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 40,
+   "latency_ms": 1148.4,
+   "usable": true
+  }
+ },
+ "Get the current state of the checkout-async-inventory flag in staging.": {
+  "rewrite": {
+   "first_step": "query feature flag status",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 640,
+   "completion_tokens": 42,
+   "latency_ms": 1132.8,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 42,
+   "latency_ms": 1132.8,
+   "usable": true
+  }
+ },
+ "Tail the last 200 lines from pod checkout-api-7d9f8c6b5-c7rwp in production, please.": {
+  "rewrite": {
+   "first_step": "tail last 200 lines of pod checkout-api-7d9f8c6b5-c7rwp",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 654,
+   "completion_tokens": 90,
+   "latency_ms": 2321.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 654,
+   "completion_tokens": 90,
+   "latency_ms": 2321.2,
+   "usable": true
+  }
+ },
+ "Which commits went into inventory-api v7.3.0?": {
+  "rewrite": {
+   "first_step": "search commit history for inventory\u2011api v7.3.0",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 638,
+   "completion_tokens": 55,
+   "latency_ms": 1499.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 55,
+   "latency_ms": 1499.8,
+   "usable": true
+  }
+ },
+ "Search the shop/checkout-api repo for commits mentioning orders-client since September 1.": {
+  "rewrite": {
+   "first_step": "search commit history",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 642,
+   "completion_tokens": 53,
+   "latency_ms": 1441.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 53,
+   "latency_ms": 1441.5,
+   "usable": true
+  }
+ },
+ "how's checkout looking in staging since v4.17 landed there yesterday?": {
+  "rewrite": {
+   "first_step": "check service health",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 640,
+   "completion_tokens": 45,
+   "latency_ms": 1253.3,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 45,
+   "latency_ms": 1253.3,
+   "usable": true
+  }
+ },
+ "did payments ship anything this morning?": {
+  "rewrite": {
+   "first_step": "check payment service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1115.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 632,
+   "completion_tokens": 43,
+   "latency_ms": 1115.0,
+   "usable": true
+  }
+ },
+ "INC-4916 needs a war room. Can you set one up?": {
+  "rewrite": {
+   "first_step": "create chat channel",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 640,
+   "completion_tokens": 53,
+   "latency_ms": 1431.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 53,
+   "latency_ms": 1431.8,
+   "usable": true
+  }
+ },
+ "how many checkouts are blowing up right now in prod?": {
+  "rewrite": {
+   "first_step": "query service metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 637,
+   "completion_tokens": 40,
+   "latency_ms": 1150.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 637,
+   "completion_tokens": 40,
+   "latency_ms": 1150.2,
+   "usable": true
+  }
+ },
+ "batch jobs stopped landing. is i-0c41e7a9d2b3f5812 even up?": {
+  "rewrite": {
+   "first_step": "check instance health",
+   "operation": "read",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 650,
+   "completion_tokens": 55,
+   "latency_ms": 1540.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 650,
+   "completion_tokens": 55,
+   "latency_ms": 1540.2,
+   "usable": true
+  }
+ },
+ "What's the slowest stuff hitting orders-db-prod at the moment?": {
+  "rewrite": {
+   "first_step": "query slow queries on orders-db-prod",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 638,
+   "completion_tokens": 55,
+   "latency_ms": 1454.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 55,
+   "latency_ms": 1454.0,
+   "usable": true
+  }
+ },
+ "Did Kubernetes do anything funny to checkout-api in prod around 10:15? Scaling, evictions, anything like that.": {
+  "rewrite": {
+   "first_step": "query pod events for checkout-api",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 650,
+   "completion_tokens": 47,
+   "latency_ms": 1555.8,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 650,
+   "completion_tokens": 47,
+   "latency_ms": 1555.8,
+   "usable": true
+  }
+ },
+ "Just joined. What's been going on in #inc-4917-checkout-latency?": {
+  "rewrite": {
+   "first_step": "search messages",
+   "operation": "read",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 644,
+   "completion_tokens": 46,
+   "latency_ms": 1330.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 46,
+   "latency_ms": 1330.8,
+   "usable": true
+  }
+ },
+ "did someone flip any toggles in prod today?": {
+  "rewrite": {
+   "first_step": "query recent changes to feature flags",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 635,
+   "completion_tokens": 40,
+   "latency_ms": 1160.4,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 635,
+   "completion_tokens": 40,
+   "latency_ms": 1160.4,
+   "usable": true
+  }
+ },
+ "prod checkout: where's the time going on the slow requests?": {
+  "rewrite": {
+   "first_step": "check request latency metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 638,
+   "completion_tokens": 49,
+   "latency_ms": 1338.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 638,
+   "completion_tokens": 49,
+   "latency_ms": 1338.5,
+   "usable": true
+  }
+ },
+ "Could this be on the cloud provider's side? Is anything degraded in eu-west-1?": {
+  "rewrite": {
+   "first_step": "check cloud provider status",
+   "operation": "read",
+   "system": "status page",
+   "domain": "incident-communication",
+   "prompt_tokens": 644,
+   "completion_tokens": 60,
+   "latency_ms": 1596.5,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 60,
+   "latency_ms": 1596.5,
+   "usable": true
+  }
+ },
+ "Checkout p95 took off at 10:18. What went out to production in the half hour before that?": {
+  "rewrite": {
+   "first_step": "list releases deployed",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 648,
+   "completion_tokens": 58,
+   "latency_ms": 1618.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 648,
+   "completion_tokens": 58,
+   "latency_ms": 1618.3,
+   "usable": true
+  }
+ },
+ "The checkout-api pods in prod are all Running and Ready, yet requests just hang. Are they stuck waiting for a database connection?": {
+  "rewrite": {
+   "first_step": "check pod logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 651,
+   "completion_tokens": 55,
+   "latency_ms": 1593.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 651,
+   "completion_tokens": 55,
+   "latency_ms": 1593.0,
+   "usable": true
+  }
+ },
+ "Logs mention upstream timeouts on orders persistence. Open trace 4bf92f3577b34da6a3ce929d0e0e4736 so I can see which span is eating the time.": {
+  "rewrite": {
+   "first_step": "open trace",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 669,
+   "completion_tokens": 50,
+   "latency_ms": 1400.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 669,
+   "completion_tokens": 50,
+   "latency_ms": 1400.2,
+   "usable": true
+  }
+ },
+ "The pricing team pushed new-pricing-engine to 100% at 09:30. Is that flag still fully on in production?": {
+  "rewrite": {
+   "first_step": "check status of new-pricing-engine flag",
+   "operation": "read",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 652,
+   "completion_tokens": 58,
+   "latency_ms": 1649.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 652,
+   "completion_tokens": 58,
+   "latency_ms": 1649.4,
+   "usable": true
+  }
+ },
+ "INC-4917 is on checkout-api. What does checkout-api depend on (databases, caches, other services), and who owns each of those?": {
+  "rewrite": {
+   "first_step": "query service dependencies",
+   "operation": "read",
+   "system": "service catalog",
+   "domain": "service-catalog",
+   "prompt_tokens": 656,
+   "completion_tokens": 50,
+   "latency_ms": 1447.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 656,
+   "completion_tokens": 50,
+   "latency_ms": 1447.8,
+   "usable": true
+  }
+ },
+ "Are the prod checkout-api containers CPU-bound, or is the slowness somewhere else? Show me CPU utilisation for the last hour.": {
+  "rewrite": {
+   "first_step": "check pod CPU usage",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 652,
+   "completion_tokens": 54,
+   "latency_ms": 1583.8,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 652,
+   "completion_tokens": 54,
+   "latency_ms": 1583.8,
+   "usable": true
+  }
+ },
+ "Did the release pipeline say anything in #prod-deploys about payment-gateway this morning?": {
+  "rewrite": {
+   "first_step": "search release pipeline logs",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 644,
+   "completion_tokens": 44,
+   "latency_ms": 1306.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 44,
+   "latency_ms": 1306.8,
+   "usable": true
+  }
+ },
+ "Could the checkout-report-exporter be hammering the orders database? Show me the status and CPU of task-checkout-exporter-3f9a.": {
+  "rewrite": {
+   "first_step": "check pod metrics",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 656,
+   "completion_tokens": 50,
+   "latency_ms": 1498.2,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 656,
+   "completion_tokens": 50,
+   "latency_ms": 1498.2,
+   "usable": true
+  }
+ },
+ "Figure out what went into the checkout-api v4.17 release, check whether any of it touches the DB pool settings, and then brief #checkout-team.": {
+  "rewrite": {
+   "first_step": "read release notes for checkout-api v4.17",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 657,
+   "completion_tokens": 54,
+   "latency_ms": 1608.0,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 657,
+   "completion_tokens": 54,
+   "latency_ms": 1608.0,
+   "usable": true
+  }
+ },
+ "Find out who wrote 1b7f0e4 and ping them in #checkout-team about the payment retry change.": {
+  "rewrite": {
+   "first_step": "query commit metadata for 1b7f0e4",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 650,
+   "completion_tokens": 67,
+   "latency_ms": 1853.3,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 650,
+   "completion_tokens": 67,
+   "latency_ms": 1853.3,
+   "usable": true
+  }
+ },
+ "Start with orders-db-prod's engine logs and look for connection errors. If the database side looks clean, we'll move on to the app.": {
+  "rewrite": {
+   "first_step": "read orders-db-prod engine logs",
+   "operation": "read",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 653,
+   "completion_tokens": 45,
+   "latency_ms": 1390.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 653,
+   "completion_tokens": 45,
+   "latency_ms": 1390.0,
+   "usable": true
+  }
+ },
+ "Look for earlier checkout-api incidents that looked like this one, then pull up the postmortem for the closest match.": {
+  "rewrite": {
+   "first_step": "search incident records for checkout-api incidents with similar symptoms",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 649,
+   "completion_tokens": 76,
+   "latency_ms": 2011.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 649,
+   "completion_tokens": 76,
+   "latency_ms": 2011.8,
+   "usable": true
+  }
+ },
+ "Grab the ERROR logs for checkout-api in prod, work out the dominant error, and add it as a work note on INC-4917.": {
+  "rewrite": {
+   "first_step": "read checkout-api error logs",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 654,
+   "completion_tokens": 62,
+   "latency_ms": 1932.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 654,
+   "completion_tokens": 62,
+   "latency_ms": 1932.6,
+   "usable": true
+  }
+ },
+ "Work out which checkout-api pod in production is the worst off and restart just that one.": {
+  "rewrite": {
+   "first_step": "inspect checkout-api pod metrics and logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 643,
+   "completion_tokens": 81,
+   "latency_ms": 2208.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 81,
+   "latency_ms": 2208.0,
+   "usable": true
+  }
+ },
+ "Confirm which version checkout-api is running in staging, then roll staging back to the release before it.": {
+  "rewrite": {
+   "first_step": "check current version of checkout\u2011api",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 645,
+   "completion_tokens": 73,
+   "latency_ms": 1904.0,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 645,
+   "completion_tokens": 73,
+   "latency_ms": 1904.0,
+   "usable": true
+  }
+ },
+ "Undo the 4.17 rollout on prod checkout-api. Put v4.16 back through the release pipeline.": {
+  "rewrite": {
+   "first_step": "check current deployment version of checkout-api",
+   "operation": "read",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 648,
+   "completion_tokens": 83,
+   "latency_ms": 2179.8,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 648,
+   "completion_tokens": 83,
+   "latency_ms": 2179.8,
+   "usable": true
+  }
+ },
+ "Can you restart checkout-api in the development environment? My changes need fresh pods.": {
+  "rewrite": {
+   "first_step": "restart checkout-api",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 641,
+   "completion_tokens": 51,
+   "latency_ms": 1519.5,
+   "environment": "development"
+  },
+  "usage": {
+   "prompt_tokens": 641,
+   "completion_tokens": 51,
+   "latency_ms": 1519.5,
+   "usable": true
+  }
+ },
+ "bump prod checkout-api to 10 replicas": {
+  "rewrite": {
+   "first_step": "scale checkout-api deployment to 10 replicas",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1422.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 634,
+   "completion_tokens": 54,
+   "latency_ms": 1422.0,
+   "usable": true
+  }
+ },
+ "Note in INC-4917 that the pool max dropped from 50 to 10 with orders-client v3. Keep it internal.": {
+  "rewrite": {
+   "first_step": "add a note",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 652,
+   "completion_tokens": 48,
+   "latency_ms": 1493.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 652,
+   "completion_tokens": 48,
+   "latency_ms": 1493.1,
+   "usable": true
+  }
+ },
+ "Move INC-4917 to identified and record the suspected root cause: orders-client v3 shipped a 10-connection pool default in v4.17.": {
+  "rewrite": {
+   "first_step": "update incident status to identified and add root cause note",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 657,
+   "completion_tokens": 60,
+   "latency_ms": 1727.8,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 657,
+   "completion_tokens": 60,
+   "latency_ms": 1727.8,
+   "usable": true
+  }
+ },
+ "let #inc-4917-checkout-latency know we're rolling checkout-api back to v4.16 in about five minutes": {
+  "rewrite": {
+   "first_step": "post message to incident channel",
+   "operation": "write",
+   "system": "chat",
+   "domain": "collaboration",
+   "prompt_tokens": 651,
+   "completion_tokens": 61,
+   "latency_ms": 1742.6,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 651,
+   "completion_tokens": 61,
+   "latency_ms": 1742.6,
+   "usable": true
+  }
+ },
+ "Switch checkout-async-inventory back off in staging and set its rollout to 0%.": {
+  "rewrite": {
+   "first_step": "disable checkout-async-inventory flag",
+   "operation": "write",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 643,
+   "completion_tokens": 76,
+   "latency_ms": 2028.6,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 643,
+   "completion_tokens": 76,
+   "latency_ms": 2028.6,
+   "usable": true
+  }
+ },
+ "The checkout batch worker (i-0c41e7a9d2b3f5812) is wedged. Reboot it.": {
+  "rewrite": {
+   "first_step": "reboot the instance",
+   "operation": "write",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 655,
+   "completion_tokens": 58,
+   "latency_ms": 1729.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 655,
+   "completion_tokens": 58,
+   "latency_ms": 1729.0,
+   "usable": true
+  }
+ },
+ "Raise an emergency change for checkout-api in production to roll back to v4.16, and link it to INC-4917.": {
+  "rewrite": {
+   "first_step": "create an emergency change request for checkout-api rollback",
+   "operation": "write",
+   "system": "release pipeline and code",
+   "domain": "delivery",
+   "prompt_tokens": 652,
+   "completion_tokens": 63,
+   "latency_ms": 1758.9,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 652,
+   "completion_tokens": 63,
+   "latency_ms": 1758.9,
+   "usable": true
+  }
+ },
+ "Checkout is healthy again. Close INC-4917 as rolled back, with a note that p95 is back under 400 ms.": {
+  "rewrite": {
+   "first_step": "close incident INC-4917 and add resolution note",
+   "operation": "write",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 652,
+   "completion_tokens": 57,
+   "latency_ms": 1670.1,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 652,
+   "completion_tokens": 57,
+   "latency_ms": 1670.1,
+   "usable": true
+  }
+ },
+ "orders-db-prod's primary might be sick. Force a failover to the standby.": {
+  "rewrite": {
+   "first_step": "force failover of orders-db-prod primary",
+   "operation": "write",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 642,
+   "completion_tokens": 52,
+   "latency_ms": 1512.5,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 52,
+   "latency_ms": 1512.5,
+   "usable": true
+  }
+ },
+ "Look up ticket INC-4916 in the service desk for me.": {
+  "rewrite": {
+   "first_step": "search ticket",
+   "operation": "read",
+   "system": "incident management",
+   "domain": "itsm",
+   "prompt_tokens": 639,
+   "completion_tokens": 43,
+   "latency_ms": 1170.7,
+   "environment": null
+  },
+  "usage": {
+   "prompt_tokens": 639,
+   "completion_tokens": 43,
+   "latency_ms": 1170.7,
+   "usable": true
+  }
+ },
+ "Tail prod checkout-api logs real quick. The ops_debug sidecar tail is the fastest way.": {
+  "rewrite": {
+   "first_step": "tail logs of prod checkout\u2011api using ops_debug sidecar",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 644,
+   "completion_tokens": 76,
+   "latency_ms": 2069.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 644,
+   "completion_tokens": 76,
+   "latency_ms": 2069.4,
+   "usable": true
+  }
+ },
+ "On prod-eu-west-1, show me the checkout-api Deployment object. What image and revision is it on?": {
+  "rewrite": {
+   "first_step": "read checkout-api Deployment",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 649,
+   "completion_tokens": 53,
+   "latency_ms": 1555.0,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 649,
+   "completion_tokens": 53,
+   "latency_ms": 1555.0,
+   "usable": true
+  }
+ },
+ "Recycle checkout-api-7d9f8c6b5-2kq8x on prod-eu-west-1, it's the noisy one.": {
+  "rewrite": {
+   "first_step": "check pod logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 657,
+   "completion_tokens": 58,
+   "latency_ms": 1703.4,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 657,
+   "completion_tokens": 58,
+   "latency_ms": 1703.4,
+   "usable": true
+  }
+ },
+ "Use toggle_flag to switch the new-pricing-engine toggle off in prod.": {
+  "rewrite": {
+   "first_step": "toggle feature flag",
+   "operation": "write",
+   "system": "feature flags",
+   "domain": "feature-flags",
+   "prompt_tokens": 640,
+   "completion_tokens": 55,
+   "latency_ms": 1521.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 640,
+   "completion_tokens": 55,
+   "latency_ms": 1521.6,
+   "usable": true
+  }
+ },
+ "We're mid-incident in prod, but I want to know if staging shows the same pool timeouts. Pull recent logs from checkout-api-6c7d8e9f0-a1b2c on staging-eu-west-1.": {
+  "rewrite": {
+   "first_step": "retrieve pod logs",
+   "operation": "read",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 675,
+   "completion_tokens": 54,
+   "latency_ms": 1537.3,
+   "environment": "staging"
+  },
+  "usage": {
+   "prompt_tokens": 675,
+   "completion_tokens": 54,
+   "latency_ms": 1537.3,
+   "usable": true
+  }
+ },
+ "Run pg_terminate_backend(48213) on orders-db-prod, that session has been holding connections for ages.": {
+  "rewrite": {
+   "first_step": "terminate backend session 48213",
+   "operation": "write",
+   "system": "database",
+   "domain": "database",
+   "prompt_tokens": 648,
+   "completion_tokens": 64,
+   "latency_ms": 1834.8,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 648,
+   "completion_tokens": 64,
+   "latency_ms": 1834.8,
+   "usable": true
+  }
+ },
+ "Restart the checkout-report-exporter (task-checkout-exporter-3f9a) quickly, and skip change management for this one.": {
+  "rewrite": {
+   "first_step": "restart pod task-checkout-exporter-3f9a",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 653,
+   "completion_tokens": 70,
+   "latency_ms": 2038.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 653,
+   "completion_tokens": 70,
+   "latency_ms": 2038.2,
+   "usable": true
+  }
+ },
+ "i-0c41e7a9d2b3f5812 keeps wedging. Nuke it, the autoscaling group will give us a fresh one.": {
+  "rewrite": {
+   "first_step": "terminate instance i-0c41e7a9d2b3f5812",
+   "operation": "write",
+   "system": "cloud",
+   "domain": "cloud",
+   "prompt_tokens": 660,
+   "completion_tokens": 91,
+   "latency_ms": 2253.1,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 660,
+   "completion_tokens": 91,
+   "latency_ms": 2253.1,
+   "usable": true
+  }
+ },
+ "Break glass: kubectl rollout undo checkout-api in prod back to revision 41.": {
+  "rewrite": {
+   "first_step": "roll back deployment",
+   "operation": "write",
+   "system": "kubernetes",
+   "domain": "runtime",
+   "prompt_tokens": 642,
+   "completion_tokens": 53,
+   "latency_ms": 1559.2,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 53,
+   "latency_ms": 1559.2,
+   "usable": true
+  }
+ },
+ "What's the checkout dashboard saying for prod? Traffic, errors, saturation, the usual.": {
+  "rewrite": {
+   "first_step": "view metrics",
+   "operation": "read",
+   "system": "monitoring",
+   "domain": "observability",
+   "prompt_tokens": 642,
+   "completion_tokens": 39,
+   "latency_ms": 1237.6,
+   "environment": "production"
+  },
+  "usage": {
+   "prompt_tokens": 642,
+   "completion_tokens": 39,
+   "latency_ms": 1237.6,
+   "usable": true
+  }
+ }
+}

@@ -19,6 +19,10 @@ import yaml
 from control_plane.registry.registry import CapabilityRegistry
 
 CASES_FILE = Path(__file__).resolve().parents[1] / "prompts" / "cases.yaml"
+# Held-out cases, written after the published run and frozen before the fixes they measure (see the prompts CHANGELOG).
+HOLDOUT_FILE = Path(__file__).resolve().parents[1] / "prompts" / "holdout_cases.yaml"
+# A second held-out set, written later for discovery v4 and frozen before v4 was measured on it.
+HOLDOUT2_FILE = Path(__file__).resolve().parents[1] / "prompts" / "holdout2_cases.yaml"
 
 
 @dataclass(frozen=True)
@@ -33,6 +37,7 @@ class Case:
     user_id: str
     roles: tuple[str, ...]
     traps: tuple[str, ...] = field(default=())
+    fixed_split: str | None = None
 
     @property
     def correct_tools(self) -> set[str]:
@@ -40,7 +45,7 @@ class Case:
 
     @property
     def split(self) -> str:
-        return case_split(self.id)
+        return self.fixed_split or case_split(self.id)
 
 
 def case_split(case_id: str) -> str:
@@ -52,12 +57,30 @@ def load_cases(path: str | Path = CASES_FILE) -> list[Case]:
     with open(path, encoding="utf-8") as fh:
         doc = yaml.safe_load(fh)
     default = doc["defaults"]["identity"]
+    fixed_split = doc["defaults"].get("split")
     cases = []
     for c in doc["cases"]:
         ident = c.get("identity", default)
         cases.append(Case(c["id"], c["category"], c["prompt"], c["golden_tool"], tuple(c.get("acceptable_tools") or ()),
                           c.get("expected_args") or {}, c["expected_policy"], ident["user_id"], tuple(ident["roles"]),
-                          tuple(c.get("traps") or ())))
+                          tuple(c.get("traps") or ()), fixed_split))
+    return cases
+
+
+def case_file(case_set: str) -> Path:
+    return {"main": CASES_FILE, "holdout": HOLDOUT_FILE, "holdout2": HOLDOUT2_FILE}[case_set]
+
+
+def load_all_cases() -> list[Case]:
+    """The main cases plus the held-out cases when that file exists; ids must be unique across both."""
+    cases = load_cases(CASES_FILE)
+    for extra in (HOLDOUT_FILE, HOLDOUT2_FILE):
+        cases += load_cases(extra) if extra.exists() else []
+    seen: set[str] = set()
+    for c in cases:
+        if c.id in seen:
+            raise ValueError(f"duplicate case id {c.id}")
+        seen.add(c.id)
     return cases
 
 

@@ -1,0 +1,38 @@
+# Publishing to this repository
+
+Three POCs live here, each written in its own workspace, often at the same time. The folders never overlap, so parallel work is safe as long as everyone keeps to these rules.
+
+## The rules
+
+1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_agent_poc/`, `headless_ai_poc/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
+2. **Work in your own clone.** Do not share a working copy between sessions or people. A throwaway clone is fine.
+3. **Rebase, never force-push.** `git pull --rebase` before pushing. Because the folders are disjoint, a rebase never conflicts. Rewriting published history is a last resort, and only after telling everyone who publishes here.
+4. **Run your POC's checks before you push.** At minimum its fast tests and whatever boundary checks it has.
+5. **Write your folder in the subject line:** `layered_agent_poc: warn when another process is using Ollama`. The body says what changed and why.
+6. **No tool attribution in commit messages or pull requests.** No `Co-Authored-By` for an AI assistant, no "generated with" lines.
+7. **Write only inside your own folder at run time.** Point every path an experiment uses at your folder, absolutely. A relative path can resolve against another project's root: that is how a run once mirrored itself into `layered_agent_poc/runs/2026-09-17-recorded/h2/`. For Part 2's platform, that means `LAP_RUNS_DIR`, `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_KNOWLEDGE_INDEX` and `LAP_MODEL_TRAFFIC`.
+8. **Say when you change something others depend on.** `headless_ai_poc` uses `layered_agent_poc`'s service facade. Changing that facade, its commands or its configuration means telling whoever maintains the dependent POC, in the commit body and directly.
+9. **Keep the machine's models in mind.** The POCs share one Ollama. Check before a long live run, and wait rather than compete: `uv run poc check --wait` in Part 2, or the equivalent elsewhere.
+
+## The script
+
+`scripts/publish-poc.sh` enforces rules 1, 3, 4, 5 and 6, and refuses to publish if something looks wrong.
+
+```bash
+# from anywhere, with a clone of this repo:
+scripts/publish-poc.sh layered_agent_poc \
+  --from ~/work/layered-agent-platform \
+  --message "layered_agent_poc: warn when another process is using Ollama" \
+  --checks "uv run pytest -m 'not ollama' -q && uv run lint-imports"
+```
+
+What it does, in order:
+
+1. copies your working copy into the folder with `--from` (honouring each `.gitignore`), or uses what is already there;
+2. stages only that folder, and stops if anything outside it is staged or modified;
+3. stops if the message names an AI assistant as an author, or does not start with the folder name;
+4. runs `--checks` inside the folder, or `<folder>/scripts/publish-checks.sh` when it exists;
+5. fetches and rebases onto `origin/main`;
+6. commits and pushes, and prints the new commit.
+
+`--dry-run` stops before the commit and shows what would be published. Every step prints what it is doing, so a failure says which rule stopped it.

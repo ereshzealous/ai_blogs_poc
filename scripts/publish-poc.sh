@@ -8,6 +8,7 @@
 #   --message-file <f>  read the message from a file instead
 #   --checks <cmd>      run this in the folder before committing (default: <folder>/scripts/publish-checks.sh)
 #   --no-checks         skip the checks, for a docs-only change
+#   --allow-frozen      allow changes to paths listed in <folder>/.publish-frozen (say why in the message)
 #   --dry-run           do everything except commit and push
 set -euo pipefail
 
@@ -16,7 +17,7 @@ step() { printf '\n== %s\n' "$1"; }
 
 [ $# -ge 1 ] || die "usage: scripts/publish-poc.sh <folder> --message \"<folder>: what changed\" [--from <dir>] [--checks <cmd>] [--dry-run]"
 folder=${1%/}; shift
-from=""; message=""; message_file=""; checks=""; run_checks=1; dry_run=0
+from=""; message=""; message_file=""; checks=""; run_checks=1; dry_run=0; allow_frozen=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --from) from=${2:?--from needs a directory}; shift 2 ;;
@@ -24,6 +25,7 @@ while [ $# -gt 0 ]; do
     --message-file) message_file=${2:?--message-file needs a file}; shift 2 ;;
     --checks) checks=${2:?--checks needs a command}; shift 2 ;;
     --no-checks) run_checks=0; shift ;;
+    --allow-frozen) allow_frozen=1; shift ;;
     --dry-run) dry_run=1; shift ;;
     *) die "unknown option: $1" ;;
   esac
@@ -66,6 +68,38 @@ printf '   %s file(s) staged\n' "$(printf '%s\n' "$staged" | wc -l | tr -d ' ')"
 outside=$(git status --porcelain | grep -v -E "^.. ?\"?$folder/" || true)
 [ -z "$outside" ] || die "the copy wrote outside $folder (rule 7):
 $outside"
+
+frozen_list=$(
+  if [ -f "$folder/.publish-frozen" ]; then
+    printf '%s\n' "$staged" | python3 -c '
+import fnmatch, sys
+from pathlib import Path
+folder, rules_file = sys.argv[1], sys.argv[2]
+rules = [l.strip() for l in Path(rules_file).read_text().splitlines() if l.strip() and not l.startswith("#")]
+for line in sys.stdin.read().splitlines():
+    rel = line[len(folder) + 1:]
+    frozen = False
+    for rule in rules:
+        negate = rule.startswith("!")
+        pattern = rule[1:] if negate else rule
+        if fnmatch.fnmatch(rel, pattern) or fnmatch.fnmatch(rel, pattern.rstrip("/") + "/*"):
+            frozen = not negate
+    if frozen:
+        print(rel)
+' "$folder" "$folder/.publish-frozen"
+  fi
+)
+if [ -n "$frozen_list" ]; then
+  count=$(printf '%s\n' "$frozen_list" | wc -l | tr -d ' ')
+  if [ "$allow_frozen" -eq 1 ]; then
+    printf '   warning: %s frozen file(s) change in this commit (--allow-frozen):\n' "$count"
+    printf '%s\n' "$frozen_list" | sed 's/^/     /' | head -20
+  else
+    die "$count file(s) listed in $folder/.publish-frozen would change (rule 10). These are byte-exact artefacts;
+a diff here usually means something regenerated them. Publish with --allow-frozen only if the change is intended:
+$(printf '%s\n' "$frozen_list" | sed 's/^/  /' | head -20)"
+  fi
+fi
 
 step "4/6 checks"
 if [ "$run_checks" -eq 0 ]; then

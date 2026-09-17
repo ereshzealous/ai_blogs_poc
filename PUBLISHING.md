@@ -14,9 +14,11 @@ Three POCs live here, each written in its own workspace, often at the same time.
 8. **Say when you change something others depend on.** `headless_ai_poc` uses `layered_agent_poc`'s service facade. Changing that facade, its commands or its configuration means telling whoever maintains the dependent POC, in the commit body and directly.
 9. **Keep the machine's models in mind.** The POCs share one Ollama. Check before a long live run, and wait rather than compete: `uv run poc check --wait` in Part 2, or the equivalent elsewhere.
 
+10. **Say which files must never change by accident.** Some committed files are byte-exact artefacts: a published report, a generated catalogue, the evidence of a cited run. List them in `<folder>/.publish-frozen`, one glob per line, `!` to make an exception. The script then refuses a publish that changes them, unless you pass `--allow-frozen` and say why in the message.
+
 ## The script
 
-`scripts/publish-poc.sh` enforces rules 1, 3, 4, 5 and 6, and refuses to publish if something looks wrong.
+`scripts/publish-poc.sh` enforces rules 1, 3, 4, 5, 6 and 10, and refuses to publish if something looks wrong.
 
 ```bash
 # from anywhere, with a clone of this repo:
@@ -31,8 +33,8 @@ What it does, in order:
 1. copies your working copy into the folder with `--from` (honouring each `.gitignore`), or uses what is already there;
 2. stages only that folder, and stops if anything outside it is staged or modified;
 3. stops if the message names an AI assistant as an author, or does not start with the folder name;
-4. runs `--checks` inside the folder, or `<folder>/scripts/publish-checks.sh` when it exists;
-5. fetches and rebases onto `origin/main`;
-6. commits and pushes, and prints the new commit.
+4. refuses if the commit changes a path listed in `<folder>/.publish-frozen`, unless `--allow-frozen`;
+5. runs `--checks` inside the folder, or `<folder>/scripts/publish-checks.sh` when it exists;
+6. commits, rebases onto `origin/main` and pushes, and prints the new commit.
 
 `--dry-run` stops before the commit and shows what would be published. Every step prints what it is doing, so a failure says which rule stopped it.

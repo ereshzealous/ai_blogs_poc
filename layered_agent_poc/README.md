@@ -373,7 +373,7 @@ Everything that can change without a code change lives in `config/`:
 | `principals.yaml` | Users, roles, chat user ids and the agent's identity and scopes |
 | `memory_seed.yaml` | Episodic memories with provenance and expiry: INC-4630, INC-4411 and one expired Q1 note |
 
-Environment variables override configuration:
+Environment variables override configuration. A relative value is taken from the current directory, and an unset one defaults inside this POC, so another project embedding this platform should set all of them, including `LAP_KNOWLEDGE_INDEX`: left unset, the runbook index is built in this POC's `var/`.
 
 | Variable | Effect |
 |---|---|

@@ -1,0 +1,100 @@
+diff --git a/headless/baseline/channel_coupled/api_assistant.py b/headless/baseline/channel_coupled/api_assistant.py
+index 22ef492..de2eec4 100644
+--- a/headless/baseline/channel_coupled/api_assistant.py
++++ b/headless/baseline/channel_coupled/api_assistant.py
+@@ -38,7 +38,7 @@ def call_tool(tool: str, args: dict[str, Any]) -> dict[str, Any]:
+ 
+ 
+ # ------------------------------------------------------------------ identity and policy
+-TOKEN_SCOPES = {"api|alice": ["incidents:write", "role:incident-commander"], "api|bob": ["incidents:read"]}
++TOKEN_SCOPES = {"api|alice": ["incidents:write", "role:incident-commander", "role:release-manager"], "api|bob": ["incidents:read"]}
+ 
+ 
+ def roles_of(subject: str) -> list[str]:
+@@ -46,9 +46,9 @@ def roles_of(subject: str) -> list[str]:
+ 
+ 
+ def approval_role(tool: str, environment: str) -> str | None:
+-    """High-risk production writes need an incident commander."""
++    """High-risk production writes need the release manager."""
+     if WRITE_TOOLS.get(tool) == "HIGH" and environment == "production":
+-        return "incident-commander"
++        return "release-manager"
+     return None
+ 
+ 
+diff --git a/headless/baseline/channel_coupled/slack_assistant.py b/headless/baseline/channel_coupled/slack_assistant.py
+index 34dfb07..cfbe508 100644
+--- a/headless/baseline/channel_coupled/slack_assistant.py
++++ b/headless/baseline/channel_coupled/slack_assistant.py
+@@ -36,7 +36,7 @@ def call_tool(tool: str, args: dict[str, Any]) -> dict[str, Any]:
+ 
+ 
+ # ------------------------------------------------------------------ identity and policy
+-SLACK_GROUPS = {"U04ALICE": ["sre", "incident-commander"], "U04BOB": ["developer"]}  # synced from Slack user groups
++SLACK_GROUPS = {"U04ALICE": ["sre", "incident-commander", "release-manager"], "U04BOB": ["developer"]}  # synced from Slack user groups
+ 
+ 
+ def roles_of(slack_user: str) -> list[str]:
+@@ -44,9 +44,9 @@ def roles_of(slack_user: str) -> list[str]:
+ 
+ 
+ def approval_role(tool: str, environment: str) -> str | None:
+-    """Production rollbacks need an incident commander."""
++    """Production rollbacks need the release manager."""
+     if tool in HIGH_RISK and environment == "production":
+-        return "incident-commander"
++        return "release-manager"
+     return None
+ 
+ 
+@@ -92,7 +92,7 @@ def on_button(thread_ts: str, user: str, approve: bool) -> str:
+         return "Nothing is waiting for approval in this thread."
+     env = action["args"].get("environment", "production")
+     if not may_approve(user, action["tool"], env):
+-        return "Only an incident commander can approve production rollbacks."
++        return "Only the release manager can approve production rollbacks."
+     PENDING.pop(thread_ts)
+     if not approve:
+         return "Rejected."
+@@ -107,7 +107,7 @@ def on_button(thread_ts: str, user: str, approve: bool) -> str:
+ def blocks(answer: dict[str, Any]) -> list[dict[str, Any]]:
+     out = [{"type": "section", "text": {"type": "mrkdwn", "text": answer["text"]}}]
+     if answer.get("pending"):
+-        out.append({"type": "context", "elements": [{"type": "mrkdwn", "text": "Needs an incident commander."}]})
++        out.append({"type": "context", "elements": [{"type": "mrkdwn", "text": "Needs the release manager."}]})
+         out.append({"type": "actions", "elements": [
+             {"type": "button", "action_id": "approve", "text": {"type": "plain_text", "text": "Approve"}},
+             {"type": "button", "action_id": "reject", "text": {"type": "plain_text", "text": "Reject"}}]})
+diff --git a/headless/baseline/channel_coupled/web_assistant.py b/headless/baseline/channel_coupled/web_assistant.py
+index fe0e376..a674a4f 100644
+--- a/headless/baseline/channel_coupled/web_assistant.py
++++ b/headless/baseline/channel_coupled/web_assistant.py
+@@ -43,9 +43,9 @@ def roles_of(oidc_claims: dict[str, Any]) -> list[str]:
+ 
+ 
+ def approval_role(tool: str, environment: str) -> str | None:
+-    """Production rollbacks need an incident commander."""
++    """Production rollbacks need the release manager."""
+     if tool in HIGH_RISK and environment == "production":
+-        return "incident-commander"
++        return "release-manager"
+     return None
+ 
+ 
+@@ -89,7 +89,7 @@ def approve(session_id: str, claims: dict[str, Any], approve_it: bool) -> dict[s
+     if not action:
+         return {"ok": False, "error": "nothing pending"}
+     if not may_approve(claims, action["tool"], action["args"].get("environment", "production")):
+-        return {"ok": False, "error": "incident-commander role required"}
++        return {"ok": False, "error": "release-manager role required"}
+     s["pending"] = None
+     if not approve_it:
+         return {"ok": True, "status": "rejected"}
+@@ -106,5 +106,5 @@ def approve(session_id: str, claims: dict[str, Any], approve_it: bool) -> dict[s
+ def approval_modal(pending: dict[str, Any]) -> str:
+     return (f"<dialog open><h3>Approve {escape(pending['tool'])}?</h3>"
+             f"<p>Target: {escape(str(pending['args'].get('target_version')))}</p>"
+-            "<p>Only an incident commander can approve this change.</p>"
++            "<p>Only the release manager can approve this change.</p>"
+             "<button value='approve'>Approve</button><button value='reject'>Reject</button></dialog>")

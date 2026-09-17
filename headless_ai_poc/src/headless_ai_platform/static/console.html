@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Incident Console</title>
+<link rel="stylesheet" href="/console/console.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot"></span> Incident Console <span class="sub">web channel · headless capability <code>incident.remediation</code></span></div>
+  <label class="who">Signed in as
+    <select id="subject">
+      <option value="oidc|alice-92ab">Alice (oidc|alice-92ab)</option>
+      <option value="oidc|bob-51cd">Bob (oidc|bob-51cd)</option>
+    </select>
+  </label>
+</header>
+<main>
+  <form id="open" class="open">
+    <input id="wf" name="wf" placeholder="workflow id, e.g. wf-3f2a9c01d4" autocomplete="off" required>
+    <button type="submit">Open</button>
+  </form>
+  <p id="identity" class="identity"></p>
+  <section id="view" aria-live="polite"><p class="empty">Open a workflow started from any channel: Slack, CLI, REST or an alert.</p></section>
+  <p id="toast" class="toast" role="status"></p>
+</main>
+<script src="/console/console.js"></script>
+</body>
+</html>

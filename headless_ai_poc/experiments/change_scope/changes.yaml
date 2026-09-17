@@ -1,0 +1,42 @@
+# H3 · two requirement changes, each implemented in the channel-coupled baseline and in the headless platform.
+# Patches were written by hand for this POC; they are illustrative, not a benchmark. Paths are relative to a scratch
+# tree that mirrors the monorepo: layered/ (Part 2) and headless/ (this POC).
+# Concern labels are a human reading of each hunk, from a fixed vocabulary:
+#   channel, rendering, identity, prompt, model, tools, workflow, memory, policy, approval, telemetry
+changes:
+  - id: add-channel
+    title: Add a Teams-style channel
+    baseline:
+      patch: add-channel.baseline.patch
+      concerns: [channel, rendering, identity, prompt, model, tools, workflow, memory, policy, approval, telemetry]
+      notes: "A new teams_assistant.py, derived from the Slack copy: its own prompt, model call, tool wiring, workflow, memory, role map, approval rule and logging."
+    headless:
+      patch: add-channel.headless.patch
+      concerns: [channel, rendering, identity]
+      notes: "channels/teams.py, renderers/teams.py (Adaptive Card), one router registration, two identity links. No change to the contract, capability, gateway or Part 2."
+  - id: approver-role
+    title: Production rollbacks now need the release manager
+    baseline:
+      patch: approver-role.baseline.patch
+      concerns: [policy, identity, approval, rendering]
+      notes: "The rule, the role map and the approval wording change in each of the three copies."
+    headless:
+      patch: approver-role.headless.patch
+      concerns: [policy, identity]
+      notes: "One policy rule and one role in the layered platform. No channel, renderer or headless file changes: renderers show the role the contract reports."
+  - id: approver-role-drift
+    title: "Controlled drift: the same change, with the API copy missed"
+    controlled: true
+    baseline:
+      patch: approver-role.baseline-missed-api.patch
+      concerns: [policy, identity, approval, rendering]
+      notes: "Deliberately incomplete, to show what a missed copy does. Not a claim that the baseline always drifts."
+# Files that count as core. A change touching them is not a channel-only change.
+core:
+  - layered/agent_platform/
+  - headless/src/headless_ai_platform/contracts/
+  - headless/src/headless_ai_platform/capabilities/
+  - headless/src/headless_ai_platform/gateway.py
+  - headless/src/headless_ai_platform/platform/
+  - headless/src/headless_ai_platform/interactions.py
+  - headless/src/headless_ai_platform/runtime.py

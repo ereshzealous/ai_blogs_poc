@@ -1,0 +1,23 @@
+# Synthetic identities. No real users or tenants.
+# Each channel authenticates people its own way. This file links what a channel saw to one enterprise principal.
+# Principals and their roles are owned by the layered platform (layered-agent-platform/config/principals.yaml).
+# In production this is an identity provider's job (SCIM-linked accounts, OIDC subjects, token exchange).
+channels:
+  slack:            # Slack-shaped user ids
+    U04ALICE: alice
+    U04BOB: bob
+  web:              # OIDC subject claims from the web console's sign-in
+    oidc|alice-92ab: alice
+    oidc|bob-51cd: bob
+  cli:              # subject of the CLI's device-flow token
+    alice@company.example: alice
+    bob@company.example: bob
+  rest:             # OAuth client acting for a user (the API caller passes the user's subject)
+    api|alice: alice
+    api|bob: bob
+# Machine-started work runs on behalf of whoever is on call for the service, never as an anonymous superuser.
+event_sources:
+  alertmanager: { on_behalf_of: on_call }
+on_call:
+  checkout-api: alice
+  default: alice

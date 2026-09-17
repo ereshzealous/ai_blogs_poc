@@ -1,0 +1,108 @@
+diff --git a/headless/config/channel_identities.yaml b/headless/config/channel_identities.yaml
+index 42d05b6..cf5bc3a 100644
+--- a/headless/config/channel_identities.yaml
++++ b/headless/config/channel_identities.yaml
+@@ -15,6 +15,9 @@ channels:
+   rest:             # OAuth client acting for a user (the API caller passes the user's subject)
+     api|alice: alice
+     api|bob: bob
++  teams:            # Entra ID object ids from Bot Framework activities
++    29:aad-alice-7f3e: alice
++    29:aad-bob-0c21: bob
+ # Machine-started work runs on behalf of whoever is on call for the service, never as an anonymous superuser.
+ event_sources:
+   alertmanager: { on_behalf_of: on_call }
+diff --git a/headless/src/headless_ai_platform/channels/teams.py b/headless/src/headless_ai_platform/channels/teams.py
+new file mode 100644
+index 0000000..fd859eb
+--- /dev/null
++++ b/headless/src/headless_ai_platform/channels/teams.py
+@@ -0,0 +1,43 @@
++"""Teams-style channel (simulated Bot Framework activities; no Teams app is installed).
++
++    POST /teams/messages   a message activity mentioning the bot, or an Adaptive Card Action.Submit
++"""
++
++from __future__ import annotations
++
++import re
++from typing import Any
++
++from fastapi import APIRouter, Request
++
++from headless_ai_platform.channels import CAPABILITY, gateway
++from headless_ai_platform.contracts import CapabilityError
++from headless_ai_platform.renderers import teams
++
++router = APIRouter()
++CHANNEL = "teams"
++INCIDENT = re.compile(r"\bINC-\d+\b")
++
++
++@router.post("/teams/messages")
++async def messages(request: Request) -> dict[str, Any]:
++    activity = await request.json()
++    actor = {"channel": CHANNEL, "channel_subject": activity.get("from", {}).get("aadObjectId", "")}
++    thread = activity.get("conversation", {}).get("id")
++    submitted = activity.get("value") or {}
++    if submitted.get("action_id"):
++        payload = {"capability": CAPABILITY, "operation": "act", "workflow_id": submitted.get("workflow_id"),
++                   "action_id": submitted["action_id"], "binding": submitted.get("binding"), "actor": actor,
++                   "channel_context": {"thread_ref": thread}}
++    else:
++        match = INCIDENT.search(activity.get("text", ""))
++        if not match:
++            return {"type": "message", "text": "Mention me with an incident id, for example INC-4917."}
++        payload = {"capability": CAPABILITY, "operation": "start", "input": {"incident_id": match.group(0)}, "actor": actor,
++                   "channel_context": {"thread_ref": thread, "reply_to": request.app.state.channel_urls.get(CHANNEL),
++                                       "idempotency_key": activity.get("id")}}
++    try:
++        resp = await gateway(request).handle(payload)
++    except CapabilityError as exc:
++        return {"type": "message", "text": exc.message}
++    return {"type": "message", "attachments": [teams.render(resp)]}
+diff --git a/headless/src/headless_ai_platform/renderers/teams.py b/headless/src/headless_ai_platform/renderers/teams.py
+new file mode 100644
+index 0000000..3c9bf9d
+--- /dev/null
++++ b/headless/src/headless_ai_platform/renderers/teams.py
+@@ -0,0 +1,22 @@
++"""Adaptive Card for Teams-style hosts."""
++
++from __future__ import annotations
++
++from typing import Any
++
++from headless_ai_platform.contracts import CapabilityResponse
++
++
++def render(r: CapabilityResponse) -> dict[str, Any]:
++    s = r.state
++    facts = [{"title": k, "value": v} for k, v in (("Workflow", r.workflow_id), ("Status", r.status.value),
++                                                   ("Root cause", s.summary), ("Recommended", s.recommended_action.description
++                                                    if s.recommended_action else None)) if v]
++    actions = [{"type": "Action.Submit", "title": a.label,
++                "data": {"workflow_id": r.workflow_id, "action_id": a.action_id, "binding": a.binding}}
++               for a in r.available_actions if a.allowed_for_actor]
++    return {"contentType": "application/vnd.microsoft.card.adaptive", "content": {
++        "type": "AdaptiveCard", "version": "1.5",
++        "body": [{"type": "TextBlock", "text": s.incident_id, "weight": "Bolder", "size": "Medium"},
++                 {"type": "FactSet", "facts": facts}],
++        "actions": actions}}
+diff --git a/headless/src/headless_ai_platform/server.py b/headless/src/headless_ai_platform/server.py
+index 4b7672d..ac9cdd7 100644
+--- a/headless/src/headless_ai_platform/server.py
++++ b/headless/src/headless_ai_platform/server.py
+@@ -16,10 +16,10 @@ from typing import Any
+ 
+ from fastapi import FastAPI
+ 
+-from headless_ai_platform.channels import event, rest, slack, web
++from headless_ai_platform.channels import event, rest, slack, teams, web
+ from headless_ai_platform.runtime import open_gateway
+ 
+-ROUTERS = {"slack": slack.router, "web": web.router, "rest": rest.router, "event": event.router}
++ROUTERS = {"slack": slack.router, "web": web.router, "rest": rest.router, "event": event.router, "teams": teams.router}
+ SENDERS = {"slack": slack.send, "rest": rest.send}
+ 
+ 

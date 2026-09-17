@@ -1,0 +1,38 @@
+{
+  "text": "INC-4917 WAITING_APPROVAL",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": ":raised_hand: *INC-4917* · `wf-a231fc3a76` · *waiting approval*\n*Root cause:* The checkout‑api v4.17 release reduced its orders‑db connection pool max from 50 to 10, exhausting all connections and blocking requests.\n*Recommended:* rollback release checkout-api to v4.16 in production (needs `incident-commander`)"
+      }
+    },
+    {
+      "type": "actions",
+      "block_id": "wf:wf-a231fc3a76",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "approve-remediation",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve source_control.rollback_release → v4.16"
+          },
+          "value": "wf-a231fc3a76|831146605453e42b",
+          "style": "primary"
+        },
+        {
+          "type": "button",
+          "action_id": "reject-remediation",
+          "text": {
+            "type": "plain_text",
+            "text": "Reject"
+          },
+          "value": "wf-a231fc3a76|831146605453e42b",
+          "style": "danger"
+        }
+      ]
+    }
+  ]
+}

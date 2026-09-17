@@ -1,0 +1,110 @@
+{
+  "run_id": "2026-09-17-recorded",
+  "mode": "live",
+  "finished": "2026-09-17T17:49:26Z",
+  "scenarios": {
+    "h1": {
+      "title": "Same capability, different channels",
+      "pass": true,
+      "seconds": 384.6,
+      "checks": {
+        "same_semantics": true,
+        "completed_everywhere": true,
+        "authoritative_remediation": true,
+        "same_policy_outcome": true,
+        "platform_evals_pass": true,
+        "channel_recorded": true
+      }
+    },
+    "h2": {
+      "title": "Slack \u2192 Web \u2192 CLI handoff (separate processes)",
+      "pass": true,
+      "seconds": 122.9,
+      "checks": {
+        "one_workflow_id": true,
+        "one_trace": true,
+        "started_in_slack": true,
+        "approved_on_web": true,
+        "completed": true,
+        "work_spanned_two_processes": true,
+        "thread_got_both_updates": true,
+        "platform_evals_pass": true
+      }
+    },
+    "h3": {
+      "title": "Add a channel, change a rule (change scope)",
+      "pass": true,
+      "seconds": null,
+      "checks": {
+        "all_patches_apply_and_import": true,
+        "new_channel_touches_no_core_file": true,
+        "new_channel_keeps_import_contracts": true,
+        "new_channel_completes_a_workflow": true,
+        "new_channel_gets_existing_governance": true,
+        "baseline_new_channel_adds_a_governance_copy": true,
+        "rule_change_is_one_place_headless": true,
+        "rule_change_reaches_every_channel": true,
+        "baseline_rule_change_edits_every_copy": true,
+        "controlled_drift_is_visible": true
+      }
+    },
+    "h4": {
+      "title": "Governance is the same in every channel",
+      "pass": true,
+      "seconds": 583.5,
+      "checks": {
+        "same_decision_every_channel": true,
+        "decision_is_require_approval": true,
+        "nothing_executed_before_approval": true,
+        "every_forgery_refused": true,
+        "workflow_still_waiting": true,
+        "no_write_in_audit": true
+      }
+    },
+    "h5": {
+      "title": "Same person, same authority, any channel",
+      "pass": true,
+      "seconds": 137.3,
+      "checks": {
+        "alice_one_principal": true,
+        "alice_same_roles": true,
+        "bob_one_principal": true,
+        "bob_denied_everywhere": true,
+        "bob_never_offered_the_button": true,
+        "still_waiting_after_bob": true,
+        "alice_approves_from_another_channel": true
+      }
+    },
+    "h6": {
+      "title": "Rendering needs no reasoning",
+      "pass": true,
+      "seconds": 120.2,
+      "checks": {
+        "no_activity_while_rendering": true,
+        "workflow_had_real_activity": true
+      }
+    },
+    "h7": {
+      "title": "The channel dies; the workflow does not",
+      "pass": true,
+      "seconds": 174.3,
+      "checks": {
+        "one_workflow_id": true,
+        "one_trace": true,
+        "started_in_slack": true,
+        "approved_on_web": true,
+        "completed": true,
+        "work_spanned_two_processes": true,
+        "thread_got_both_updates": true,
+        "platform_evals_pass": true,
+        "slack_really_down": true,
+        "completed_while_slack_down": true,
+        "completion_queued_while_down": true,
+        "no_message_while_down": true,
+        "delivered_after_restart": true
+      }
+    }
+  },
+  "passed": 7,
+  "total": 7
+}

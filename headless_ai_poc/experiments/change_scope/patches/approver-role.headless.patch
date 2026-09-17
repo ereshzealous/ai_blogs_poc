@@ -1,0 +1,27 @@
+diff --git a/layered/config/policies.yaml b/layered/config/policies.yaml
+index 336f49e..199f967 100644
+--- a/layered/config/policies.yaml
++++ b/layered/config/policies.yaml
+@@ -20,8 +20,8 @@ rules:
+   - id: P4-prod-high-risk-approval
+     when: { risk: [HIGH_RISK_WRITE], environment: [production] }
+     decision: REQUIRE_APPROVAL
+-    approver_role: incident-commander
+-    reason: High-risk production change needs an incident commander's approval bound to this exact invocation.
++    approver_role: release-manager
++    reason: High-risk production change needs the release manager's approval bound to this exact invocation.
+   - id: P5-low-risk-write
+     when: { risk: [LOW_RISK_WRITE] }
+     decision: ALLOW
+diff --git a/layered/config/principals.yaml b/layered/config/principals.yaml
+index 5691412..1c763ac 100644
+--- a/layered/config/principals.yaml
++++ b/layered/config/principals.yaml
+@@ -1,6 +1,6 @@
+ # Synthetic identities. No real users.
+ users:
+-  alice: { display_name: Alice (SRE on call), roles: [sre, incident-commander] }
++  alice: { display_name: Alice (SRE on call), roles: [sre, incident-commander, release-manager] }
+   bob:   { display_name: Bob (developer), roles: [developer] }
+ # Chat user ids (Slack-shaped payloads) map to platform users.
+ chat_users:

@@ -1,0 +1,106 @@
+{
+  "checks": {
+    "same_semantics": true,
+    "completed_everywhere": true,
+    "authoritative_remediation": true,
+    "same_policy_outcome": true,
+    "platform_evals_pass": false,
+    "channel_recorded": true
+  },
+  "facts": {
+    "channels": {
+      "cli": {
+        "workflow_id": "wf-bb3e07ebeb",
+        "status": "COMPLETED",
+        "tool": "source_control.rollback_release",
+        "target": "v4.16",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "approval": "APPROVED",
+        "verified": true,
+        "started_via": "cli",
+        "seconds": 151.7,
+        "eval_ok": true,
+        "eval_checks": "8/8",
+        "eval_failed": [],
+        "tools": [
+          "itsm.get_incident",
+          "itsm.get_incident",
+          "source_control.search_deployments",
+          "observability.query_latency",
+          "observability.search_logs",
+          "observability.get_slow_trace",
+          "database.get_connection_pool_stats",
+          "source_control.get_diff",
+          "source_control.rollback_release",
+          "observability.query_latency",
+          "itsm.update_incident"
+        ],
+        "model_calls": 11,
+        "tokens": 22029,
+        "spans": 90
+      },
+      "rest": {
+        "workflow_id": "wf-f381c0e479",
+        "status": "COMPLETED",
+        "tool": "source_control.rollback_release",
+        "target": "v4.16",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "approval": "APPROVED",
+        "verified": true,
+        "started_via": "rest",
+        "seconds": 100.6,
+        "eval_ok": false,
+        "eval_checks": "7/8",
+        "eval_failed": [
+          "correct_deployment"
+        ],
+        "tools": [
+          "itsm.get_incident",
+          "itsm.get_incident",
+          "source_control.rollback_release",
+          "observability.query_latency",
+          "itsm.update_incident"
+        ],
+        "model_calls": 5,
+        "tokens": 7364,
+        "spans": 60
+      },
+      "slack": {
+        "workflow_id": "wf-3367eae73d",
+        "status": "COMPLETED",
+        "tool": "source_control.rollback_release",
+        "target": "v4.16",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "approval": "APPROVED",
+        "verified": true,
+        "started_via": "slack",
+        "seconds": 100.3,
+        "eval_ok": true,
+        "eval_checks": "8/8",
+        "eval_failed": [],
+        "tools": [
+          "itsm.get_incident",
+          "itsm.get_incident",
+          "source_control.search_deployments",
+          "source_control.rollback_release",
+          "observability.query_latency",
+          "itsm.update_incident"
+        ],
+        "model_calls": 6,
+        "tokens": 9975,
+        "spans": 65
+      }
+    },
+    "identical_trajectories": false,
+    "distinct_trajectories": 3
+  },
+  "pass": false,
+  "scenario": "h1",
+  "seconds": 354.6
+}

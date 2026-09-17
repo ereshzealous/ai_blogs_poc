@@ -1,0 +1,18 @@
+# Headless boundary configuration. The layered platform keeps its own config (models, policy, principals).
+paths:
+  headless_db: var/headless.db       # interactions, channel subscriptions, notification outbox
+  platform_db: var/platform.db       # passed to the layered platform as LAP_PLATFORM_DB
+  enterprise_db: var/enterprise.db   # the simulated enterprise systems (LAP_ENTERPRISE_DB)
+  runs_dir: runs/traces              # LAP_RUNS_DIR: platform traces
+
+capabilities:
+  incident.remediation:
+    version: "1"
+    description: Diagnose a production incident, recommend a remediation, apply it once approved, verify and record.
+    default_request: >-
+      Checkout API latency increased after the 10:15 production deployment. Investigate the cause, recommend the
+      safest remediation, apply the approved action and update the incident.
+
+notifications:
+  poll_interval_s: 0.5
+  max_attempts: 50

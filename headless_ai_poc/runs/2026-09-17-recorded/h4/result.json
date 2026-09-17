@@ -1,0 +1,71 @@
+{
+  "checks": {
+    "same_decision_every_channel": true,
+    "decision_is_require_approval": true,
+    "nothing_executed_before_approval": true,
+    "every_forgery_refused": true,
+    "workflow_still_waiting": true,
+    "no_write_in_audit": true
+  },
+  "facts": {
+    "channels": {
+      "slack": {
+        "workflow_id": "wf-c63d0da592",
+        "status": "WAITING_APPROVAL",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "executed_before_approval": false
+      },
+      "rest": {
+        "workflow_id": "wf-6dfcb79844",
+        "status": "WAITING_APPROVAL",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "executed_before_approval": false
+      },
+      "cli": {
+        "workflow_id": "wf-43d4c5037e",
+        "status": "WAITING_APPROVAL",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "executed_before_approval": false
+      },
+      "web": {
+        "workflow_id": "wf-4f328272eb",
+        "status": "WAITING_APPROVAL",
+        "policy": "REQUIRE_APPROVAL",
+        "rule": "P4-prod-high-risk-approval",
+        "required_role": "incident-commander",
+        "executed_before_approval": false
+      }
+    },
+    "forgery_attempts": [
+      {
+        "attempt": "approved: true on the request",
+        "outcome": "INVALID_REQUEST"
+      },
+      {
+        "attempt": "approved: true inside input",
+        "outcome": "INVALID_REQUEST"
+      },
+      {
+        "attempt": "principal_id asserted by the channel",
+        "outcome": "INVALID_REQUEST"
+      },
+      {
+        "attempt": "approve with an invented binding",
+        "outcome": "CONFLICT"
+      },
+      {
+        "attempt": "unknown action 'force-execute'",
+        "outcome": "CONFLICT"
+      }
+    ]
+  },
+  "pass": true,
+  "scenario": "h4",
+  "seconds": 583.5
+}

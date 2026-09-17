@@ -1,0 +1,43 @@
+[project]
+name = "headless-ai-platform"
+version = "0.1.0"
+description = "POC: a headless capability boundary around the layered agent platform, one incident (INC-4917) across Slack, Web, CLI, REST and events"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "layered-agent-platform",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "httpx>=0.27",
+    "pydantic>=2.8",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "import-linter>=2.1"]
+
+[project.scripts]
+hai = "headless_ai_platform.channels.cli:main"
+hai-exp = "experiments.run:main"
+
+# Part 2 is used as an editable path dependency: it reads its config, runbooks and mock enterprise systems from its
+# own folder, so this POC needs the whole repository, not this folder alone.
+[tool.uv.sources]
+layered-agent-platform = { path = "../layered_agent_poc", editable = true }
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/headless_ai_platform", "baseline", "experiments"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -rA"
+filterwarnings = ["ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning"]
+markers = [
+    "platform: starts the real layered platform (MCP server subprocesses); model answers are replayed or faked",
+    "ollama: calls the local Ollama models (skipped when Ollama or a model is unavailable)",
+]

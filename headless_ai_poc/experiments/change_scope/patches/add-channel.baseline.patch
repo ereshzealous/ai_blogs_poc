@@ -1,0 +1,120 @@
+diff --git a/headless/baseline/channel_coupled/teams_assistant.py b/headless/baseline/channel_coupled/teams_assistant.py
+new file mode 100644
+index 0000000..29b1c24
+--- /dev/null
++++ b/headless/baseline/channel_coupled/teams_assistant.py
+@@ -0,0 +1,114 @@
++"""Teams incident bot. Owns everything it needs to answer a mention and act on an Adaptive Card submit."""
++
++from __future__ import annotations
++
++import json
++import logging
++import time
++from typing import Any
++
++import httpx
++
++log = logging.getLogger("teams-assistant")
++
++# ------------------------------------------------------------------ prompt (Teams flavour: card-friendly)
++SYSTEM_PROMPT = """You are the incident assistant in Microsoft Teams.
++Investigate the incident with the tools, then answer with a title line and up to four facts.
++Recommend exactly one remediation. For services released by the release pipeline, recommend
++source_control.rollback_release to the previous version. Never change production yourself."""
++PROMPT_VERSION = "teams-v1"
++
++# ------------------------------------------------------------------ model
++MODEL = "gpt-oss:20b"
++OLLAMA = "http://localhost:11434"
++MODEL_OPTIONS = {"temperature": 0, "num_ctx": 16384}
++
++# ------------------------------------------------------------------ tools
++TOOLS = ["itsm.get_incident", "source_control.list_deployments", "observability.query_latency",
++         "database.get_connection_pool_stats", "source_control.rollback_release", "itsm.update_incident"]
++HIGH_RISK = {"source_control.rollback_release", "kubernetes.rollback_deployment"}
++
++
++def call_tool(tool: str, args: dict[str, Any]) -> dict[str, Any]:
++    resp = httpx.post(f"http://localhost:8700/tools/{tool}", json=args, timeout=8)
++    resp.raise_for_status()
++    return resp.json()
++
++
++# ------------------------------------------------------------------ identity and policy
++AAD_GROUPS = {"29:aad-alice-7f3e": ["sre", "incident-commander"], "29:aad-bob-0c21": ["developer"]}  # from Graph
++
++
++def roles_of(aad_object_id: str) -> list[str]:
++    return AAD_GROUPS.get(aad_object_id, [])
++
++
++def approval_role(tool: str, environment: str) -> str | None:
++    """Production rollbacks need an incident commander."""
++    if tool in HIGH_RISK and environment == "production":
++        return "incident-commander"
++    return None
++
++
++def may_approve(aad_object_id: str, tool: str, environment: str) -> bool:
++    role = approval_role(tool, environment)
++    return role is None or role in roles_of(aad_object_id)
++
++
++# ------------------------------------------------------------------ memory (per Teams conversation)
++CONVERSATIONS: dict[str, list[dict[str, str]]] = {}
++PENDING: dict[str, dict[str, Any]] = {}  # conversation id -> proposed action waiting for a card submit
++
++
++# ------------------------------------------------------------------ workflow
++def investigate(conversation_id: str, user: str, text: str) -> dict[str, Any]:
++    history = CONVERSATIONS.setdefault(conversation_id, [{"role": "system", "content": SYSTEM_PROMPT}])
++    history.append({"role": "user", "content": text})
++    started = time.monotonic()
++    for _ in range(8):
++        reply = httpx.post(f"{OLLAMA}/api/chat", timeout=240, json={
++            "model": MODEL, "messages": history, "stream": False, "options": MODEL_OPTIONS,
++            "tools": [{"type": "function", "function": {"name": t, "parameters": {"type": "object"}}} for t in TOOLS]}).json()
++        msg = reply["message"]
++        history.append(msg)
++        calls = msg.get("tool_calls") or []
++        if not calls:
++            break
++        for c in calls:
++            name, args = c["function"]["name"], c["function"].get("arguments", {})
++            if name in HIGH_RISK:
++                PENDING[conversation_id] = {"tool": name, "args": args, "requested_by": user}
++                history.append({"role": "tool", "content": "queued for approval"})
++                continue
++            history.append({"role": "tool", "content": json.dumps(call_tool(name, args))[:2000]})
++    log.info("teams investigate conversation=%s user=%s ms=%d prompt=%s", conversation_id, user,
++             (time.monotonic() - started) * 1000, PROMPT_VERSION)
++    return {"text": history[-1].get("content", ""), "pending": PENDING.get(conversation_id)}
++
++
++def on_submit(conversation_id: str, user: str, approve: bool) -> str:
++    action = PENDING.get(conversation_id)
++    if action is None:
++        return "Nothing is waiting for approval in this conversation."
++    env = action["args"].get("environment", "production")
++    if not may_approve(user, action["tool"], env):
++        return "Only an incident commander can approve production rollbacks."
++    PENDING.pop(conversation_id)
++    if not approve:
++        return "Rejected."
++    result = call_tool(action["tool"], action["args"])
++    call_tool("itsm.update_incident", {"incident_id": action["args"].get("incident_id"), "status": "mitigated",
++                                       "note": f"Rolled back via Teams by {user}"})
++    log.info("teams approved conversation=%s user=%s tool=%s", conversation_id, user, action["tool"])
++    return f"Done: {result.get('status', 'ok')}"
++
++
++# ------------------------------------------------------------------ rendering
++def card(answer: dict[str, Any]) -> dict[str, Any]:
++    body = [{"type": "TextBlock", "text": answer["text"], "wrap": True}]
++    actions = []
++    if answer.get("pending"):
++        body.append({"type": "TextBlock", "text": "Needs an incident commander.", "isSubtle": True})
++        actions = [{"type": "Action.Submit", "title": "Approve", "data": {"approve": True}},
++                   {"type": "Action.Submit", "title": "Reject", "data": {"approve": False}}]
++    return {"type": "AdaptiveCard", "version": "1.5", "body": body, "actions": actions}

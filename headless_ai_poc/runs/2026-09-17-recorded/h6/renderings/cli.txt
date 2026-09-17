@@ -1,0 +1,9 @@
+⏸ wf-a231fc3a76  INC-4917  WAITING_APPROVAL   (started via slack by alice; you are alice)
+  root cause  The checkout‑api v4.17 release reduced its orders‑db connection pool max from 50 to 10, exhausting all connections and blocking requests.
+  suspect     checkout-api v4.17 (DEP-88213)
+  recommended rollback release checkout-api to v4.16 in production
+  policy      REQUIRE_APPROVAL (P4-prod-high-risk-approval)
+  approval    PENDING
+  trace       1e6721200da221232b1cd3c75ef474f2
+  next        hai approve wf-a231fc3a76
+  next        hai reject wf-a231fc3a76

@@ -1,0 +1,85 @@
+[importlinter]
+root_packages =
+    headless_ai_platform
+    baseline
+    agent_platform
+    mock_enterprise
+    traffic
+include_external_packages = True
+
+[importlinter:contract:only-the-adapter-touches-part-2]
+name = Only platform.layered imports the layered platform, and only its facade, commands and principal directory
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    headless_ai_platform.contracts
+    headless_ai_platform.identity
+    headless_ai_platform.capabilities
+    headless_ai_platform.gateway
+    headless_ai_platform.interactions
+    headless_ai_platform.renderers
+    headless_ai_platform.channels
+    headless_ai_platform.server
+forbidden_modules =
+    agent_platform
+    mock_enterprise
+    traffic
+
+[importlinter:contract:facade-only]
+name = The platform adapter never reaches past Part 2's facade
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    headless_ai_platform.platform
+forbidden_modules =
+    agent_platform.orchestration
+    agent_platform.agents
+    agent_platform.actions
+    agent_platform.models
+    agent_platform.context
+    agent_platform.memory
+    agent_platform.knowledge
+    agent_platform.channels
+    mock_enterprise
+
+[importlinter:contract:channels-are-thin]
+name = Channel adapters use the gateway, contract and renderers; never the platform port or a capability
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    headless_ai_platform.channels
+forbidden_modules =
+    headless_ai_platform.platform
+    headless_ai_platform.capabilities
+    headless_ai_platform.identity
+    headless_ai_platform.interactions
+
+[importlinter:contract:renderers-are-pure]
+name = Renderers see only the contract: no gateway, platform, capability, identity, store or network
+type = forbidden
+allow_indirect_imports = False
+source_modules =
+    headless_ai_platform.renderers
+forbidden_modules =
+    headless_ai_platform.gateway
+    headless_ai_platform.platform
+    headless_ai_platform.capabilities
+    headless_ai_platform.identity
+    headless_ai_platform.interactions
+    headless_ai_platform.runtime
+    headless_ai_platform.channels
+    httpx
+    sqlite3
+
+[importlinter:contract:capabilities-hold-no-channel-code]
+name = Capabilities and the contract know no channel or renderer
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    headless_ai_platform.contracts
+    headless_ai_platform.capabilities
+    headless_ai_platform.gateway
+forbidden_modules =
+    headless_ai_platform.channels
+    headless_ai_platform.renderers
+    fastapi

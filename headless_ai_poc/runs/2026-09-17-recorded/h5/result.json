@@ -1,0 +1,77 @@
+{
+  "checks": {
+    "alice_one_principal": true,
+    "alice_same_roles": true,
+    "bob_one_principal": true,
+    "bob_denied_everywhere": true,
+    "bob_never_offered_the_button": true,
+    "still_waiting_after_bob": true,
+    "alice_approves_from_another_channel": true
+  },
+  "facts": {
+    "alice": {
+      "slack": {
+        "subject": "U04ALICE",
+        "principal": "alice",
+        "roles": [
+          "sre",
+          "incident-commander"
+        ]
+      },
+      "web": {
+        "subject": "oidc|alice-92ab",
+        "principal": "alice",
+        "roles": [
+          "sre",
+          "incident-commander"
+        ]
+      },
+      "cli": {
+        "subject": "alice@company.example",
+        "principal": "alice",
+        "roles": [
+          "sre",
+          "incident-commander"
+        ]
+      },
+      "rest": {
+        "subject": "api|alice",
+        "principal": "alice",
+        "roles": [
+          "sre",
+          "incident-commander"
+        ]
+      }
+    },
+    "bob": {
+      "slack": {
+        "subject": "U04BOB",
+        "principal": "bob",
+        "outcome": "FORBIDDEN",
+        "button_enabled": false
+      },
+      "web": {
+        "subject": "oidc|bob-51cd",
+        "principal": "bob",
+        "outcome": "FORBIDDEN",
+        "button_enabled": false
+      },
+      "cli": {
+        "subject": "bob@company.example",
+        "principal": "bob",
+        "outcome": "FORBIDDEN",
+        "button_enabled": false
+      },
+      "rest": {
+        "subject": "api|bob",
+        "principal": "bob",
+        "outcome": "FORBIDDEN",
+        "button_enabled": false
+      }
+    },
+    "interactions": 11
+  },
+  "pass": true,
+  "scenario": "h5",
+  "seconds": 137.3
+}

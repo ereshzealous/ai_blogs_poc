@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "capability": "incident.remediation",
+  "capability_version": "incident.remediation@1",
+  "workflow_id": "wf-a231fc3a76",
+  "status": "WAITING_APPROVAL",
+  "state": {
+    "incident_id": "INC-4917",
+    "service": "checkout-api",
+    "environment": "production",
+    "summary": "The checkout‑api v4.17 release reduced its orders‑db connection pool max from 50 to 10, exhausting all connections and blocking requests.",
+    "suspect": "checkout-api v4.17 (DEP-88213)",
+    "confidence": "high",
+    "recommended_action": {
+      "tool": "source_control.rollback_release",
+      "target": "v4.16",
+      "environment": "production",
+      "description": "rollback release checkout-api to v4.16 in production"
+    },
+    "policy_decision": "REQUIRE_APPROVAL",
+    "policy_rule": "P4-prod-high-risk-approval",
+    "approval_status": "PENDING",
+    "approval_required_role": "incident-commander",
+    "approved_by": null,
+    "remediation_status": null,
+    "verified": null,
+    "p95_ms": null,
+    "slo_p95_ms": null,
+    "incident_note": null,
+    "current_step": "await_approval"
+  },
+  "available_actions": [
+    {
+      "action_id": "approve-remediation",
+      "type": "APPROVE",
+      "label": "Approve source_control.rollback_release → v4.16",
+      "required_role": "incident-commander",
+      "allowed_for_actor": true,
+      "binding": "831146605453e42b"
+    },
+    {
+      "action_id": "reject-remediation",
+      "type": "REJECT",
+      "label": "Reject",
+      "required_role": "incident-commander",
+      "allowed_for_actor": true,
+      "binding": "831146605453e42b"
+    }
+  ],
+  "actor": {
+    "principal_id": "alice",
+    "channel": "slack"
+  },
+  "started_by": {
+    "principal_id": "alice",
+    "channel": "slack"
+  },
+  "trace_id": "1e6721200da221232b1cd3c75ef474f2",
+  "updated_at": "2026-09-17T17:32:52.546361+00:00",
+  "links": {
+    "self": "/v1/capabilities/incident.remediation/workflows/wf-a231fc3a76",
+    "actions": "/v1/capabilities/incident.remediation/workflows/wf-a231fc3a76/actions"
+  }
+}

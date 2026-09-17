@@ -71,33 +71,35 @@ $outside"
 
 frozen_list=$(
   if [ -f "$folder/.publish-frozen" ]; then
-    printf '%s\n' "$staged" | python3 -c '
+    git diff --cached --name-status | python3 -c '
 import fnmatch, sys
 from pathlib import Path
 folder, rules_file = sys.argv[1], sys.argv[2]
 rules = [l.strip() for l in Path(rules_file).read_text().splitlines() if l.strip() and not l.startswith("#")]
 for line in sys.stdin.read().splitlines():
-    rel = line[len(folder) + 1:]
-    frozen = False
+    status, _, path = line.partition("\t")
+    rel, frozen = path[len(folder) + 1:], False
     for rule in rules:
         negate = rule.startswith("!")
         pattern = rule[1:] if negate else rule
         if fnmatch.fnmatch(rel, pattern) or fnmatch.fnmatch(rel, pattern.rstrip("/") + "/*"):
             frozen = not negate
     if frozen:
-        print(rel)
+        print(f"{status[0]}  {rel}")
 ' "$folder" "$folder/.publish-frozen"
   fi
 )
 if [ -n "$frozen_list" ]; then
   count=$(printf '%s\n' "$frozen_list" | wc -l | tr -d ' ')
   if [ "$allow_frozen" -eq 1 ]; then
-    printf '   warning: %s frozen file(s) change in this commit (--allow-frozen):\n' "$count"
+    printf '   warning: %s frozen path(s) change in this commit (--allow-frozen):\n' "$count"
     printf '%s\n' "$frozen_list" | sed 's/^/     /' | head -20
   else
-    die "$count file(s) listed in $folder/.publish-frozen would change (rule 10). These are byte-exact artefacts;
-a diff here usually means something regenerated them. Publish with --allow-frozen only if the change is intended:
-$(printf '%s\n' "$frozen_list" | sed 's/^/  /' | head -20)"
+    die "$count path(s) listed in $folder/.publish-frozen would change (rule 10):
+$(printf '%s\n' "$frozen_list" | sed 's/^/  /' | head -20)
+M or D means something regenerated or removed a byte-exact artefact: check before you publish.
+A means either evidence you are publishing for the first time, or a stray file another run wrote into a frozen
+folder. If it is new evidence, publish it with --allow-frozen and say so in the message."
   fi
 fi
 

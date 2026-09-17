@@ -14,7 +14,9 @@ Three POCs live here, each written in its own workspace, often at the same time.
 8. **Say when you change something others depend on.** `headless_ai_poc` uses `layered_agent_poc`'s service facade. Changing that facade, its commands or its configuration means telling whoever maintains the dependent POC, in the commit body and directly.
 9. **Keep the machine's models in mind.** The POCs share one Ollama. Check before a long live run, and wait rather than compete: `uv run poc check --wait` in Part 2, or the equivalent elsewhere.
 
-10. **Say which files must never change by accident.** Some committed files are byte-exact artefacts: a published report, a generated catalogue, the evidence of a cited run. List them in `<folder>/.publish-frozen`, one glob per line, `!` to make an exception. The script then refuses a publish that changes them, unless you pass `--allow-frozen` and say why in the message.
+10. **Say which files must never change by accident.** Some committed files are byte-exact artefacts: a published report, a generated catalogue, the evidence of a cited run. List them in `<folder>/.publish-frozen`, one glob per line, `!` to make an exception. The script then refuses a publish that touches them, unless you pass `--allow-frozen` and say why in the message.
+
+    Added files count too, not only modified ones, because a stray file written into a frozen folder by another run is the failure this catches. So the first publish of new evidence under a frozen glob needs `--allow-frozen` once. Deleting a frozen file is refused for the same reason.
 
 ## The script
 

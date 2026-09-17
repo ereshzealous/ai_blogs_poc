@@ -64,3 +64,17 @@ def test_approvals_are_bound_to_one_digest(tmp_path):
     s.decide(a["id"], "alice", True)
     s.decide(a["id"], "bob", False)  # a decided approval cannot be flipped
     assert s.approval_for("wf-3", "d1")["status"] == "APPROVED"
+
+
+def test_relative_path_overrides_follow_the_working_directory(tmp_path, monkeypatch):
+    """A relative LAP_* value belongs to the caller's directory, so embedding this platform cannot write into it."""
+    from agent_platform import config
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("LAP_RUNS_DIR", "runs/h2")
+    monkeypatch.setenv("LAP_PLATFORM_DB", "state/platform.db")
+    monkeypatch.delenv("LAP_ENTERPRISE_DB", raising=False)
+    s = config.load_settings()
+    assert s.runs_dir == tmp_path / "runs" / "h2" and s.platform_db == tmp_path / "state" / "platform.db"
+    assert config.ROOT not in s.runs_dir.parents
+    assert s.enterprise_db.is_relative_to(config.ROOT)  # an unset value still defaults inside the POC

@@ -37,7 +37,12 @@ class Settings:
 
 
 def _path(value: str, env: str) -> Path:
-    p = Path(os.environ.get(env, value))
+    """A default from platform.yaml is relative to this package. An environment override is relative to the working
+    directory, like any other tool: a relative LAP_RUNS_DIR from another project must not write inside this one."""
+    override = os.environ.get(env)
+    if override:
+        return Path(override).expanduser().absolute()
+    p = Path(value)
     return p if p.is_absolute() else ROOT / p
 
 

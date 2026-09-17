@@ -379,7 +379,7 @@ Environment variables override configuration:
 |---|---|
 | `LAP_MODEL_REASONING`, `LAP_MODEL_SUMMARY`, `LAP_MODEL_EMBEDDINGS` | Replace the model for a route |
 | `OLLAMA_URL` | Use another Ollama server |
-| `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_RUNS_DIR`, `LAP_KNOWLEDGE_INDEX` | Move state elsewhere (the tests use this to isolate runs) |
+| `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_RUNS_DIR`, `LAP_KNOWLEDGE_INDEX` | Move state elsewhere (the tests use this to isolate runs). A relative value is taken from the current directory, so another project embedding this platform never writes inside it |
 | `LAP_CRASH_ON` | Kill the process with `SIGKILL` at a named point, for example `after_step:await_approval`, `executed:<tool>` or `timeout:<tool>` |
 | `LAP_MODEL_TRAFFIC` | `record:<dir>` appends every model answer to `<dir>`; `replay:<dir>` answers from it, with no model server |
 | `LAP_RECOVER_ON_START` | `1` (default) makes `lap serve` resume workflows a dead worker left `RUNNING` |

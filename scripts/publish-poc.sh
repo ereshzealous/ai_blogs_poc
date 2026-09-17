@@ -95,7 +95,7 @@ if [ -n "$frozen_list" ]; then
     printf '   warning: %s frozen path(s) change in this commit (--allow-frozen):\n' "$count"
     printf '%s\n' "$frozen_list" | sed 's/^/     /' | head -20
   else
-    die "$count path(s) listed in $folder/.publish-frozen would change (rule 10):
+    die "$count path(s) listed in $folder/.publish-frozen would change (rule 11):
 $(printf '%s\n' "$frozen_list" | sed 's/^/  /' | head -20)
 M or D means something regenerated or removed a byte-exact artefact: check before you publish.
 A means either evidence you are publishing for the first time, or a stray file another run wrote into a frozen

@@ -212,6 +212,15 @@ uv run poc run --plan quick              # about 5 minutes
 
 `poc check` looks at Python, the Ollama models, what else is loaded in Ollama, free memory and disk, and starts the 5 MCP servers. Each problem comes with the command that fixes it.
 
+**Sharing Ollama.** A live run shares Ollama with any other process on the machine. Both slow down, and a model swap can cost minutes. `poc check` watches Ollama for a few seconds and warns when another process is sending it requests. To wait for that process before running:
+
+```bash
+uv run poc check --wait && uv run poc run --plan full    # starts after Ollama has been idle for 2 minutes
+uv run poc check --wait 300                              # or choose the idle period in seconds
+```
+
+Replay plans don't use Ollama, so they can run at any time.
+
 `poc demo` runs INC-4917 in its own folder under `runs/demo/`:
 
 1. alice reports the incident; the agents investigate and stop at the approval gate;
@@ -746,7 +755,7 @@ uv run lint-imports
 | A plan's run fails with `not met` | An expectation did not hold. The Measured column in the result table and in the report says what happened |
 | Replay prints `request differs from the recording` | The code now asks the model something the recording did not see. The run continues with the recorded answer; record a fresh run with `uv run poc run` |
 | `lap doctor` lists missing models | `ollama pull` the missing model, or point `OLLAMA_URL` at the right server |
-| Model calls take minutes | Another process is using the same model with a different `num_ctx`, so Ollama reloads it on every call. Keep `num_ctx` equal (32768 here) or stop the other process |
+| Model calls take minutes | Another process is using Ollama: `poc check` shows `Ollama in use`. Wait with `uv run poc check --wait`, or run `--plan replay`. If it uses the same model with a different `num_ctx`, Ollama reloads the model on every call; keep `num_ctx` equal (32768 here) |
 | A run starts from a rolled-back world | Run `uv run python -m mock_enterprise reset` before each run |
 | Old workflows clutter `lap list` | Delete `var/platform.db*`; it is recreated on the next command |
 | A workflow is stuck in `RUNNING` | Its process died. Run `uv run lap recover` or `uv run lap resume <wf-id>` |

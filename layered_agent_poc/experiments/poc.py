@@ -1,6 +1,7 @@
 """`poc`: the POC's front door. One command per thing a reader wants to do.
 
-    uv run poc check                         is this machine ready? (Ollama, models, memory, MCP servers)
+    uv run poc check [--wait]                is this machine ready? (Ollama, models, memory, MCP servers);
+                                             --wait first waits until no other process is using Ollama
     uv run poc demo [--replay]               INC-4917 end to end in about a minute, then open its report
     uv run poc plans                         the run plans in plans/: what each tests
     uv run poc plan show <plan>              what a plan runs, which faults and kills it injects, what counts as a pass
@@ -125,6 +126,33 @@ async def mcp_tools() -> int:
             await pool.close()
 
 
+def ollama_activity(window_s: float = 8.0) -> set[str]:
+    """Loaded models that answered a request during the window. Ollama moves a model's keep-alive deadline
+    (`expires_at` in /api/ps) every time a request finishes, so a moving deadline means someone is using it."""
+    def deadlines() -> dict[str, str]:
+        return {m["name"]: m.get("expires_at", "") for m in httpx.get(f"{ollama_url()}/api/ps", timeout=3).json().get("models", [])}
+
+    first, busy, end = deadlines(), set(), time.monotonic() + window_s
+    while first and time.monotonic() < end:
+        time.sleep(1.0)
+        busy |= {n for n, e in deadlines().items() if n in first and e != first[n]}
+    return busy
+
+
+def wait_for_ollama(quiet_for_s: int = 120) -> None:
+    """Block until no loaded model has answered a request for `quiet_for_s` seconds."""
+    print(f"Waiting until Ollama has been idle for {quiet_for_s} s (Ctrl-C to stop) ...", flush=True)
+    idle_since, last = time.monotonic(), None
+    while time.monotonic() - idle_since < quiet_for_s:
+        busy = ollama_activity(10.0)
+        if busy:
+            idle_since = time.monotonic()
+            if busy != last:
+                print(f"  {time.strftime('%H:%M:%S')}  in use: {', '.join(sorted(busy))}", flush=True)
+        last = busy
+    print(f"  {time.strftime('%H:%M:%S')}  idle for {quiet_for_s} s", flush=True)
+
+
 def check(replay: bool = False, quiet: bool = False, models: list[str] | None = None) -> bool:
     models = models or MODELS
     rows: list[tuple[str, str, str]] = []
@@ -145,6 +173,10 @@ def check(replay: bool = False, quiet: bool = False, models: list[str] | None = 
                     rows.append(("warn", "Ollama is busy", f"{name} is loaded; runs will swap models and slow down"))
                 elif ctx and name != f"{EMBEDDING}:latest" and ctx != NUM_CTX:
                     rows.append(("warn", "Ollama context", f"{name} is loaded with num_ctx {ctx}; the POC uses {NUM_CTX}, so Ollama will reload it"))
+            busy = ollama_activity() if loaded else set()
+            if busy:
+                rows.append(("warn", "Ollama in use", f"another process is sending requests to {', '.join(sorted(busy))}. A live run now is slower, "
+                                                      "and it slows that process too. Wait with `uv run poc check --wait`, or use `--plan replay`"))
         except (httpx.HTTPError, KeyError, ValueError):
             rows.append(("fail", "Ollama", f"not reachable at {ollama_url()}: start the Ollama app (or `ollama serve`), "
                                             "or use --replay to run without it"))
@@ -164,6 +196,8 @@ def check(replay: bool = False, quiet: bool = False, models: list[str] | None = 
     if not quiet or failed:
         heading("Checking this machine")
         table(rows)
+    elif any(s == "warn" for s, _, _ in rows):
+        table([r for r in rows if r[0] == "warn"])
     if not quiet and not failed:
         heading("What you can run")
         from experiments import plan as plans
@@ -425,6 +459,8 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     ck = sub.add_parser("check", help="is this machine ready?")
     ck.add_argument("--replay", action="store_true", help="check for a replay run (no Ollama needed)")
+    ck.add_argument("--wait", nargs="?", const=120, type=int, metavar="SECONDS",
+                    help="first wait until no other process has used Ollama for SECONDS (default 120)")
     dm = sub.add_parser("demo", help="INC-4917 end to end, then open its report")
     dm.add_argument("--model", default="gpt-oss:20b", choices=MODELS)
     dm.add_argument("--replay", action="store_true", help="use recorded model answers; no Ollama needed")
@@ -457,6 +493,11 @@ def main() -> None:
     op.add_argument("target", nargs="?", default="latest", help="latest, demo, index, or a run id")
     a = ap.parse_args()
     if a.cmd == "check":
+        if a.wait and not a.replay:
+            try:
+                wait_for_ollama(a.wait)
+            except httpx.HTTPError:
+                pass  # the check below reports an unreachable server
         sys.exit(0 if check(replay=a.replay) else 1)
     if a.cmd == "demo":
         sys.exit(demo(a.model, a.replay, not a.no_open, a.save_recording))

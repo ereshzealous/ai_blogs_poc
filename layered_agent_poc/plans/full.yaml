@@ -1,0 +1,54 @@
+# The full plan: everything the article reports. Every other plan changes some of these keys.
+# Explain a plan:  uv run poc plan show full        Run it:  uv run poc run --plan full
+name: full
+description: Every experiment with both models, three runs each, plus the end-to-end tests against the models.
+minutes: 15                        # rough, on an idle 24 GB Apple Silicon laptop
+
+models: [gpt-oss:20b, qwen3:8b]    # generative models; each must be pulled in Ollama
+runs: 3                            # platform runs per model, and monolith runs
+
+model_answers:
+  mode: live                       # live: ask Ollama · replay: answer from a recorded run, no Ollama needed
+  replay_from: null                # the run id to replay, when mode is replay
+  record: true                     # live runs keep their model answers under traffic/ for later replays
+
+experiments:                       # run in this order; delete a line to skip that experiment
+  - tests                          # pytest and the 7 import contracts
+  - faults                         # E5, E6: tool timeouts and a lost write response
+  - crash                          # E4: SIGKILL, checkpoint, resume
+  - monolith                       # the baseline agent, same incident
+  - workflow                       # E2, E3, E7, E8, E9: runs per model with evals and traces
+  - change                         # E1: requirement-change patches
+  - export                         # data for the article's figures
+
+tests:
+  model_tests: true                # also the end-to-end tests against the models (skipped in replay)
+
+faults:                            # one platform run with injected faults
+  model: gpt-oss:20b
+  arm_at: approval                 # approval: faults hit remediation, verification and the incident update · start: also the investigation
+  inject:                          # one entry per tool; mode is timeout or lose_response (writes only)
+    - {tool: observability.query_latency, mode: timeout, times: 2, delay_s: 3.0}
+    - {tool: source_control.rollback_release, mode: lose_response, times: 1, delay_s: 4.0}
+
+crash:                             # one workflow, killed with SIGKILL at each point in turn
+  model: gpt-oss:20b
+  kill_at:                         # after_step:<step> · executed:<tool> · timeout:<tool> (needs a timeout in crash.inject)
+    - after_step:await_approval
+    - executed:source_control.rollback_release
+  inject: []                       # faults for this workflow, same format as faults.inject
+
+monolith:
+  lost_response: true              # the same lost rollback response, without idempotency
+  crash: true                      # SIGKILL while it waits for approval
+
+expect:                            # the run passes only if all of these hold; null turns one off
+  tests_pass: true
+  contracts_kept: true
+  platform_runs_complete: all      # all, or a number of runs per model
+  platform_all_checks: all         # runs per model that pass all 8 eval checks
+  lost_response_backend_executions: 1
+  monolith_lost_response_rollbacks_at_least: 2
+  crash_final_status: COMPLETED
+  crash_backend_rollbacks: 1
+  change_contracts_kept: true

@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from experiments.plan import fault_text
 from agent_platform.channels.html_report import (
     AGENT_TONE, CHECKS, chip, code, details, esc, fnum, gantt, hbars, hms, jcompact, kv, lanes, legend, note, ok_chip, page,
     pre, repaired, scrub, section, stat, table, trace_tree, ts, workflow_body,
@@ -129,6 +130,10 @@ def collect(base: Path) -> dict[str, Any]:
     d["stages"] = stages_of(base)
     if (base / "run.json").exists():
         d["meta"] = load(base / "run.json")
+    from experiments import plan as plans
+
+    d["plan"] = plans.for_run(base, (d.get("meta") or {}).get("profile"))
+    d["expectations"] = [{"status": st, "check": name, "measured": got} for st, name, got in plans.evaluate(base, d["plan"])]
     if (base / "tests.json").exists():
         d["tests"] = load(base / "tests.json")
     if (base / "workflow" / "summary.json").exists():
@@ -149,16 +154,17 @@ def collect(base: Path) -> dict[str, Any]:
         c = load(base / "crash" / "summary.json")
         d["crash"] = {k: c[k] for k in ("workflow_id", "processes", "backend_rollbacks", "model_calls_before_crash",
                                         "model_calls_after_resume", "tokens_before_crash", "tokens_after_crash")}
-        d["crash"] |= {"status_after_first_kill": c["run"]["status_after"], "final_status": c["resume"]["status"],
-                       "remediation_replayed": c["resume"]["remediation_replayed"]}
+        d["crash"] |= {"status_after_first_kill": c["run"]["status_after"], "final_status": plans.final_status(c),
+                       "remediation_replayed": c["resume"]["remediation_replayed"], "sigkills": plans.kills(c),
+                       "kill_at": c.get("kill_at", ["after_step:await_approval", "executed:source_control.rollback_release"])}
     if (base / "monolith" / "summary.json").exists():
         m = load(base / "monolith" / "summary.json")
         d["monolith"] = {"runs": len(m["runs"]), "median_seconds": med([r["seconds"] for r in m["runs"]]),
                          "median_tokens": med([r["tokens"] for r in m["runs"]]), "kubernetes_rollbacks": m["kubernetes_rollbacks"],
-                         "lost_response_rollbacks": m["lost_response"]["world"]["rollback_executions"],
-                         "crash_seconds_to_prompt": m["crash"]["seconds_until_approval_prompt"],
-                         "crash_state_left": m["crash"]["state_left_behind"]}
-    cs = change_scope_of(base)
+                         "lost_response_rollbacks": (m.get("lost_response") or {}).get("world", {}).get("rollback_executions"),
+                         "crash_seconds_to_prompt": (m.get("crash") or {}).get("seconds_until_approval_prompt"),
+                         "crash_state_left": (m.get("crash") or {}).get("state_left_behind")}
+    cs = change_scope_of(base) if "change" in d["plan"]["experiments"] else None
     if cs:
         d["change_scope"] = [{"id": c["id"], "title": c["title"],
                               **{side: {k: c[side].get(k) for k in ("files", "added", "removed", "concerns", "applies", "compiles", "imports", "contracts_kept")}
@@ -179,12 +185,12 @@ def s_overview(base: Path, d: dict[str, Any]) -> str:
         w = d["workflow"]
         tiles.append(stat("Platform runs, all 8 checks", f'{sum(m["all_checks_passed"] for m in w.values())}/{sum(m["runs"] for m in w.values())}',
                           " · ".join(f'{k} {m["all_checks_passed"]}/{m["runs"]}' for k, m in w.items()), "purple"))
-    if "monolith" in d and "faults" in d:
+    if "monolith" in d and "faults" in d and d["monolith"]["lost_response_rollbacks"] is not None:
         tiles.append(stat("Rollbacks after a lost response", f'{d["monolith"]["lost_response_rollbacks"]} → {d["faults"]["rollback"]["backend_executions"]}',
                           "monolith → platform", "red"))
     if "crash" in d:
         c = d["crash"]
-        tiles.append(stat("SIGKILL crashes survived", str(c["processes"] - 1),
+        tiles.append(stat("SIGKILL crashes survived", str(c["sigkills"]),
                           f'{c["processes"]} processes · {c["backend_rollbacks"]} rollback · replayed {str(c["remediation_replayed"]).lower()}', "orange"))
     if d.get("change_scope") and len(d["change_scope"]) > 1:
         sm = d["change_scope"][1]
@@ -196,13 +202,25 @@ def s_overview(base: Path, d: dict[str, Any]) -> str:
         mode = "live, model traffic recorded" if m.get("recorded") else "live"
         if m.get("mode") == "replay":
             mode = f"replay of runs/{m.get('replay_from')}"
-        about = kv([("Run", f'{esc(mode)} · profile {esc(m.get("profile", "custom"))} · models {esc(", ".join(m.get("models", [])))} · '
+        about = kv([("Run", f'{esc(mode)} · plan {esc(m.get("profile", "custom"))} · models {esc(", ".join(m.get("models", [])))} · '
                             f'{m.get("k")} run(s) per scenario · model tests {"on" if m.get("model_tests") else "off"}'),
                     ("When", f'{esc(m.get("started", ""))} → {esc(m.get("finished", "running"))} · {esc(m.get("host", {}).get("platform", ""))}, '
                              f'Python {esc(m.get("host", {}).get("python", ""))}')]
                    + ([("Re-run", " · ".join(f'{esc(x["what"])}{" (resume)" if x.get("resume") else ""}, {esc(x["mode"])}, {esc(x["at"])}'
                                              for x in m["reruns"]))] if m.get("reruns") else []))
-    body = about + f'<div class="stats">{"".join(tiles)}</div>'
+    pl = d["plan"]
+    about += kv([("Plan", f'{esc(pl["name"])} · experiments {esc(", ".join(pl["experiments"]))}'
+                          + (f' · faults: {esc(fault_text(pl["faults"]["inject"]))}' if "faults" in pl["experiments"] else "")
+                          + (f' · SIGKILL at {esc(", then ".join(pl["crash"]["kill_at"]))}' if "crash" in pl["experiments"] else ""))])
+    exp_rows = [[ok_chip(e["status"] == "ok", "met", "not met") if e["status"] != "skip" else chip("not run", "gray"), esc(e["check"]), esc(e["measured"])]
+                for e in d["expectations"]]
+    verdict = ""
+    if exp_rows:
+        failed = sum(1 for e in d["expectations"] if e["status"] == "fail")
+        verdict = (f'<h3>Expectations: {len(exp_rows) - failed} of {len(exp_rows)} met</h3>'
+                   + table(["Result", "Check", "Measured"], exp_rows)
+                   + '<p class="small">From the plan\'s <code>expect</code> section (<code>plan.yaml</code> in the run folder).</p>')
+    body = about + f'<div class="stats">{"".join(tiles)}</div>' + verdict
     if d["stages"]:
         body += "<h3>How the run unfolded</h3>" + gantt(d["stages"])
         body += table(["Stage", "Started (UTC)", "Duration", "Result"],
@@ -308,13 +326,19 @@ def s_crash(base: Path, d: dict[str, Any]) -> str:
     spans = [json.loads(line) for p in sorted((base / "crash" / "otel" / "traces").glob("*.jsonl")) for line in p.read_text().splitlines() if line.strip()]
     mine = [s for s in spans if s["trace_id"] == tid]
     startup = Counter(s["name"] for s in spans if s["trace_id"] != tid)
+    seq = c.get("sequence") or [
+        {"command": "lap run INC-4917", "crash_on": "after_step:await_approval", "returncode": c["run"]["returncode"], "seconds": c["run"]["seconds"], "status_after": c["run"]["status_after"]},
+        {"command": "lap approve", "crash_on": "executed:source_control.rollback_release", "returncode": c["approve"]["returncode"], "seconds": c["approve"]["seconds"], "status_after": c["approve"]["status_after"]},
+        {"command": "lap resume", "crash_on": None, "returncode": c["resume"]["returncode"], "seconds": c["resume"]["seconds"], "status_after": c["resume"]["status"]}]
+    procs = []
+    for i, e in enumerate(seq, 1):
+        tone = "green" if e["status_after"] == "COMPLETED" else "orange"
+        how = f' with {code("LAP_CRASH_ON=" + e["crash_on"])}' if e.get("crash_on") else ""
+        killed = "killed by SIGKILL" if e["returncode"] == -9 else f'exit {e["returncode"]}'
+        procs.append((f"Process {i}", f'{code(e["command"])}{how} → {killed} after {e["seconds"]} s; status afterwards {chip(e["status_after"], tone)}'))
     return (
-        kv([("Workflow", code(wf)),
-            ("Process 1", f'{code("lap run INC-4917")} with {code("LAP_CRASH_ON=after_step:await_approval")} → exit {c["run"]["returncode"]} after {c["run"]["seconds"]} s; status afterwards {chip(c["run"]["status_after"], "orange")}'),
-            ("Process 2", f'{code("lap approve")} with {code("LAP_CRASH_ON=executed:source_control.rollback_release")} → exit {c["approve"]["returncode"]} after {c["approve"]["seconds"]} s; '
-                          f'backend rollbacks {c["approve"]["backend_rollbacks_after_crash"]}; status {chip(c["approve"]["status_after"], "orange")}'),
-            ("Process 3", f'{code("lap resume")} → exit {c["resume"]["returncode"]} after {c["resume"]["seconds"]} s; {chip(c["resume"]["status"], "green" if c["resume"]["status"] == "COMPLETED" else "red")}; '
-                          f'remediation replayed {c["resume"]["remediation_replayed"]}'),
+        kv([("Workflow", code(wf))] + procs + [
+            ("Remediation", f'replayed on the last resume: {c["resume"]["remediation_replayed"]}'),
             ("Result", f'backend rollbacks <strong>{c["backend_rollbacks"]}</strong> · model calls before the first kill {c["model_calls_before_crash"]} '
                        f'({fnum(c["tokens_before_crash"])} tokens) · after it {c["model_calls_after_resume"]} ({fnum(c["tokens_after_crash"])} tokens)'),
             ("Trace", f'{code(tid)} holds {len(mine)} spans from {len({s["pid"] for s in mine})} processes. The trace folder also holds '
@@ -336,6 +360,16 @@ def s_crash(base: Path, d: dict[str, Any]) -> str:
         + details("Trace tree of the crashed workflow", pre(trace_tree(mine), "tree")))
 
 
+def armed(f: dict[str, Any]) -> str:
+    if "injected" not in f:  # runs recorded before plans
+        return (f'{code("source_control.rollback_release")}: execute, then answer after the client timeout (lost response) · '
+                f'{code("observability.query_latency")}: two timeouts during {code("verify")}')
+    when = "from the start" if f.get("arm_at") == "start" else "at the approval gate"
+    parts = [f'{code(x["tool"])}: ' + ("times out" if x["mode"] == "timeout" else "executes, then answers after the client timeout (lost response)")
+             + f' ×{x.get("times", 1)}' for x in f["injected"]]
+    return f'{esc(f.get("model", ""))}, armed {when} · ' + " · ".join(parts)
+
+
 def s_faults(base: Path, d: dict[str, Any]) -> str:
     f = load(base / "faults" / "summary.json")
     rec = load(base / "faults" / "record.json")
@@ -345,8 +379,7 @@ def s_faults(base: Path, d: dict[str, Any]) -> str:
     ex = db.execute("SELECT id, tool, idempotency_key, at FROM executions ORDER BY id").fetchall()
     rp = db.execute("SELECT * FROM replays").fetchall()
     return (
-        kv([("Faults armed", f'{code("source_control.rollback_release")}: execute, then answer after the client timeout (lost response) · '
-                             f'{code("observability.query_latency")}: two timeouts during {code("verify")}'),
+        kv([("Faults armed", armed(f)),
             ("Rollback", f'{f["rollback"]["attempts"]} attempts · replayed {f["rollback"]["replayed"]} · backend executions <strong>{f["rollback"]["backend_executions"]}</strong> · '
                          f'backend replays {f["rollback"]["backend_replays"]}'),
             ("Latency read", f'succeeded on attempt {d["faults"]["latency_read_attempts"]} · timeouts in the audit log: {f["timeouts_in_audit"]}'),
@@ -383,17 +416,20 @@ def s_monolith(base: Path, d: dict[str, Any]) -> str:
         lost = table(["#", "Tool", "Idempotency key", "Simulated time"],
                      [[str(i), code(t, nowrap=True), code(k or "—"), esc(a)] for i, t, k, a in db.execute("SELECT id, tool, idempotency_key, at FROM executions ORDER BY id")])
     retry = re.search(r"^.*timed out, retrying.*$", console_log(base), re.M)
-    return (table(["Run", "Wall time", "Tokens", "Tool calls", "Approvals asked", "Rollbacks", "Kubernetes rollbacks", "Write once"], rows, "num")
-            + "".join(runs)
-            + "<h3>The lost response, in the monolith</h3>"
-            + kv(([("Retry", f'{code(retry.group(0))} (console)')] if retry else [])
-                 + [("Result", f'rollbacks executed <strong>{lr["world"]["rollback_executions"]}</strong> → {", ".join(map(str, lr["world"]["rollback_targets"]))} · '
-                               f'write once {lr["world"]["write_exactly_once"]} · {lr["seconds"]:.1f} s · {lr["tokens"]:,} tokens')])
-            + lost
-            + "<h3>The crash, in the monolith</h3>"
-            + kv([("SIGKILL", f'while waiting on the terminal prompt, {mc["seconds_until_approval_prompt"]} s into the run · exit {mc["returncode"]}'),
-                  ("State left behind", esc(jcompact(mc["state_left_behind"])) + f' · resume command: {esc(mc["resume_command"])}'),
-                  ("Note", esc(mc["note"]))]))
+    out = (table(["Run", "Wall time", "Tokens", "Tool calls", "Approvals asked", "Rollbacks", "Kubernetes rollbacks", "Write once"], rows, "num")
+           + "".join(runs))
+    if lr:
+        out += ("<h3>The lost response, in the monolith</h3>"
+                + kv(([("Retry", f'{code(retry.group(0))} (console)')] if retry else [])
+                     + [("Result", f'rollbacks executed <strong>{lr["world"]["rollback_executions"]}</strong> → {", ".join(map(str, lr["world"]["rollback_targets"]))} · '
+                                   f'write once {lr["world"]["write_exactly_once"]} · {lr["seconds"]:.1f} s · {lr["tokens"]:,} tokens')])
+                + lost)
+    if mc:
+        out += ("<h3>The crash, in the monolith</h3>"
+                + kv([("SIGKILL", f'while waiting on the terminal prompt, {mc["seconds_until_approval_prompt"]} s into the run · exit {mc["returncode"]}'),
+                      ("State left behind", esc(jcompact(mc["state_left_behind"])) + f' · resume command: {esc(mc["resume_command"])}'),
+                      ("Note", esc(mc["note"]))]))
+    return out
 
 
 def s_change(base: Path, d: dict[str, Any]) -> str:
@@ -481,6 +517,12 @@ def replay_note(d: dict[str, Any]) -> str:
             "MCP, policy, SQLite, the workflow, crashes and retries ran for real. Wall-clock times here are not model timings.<br>")
 
 
+def crash_lede(d: dict[str, Any]) -> str:
+    points = (d.get("crash") or {}).get("kill_at") or d["plan"]["crash"]["kill_at"]
+    return (f"Real SIGKILLs, {len(points)} in turn: " + ", then ".join(f"<code>{esc(x)}</code>" for x in points)
+            + ". Each new process approves the workflow if it waits for approval, otherwise resumes it.")
+
+
 def build_html(base: Path, d: dict[str, Any], bare: bool = False, title: str | None = None) -> str:
     plan = [
         ("overview", "Run " + base.name, "At a glance", "Everything below is read from this run's files. Enterprise systems, approvals, faults and identities are simulated; "
@@ -488,9 +530,9 @@ def build_html(base: Path, d: dict[str, Any], bare: bool = False, title: str | N
         ("tests", "Tests", "Tests and layer contracts", "Each pytest sitting recorded with this run, and the import-linter contracts.", lambda: s_tests(base, d), True),
         ("workflow", "E2 · E9", "The platform, run by run", "INC-4917 end to end with each model. alice approves one second after the request.",
          lambda: s_workflow(base, d), "workflow" in d),
-        ("crash", "E4", "Crash, checkpoint, resume", "Real SIGKILLs: one right after the approval checkpoint, one after the rollback executed but before its checkpoint.",
+        ("crash", "E4", "Crash, checkpoint, resume", crash_lede(d),
          lambda: s_crash(base, d), "crash" in d),
-        ("faults", "E5 · E6", "Timeouts and a lost write", "Two injected faults. The action gateway is the only retry layer; the backend deduplicates by key.",
+        ("faults", "E5 · E6", "Timeouts and a lost write", "Injected tool faults. The action gateway is the only retry layer; the backend deduplicates writes by key.",
          lambda: s_faults(base, d), "faults" in d),
         ("monolith", "Baseline", "The monolith, same incident", "Runs with <code>--yes</code> (a test mode that approves every write), then the lost response and the crash.",
          lambda: s_monolith(base, d), "monolith" in d),

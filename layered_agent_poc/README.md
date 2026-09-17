@@ -1,15 +1,188 @@
 # Layered Agent Platform POC
 
-A working companion to the article **"Your Agent Works in a Demo. Why Does It Break in Production?"**, Part 2 of the series that began with [MCP tool sprawl](../mcp_sprawl_poc).
+**The question.** An incident agent works in a demo. What has to change so it survives production: more channels, a second model, human approvals, crashes, lost responses and operators who need to know what happened?
 
-It runs one simulated production incident, **INC-4917**, through two implementations of the same incident agent:
+**The answer this POC tests.** Keep the agent to reasoning. Move sessions, workflow state, memory, tool execution, model access and governance into layers the agent calls, and enforce those boundaries in code. Then check that a change or a failure stays inside one layer.
 
-- `monolith/`, the agent a good engineer builds first;
-- `agent_platform/`, the same capability split into six layers plus cross-cutting control planes.
+**How it tests that.** One simulated production incident, **INC-4917**, runs through two implementations of the same incident agent:
 
-Then it changes requirements, kills processes and loses network responses to show which design keeps changes and failures local.
+- **`monolith/`:** the agent a good engineer builds first, one class that owns everything;
+- **`agent_platform/`:** the same capability split into six layers plus cross-cutting control planes.
+
+Then the POC changes requirements, kills processes and loses network responses, and records what each design does.
+
+It is the companion to the article **"Your Agent Works in a Demo. Why Does It Break in Production?"**, Part 2 of the series that began with [MCP tool sprawl](../mcp_sprawl_poc). Everything runs on one laptop with local models. The MCP protocol, the models, the database and the process kills are real; the enterprise systems are simulated.
+
+**In this README:**
+
+1. [Why this exists](#why-this-exists)
+2. [What it demonstrates](#what-it-demonstrates)
+3. [Architecture](#architecture)
+4. [Real and simulated](#real-and-simulated)
+5. [Run it from zero](#run-it-from-zero), then [Choose what to test: plans](#choose-what-to-test-plans) and [Where to see the results](#where-to-see-the-results)
+6. [Step-by-step guide](#steps-at-a-glance), [Troubleshooting](#troubleshooting), [Repository structure](#repository-structure), [Limitations](#limitations)
+
+## Why this exists
+
+A working agent demo is one loop: a prompt, a model, a few tools. Production then adds channels, identities, approvals, retries, memory, retrieval, more models, audit and tracing. If each of these lands inside the agent loop, the agent becomes the platform, and it fails in predictable ways:
+
+| Failure | What happens in the monolith | Which layer should own it |
+|---|---|---|
+| Channel coupling | A second channel re-implements sessions and approvals | Experience |
+| Provider coupling | A model swap edits agent code | Model services |
+| State loss | A crash while waiting for approval throws the investigation away | Orchestration |
+| Unsafe actions | Nothing but a y/N prompt checks what the model chose to run | Tool & action |
+| Duplicate side effects | A retry after a lost response runs a production write twice | Tool & action |
+| Blind operations | Operators get one log line: "agent failed" | Observability |
+
+The POC shows these failures in the monolith, then shows the layered platform containing them.
+
+> A production agent should reason about the task. It should not own the entire AI platform.
+
+![How the monolith fails: six failures, each traced to a responsibility the agent should not own.](docs/images/03-monolith-failure-modes.png)
+
+## What it demonstrates
+
+| Property | How the POC shows it |
+|---|---|
+| **Separation** | Seven [import-linter](https://github.com/seddonym/import-linter) contracts fail the build if a layer reaches into another layer's job, for example `agents/` importing the MCP client |
+| **Replaceability** | Channels (CLI, REST, chat) and models (`gpt-oss:20b`, `qwen3:8b`) change without touching agents or the workflow |
+| **Recoverability** | Real `SIGKILL` crashes: a workflow resumes from SQLite checkpoints in a new process, and an idempotency key keeps the rollback to one execution |
+| **Safety** | Deterministic policy decides before any write; approvals are bound to the digest of the exact invocation |
+| **Observability** | One OpenTelemetry trace per incident, across process restarts, with GenAI span names |
+| **Change locality** | Three requirement changes written as patches against both implementations, measured by files, lines and concerns touched |
+
+It does **not** measure model quality. It runs one scenario, and its evals check outcomes and platform invariants.
+
+## Architecture
 
 ![The layered agent platform: six layers, six control planes, one INC-4917 request.](docs/images/05-layered-agent-platform.png)
+
+### The pieces and how they call each other
+
+```mermaid
+flowchart TB
+  user(["alice · bob"]) --> ch
+  subgraph P["agent_platform: the system under test"]
+    ch["1 Experience<br/>CLI · REST · chat webhook"] --> svc["service.py<br/>the only entry point"]
+    svc --> orch["2 Orchestration<br/>8-step workflow · checkpoints · approvals · resume"]
+    orch -->|tasks| ag["3 Agent runtime<br/>diagnosis · remediation · summary agents"]
+    ag -->|build context| ctx["4 Context & memory<br/>assembler · sessions · episodic memory · runbooks"]
+    ag -->|tool calls, through a port| act["5 Tool & action<br/>registry · policy · gateway · retry · idempotency · audit"]
+    orch -->|incident read, rollback, verification| act
+    orch -->|write memory| ctx
+    ag -->|chat| mod["6 Model services<br/>routes · profiles · fallback · budgets"]
+    ctx -->|embeddings| mod
+    x["Cross-cutting: identity · telemetry · evals"]
+  end
+  act -->|MCP over stdio| mcp["5 MCP servers<br/>itsm · source_control · observability · database · kubernetes"]
+  mcp --> ent[("mock_enterprise<br/>simulated systems of record")]
+  mod -->|HTTP| oll["Ollama<br/>gpt-oss:20b · qwen3:8b · nomic-embed-text"]
+```
+
+- **State.** Orchestration, the context and memory stores and the tool and action layer each keep their own tables in one SQLite file, `platform.db`; see [State: what lives where](#state-what-lives-where).
+- **One way in.** Channels only build commands (`StartInvestigation`, `ApprovalDecision`) and call `agent_platform/service.py`, which is also the only place the layers are wired together.
+- **Ports, not clients.** Agents never hold an MCP client or a model SDK. They receive a tool port and a model port, so the gateway and the model router can change without touching them.
+- **Enforced, not drawn.** `.importlinter` holds seven contracts. For example, agents cannot import `mcp` or `httpx`, orchestration cannot call a model, and only the tool and action layer's MCP client may speak MCP.
+
+### Layers
+
+| Layer | Package | Owns | Must not own |
+|---|---|---|---|
+| 1 Experience | `agent_platform/channels/` | CLI, REST, chat webhook, rendering | Workflow logic |
+| 2 Orchestration | `agent_platform/orchestration/` | 8 steps, append-only checkpoints, approvals, leases, resume | Reasoning |
+| 3 Agent runtime | `agent_platform/agents/` | Bounded tool-use loop, validated structured output with one repair | MCP clients, provider SDKs |
+| 4 Context & memory | `agent_platform/context/`, `memory/`, `knowledge/` | Context assembly within a token budget, sessions, episodic memory, runbook retrieval | Workflow state |
+| 5 Tool & action | `agent_platform/actions/` | Capability registry, policy, MCP gateway, bounded retry, idempotency, audit | Reasoning |
+| 6 Model services | `agent_platform/models/` | Routes, provider profiles, fallback, token budgets, embeddings | Business logic |
+| Cross-cutting | `agent_platform/identity/`, `telemetry/`, `evals/` | Principals and roles, tracing, deterministic evals | A layer of its own |
+
+The six layers are the article's synthesis, not a standard. Layers are not agents either: this platform runs three agents inside one layer.
+
+### One request, step by step
+
+A request enters through a channel, becomes a `StartInvestigation` command, and runs as an eight-step workflow. Agents only reason. Everything that touches state, tools or models goes through the layer that owns it.
+
+![INC-4917 through the layers: eight steps, one owner each.](docs/images/07-inc4917-through-layers.png)
+
+| # | Step | Owner | What happens | Model? |
+|---|---|---|---|---|
+| 1 | `intake` | Orchestration | Load the incident through the action gateway (one read call) | No |
+| 2 | `investigate` | Diagnosis agent | Choose from 8 read tools (deploys, diff, latency, logs, traces, pool stats, pods, the incident); 7 to 8 calls per run in the article's run | Yes |
+| 3 | `propose_remediation` | Remediation agent | Propose an action using runbook RB-CHK-007 and memory INC-4630; policy pre-checks it | Yes |
+| 4 | `await_approval` | Orchestration | Park the workflow until an incident commander approves this exact invocation | No |
+| 5 | `remediate` | Action gateway | Run `source_control.rollback_release` with an idempotency key | No |
+| 6 | `verify` | Orchestration | Poll `observability.query_latency` until p95 is back under the SLO | No |
+| 7 | `record` | Summary agent | Write the incident note, only after verification | Yes |
+| 8 | `complete` | Orchestration | Store an episodic memory with provenance and record the outcome in the session | No |
+
+Every step ends with a checkpoint. The evals run afterwards, on demand (`lap eval`). Every tool call passes four decisions:
+
+1. **Reasoning** (agent): what do I want to do?
+2. **Capability resolution** (registry): which capability represents that intent? A tool the agent was not offered is refused.
+3. **Authorization** (policy): may this caller and this agent run this exact action? See `config/policies.yaml`.
+4. **Execution** (gateway): idempotency key, bounded retry, the MCP call, an audit record.
+
+`docs/DESIGN.md` is the source of truth for every name: steps, tools, rules, stores, spans and evals.
+
+### State: what lives where
+
+Each kind of state has one owner and its own rules. One vector store for all of them would be a retrieval index, not a state model.
+
+| Kind | Where | Lifetime | Written by | Rule |
+|---|---|---|---|---|
+| Workflow state | `workflows`, `checkpoints`, `workflow_events`, `approvals` in `platform.db` | Until the workflow ends | Orchestration only | Transactional, append-only checkpoints |
+| Conversation | `sessions`, `messages` | One session | Channels through the service; agents' final answers | Append-only, trimmed into context |
+| Episodic memory | `memories` | Months, with `expires_at` | The memory store, with `source` provenance | Curated, can be wrong, expired entries are skipped |
+| Knowledge | `agent_platform/knowledge/runbooks/*.md`, plus an embedding index | Until the owner edits a runbook | Document owners | Authoritative, cited by id |
+| Operations | `idempotency`, `audit` | Retention | Tool & action layer | Deduplicate writes; append-only log |
+| Model usage | `model_usage` | Retention | Model services (the model gateway) | Tokens and latency per call |
+| Working context | not stored | One agent step | Context assembler | Rebuilt every time, within a token budget |
+| Systems of record | `enterprise.db` (simulated) | The scenario | The MCP servers | Deployments, incident notes, executed writes |
+
+Spans go to `runs/traces/<trace-id>.jsonl` as each span ends, so a trace survives a `SIGKILL`.
+
+### The baseline: the agent monolith
+
+`monolith/incident_agent.py` is the agent a careful engineer writes first, in about 140 lines, with a CLI (`monolith/cli.py`) and a REST wrapper (`monolith/api.py`). One class holds:
+
+- the prompt and the Ollama call, including model-specific options such as `think: "low"`;
+- the conversation history in memory;
+- the five MCP clients and the tool list;
+- a y/N approval prompt before any write;
+- a retry loop around tool calls;
+- logging.
+
+It solves INC-4917. It is the right design for a short, single-channel task. The experiments show where it stops being enough: a second channel, a model swap, a crash while waiting, a lost write response.
+
+### The test harness
+
+The harness drives the platform from outside. Two small hooks live inside the platform, and both do nothing unless their environment variable is set: the crash switch (`LAP_CRASH_ON`) and the model-traffic recorder (`LAP_MODEL_TRAFFIC`).
+
+| Piece | Where | What it does |
+|---|---|---|
+| `poc` command | `experiments/poc.py` | Checks the machine, runs the demo and the plans, lists and opens reports |
+| Run plans | `plans/*.yaml`, `experiments/plan.py` | Say what to test (models, experiments, faults, kill points) and what counts as a pass |
+| Experiment runner | `experiments/run.py` | Runs each experiment in a fresh folder with fresh databases and writes every record to `runs/<run-id>/` |
+| Reports | `experiments/report.py`, `agent_platform/channels/html_report.py` | Build HTML, Markdown and JSON reports from those files alone |
+| Model traffic | `traffic/`, `agent_platform/models/recorded.py` | Record every model answer, and replay a run without Ollama |
+| Fault and crash hooks | `mock_enterprise/world.py`, `agent_platform/faults.py` | Arm timeouts and lost responses in the simulated systems; kill a platform process at a named point (`LAP_CRASH_ON`), only when the variable is set |
+| Change patches | `experiments/change_scope/` | Apply each requirement change to a copy of both implementations and count what it touched |
+
+## Real and simulated
+
+| Real | Simulated, and labelled as such |
+|---|---|
+| MCP over stdio, [Python SDK](https://github.com/modelcontextprotocol/python-sdk) 2.2.0, five servers | Enterprise systems: deterministic INC-4917 backends in `mock_enterprise/` |
+| Local models through [Ollama](https://ollama.com): two generative (`gpt-oss:20b`, `qwen3:8b`), one embedding (`nomic-embed-text`) | Slack-shaped chat payloads (not a Slack app) |
+| FastAPI REST service | Human approvals (CLI or REST calls) |
+| SQLite durability (WAL) | Injected faults (timeouts, lost responses) |
+| Process kills with `SIGKILL` | Identities `alice` (SRE, incident commander) and `bob` (developer) |
+| OpenTelemetry spans (JSONL, optional OTLP to Jaeger) | |
+
+The backends are mocks on purpose: the scenario has to be repeatable, a lost response has to be injectable, and a rollback has to be countable.
+
+![The POC at a glance: packages, servers, tools, models, rules and tests, counted from the repository.](docs/images/13-poc-at-a-glance.png)
 
 ## Run it from zero
 
@@ -31,8 +204,10 @@ uv sync
 uv run poc check
 uv run poc demo
 
-# 5. Every experiment, with reports
-uv run poc run --profile quick           # about 5 minutes
+# 5. Every experiment, with reports: pick a plan, see what it tests, run it
+uv run poc plans
+uv run poc plan show quick
+uv run poc run --plan quick              # about 5 minutes
 ```
 
 `poc check` looks at Python, the Ollama models, what else is loaded in Ollama, free memory and disk, and starts the 5 MCP servers. Each problem comes with the command that fixes it.
@@ -45,15 +220,58 @@ uv run poc run --profile quick           # about 5 minutes
 4. the 8 checks are scored and the systems of record are read back;
 5. `report.html` is written and opened.
 
-`poc run` has three profiles:
+`poc run` runs a plan (next section) and ends with a table of the plan's expectations, each met or not, with what was measured. Timings grow when another process uses Ollama at the same time. If a stage fails, the others still run, and `uv run poc run --resume <run-id>` re-runs only the failed stages with the run's saved plan.
 
-| Profile | What runs | About, on an idle 24 GB laptop |
+### Choose what to test: plans
+
+A plan is a YAML file in `plans/`. It says which models to use, how many runs per scenario, where model answers come from, which experiments run, which faults to inject, where to kill the process, and what counts as a pass.
+
+| Plan | What it runs | Model answers | About, on an idle 24 GB laptop |
+|---|---|---|---|
+| `quick` | Every experiment with `gpt-oss:20b`, one run per scenario, fast tests | Ollama | 5 min |
+| `standard` | Every experiment with both models, three runs each, fast tests | Ollama | 10 min |
+| `full` | `standard`, plus the end-to-end tests against the models. The article's run used it | Ollama | 15 min |
+| `replay` | `full`, answered from the recording of `2026-09-17-recorded` | recorded | 3 min |
+| `chaos` | An example of a custom plan: faults from the start, three `SIGKILL`s in one workflow | Ollama | 4 min |
+
+```bash
+uv run poc plans                                   # the list above
+uv run poc plan show chaos                         # what a plan runs, injects and expects
+uv run poc run --plan chaos                        # run it
+uv run poc run --plan full --models qwen3:8b --runs 5          # override the models and runs
+uv run poc run --plan quick --only faults,crash                # or --skip monolith,change
+uv run poc run --plan quick --set tests.model_tests=true \
+    --set 'crash.kill_at=[after_step:investigate, after_step:await_approval]'
+uv run poc run --plan my-plans/nightly.yaml                    # your own file
+```
+
+What you can test, and the plan keys that change it:
+
+| Experiment | What it shows | Plan keys |
 |---|---|---|
-| `quick` | `gpt-oss:20b` only, one run per scenario, fast tests | 5 min |
-| `standard` | Both models, three runs each, fast tests | 10 min |
-| `full` | `standard`, plus the end-to-end tests against the models | 15 min |
+| `tests` | pytest and the 7 import contracts | `tests.model_tests` adds the end-to-end tests against the models |
+| `faults` (E5, E6) | One platform run with tool faults: the gateway retries within bounds, and the backend deduplicates a lost write by its idempotency key | `faults.model`; `faults.arm_at` (`approval` or `start`); `faults.inject`, a list of `{tool, mode: timeout \| lose_response, times, delay_s}` |
+| `crash` (E4) | One workflow killed with `SIGKILL` at each point in turn; each new process approves or resumes it from its checkpoints | `crash.kill_at`: `after_step:<step>`, `executed:<tool>`, `timeout:<tool>`; `crash.inject` |
+| `monolith` | The same incident through the agent monolith | `runs`; `monolith.lost_response`; `monolith.crash` |
+| `workflow` (E2, E3, E7, E8, E9) | INC-4917 end to end per model, with evals, traces, memory and context | `models`, `runs` |
+| `change` (E1) | Each requirement-change patch applied to both implementations | none |
+| `export` | Data for the article's figures | none |
 
-Timings grow when another process uses Ollama at the same time. If a stage fails, the others still run, the table shows which one failed, and `uv run poc run --resume <run-id>` re-runs only the failed stages.
+- **Steps for `after_step:`** `intake`, `investigate`, `propose_remediation`, `await_approval`, `remediate`, `verify`, `record`, `complete`.
+- **Tools** are the 11 in `config/capabilities.yaml`. A lost response only makes sense for a write.
+- **Pass criteria** live under `expect`:
+  - `tests_pass`, `contracts_kept`;
+  - `platform_runs_complete` and `platform_all_checks` (`all` or a number of runs);
+  - `lost_response_backend_executions`, `monolith_lost_response_rollbacks_at_least`;
+  - `crash_final_status`, `crash_backend_rollbacks`;
+  - `change_contracts_kept`.
+
+  Set one to `null` to drop it. Only experiments in the plan are judged.
+- **Your own plan:**
+  1. Copy `plans/full.yaml` and keep only the keys you change: a plan is laid over the full plan.
+  2. Check it with `poc plan show <file>`. An unknown key, experiment, step or tool is rejected with the reason.
+- **CI:** `poc run` exits 0 only when every stage passes and every expectation is met. Each run saves its resolved plan as `runs/<run-id>/plan.yaml`, and the report shows it with the expectation results.
+- **Replay needs the recorded plan:** a replay answers model calls in the order they were recorded. It must keep the models, runs, faults and kill points of the run it replays, which is why `--replay` reuses that run's plan.
 
 ### No GPU? Replay mode
 
@@ -62,7 +280,7 @@ Every model answer from a reference run is recorded next to it. Replay mode runs
 ```bash
 uv sync
 uv run poc demo --replay                 # about 15 seconds
-uv run poc run --replay                  # every experiment, about 2 minutes
+uv run poc run --plan replay             # every experiment, about 3 minutes
 ```
 
 In replay mode, only the model is replaced:
@@ -87,88 +305,10 @@ Recordings are plain JSON lines (`traffic/chat.jsonl`, `traffic/embed.jsonl`). E
 | Any `lap` command | Spans in `runs/traces/<trace-id>.jsonl`, or in Jaeger (see [9](#9-read-the-trace)) |
 | `lap serve` | `GET /v1/workflows/{id}` and its `/events`, `/trace` and `/evaluation` |
 | A run, in detail | `runs/<run-id>/report/index.html` shows everything. `report/summary.md` has the headline numbers, and `report/results.json` has the same numbers as JSON |
-| Console output of a run | `runs/<run-id>/run.log`, with each stage's start, end and result in `stages.json`, and the profile, models and mode in `run.json` |
+| Console output of a run | `runs/<run-id>/run.log`, with each stage's start, end and result in `stages.json`, the resolved plan in `plan.yaml`, and the mode in `run.json` |
 | Tests recorded with a run | `runs/<run-id>/tests/`: JUnit XML, pytest output and `lint-imports.log` |
 | The systems of record | `uv run python -m mock_enterprise status` |
 | The run behind the article | `runs/2026-09-17-recorded/report/index.html` |
-
-## Problem
-
-A working agent demo is one loop: a prompt, a model, a few tools. Production then adds channels, identities, approvals, retries, memory, retrieval, more models, audit and tracing. If each of these lands inside the agent loop, the agent becomes the platform:
-
-- a second channel re-implements sessions and approvals;
-- a model swap edits agent code;
-- a crash while waiting for approval throws the investigation away;
-- a retry after a lost response runs a production write twice;
-- operators get one log line: "agent failed".
-
-This POC shows each of these failures in the monolith, then shows the layered platform containing them.
-
-## What the POC demonstrates
-
-| Property | How the POC shows it |
-|---|---|
-| **Separation** | Seven [import-linter](https://github.com/seddonym/import-linter) contracts fail the build if a layer reaches into another layer's job, for example `agents/` importing the MCP client |
-| **Replaceability** | Channels (CLI, REST, chat) and models (`gpt-oss:20b`, `qwen3:8b`) change without touching agents or the workflow |
-| **Recoverability** | Real `SIGKILL` crashes: a workflow resumes from SQLite checkpoints in a new process, and an idempotency key keeps the rollback to one execution |
-| **Safety** | Deterministic policy decides before any write; approvals are bound to the digest of the exact invocation |
-| **Observability** | One OpenTelemetry trace per incident, across process restarts, with GenAI span names |
-| **Change locality** | Three requirement changes written as patches against both implementations, measured by files, lines and concerns touched |
-
-It does **not** measure model quality. It runs one scenario, and its evals check outcomes and platform invariants.
-
-## Real and simulated
-
-| Real | Simulated, and labelled as such |
-|---|---|
-| MCP over stdio, [Python SDK](https://github.com/modelcontextprotocol/python-sdk) 2.2.0, five servers | Enterprise systems: deterministic INC-4917 backends in `mock_enterprise/` |
-| Local models through [Ollama](https://ollama.com): two generative (`gpt-oss:20b`, `qwen3:8b`), one embedding (`nomic-embed-text`) | Slack-shaped chat payloads (not a Slack app) |
-| FastAPI REST service | Human approvals (CLI or REST calls) |
-| SQLite durability (WAL) | Injected faults (timeouts, lost responses) |
-| Process kills with `SIGKILL` | Identities `alice` (SRE, incident commander) and `bob` (developer) |
-| OpenTelemetry spans (JSONL, optional OTLP to Jaeger) | |
-
-The backends are mocks on purpose: the scenario has to be repeatable, a lost response has to be injectable, and a rollback has to be countable.
-
-![The POC at a glance: packages, servers, tools, models, rules and tests, counted from the repository.](docs/images/13-poc-at-a-glance.png)
-
-## How it works
-
-A request enters through a channel, becomes a `StartInvestigation` command, and runs as an eight-step workflow. Agents only reason. Everything that touches state, tools or models goes through a layer that owns it.
-
-| Layer | Package | Owns | Must not own |
-|---|---|---|---|
-| 1 Experience | `agent_platform/channels/` | CLI, REST, chat webhook, rendering | Workflow logic |
-| 2 Orchestration | `agent_platform/orchestration/` | 8 steps, append-only checkpoints, approvals, leases, resume | Reasoning |
-| 3 Agent runtime | `agent_platform/agents/` | Bounded tool-use loop, validated structured output with one repair | MCP clients, provider SDKs |
-| 4 Context & memory | `agent_platform/context/`, `memory/`, `knowledge/` | Context assembly within a token budget, sessions, episodic memory, runbook retrieval | Workflow state |
-| 5 Tool & action | `agent_platform/actions/` | Capability registry, policy, MCP gateway, bounded retry, idempotency, audit | Reasoning |
-| 6 Model services | `agent_platform/models/` | Routes, provider profiles, fallback, token budgets, embeddings | Business logic |
-| Cross-cutting | `agent_platform/identity/`, `telemetry/`, `evals/` | Principals and roles, tracing, deterministic evals | A layer of its own |
-
-`agent_platform/service.py` is the facade every channel calls and the only place the layers are wired together.
-
-![INC-4917 through the layers: eight steps, one owner each.](docs/images/07-inc4917-through-layers.png)
-
-| # | Step | Owner | What happens | Model? |
-|---|---|---|---|---|
-| 1 | `intake` | Orchestration | Load the incident through the action gateway (one read call) | No |
-| 2 | `investigate` | Diagnosis agent | Choose from 8 read tools (deploys, diff, latency, logs, traces, pool stats, pods, the incident); 7 to 8 calls per run in the article's run | Yes |
-| 3 | `propose_remediation` | Remediation agent | Propose an action using runbook RB-CHK-007 and memory INC-4630; policy pre-checks it | Yes |
-| 4 | `await_approval` | Orchestration | Park the workflow until an incident commander approves this exact invocation | No |
-| 5 | `remediate` | Action gateway | Run `source_control.rollback_release` with an idempotency key | No |
-| 6 | `verify` | Orchestration | Poll `observability.query_latency` until p95 is back under the SLO | No |
-| 7 | `record` | Summary agent | Write the incident note, only after verification | Yes |
-| 8 | `complete` | Orchestration | Store an episodic memory with provenance and record the outcome in the session | No |
-
-Every step ends with a checkpoint. The evals run afterwards, on demand (`lap eval`). Every tool call passes four decisions:
-
-1. **Reasoning** (agent): what do I want to do?
-2. **Capability resolution** (registry): which capability represents that intent? A tool the agent was not offered is refused.
-3. **Authorization** (policy): may this caller and this agent run this exact action? See `config/policies.yaml`.
-4. **Execution** (gateway): idempotency key, bounded retry, the MCP call, an audit record.
-
-`docs/DESIGN.md` is the source of truth for every name: steps, tools, rules, stores, spans and evals.
 
 ## Steps at a glance
 
@@ -492,20 +632,20 @@ In the published run:
 ## 11. Reproduce the published results
 
 ```bash
-uv run poc run --profile full --run-id <run-id>
+uv run poc run --plan full --run-id <run-id>
 # the same, without the wrapper:
-uv run python -m experiments.run all --run-id <run-id> --k 3 --model-tests
+uv run python -m experiments.run all --run-id <run-id> --plan plans/full.yaml
 ```
 
-`all` runs these stages in order. Pass one name instead of `all` to run a single stage.
+`all` runs the plan's experiments in order, then the report. Pass one name instead of `all` to run a single stage; in an existing run folder it uses that run's saved plan.
 
 | Stage | What it does | About |
 |---|---|---|
-| `tests` | pytest with JUnit output, plus the import contracts; `--model-tests` adds the end-to-end tests | 1 min, or 10–30 min with `--model-tests` |
-| `faults` | E5, E6: read timeouts and a lost rollback response | 2 min |
-| `crash` | E4: two `SIGKILL`s and a resume in a third process | 2 min |
-| `monolith` | The baseline: `--k` runs, then the lost response and the crash | 5 min |
-| `workflow` | E2, E3, E7, E8, E9: `--k` runs per model (`--models` to choose) | 13 min |
+| `tests` | pytest with JUnit output, plus the import contracts; `tests.model_tests` adds the end-to-end tests | 1 min, or 5–30 min with model tests |
+| `faults` | E5, E6: the plan's injected faults, by default read timeouts and a lost rollback response | 1 min |
+| `crash` | E4: a `SIGKILL` at each of the plan's kill points, by default two, then a resume | 1–2 min |
+| `monolith` | The baseline: `runs` runs, then the lost response and the crash | 2 min |
+| `workflow` | E2, E3, E7, E8, E9: `runs` runs per model | 1–2 min per run |
 | `change` | E1: applies each requirement-change patch to a copy and checks it | 1 min |
 | `export` | The data behind the article's measured figures, from the records | seconds |
 | `report` | `report/index.html`, `summary.md`, `results.json`, from the files alone | seconds |
@@ -514,10 +654,13 @@ Useful flags:
 
 | `poc run` | `experiments.run` | Effect |
 |---|---|---|
-| `--profile quick\|standard\|full` | `--models`, `--k`, `--model-tests` | What runs; `quick` by default, while a replay or a resume keeps its run's profile |
-| `--replay [<run-id>]` | `--replay-from <run-id>` | Answer model calls from a recorded run (default `2026-09-17-recorded`) |
-| `--resume [<run-id>]` | `--resume` | Finish a run by skipping the stages that already passed; the default is the latest run |
-| `--run-id <run-id>` | `--run-id <run-id>` | Name the folder; the default is the date, time and profile |
+| `--plan <name or file>` | `--plan <file>` | What runs and what counts as a pass; `quick` by default |
+| `--models`, `--runs` | `--models`, `--k` | Override the plan's models and runs per scenario |
+| `--only a,b`, `--skip a,b` | | Run a subset of the plan's experiments |
+| `--set key=value` | | Override any plan key; the value is YAML |
+| `--replay [<run-id>]` | `--replay-from <run-id>` | Answer model calls from a recorded run, with that run's plan (default `2026-09-17-recorded`) |
+| `--resume [<run-id>]` | `--resume` | Finish a run with its saved plan, skipping the stages that already passed; the default is the latest run |
+| `--run-id <run-id>` | `--run-id <run-id>` | Name the folder; the default is the date, time and plan name |
 | `--no-open` | | Do not open the report |
 | | `--no-record` | Do not keep the model traffic |
 
@@ -526,6 +669,7 @@ Each run gets its own folder:
 | Path under `runs/<run-id>/` | Contents |
 |---|---|
 | `report/index.html`, `report/summary.md`, `report/results.json` | The reports |
+| `plan.yaml` | The resolved plan: what ran and what counted as a pass |
 | `run.log`, `stages.json` | Console output; each stage's start, end, result and error |
 | `tests/`, `tests.json` | JUnit XML, pytest output, `lint-imports.log`; test counts |
 | `workflow/<model>/run<N>/record.json` | View, events, audit log, model usage, eval results, trace and backend state for each run |
@@ -540,7 +684,7 @@ Reports and exports never call a model, so `experiments.run report --run-id <run
 
 About the article's run, `2026-09-17-recorded`:
 
-- **How it was made:** `uv run poc run --profile full`, which also recorded the model answers that replay mode uses.
+- **How it was made:** the `full` plan (`uv run poc run --plan full`), which also recorded the model answers that replay mode uses.
 - **Tests:** 33 passed with the run (29 fast, 4 end-to-end against the models), 0 failed. The POC has gained tests since; they run in every new run.
 - **Timings:** they come from one 24 GB Apple Silicon laptop, and change with the hardware and with whatever else uses Ollama.
 - **An earlier run:** `runs/2026-09-16/` was the first full run. Its end-to-end tests passed in two sittings, because another process was loading Ollama models with a different context size.
@@ -597,7 +741,9 @@ uv run lint-imports
 | Symptom | Cause and fix |
 |---|---|
 | `poc check` reports a problem | Run the command printed under it, then check again |
-| No GPU, or no room for the models | Use replay mode: `uv run poc run --replay` |
+| No GPU, or no room for the models | Use replay mode: `uv run poc run --plan replay` |
+| `invalid plan:` | The lines under it name each bad key and the allowed values; `uv run poc plan show <file>` checks a plan without running it |
+| A plan's run fails with `not met` | An expectation did not hold. The Measured column in the result table and in the report says what happened |
 | Replay prints `request differs from the recording` | The code now asks the model something the recording did not see. The run continues with the recorded answer; record a fresh run with `uv run poc run` |
 | `lap doctor` lists missing models | `ollama pull` the missing model, or point `OLLAMA_URL` at the right server |
 | Model calls take minutes | Another process is using the same model with a different `num_ctx`, so Ollama reloads it on every call. Keep `num_ctx` equal (32768 here) or stop the other process |
@@ -630,7 +776,8 @@ agent_platform/
 config/            platform, capabilities, policies, principals, memory seed
 mock_enterprise/   INC-4917 systems of record behind 5 MCP servers (stdio)
 monolith/          the baseline: incident_agent.py, cli.py, api.py
-experiments/       poc.py (the poc command), run.py (all stages), report.py (run reports), change_scope/ (E1 patches and runner)
+experiments/       poc.py (the poc command), plan.py (run plans), run.py (all stages), report.py (run reports), change_scope/ (E1 patches)
+plans/             run plans: quick, standard, full, replay, chaos
 traffic/           record and replay of model traffic; recordings/ for poc demo --replay
 tests/             pytest, fast and end-to-end
 runs/              <run-id>/ per experiment run (2026-09-17-recorded is the article's run and the replay reference); demo/; reports/ from lap report

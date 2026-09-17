@@ -72,10 +72,9 @@ def test_run_summary_reads_the_published_run():
     ok, rows = poc.summarize("2026-09-16")
     assert ok, rows
     names = [r[1] for r in rows]
-    assert names[:2] == ["Stages", "Tests"]
-    assert "Platform · gpt-oss:20b" in names and "Platform · qwen3:8b" in names
-    assert set(poc.PROFILES) == {"quick", "standard", "full"}
-    assert poc.PROFILES["full"]["model_tests"] and not poc.PROFILES["quick"]["model_tests"]
+    assert names[:3] == ["Stages", "Tests", "Layer contracts"]
+    assert {"Platform runs complete", "All 8 eval checks", "Write executed once", "Workflow survives SIGKILLs"} <= set(names)
+    assert all(status == "ok" for status, _, _ in rows)
 
 
 def test_a_rerun_scenario_starts_clean(tmp_path):
@@ -95,7 +94,7 @@ def test_reports_say_how_a_run_was_made(tmp_path):
     from experiments import report
 
     page = report.build(poc.REFERENCE_RUN, report_dir=tmp_path).read_text()
-    assert "live, model traffic recorded · profile full" in page and "Replayed run." not in page
+    assert "live, model traffic recorded · plan full" in page and "Replayed run." not in page
     base = ROOT / "runs" / poc.REFERENCE_RUN
     d = report.collect(base)
     d["meta"] |= {"mode": "replay", "replay_from": poc.REFERENCE_RUN, "recorded": False,

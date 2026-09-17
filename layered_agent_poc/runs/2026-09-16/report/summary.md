@@ -1,6 +1,6 @@
 # Run 2026-09-16
 
-Generated 2026-09-17 15:13 UTC from the files in `runs/2026-09-16/`. Open `report/index.html` for everything.
+Generated 2026-09-17 16:33 UTC from the files in `runs/2026-09-16/`. Open `report/index.html` for everything.
 
 ## Stages
 
@@ -10,9 +10,6 @@ Generated 2026-09-17 15:13 UTC from the files in `runs/2026-09-16/`. Open `repor
 | crash | 110 s | OK |
 | monolith | 281 s | OK |
 | workflow | 777 s | OK |
-| report | 0 s | OK |
-| report | 0 s | OK |
-| report | 0 s | OK |
 
 ## Tests
 

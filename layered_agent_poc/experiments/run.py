@@ -1,5 +1,9 @@
 """Experiment runner. Every number in the article comes from files this script writes under runs/<run-id>/.
 
+`uv run poc run --plan <plan>` is the usual way in: it resolves a plan (plans/*.yaml, see experiments/plan.py), saves it
+as runs/<run-id>/plan.yaml and calls `experiments.run all --plan runs/<run-id>/plan.yaml`. The flags below still work
+and build the same plan from the command line.
+
     uv run python -m experiments.run all --run-id 2026-09-17 --k 3 [--model-tests]   # every stage below, then the reports
     uv run python -m experiments.run tests [--model-tests]                            # pytest (JUnit) and import contracts
     uv run python -m experiments.run workflow --models gpt-oss:20b qwen3:8b --k 3     # E2, E3, E7, E8, E9
@@ -41,6 +45,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 # How model traffic is handled in this process: {"mode": None | "record" | "replay", "base": run dir, "source": run dir}
 TRAFFIC: dict[str, Any] = {"mode": None, "base": None, "source": None}
+# The plan this process runs (experiments.plan); main() sets it from --plan or from the flags.
+PLAN: dict[str, Any] = {}
 REQUEST = ("Checkout API latency increased after the 10:15 production deployment. Investigate the cause, recommend the "
            "safest remediation, apply the approved action and update the incident.")
 
@@ -106,8 +112,12 @@ def save(path: Path, obj: Any) -> None:
 
 
 # ============================================================================ E2 E3 E7 E8 E9 · layered workflow
-async def one_workflow(d: Path, model: str, channel: str = "cli", faults: dict[str, tuple[str, int, float]] | None = None) -> dict[str, Any]:
+async def one_workflow(d: Path, model: str, channel: str = "cli", faults: dict[str, tuple[str, int, float]] | None = None,
+                       arm_at: str = "approval") -> dict[str, Any]:
     world = fresh_world(d)
+    if arm_at == "start":
+        for tool, (mode, times, delay) in (faults or {}).items():
+            world.arm_fault(tool, mode, times, delay)
     os.environ.update(env_for(d, LAP_MODEL_REASONING=model, LAP_MODEL_SUMMARY=model))
     from agent_platform.contracts import ApprovalDecision, StartInvestigation
     from agent_platform.service import PlatformService
@@ -122,7 +132,7 @@ async def one_workflow(d: Path, model: str, channel: str = "cli", faults: dict[s
         t_wait = time.perf_counter()
         wf = view["workflow_id"]
         if view["status"] == "WAITING_APPROVAL":
-            for tool, (mode, times, delay) in (faults or {}).items():
+            for tool, (mode, times, delay) in (faults or {}).items() if arm_at == "approval" else ():
                 world.arm_fault(tool, mode, times, delay)
             await asyncio.sleep(1.0)  # a human takes a moment; the trace shows the gap
             try:
@@ -192,11 +202,17 @@ async def exp_workflow(base: Path, models: list[str], k: int) -> dict[str, Any]:
 
 
 # ============================================================================ E5 E6 · faults
-async def exp_faults(base: Path, model: str) -> dict[str, Any]:
+def fault_map(inject: list[dict[str, Any]] | None) -> dict[str, tuple[str, int, float]]:
+    return {f["tool"]: (f["mode"], int(f.get("times", 1)), float(f.get("delay_s", 4.0))) for f in inject or []}
+
+
+async def exp_faults(base: Path) -> dict[str, Any]:
+    from experiments.plan import fault_text
+
+    cfg = PLAN["faults"]
     d = base / "faults"
-    print("[faults] timeouts on query_latency during verify + lost rollback response ...", flush=True)
-    rec = await one_workflow(d, model, faults={"observability.query_latency": ("timeout", 2, 3.0),
-                                               "source_control.rollback_release": ("lose_response", 1, 4.0)})
+    print(f"[faults] {cfg['model']}, armed at {cfg['arm_at']}: {fault_text(cfg['inject'])} ...", flush=True)
+    rec = await one_workflow(d, cfg["model"], faults=fault_map(cfg["inject"]), arm_at=cfg["arm_at"])
     spans = rec["trace"]
     tool_spans = [s for s in spans if s["name"].startswith("execute_tool ")]
     out = {
@@ -207,6 +223,7 @@ async def exp_faults(base: Path, model: str) -> dict[str, Any]:
         "verify_latency_calls": [{"attempts": s["attributes"].get("lap.retry.attempts"), "step": s["attributes"].get("lap.step")}
                                  for s in tool_spans if s["name"].endswith("query_latency") and s["attributes"].get("lap.step") == "verify"],
         "timeouts_in_audit": sum(1 for a in rec["audit"] if a["event"] == "invocation.timeout"),
+        "injected": cfg["inject"], "arm_at": cfg["arm_at"], "model": cfg["model"],
     }
     save(d / "summary.json", out)
     print(f"  -> {json.dumps(out['rollback'])}, verify attempts {out['verify_latency_calls']}", flush=True)
@@ -230,42 +247,74 @@ def usage_tokens(db: Path, wf: str) -> list[dict[str, Any]]:
 
 
 def exp_crash(base: Path) -> dict[str, Any]:
+    """One workflow, killed with SIGKILL at each of the plan's kill points in turn. Each new process does what a person
+    or a supervisor would do next: approve a workflow that waits for approval, otherwise resume it."""
+    cfg = PLAN["crash"]
     d = base / "crash"
     world = fresh_world(d)
-    env = env_for(d)
-    print("[crash] run with SIGKILL after the approval checkpoint ...", flush=True)
-    p1, s1 = lap(["run", "INC-4917", "--as", "alice"], {**env, "LAP_CRASH_ON": "after_step:await_approval"})
+    for tool, (mode, times, delay) in fault_map(cfg.get("inject")).items():
+        world.arm_fault(tool, mode, times, delay)
+    env = env_for(d, LAP_MODEL_REASONING=cfg["model"], LAP_MODEL_SUMMARY=cfg["model"])
+    points = list(cfg["kill_at"])
     db = d / "platform.db"
-    wf = sqlite3.connect(db).execute("SELECT id FROM workflows").fetchone()[0]
-    before = len(usage_tokens(db, wf))
-    st, _ = lap(["--json", "status", wf], env)
-    waiting = json.loads(st.stdout)
-    print("[crash] approve, SIGKILL right after the rollback executes (before its checkpoint) ...", flush=True)
-    p2, s2 = lap(["approve", wf, "--as", "alice"], {**env, "LAP_CRASH_ON": "executed:source_control.rollback_release"})
-    mid, _ = lap(["--json", "status", wf], env)
-    print("[crash] resume in a third process ...", flush=True)
-    p3, s3 = lap(["--json", "resume", wf], env)
-    done = json.loads(p3.stdout)
+    sequence: list[dict[str, Any]] = []
+
+    def launch(args: list[str], label: str) -> dict[str, Any]:
+        crash_on = points.pop(0) if points else None
+        print(f"[crash] process {len(sequence) + 1}: lap {label}" + (f", SIGKILL at {crash_on}" if crash_on else "") + " ...", flush=True)
+        proc, secs = lap(args, {**env, "LAP_CRASH_ON": crash_on or ""})
+        entry = {"process": len(sequence) + 1, "command": f"lap {label}", "crash_on": crash_on, "returncode": proc.returncode, "seconds": secs}
+        sequence.append(entry)
+        return entry
+
+    def status(wf: str) -> dict[str, Any]:
+        st, _ = lap(["--json", "status", wf], env)
+        return json.loads(st.stdout)
+
+    first = launch(["run", "INC-4917", "--as", "alice"], "run INC-4917 --as alice")
+    wf = sqlite3.connect(db).execute("SELECT id FROM workflows LIMIT 1").fetchone()[0]
+    calls_after_first = len(usage_tokens(db, wf))
+    first["status_after"] = status(wf)["status"]
+    rollbacks_after: dict[int, int] = {}
+    for _ in range(len(cfg["kill_at"]) + 4):  # each kill costs at most one more process; the rest is a safety bound
+        view = status(wf)
+        if view["status"] in ("COMPLETED", "FAILED", "REJECTED", "CANCELLED"):
+            break
+        if view["status"] == "WAITING_APPROVAL":
+            entry = launch(["approve", wf, "--as", "alice"], "approve --as alice")
+        else:
+            entry = launch(["--json", "resume", wf], "resume")
+        entry["status_after"] = status(wf)["status"]
+        rollbacks_after[entry["process"]] = len(world.executions("source_control.rollback_release"))
+        if entry["returncode"] not in (0, -9):
+            break
+    final = status(wf)
     usage = usage_tokens(db, wf)
     con = sqlite3.connect(db)
     pids = [r[0] for r in con.execute("SELECT DISTINCT pid FROM workflow_events WHERE workflow_id=? ORDER BY id", (wf,))]
     checkpoints = [dict(zip(("seq", "step", "next_step", "pid"), r)) for r in
                    con.execute("SELECT seq, step, next_step, pid FROM checkpoints WHERE workflow_id=? ORDER BY seq", (wf,))]
+    approve = next((e for e in sequence if e["command"].startswith("lap approve")), None)
+    last = sequence[-1]
     out = {
-        "workflow_id": wf,
-        "run": {"returncode": p1.returncode, "seconds": s1, "status_after": waiting["status"]},
-        "approve": {"returncode": p2.returncode, "seconds": s2, "status_after": json.loads(mid.stdout)["status"],
-                    "backend_rollbacks_after_crash": 1 if world.executions("source_control.rollback_release") else 0},
-        "resume": {"returncode": p3.returncode, "seconds": s3, "status": done["status"],
-                   "remediation_replayed": (done.get("remediation") or {}).get("replayed")},
+        "workflow_id": wf, "kill_at": cfg["kill_at"], "model": cfg["model"], "sequence": sequence,
+        # the first process, the approving process and the last process, in the shape the reports read
+        "run": {"returncode": first["returncode"], "seconds": first["seconds"], "status_after": first["status_after"]},
+        "approve": {"returncode": approve["returncode"], "seconds": approve["seconds"], "status_after": approve["status_after"],
+                    "backend_rollbacks_after_crash": min(1, rollbacks_after.get(approve["process"], 0))} if approve else None,
+        "resume": {"returncode": last["returncode"], "seconds": last["seconds"], "status": final["status"],
+                   "remediation_replayed": (final.get("remediation") or {}).get("replayed")},
         "backend_rollbacks": len(world.executions("source_control.rollback_release")),
         "processes": len(pids), "checkpoints": checkpoints,
-        "model_calls_before_crash": before, "model_calls_after_resume": len(usage) - before,
-        "tokens_before_crash": sum(u["input_tokens"] + u["output_tokens"] for u in usage[:before]),
-        "tokens_after_crash": sum(u["input_tokens"] + u["output_tokens"] for u in usage[before:]),
+        "model_calls_before_crash": calls_after_first, "model_calls_after_resume": len(usage) - calls_after_first,
+        "tokens_before_crash": sum(u["input_tokens"] + u["output_tokens"] for u in usage[:calls_after_first]),
+        "tokens_after_crash": sum(u["input_tokens"] + u["output_tokens"] for u in usage[calls_after_first:]),
     }
     save(d / "summary.json", out)
-    print(f"  -> {json.dumps({k: out[k] for k in ('backend_rollbacks', 'processes', 'tokens_before_crash', 'tokens_after_crash')})}", flush=True)
+    print(f"  -> {json.dumps({k: out[k] for k in ('backend_rollbacks', 'processes', 'tokens_before_crash', 'tokens_after_crash')})}, "
+          f"final {final['status']}", flush=True)
+    if final["status"] != "COMPLETED":
+        raise RuntimeError(f"the crashed workflow ended {final['status']} after {len(sequence)} processes")
     return out
 
 
@@ -331,20 +380,24 @@ def monolith_crash(d: Path) -> dict[str, Any]:
 
 
 async def exp_monolith(base: Path, k: int) -> dict[str, Any]:
+    cfg = PLAN["monolith"]
     runs = []
     for i in range(1, k + 1):
         print(f"[monolith] run {i}/{k} (auto-approve) ...", flush=True)
         r = await monolith_once(base / "monolith" / f"run{i}")
         print(f"  -> {json.dumps(r['world'])[:200]} in {r['seconds']} s", flush=True)
         runs.append(r)
-    print("[monolith] lost rollback response ...", flush=True)
-    lost = await monolith_once(base / "monolith" / "lost-response",
-                               faults={"source_control.rollback_release": ("lose_response", 1, 4.0)})
-    print(f"  -> rollbacks executed {lost['world']['rollback_executions']}", flush=True)
-    print("[monolith] SIGKILL while waiting for approval ...", flush=True)
-    crash = monolith_crash(base / "monolith" / "crash")
+    lost = crash = None
+    if cfg.get("lost_response"):
+        print("[monolith] lost rollback response ...", flush=True)
+        lost = await monolith_once(base / "monolith" / "lost-response",
+                                   faults={"source_control.rollback_release": ("lose_response", 1, 4.0)})
+        print(f"  -> rollbacks executed {lost['world']['rollback_executions']}", flush=True)
+    if cfg.get("crash"):
+        print("[monolith] SIGKILL while waiting for approval ...", flush=True)
+        crash = monolith_crash(base / "monolith" / "crash")
     out = {"runs": [{k2: r[k2] for k2 in ("seconds", "tokens", "world", "approvals_asked")} for r in runs],
-           "lost_response": {k2: lost[k2] for k2 in ("seconds", "tokens", "world")}, "crash": crash,
+           "lost_response": {k2: lost[k2] for k2 in ("seconds", "tokens", "world")} if lost else None, "crash": crash,
            "outcomes": {c: sum(bool(r["world"][c]) for r in runs) for c in ("authoritative_rollback", "write_exactly_once", "verified_before_update")},
            "kubernetes_rollbacks": sum(r["world"]["kubernetes_rollbacks"] for r in runs)}
     save(base / "monolith" / "summary.json", out)
@@ -603,12 +656,32 @@ def main() -> None:
     p.add_argument("--no-record", action="store_true", help="do not record model traffic (live runs record it by default)")
     p.add_argument("--resume", action="store_true", help="skip stages that already passed in this run")
     p.add_argument("--profile", default="custom", help=argparse.SUPPRESS)  # set by `poc run`, kept in run.json
+    p.add_argument("--plan", metavar="FILE", help="a run plan (plans/*.yaml); its models, runs, experiments, faults and kill points win over the flags above")
     a = p.parse_args()
+    from experiments import plan as plans
+
+    saved = ROOT / "runs" / a.run_id / "plan.yaml"
+    if not a.plan and a.what != "all" and saved.exists():  # a single stage re-run keeps the run's plan
+        over = {k: v for k, v in (("models", a.models), ("runs", a.k)) if v != p.get_default(k if k == "models" else "k")}
+        PLAN.update(plans.load(str(saved), over))
+    elif a.plan:
+        PLAN.update(plans.load(a.plan))
+    else:  # the flags describe a plan too
+        PLAN.update(plans.load(None, {"name": a.profile, "models": a.models, "runs": a.k, "tests": {"model_tests": a.model_tests},
+                                      "model_answers": {"mode": "replay" if a.replay_from else "live", "replay_from": a.replay_from,
+                                                        "record": not a.no_record},
+                                      "faults": {"model": a.models[0]}, "crash": {"model": a.models[0]}}))
+    ma = PLAN["model_answers"]
+    a.models, a.k, a.profile = PLAN["models"], PLAN["runs"], PLAN["name"]
+    a.replay_from = ma["replay_from"] if ma["mode"] == "replay" else None
+    a.no_record = not ma.get("record", True)
+    a.model_tests = PLAN["tests"]["model_tests"]
     if a.replay_from and a.replay_from == a.run_id:
         raise SystemExit("--replay-from must name another run: a replay writes into its own run folder")
     base = ROOT / "runs" / a.run_id
     base.mkdir(parents=True, exist_ok=True)
-    sys.stdout = Tee(sys.stdout, base / "run.log")
+    if a.what != "report":  # rebuilding a report from the files does not belong in the run's console log
+        sys.stdout = Tee(sys.stdout, base / "run.log")
     TRAFFIC["base"] = base
     if a.replay_from:
         source = ROOT / "runs" / a.replay_from
@@ -627,19 +700,22 @@ def main() -> None:
     keep_meta = a.what != "report"
     if (a.what == "all" and not a.resume) or not old:
         meta = {"run_id": a.run_id, **this, "profile": a.profile, "k": a.k, "model_tests": a.model_tests and not a.replay_from,
-                "what": a.what, "host": {"platform": sys.platform, "python": sys.version.split()[0]}, "started": now()}
+                "experiments": PLAN["experiments"], "what": a.what,
+                "host": {"platform": sys.platform, "python": sys.version.split()[0]}, "started": now()}
     else:
         meta = old
         if keep_meta:
             meta.setdefault("reruns", []).append({"what": a.what, "resume": a.resume, "at": now(), **this})
     if keep_meta:
         save(meta_path, meta)
+        if not (base / "plan.yaml").exists() or (a.what == "all" and not a.resume):
+            (base / "plan.yaml").write_text(plans.dump(PLAN))
     done = set()
     if a.resume and (base / "stages.json").exists():
         done = {s["stage"] for s in json.loads((base / "stages.json").read_text()) if s["ok"]}
     work = {
         "tests": lambda: exp_tests(base, a.model_tests),
-        "faults": lambda: asyncio.run(exp_faults(base, a.models[0])),
+        "faults": lambda: asyncio.run(exp_faults(base)),
         "crash": lambda: exp_crash(base),
         "monolith": lambda: asyncio.run(exp_monolith(base, a.k)),
         "workflow": lambda: asyncio.run(exp_workflow(base, a.models, a.k)),
@@ -651,7 +727,7 @@ def main() -> None:
 
     failed = []
     default_models = p.get_default("models")
-    for stage in (STAGES if a.what == "all" else [a.what]):
+    for stage in ([*PLAN["experiments"], "report"] if a.what == "all" else [a.what]):
         # a re-run of the workflow stage for some models gets its own entry in stages.json
         label = f"{stage} ({', '.join(a.models)})" if stage == "workflow" and a.what != "all" and a.models != default_models else stage
         if label in done and stage != "report":

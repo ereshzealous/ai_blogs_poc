@@ -1,0 +1,62 @@
+..................................................                       [100%]
+==================================== PASSES ====================================
+___________________ test_crash_follows_the_plans_kill_points ___________________
+----------------------------- Captured stdout call -----------------------------
+[crash] process 1: lap run INC-4917 --as alice, SIGKILL at after_step:await_approval ...
+[crash] process 2: lap approve --as alice ...
+  -> {"backend_rollbacks": 1, "processes": 2, "tokens_before_crash": 20985, "tokens_after_crash": 905}, final COMPLETED
+______________ test_monolith_retry_executes_the_same_write_twice _______________
+------------------------------ Captured log call -------------------------------
+WARNING  incident_agent:incident_agent.py:112 source_control__rollback_release timed out, retrying (1/3)
+=========================== short test summary info ============================
+PASSED tests/test_architecture.py::test_layer_boundaries_hold
+PASSED tests/test_architecture.py::test_agents_do_not_mention_models_or_transports
+PASSED tests/test_channels.py::test_rest_and_chat_produce_the_same_command
+PASSED tests/test_channels.py::test_unknown_chat_user_is_rejected
+PASSED tests/test_channels.py::test_approval_without_a_pending_request_is_a_conflict
+PASSED tests/test_channels.py::test_cli_builds_the_same_command
+PASSED tests/test_plans.py::test_every_shipped_plan_loads_and_explains_itself
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override0-experiments: unknown ['benchmarks']]
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override1-unknown step 'nowhere']
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override2-never fires unless crash.inject]
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override3-only applies to writes]
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override4-unknown tool 'itsm.nope']
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override5-the run id to replay]
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override6-runs: a whole number]
+PASSED tests/test_plans.py::test_invalid_plans_are_rejected_with_a_reason[override7-expect: unknown ['speed']]
+PASSED tests/test_plans.py::test_unknown_top_level_keys_are_rejected
+PASSED tests/test_plans.py::test_set_overrides_nested_keys_with_yaml_values
+PASSED tests/test_plans.py::test_a_run_is_judged_by_its_plan
+PASSED tests/test_plans.py::test_crash_follows_the_plans_kill_points
+PASSED tests/test_policy.py::test_read_only_is_allowed
+PASSED tests/test_policy.py::test_direct_kubernetes_rollback_of_a_gitops_service_is_denied
+PASSED tests/test_policy.py::test_write_to_another_environment_than_the_incident_is_denied
+PASSED tests/test_policy.py::test_production_release_rollback_needs_an_incident_commander
+PASSED tests/test_policy.py::test_approval_digest_is_bound_to_arguments_and_workflow
+PASSED tests/test_policy.py::test_unregistered_tool_is_denied
+PASSED tests/test_policy.py::test_low_risk_write_is_allowed
+PASSED tests/test_reliability.py::test_read_timeout_is_retried_with_a_bound
+PASSED tests/test_reliability.py::test_read_gives_up_after_its_retry_budget
+PASSED tests/test_reliability.py::test_lost_response_on_a_write_does_not_execute_twice
+PASSED tests/test_reliability.py::test_monolith_retry_executes_the_same_write_twice
+PASSED tests/test_reliability.py::test_same_operation_is_replayed_from_the_platform_record
+PASSED tests/test_reliability.py::test_key_reuse_with_different_arguments_is_rejected_by_the_backend
+PASSED tests/test_reliability.py::test_high_risk_write_needs_a_grant_for_this_exact_invocation
+PASSED tests/test_reliability.py::test_denied_action_never_reaches_the_backend
+PASSED tests/test_reliability.py::test_agent_toolbox_hides_keys_and_blocks_unoffered_tools
+PASSED tests/test_replay.py::test_chat_replays_in_order_per_caller
+PASSED tests/test_replay.py::test_embeddings_replay_by_input
+PASSED tests/test_replay.py::test_env_selects_the_mode
+PASSED tests/test_replay.py::test_demo_workflow_replays_without_a_model_server
+PASSED tests/test_replay.py::test_run_summary_reads_the_published_run
+PASSED tests/test_replay.py::test_a_rerun_scenario_starts_clean
+PASSED tests/test_replay.py::test_reports_say_how_a_run_was_made
+PASSED tests/test_reports.py::test_run_report_covers_every_recorded_stage
+PASSED tests/test_reports.py::test_workflow_page_shows_the_whole_record
+PASSED tests/test_reports.py::test_scrub_keeps_json_valid
+PASSED tests/test_state.py::test_expired_memories_are_not_recalled
+PASSED tests/test_state.py::test_memory_requires_provenance
+PASSED tests/test_state.py::test_checkpoints_are_append_only_and_latest_wins
+PASSED tests/test_state.py::test_lease_of_a_dead_worker_can_be_taken_over
+PASSED tests/test_state.py::test_approvals_are_bound_to_one_digest
+50 passed, 4 deselected in 54.89s

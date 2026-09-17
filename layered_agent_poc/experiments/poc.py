@@ -1,14 +1,17 @@
 """`poc`: the POC's front door. One command per thing a reader wants to do.
 
     uv run poc check                         is this machine ready? (Ollama, models, memory, MCP servers)
-    uv run poc demo                          INC-4917 end to end in about 2 minutes, then open its report
-    uv run poc demo --replay                 the same without Ollama: recorded model answers, everything else real
-    uv run poc run --profile quick           every experiment, small: about 5 minutes
-    uv run poc run --profile standard        both models, 3 runs each: about 10 minutes
-    uv run poc run --profile full            plus the end-to-end model tests: about 15 minutes
-    uv run poc run --replay                  every experiment from recorded model traffic, in about 3 minutes
-    uv run poc runs                          every run on this machine, with its status and report
-    uv run poc open [latest|demo|<run-id>]   open a report in the browser
+    uv run poc demo [--replay]               INC-4917 end to end in about a minute, then open its report
+    uv run poc plans                         the run plans in plans/: what each tests
+    uv run poc plan show <plan>              what a plan runs, which faults and kills it injects, what counts as a pass
+    uv run poc run --plan <plan>             run a plan: quick, standard, full, replay, chaos, or your own YAML file
+        --models M [M ...]  --runs N  --only a,b  --skip a,b  --set key=value  --replay [RUN]  --run-id ID  --resume [ID]
+    uv run poc runs                          every run on this machine, with its result and report
+    uv run poc open [latest|demo|index|<run-id>]
+
+A plan (experiments/plan.py) is a YAML file: models, runs per scenario, where model answers come from, which
+experiments run, the faults to inject, where to SIGKILL, and the expectations that decide pass or fail. The exit code
+is 0 only when every expectation holds, so `poc run` works unchanged in CI.
 
 Minutes are measured on a 24 GB Apple Silicon laptop with Ollama otherwise idle. `lap` stays the platform's own CLI;
 `poc` is the harness around it (it resets the simulated enterprise systems, which the platform never touches).
@@ -40,14 +43,7 @@ EMBEDDING = "nomic-embed-text"
 NUM_CTX = 32768
 REFERENCE_RUN = "2026-09-17-recorded"  # live run whose model traffic ships with the POC
 DEMO_RECORDINGS = ROOT / "traffic" / "recordings"
-PROFILES: dict[str, dict[str, Any]] = {
-    "quick": {"models": ["gpt-oss:20b"], "k": 1, "model_tests": False, "minutes": 5,
-              "what": "gpt-oss:20b only, one run per scenario, fast tests"},
-    "standard": {"models": MODELS, "k": 3, "model_tests": False, "minutes": 10,
-                 "what": "both models, three runs each, fast tests"},
-    "full": {"models": MODELS, "k": 3, "model_tests": True, "minutes": 15,
-             "what": "standard, plus the end-to-end tests against the models"},
-}
+PROFILES = ("quick", "standard", "full")  # plan names kept from the first version of `poc run --profile`
 TTY = sys.stdout.isatty()
 
 
@@ -170,14 +166,18 @@ def check(replay: bool = False, quiet: bool = False, models: list[str] | None = 
         table(rows)
     if not quiet and not failed:
         heading("What you can run")
+        from experiments import plan as plans
+
         replays = [("uv run poc demo --replay", "INC-4917 end to end from recorded model answers, about 15 s"),
-                   ("uv run poc run --replay", f"every experiment from the answers recorded in runs/{REFERENCE_RUN}, about 2 min")]
+                   ("uv run poc run --plan replay", f"every experiment from the answers recorded in runs/{REFERENCE_RUN}, about 3 min")]
         hints = replays if replay else [
             ("uv run poc demo", "INC-4917 end to end, 1 to 2 min"),
-            *[(f"uv run poc run --profile {n}", f"{p['what']}, about {p['minutes']} min") for n, p in PROFILES.items()],
-            *replays]
+            *[(f"uv run poc run --plan {n}", f"{pl['description']} About {pl['minutes']} min.")
+              for n, pl in ((n, plans.load(n)) for n in plans.available()) if pl["model_answers"]["mode"] == "live"],
+            *replays,
+            ("uv run poc plan show <plan>", "what a plan tests, before you run it")]
         for cmd, what in hints:
-            print(f"  {cmd.ljust(36)} {what}")
+            print(f"  {cmd.ljust(32)} {what}")
     return not failed
 
 
@@ -276,36 +276,19 @@ def demo(model: str, replay: bool, want_open: bool, save_recording: str | None) 
 
 # ------------------------------------------------------------------ run
 def summarize(run_id: str) -> tuple[bool, list[tuple[str, str, str]]]:
-    base = RUNS / run_id
-    rows: list[tuple[str, str, str]] = []
-    load = lambda p: json.loads((base / p).read_text()) if (base / p).exists() else None  # noqa: E731
+    """Stage results, then each expectation of the run's plan with what was measured."""
+    from experiments import plan as plans
     from experiments.report import stages_of
 
-    stages, res, meta = stages_of(base), load("report/results.json") or {}, load("run.json") or {}
-    bad = [s["stage"] for s in stages if not s["ok"]]
-    rows.append(("ok" if stages and not bad else "fail", "Stages", f"{len(stages) - len(bad)}/{len(stages)} passed" + (f"; failed: {', '.join(bad)}" if bad else "")))
-    t = res.get("tests")
-    if t:
-        rows.append(("ok" if not t.get("failed") else "fail", "Tests", f"{t['passed']} passed ({t['fast']} fast, {t['ollama']} with models), {t.get('failed', 0)} failed"))
-    for m, w in (res.get("workflow") or {}).items():
-        good = w["all_checks_passed"] == w["runs"]
-        rows.append(("ok" if good else "fail", f"Platform · {m}", f"{w['completed']}/{w['runs']} completed, all 8 checks in {w['all_checks_passed']}/{w['runs']}, "
-                                                                f"median {w['median_seconds_to_approval']:.0f} s to approval, {w['median_tokens']:,.0f} tokens"))
-    f, mo = res.get("faults"), res.get("monolith")
-    if f and mo:
-        rb = f["rollback"]
-        good = rb["backend_executions"] == 1 and mo["lost_response_rollbacks"] > 1
-        rows.append(("ok" if good else "fail", "Lost response", f"platform {rb['backend_executions']} execution + {rb['backend_replays']} replay; monolith {mo['lost_response_rollbacks']} rollbacks"))
-    cr = res.get("crash")
-    if cr:
-        good = cr["final_status"] == "COMPLETED" and cr["backend_rollbacks"] == 1
-        rows.append(("ok" if good else "fail", "SIGKILL crashes", f"{cr['processes']} processes, {cr['final_status']}, {cr['backend_rollbacks']} rollback, replayed {str(cr['remediation_replayed']).lower()}"))
-    for ch in res.get("change_scope") or []:
-        ok = all(ch[s].get("applies") for s in ("monolith", "layered")) and ch["layered"].get("contracts_kept", True)
-        rows.append(("ok" if ok else "fail", f"Change · {ch['id']}", f"monolith {ch['monolith']['files']} files, platform {ch['layered']['files']}"))
+    base = RUNS / run_id
+    stages, meta = stages_of(base), run_meta(run_id)
+    bad = [x["stage"] for x in stages if not x["ok"]]
+    rows = [("ok" if stages and not bad else "fail", "Stages", f"{len(stages) - len(bad)}/{len(stages)} passed" + (f"; failed: {', '.join(bad)}" if bad else ""))]
+    plan = plans.for_run(base, meta.get("profile"))
+    rows += plans.evaluate(base, plan)
     if meta.get("mode") == "replay":
         rows.append(("skip", "Mode", f"replayed model traffic from {meta.get('replay_from')}; timings are not model timings"))
-    return all(s != "fail" for s, _, _ in rows), rows
+    return all(st != "fail" for st, _, _ in rows), rows
 
 
 def run_meta(run_id: str) -> dict[str, Any]:
@@ -313,39 +296,61 @@ def run_meta(run_id: str) -> dict[str, Any]:
     return json.loads(path.read_text()) if path.exists() else {}
 
 
-def run(profile: str, run_id: str | None, replay: str | None, resume: bool, want_open: bool, skip_check: bool) -> int:
-    p = PROFILES[profile]
-    rid = run_id or f"{time.strftime('%Y-%m-%d-%H%M')}-{profile}{'-replay' if replay else ''}"
-    heading(f"{'Replaying' if replay else 'Running'} the experiments · profile {profile} ({p['what']}) · runs/{rid}")
-    if replay:
-        print(f"  model answers from runs/{replay}; no model server needed; about 2 min"
-              + ("; the end-to-end model tests are skipped" if p["model_tests"] else ""))
-    else:
-        print(f"  about {p['minutes']} min on an idle 24 GB Apple Silicon laptop")
-    if not skip_check and not check(replay=bool(replay), quiet=True, models=p["models"]):
+def run(plan: dict[str, Any], run_id: str | None, resume: bool, want_open: bool, skip_check: bool) -> int:
+    from experiments import plan as plans
+
+    replay = plan["model_answers"]["replay_from"] if plan["model_answers"]["mode"] == "replay" else None
+    rid = run_id or f"{time.strftime('%Y-%m-%d-%H%M')}-{plan['name']}"
+    base = RUNS / rid
+    heading(f"{'Replaying' if replay else 'Running'} plan {plan['name']} · runs/{rid}")
+    for line in plans.describe(plan)[1:]:
+        print(f"  {line}" if line else "")
+    if not skip_check and not check(replay=bool(replay), quiet=True, models=plan["models"]):
         return 1
-    cmd = [sys.executable, "-m", "experiments.run", "all", "--run-id", rid, "--models", *p["models"], "--k", str(p["k"]),
-           "--profile", profile]
-    if p["model_tests"]:
-        cmd.append("--model-tests")
-    if replay:
-        cmd += ["--replay-from", replay]
+    base.mkdir(parents=True, exist_ok=True)
+    (base / "plan.yaml").write_text(plans.dump(plan))
+    cmd = [sys.executable, "-m", "experiments.run", "all", "--run-id", rid, "--plan", str((base / "plan.yaml").relative_to(ROOT))]
     if resume:
         cmd.append("--resume")
     sys.stdout.flush()
     code = subprocess.run(cmd, cwd=ROOT, env=clean_env()).returncode
     ok, rows = summarize(rid)
-    link_latest(RUNS / "latest", RUNS / rid)
+    link_latest(RUNS / "latest", base)
     write_index()
     heading("Result: " + (c("PASS", "green") if ok and code == 0 else c("FAIL", "red")))
     table(rows)
-    report = RUNS / rid / "report" / "index.html"
+    report = base / "report" / "index.html"
     print(f"\n  report   {report.relative_to(ROOT)}   (uv run poc open latest)")
-    print(f"  summary  runs/{rid}/report/summary.md   ·   all runs: uv run poc runs")
-    if code:
+    print(f"  plan     runs/{rid}/plan.yaml   ·   all runs: uv run poc runs")
+    if code or not ok:
         print(f"  retry    uv run poc run --resume {rid}   (re-runs only the stages that failed)")
     open_file(report, want_open)
     return 0 if ok and code == 0 else 1
+
+
+def plan_of(run_id: str) -> str:
+    """The plan a run used: its saved plan.yaml, else the built-in plan its profile names, else full."""
+    from experiments import plan as plans
+
+    saved = RUNS / run_id / "plan.yaml"
+    if saved.exists():
+        return str(saved)
+    profile = run_meta(run_id).get("profile")
+    return profile if profile in plans.available() else "full"
+
+
+def show_plans() -> int:
+    from experiments import plan as plans
+
+    heading("Run plans (plans/*.yaml)")
+    for name in plans.available():
+        pl = plans.load(name)
+        mode = "replay" if pl["model_answers"]["mode"] == "replay" else "live"
+        print(f"  {name:<10} {mode:<7} {len(pl['experiments'])} experiments · {', '.join(pl['models'])} · {pl['runs']} run(s) · about {pl['minutes']} min")
+        print(f"  {'':<10} {pl['description']}")
+    print("\n  details: uv run poc plan show <plan>     run: uv run poc run --plan <plan>")
+    print("  your own: copy plans/full.yaml, keep the keys you change, and pass the file to --plan")
+    return 0
 
 
 # ------------------------------------------------------------------ runs index
@@ -425,16 +430,27 @@ def main() -> None:
     dm.add_argument("--replay", action="store_true", help="use recorded model answers; no Ollama needed")
     dm.add_argument("--no-open", action="store_true", help="do not open the report")
     dm.add_argument("--save-recording", metavar="DIR", help=argparse.SUPPRESS)
-    rn = sub.add_parser("run", help="every experiment, with a report")
-    rn.add_argument("--profile", choices=list(PROFILES),
-                    help="quick (default), standard or full; a replay or a resume keeps the profile of its run")
+    rn = sub.add_parser("run", help="run a plan: every experiment it lists, with a report")
+    rn.add_argument("--plan", help="a plan name (poc plans) or a YAML file; default quick, or the plan of the run being resumed or replayed")
+    rn.add_argument("--profile", choices=PROFILES, help=argparse.SUPPRESS)  # older spelling of --plan
+    rn.add_argument("--models", nargs="+", metavar="MODEL", help="override the plan's models")
+    rn.add_argument("--runs", type=int, metavar="N", help="override the runs per scenario")
+    rn.add_argument("--only", metavar="A,B", help="run only these experiments (tests, faults, crash, monolith, workflow, change, export)")
+    rn.add_argument("--skip", metavar="A,B", help="leave these experiments out")
+    rn.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
+                    help="override any plan key, e.g. --set tests.model_tests=false --set 'crash.kill_at=[after_step:investigate]'")
     rn.add_argument("--run-id")
     rn.add_argument("--replay", nargs="?", const=REFERENCE_RUN, metavar="RUN_ID",
-                    help=f"replay recorded model traffic (default: {REFERENCE_RUN}); no Ollama needed")
+                    help=f"answer model calls from a recorded run (default: {REFERENCE_RUN}); no Ollama needed")
     rn.add_argument("--resume", nargs="?", const="latest", metavar="RUN_ID",
-                    help="finish a run: skip the stages that already passed (default: the latest run)")
+                    help="finish a run with its saved plan: skip the stages that already passed (default: the latest run)")
     rn.add_argument("--no-open", action="store_true")
     rn.add_argument("--skip-check", action="store_true", help=argparse.SUPPRESS)
+    pl = sub.add_parser("plans", help="list the run plans")
+    ps = sub.add_parser("plan", help="explain a plan")
+    ps.add_argument("action", choices=["show"])
+    ps.add_argument("target", help="a plan name or YAML file")
+    ps.add_argument("--set", action="append", default=[], metavar="KEY=VALUE", help="show the plan with these overrides")
     rs = sub.add_parser("runs", help="every run on this machine")
     rs.add_argument("--open", action="store_true")
     op = sub.add_parser("open", help="open a report")
@@ -444,20 +460,56 @@ def main() -> None:
         sys.exit(0 if check(replay=a.replay) else 1)
     if a.cmd == "demo":
         sys.exit(demo(a.model, a.replay, not a.no_open, a.save_recording))
+    if a.cmd == "plans":
+        sys.exit(show_plans())
+    if a.cmd == "plan":
+        from experiments import plan as plans
+
+        try:
+            over: dict[str, Any] = {}
+            for kv in a.set:
+                plans.set_value(over, kv)
+            pl_ = plans.load(a.target, over)
+        except plans.PlanError as exc:
+            sys.exit(c(str(exc), "red"))
+        print("\n".join(plans.describe(pl_, str(plans.resolve_path(a.target).relative_to(ROOT)))))
+        sys.exit(0)
     if a.cmd == "run":
-        run_id, profile, replay = a.run_id, a.profile, a.replay
-        if a.resume:
-            latest = resolve_latest(RUNS / "latest")
-            run_id = run_id or (latest.name if a.resume == "latest" and latest else a.resume)
-            if run_id == "latest" or not (RUNS / run_id).is_dir():
-                ap.error(f"no run to resume: {run_id}")
-            meta = run_meta(run_id)
-            profile = profile or meta.get("profile")
-            replay = replay or meta.get("replay_from")
-        elif replay:
-            profile = profile or run_meta(replay).get("profile")
-        profile = profile if profile in PROFILES else "quick"
-        sys.exit(run(profile, run_id, replay, bool(a.resume), not a.no_open, a.skip_check))
+        from experiments import plan as plans
+
+        run_id, source, over = a.run_id, a.plan or a.profile, {}
+        try:
+            if a.resume:
+                latest = resolve_latest(RUNS / "latest")
+                run_id = run_id or (latest.name if a.resume == "latest" and latest else a.resume)
+                if run_id == "latest" or not (RUNS / run_id).is_dir():
+                    ap.error(f"no run to resume: {run_id}")
+                source = source or plan_of(run_id)
+            elif a.replay and not source:
+                source = plan_of(a.replay)
+            if a.replay:
+                over["model_answers"] = {"mode": "replay", "replay_from": a.replay}
+            if a.models:
+                over["models"] = a.models
+            if a.runs:
+                over["runs"] = a.runs
+            base_plan = plans.load(source or "quick")
+            exps = list(base_plan["experiments"])
+            if a.only:
+                exps = [e for e in plans.EXPERIMENTS if e in {x.strip() for x in a.only.split(",")}]
+                unknown = {x.strip() for x in a.only.split(",")} - set(plans.EXPERIMENTS)
+                if unknown:
+                    ap.error(f"--only: unknown {sorted(unknown)}")
+            if a.skip:
+                exps = [e for e in exps if e not in {x.strip() for x in a.skip.split(",")}]
+            if exps != base_plan["experiments"]:
+                over["experiments"] = exps
+            for kv in a.set:
+                plans.set_value(over, kv)
+            resolved = plans.load(source or "quick", over)
+        except plans.PlanError as exc:
+            sys.exit(c(str(exc), "red"))
+        sys.exit(run(resolved, run_id, bool(a.resume), not a.no_open, a.skip_check))
     if a.cmd == "runs":
         sys.exit(runs(a.open))
     sys.exit(open_report(a.target))

@@ -1,0 +1,11 @@
+# Synthetic identities. No real users.
+users:
+  alice: { display_name: Alice (SRE on call), roles: [sre, incident-commander] }
+  bob:   { display_name: Bob (developer), roles: [developer] }
+# Chat user ids (Slack-shaped payloads) map to platform users.
+chat_users:
+  U04ALICE: alice
+  U04BOB: bob
+agent:
+  id: agent:incident-remediation
+  scopes: [incidents:read, incidents:write, deploys:read, telemetry:read, releases:rollback]

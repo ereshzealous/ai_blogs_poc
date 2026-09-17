@@ -1,0 +1,31 @@
+{
+  "seconds": 21.4,
+  "tokens": 14571,
+  "answer": "**Root Cause:**  \nThe 10:15\u202fPM production deployment of `checkout-api` to v4.17 introduced a migration to `orders-client v3`. The new client changed the database pool configuration, reducing `max_connections` to 10 and `acquire_timeout_ms` to 2000\u202fms. This caused connection contention and long waits, driving p95 latency from ~200\u202fms to >2\u202fs.\n\n**Remediation Applied:**  \nRolled back the service to the previous stable release v4.16 via GitOps (`source_control__rollback_release`). The rollback restored the original pool settings and eliminated the latency spike.\n\n**Verification:**  \nPost\u2011rollback ",
+  "approvals_asked": [
+    {
+      "tool": "source_control__rollback_release",
+      "args": {
+        "environment": "production",
+        "service": "checkout-api",
+        "target_version": "v4.16",
+        "reason": "Rollback due to high latency after migration"
+      }
+    }
+  ],
+  "world": {
+    "rollback_executions": 2,
+    "rollback_targets": [
+      "v4.16",
+      "v4.16"
+    ],
+    "kubernetes_rollbacks": 0,
+    "incident_updates": 1,
+    "final_version": "v4.16",
+    "incident_active": false,
+    "authoritative_rollback": true,
+    "write_exactly_once": false,
+    "verified_before_update": true,
+    "tool_calls": 8
+  }
+}

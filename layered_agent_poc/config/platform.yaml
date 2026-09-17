@@ -1,0 +1,38 @@
+# Platform configuration. Model names, provider options, budgets, timeouts and retry policy live here,
+# never in agent code. Environment variables override the model routes:
+#   LAP_MODEL_REASONING, LAP_MODEL_SUMMARY, LAP_MODEL_EMBEDDINGS, OLLAMA_URL
+paths:
+  platform_db: var/platform.db
+  enterprise_db: var/enterprise.db
+  runs_dir: runs
+  knowledge_dir: agent_platform/knowledge/runbooks
+  knowledge_index: var/knowledge_index.json
+
+models:
+  provider: ollama
+  url: http://localhost:11434
+  request_timeout_s: 240
+  routes:
+    reasoning: { model: gpt-oss:20b, fallback: qwen3:8b }
+    summary:   { model: gpt-oss:20b, fallback: qwen3:8b }
+    embeddings: { model: nomic-embed-text }
+  # Provider-specific behaviour is a model profile, not agent code.
+  profiles:
+    gpt-oss:20b: { think: low, options: { temperature: 0, seed: 7, num_ctx: 32768 } }
+    qwen3:8b:    { think: false, options: { temperature: 0, seed: 7, num_ctx: 32768 } }
+    llama3.1:latest: { options: { temperature: 0, seed: 7, num_ctx: 32768 } }
+    nomic-embed-text: {}
+  budgets:
+    workflow_tokens: 150000
+
+agents:
+  max_steps: 10
+  observation_chars: 2400
+
+orchestration:
+  verify_attempts: 3
+  verify_interval_s: 0.5
+  max_remediation_proposals: 2
+
+actions:
+  default_timeout_s: 8

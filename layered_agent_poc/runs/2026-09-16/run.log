@@ -1,0 +1,49 @@
+=== STAGE faults START 16:38:43
+[faults] timeouts on query_latency during verify + lost rollback response ...
+  -> {"attempts": 2, "replayed": true, "backend_executions": 1, "backend_replays": 1}, verify attempts [{'attempts': 3, 'step': 'verify'}]
+=== STAGE faults OK 16:40:17
+=== STAGE crash START 16:40:17
+[crash] run with SIGKILL after the approval checkpoint ...
+[crash] approve, SIGKILL right after the rollback executes (before its checkpoint) ...
+[crash] resume in a third process ...
+  -> {"backend_rollbacks": 1, "processes": 3, "tokens_before_crash": 20899, "tokens_after_crash": 895}
+=== STAGE crash OK 16:42:07
+=== STAGE monolith START 16:42:07
+[monolith] run 1/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 63.0 s
+[monolith] run 2/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 67.7 s
+[monolith] run 3/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 63.4 s
+[monolith] lost rollback response ...
+source_control__rollback_release timed out, retrying (1/3)
+  -> rollbacks executed 2
+[monolith] SIGKILL while waiting for approval ...
+=== STAGE monolith OK 16:46:48
+=== STAGE workflow START 16:46:48
+[workflow] gpt-oss:20b run 1/3 ...
+  -> COMPLETED evals 8/8 in 108.2 s
+[workflow] gpt-oss:20b run 2/3 ...
+  -> COMPLETED evals 8/8 in 122.5 s
+[workflow] gpt-oss:20b run 3/3 ...
+  -> COMPLETED evals 8/8 in 115.9 s
+[workflow] qwen3:8b run 1/3 ...
+  -> COMPLETED evals 8/8 in 149.9 s
+[workflow] qwen3:8b run 2/3 ...
+  -> COMPLETED evals 8/8 in 135.1 s
+[workflow] qwen3:8b run 3/3 ...
+  -> COMPLETED evals 8/8 in 141.2 s
+=== STAGE workflow OK 16:59:45
+=== ALL DONE
+=== STAGE report START 14:02:19
+[report] runs/2026-09-16/report/index.html
+=== STAGE report OK 14:02:19
+=== STAGE report START 15:09:59
+[report] runs/2026-09-16/report/index.html
+=== STAGE report OK 15:09:59
+=== STAGE report START 15:10:39
+[report] runs/2026-09-16/report/index.html
+=== STAGE report OK 15:10:39
+=== STAGE report START 15:13:06
+[report] runs/2026-09-16/report/index.html
+=== STAGE report OK 15:13:06

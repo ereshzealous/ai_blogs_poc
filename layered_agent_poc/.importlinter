@@ -1,0 +1,113 @@
+[importlinter]
+root_packages =
+    agent_platform
+    mock_enterprise
+    monolith
+include_external_packages = True
+
+[importlinter:contract:channels-only-talk-to-the-service]
+name = Experience layer calls only the service facade
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.channels
+forbidden_modules =
+    agent_platform.orchestration
+    agent_platform.agents
+    agent_platform.actions
+    agent_platform.models
+    agent_platform.context
+    agent_platform.memory
+    agent_platform.knowledge
+    mcp
+    httpx
+
+[importlinter:contract:agents-reason-they-do-not-execute]
+name = Agent runtime never reaches transports, providers or storage
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.agents
+forbidden_modules =
+    agent_platform.actions.gateway
+    agent_platform.actions.mcp_pool
+    agent_platform.models.ollama
+    agent_platform.models.gateway
+    agent_platform.orchestration
+    agent_platform.channels
+    mock_enterprise
+    mcp
+    httpx
+    sqlite3
+
+[importlinter:contract:orchestration-does-not-reason]
+name = Orchestration coordinates; it never calls a model or a transport directly
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.orchestration
+forbidden_modules =
+    agent_platform.models
+    agent_platform.channels
+    agent_platform.actions.mcp_pool
+    mock_enterprise
+    mcp
+    httpx
+
+[importlinter:contract:state-layers-stay-below]
+name = Context, memory and knowledge do not depend on workflow, agents or tools
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.context
+    agent_platform.memory
+    agent_platform.knowledge
+forbidden_modules =
+    agent_platform.orchestration
+    agent_platform.agents
+    agent_platform.actions
+    agent_platform.channels
+    mcp
+
+[importlinter:contract:actions-are-model-free]
+name = Tool and action layer never reasons or orchestrates
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.actions
+forbidden_modules =
+    agent_platform.agents
+    agent_platform.orchestration
+    agent_platform.models
+    agent_platform.channels
+    agent_platform.context
+
+[importlinter:contract:models-are-leaf-services]
+name = Model services know nothing about agents, workflows or tools
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform.models
+forbidden_modules =
+    agent_platform.agents
+    agent_platform.orchestration
+    agent_platform.actions
+    agent_platform.channels
+    agent_platform.context
+    mcp
+
+[importlinter:contract:platform-never-imports-the-mock-world]
+name = In this POC, enterprise systems are reached only through the tool and action layer, over MCP
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    agent_platform
+forbidden_modules =
+    mock_enterprise
+    monolith
+    mcp
+    mcp_types
+# the tool and action layer's MCP client is the one place allowed to speak MCP
+ignore_imports =
+    agent_platform.actions.mcp_pool -> mcp
+    agent_platform.actions.mcp_pool -> mcp_types

@@ -1,0 +1,43 @@
+diff --color -ruN base/monolith/cli.py m2/monolith/cli.py
+--- a/monolith/cli.py	2026-09-16 21:28:36
++++ b/monolith/cli.py	2026-09-16 21:29:22
+@@ -34,7 +34,7 @@
+     r = sub.add_parser("run")
+     r.add_argument("incident")
+     r.add_argument("request", nargs="?")
+-    r.add_argument("--model", default="gpt-oss:20b")
++    r.add_argument("--model", default="qwen3:8b")
+     r.add_argument("--yes", action="store_true", help="approve every write without asking")
+     args = p.parse_args()
+     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+diff --color -ruN base/monolith/incident_agent.py m2/monolith/incident_agent.py
+--- a/monolith/incident_agent.py	2026-09-16 21:28:36
++++ b/monolith/incident_agent.py	2026-09-16 21:29:22
+@@ -23,7 +23,7 @@
+ from mcp.shared.exceptions import MCPError
+ 
+ OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
+-MODEL = "gpt-oss:20b"
++MODEL = "qwen3:8b"
+ SERVERS = ("itsm", "source_control", "observability", "database", "kubernetes")
+ WRITE_TOOLS = {"rollback_release", "rollback_deployment", "update_incident"}
+ 
+@@ -79,7 +79,7 @@
+     # -- the model ---------------------------------------------------------------------------------
+     async def chat(self, messages: list[dict[str, Any]]) -> dict[str, Any]:
+         body = {"model": self.model, "messages": messages, "tools": self.tools, "stream": False,
+-                "think": "low",  # gpt-oss reasoning effort
++                "think": False,  # qwen3 takes a boolean; "low" is a gpt-oss value and is rejected
+                 "options": {"temperature": 0, "seed": 7, "num_ctx": 32768}}
+         async with httpx.AsyncClient(timeout=240) as http:
+             resp = await http.post(f"{OLLAMA_URL}/api/chat", json=body)
+@@ -111,6 +111,9 @@
+         for _ in range(max_turns):
+             msg = await self.chat(messages)
+             calls = msg.get("tool_calls") or []
++            for c in calls:  # qwen3 sometimes returns arguments as a JSON string
++                if isinstance(c["function"].get("arguments"), str):
++                    c["function"]["arguments"] = json.loads(c["function"]["arguments"] or "{}")
+             messages.append({"role": "assistant", "content": msg.get("content", ""), "tool_calls": calls})
+             if not calls:
+                 self.history.append({"role": "assistant", "content": msg.get("content", "")})

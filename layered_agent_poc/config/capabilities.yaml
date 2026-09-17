@@ -1,0 +1,55 @@
+# Capability registry: what each MCP tool is, how risky it is, who may see it, and how it is retried.
+# retry.attempts counts total attempts. Writes are retried only when the call carries an idempotency key.
+services:
+  checkout-api:    { managed_by: gitops-release-pipeline, owner: checkout-engineering, tier: 1 }
+  payment-gateway: { managed_by: gitops-release-pipeline, owner: payments-platform, tier: 1 }
+  inventory-api:   { managed_by: gitops-release-pipeline, owner: fulfilment-engineering, tier: 2 }
+
+tools:
+  itsm.get_incident:
+    risk: READ_ONLY
+    tags: [diagnosis, incident]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  itsm.update_incident:
+    risk: LOW_RISK_WRITE
+    tags: [record]
+    idempotency_key: true
+    retry: { attempts: 3, timeout_s: 4, backoff_ms: 200 }
+  source_control.search_deployments:
+    risk: READ_ONLY
+    tags: [diagnosis, deploys]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  source_control.get_diff:
+    risk: READ_ONLY
+    tags: [diagnosis, deploys]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  source_control.rollback_release:
+    risk: HIGH_RISK_WRITE
+    tags: [remediation]
+    authoritative_for: [release-rollback]
+    idempotency_key: true
+    retry: { attempts: 3, timeout_s: 2, backoff_ms: 300 }
+  observability.query_latency:
+    risk: READ_ONLY
+    tags: [diagnosis, verify]
+    retry: { attempts: 3, timeout_s: 1.5, backoff_ms: 250 }
+  observability.search_logs:
+    risk: READ_ONLY
+    tags: [diagnosis]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  observability.get_slow_trace:
+    risk: READ_ONLY
+    tags: [diagnosis]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  database.get_connection_pool_stats:
+    risk: READ_ONLY
+    tags: [diagnosis]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  kubernetes.get_pods:
+    risk: READ_ONLY
+    tags: [diagnosis]
+    retry: { attempts: 2, timeout_s: 4, backoff_ms: 200 }
+  kubernetes.rollback_deployment:
+    risk: HIGH_RISK_WRITE
+    tags: [remediation]
+    retry: { attempts: 1, timeout_s: 4, backoff_ms: 0 }

@@ -1,0 +1,14 @@
+# Optional: view the platform's OpenTelemetry traces in Jaeger.
+#   docker compose up -d jaeger
+#   uv sync --extra otlp
+#   OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 uv run lap run INC-4917 --as alice
+#   open http://localhost:16686
+# Ollama runs on the host (the platform calls http://localhost:11434).
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"   # UI
+      - "4318:4318"     # OTLP/HTTP

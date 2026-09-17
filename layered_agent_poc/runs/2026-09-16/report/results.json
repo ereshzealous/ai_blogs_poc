@@ -1,0 +1,227 @@
+{
+  "run_id": "2026-09-16",
+  "generated_at": "2026-09-17 15:13 UTC",
+  "stages": [
+    {
+      "stage": "faults",
+      "start": 1789576723.0,
+      "end": 1789576817.0,
+      "ok": true
+    },
+    {
+      "stage": "crash",
+      "start": 1789576817.0,
+      "end": 1789576927.0,
+      "ok": true
+    },
+    {
+      "stage": "monolith",
+      "start": 1789576927.0,
+      "end": 1789577208.0,
+      "ok": true
+    },
+    {
+      "stage": "workflow",
+      "start": 1789577208.0,
+      "end": 1789577985.0,
+      "ok": true
+    },
+    {
+      "stage": "report",
+      "start": 1789567339.0,
+      "end": 1789567339.0,
+      "ok": true
+    },
+    {
+      "stage": "report",
+      "start": 1789571399.0,
+      "end": 1789571399.0,
+      "ok": true
+    },
+    {
+      "stage": "report",
+      "start": 1789571439.0,
+      "end": 1789571439.0,
+      "ok": true
+    }
+  ],
+  "tests": {
+    "passed": 31,
+    "fast": 27,
+    "ollama": 4
+  },
+  "workflow": {
+    "gpt-oss:20b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 104.0,
+      "median_seconds_after_approval": 11.900000000000006,
+      "median_tokens": 23701,
+      "median_model_calls": 12,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      }
+    },
+    "qwen3:8b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 129.5,
+      "median_seconds_after_approval": 13.099999999999994,
+      "median_tokens": 15150,
+      "median_model_calls": 7,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      }
+    }
+  },
+  "remediation_repairs": {
+    "repaired": 6,
+    "runs": 6
+  },
+  "faults": {
+    "status": "COMPLETED",
+    "evals": "8/8",
+    "rollback": {
+      "attempts": 2,
+      "replayed": true,
+      "backend_executions": 1,
+      "backend_replays": 1
+    },
+    "latency_read_attempts": 3,
+    "timeouts_in_audit": 3
+  },
+  "crash": {
+    "workflow_id": "wf-ced1ebd3ea",
+    "processes": 3,
+    "backend_rollbacks": 1,
+    "model_calls_before_crash": 10,
+    "model_calls_after_resume": 1,
+    "tokens_before_crash": 20899,
+    "tokens_after_crash": 895,
+    "status_after_first_kill": "WAITING_APPROVAL",
+    "final_status": "COMPLETED",
+    "remediation_replayed": true
+  },
+  "monolith": {
+    "runs": 3,
+    "median_seconds": 63.4,
+    "median_tokens": 16134,
+    "kubernetes_rollbacks": 0,
+    "lost_response_rollbacks": 2,
+    "crash_seconds_to_prompt": 23.1,
+    "crash_state_left": []
+  },
+  "change_scope": [
+    {
+      "id": "add-channel",
+      "title": "Add a Teams-style chat channel",
+      "monolith": {
+        "files": 3,
+        "added": 63,
+        "removed": 14,
+        "concerns": [
+          "channel",
+          "session",
+          "workflow",
+          "prompt"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 3,
+        "added": 60,
+        "removed": 0,
+        "concerns": [
+          "channel",
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "swap-model",
+      "title": "Swap gpt-oss:20b for qwen3:8b",
+      "monolith": {
+        "files": 2,
+        "added": 6,
+        "removed": 3,
+        "concerns": [
+          "model",
+          "reasoning",
+          "channel"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 1,
+        "added": 1,
+        "removed": 1,
+        "concerns": [
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "change-freeze",
+      "title": "Change freeze needs a change manager",
+      "monolith": {
+        "files": 3,
+        "added": 24,
+        "removed": 11,
+        "concerns": [
+          "policy",
+          "workflow",
+          "channel"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 2,
+        "added": 6,
+        "removed": 0,
+        "concerns": [
+          "policy",
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    }
+  ]
+}

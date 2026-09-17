@@ -1,0 +1,32 @@
+# Deterministic execution policy, evaluated top to bottom; the first matching rule wins.
+# Discovery can be heuristic. Authorization is not.
+rules:
+  - id: P0-default-deny
+    when: { registered: false }
+    decision: DENY
+    reason: Tool is not in the capability registry.
+  - id: P1-read-only
+    when: { risk: [READ_ONLY] }
+    decision: ALLOW
+    reason: Read-only capability.
+  - id: P2-gitops-authoritative
+    when: { tool_prefix: kubernetes., risk: [LOW_RISK_WRITE, HIGH_RISK_WRITE], service_managed_by: gitops-release-pipeline }
+    decision: DENY
+    reason: The service is managed by the GitOps release pipeline; a direct Kubernetes change would be reverted. Use source_control.rollback_release.
+  - id: P3-env-must-match-incident
+    when: { risk: [LOW_RISK_WRITE, HIGH_RISK_WRITE], environment_differs_from_incident: true }
+    decision: DENY
+    reason: The write targets a different environment than the incident.
+  - id: P4-prod-high-risk-approval
+    when: { risk: [HIGH_RISK_WRITE], environment: [production] }
+    decision: REQUIRE_APPROVAL
+    approver_role: incident-commander
+    reason: High-risk production change needs an incident commander's approval bound to this exact invocation.
+  - id: P5-low-risk-write
+    when: { risk: [LOW_RISK_WRITE] }
+    decision: ALLOW
+    reason: Low-risk write.
+  - id: P9-fallback-deny
+    when: {}
+    decision: DENY
+    reason: No rule allowed this invocation.

@@ -1,0 +1,26 @@
+diff --color -ruN base/config/policies.yaml l3/config/policies.yaml
+--- a/config/policies.yaml	2026-09-16 21:28:36
++++ b/config/policies.yaml	2026-09-16 21:28:36
+@@ -17,6 +17,11 @@
+     when: { risk: [LOW_RISK_WRITE, HIGH_RISK_WRITE], environment_differs_from_incident: true }
+     decision: DENY
+     reason: The write targets a different environment than the incident.
++  - id: P4a-change-freeze
++    when: { risk: [HIGH_RISK_WRITE], environment: [production] }
++    decision: REQUIRE_APPROVAL
++    approver_role: change-manager
++    reason: Change freeze in effect; production changes need a change manager's approval.
+   - id: P4-prod-high-risk-approval
+     when: { risk: [HIGH_RISK_WRITE], environment: [production] }
+     decision: REQUIRE_APPROVAL
+diff --color -ruN base/config/principals.yaml l3/config/principals.yaml
+--- a/config/principals.yaml	2026-09-16 21:28:36
++++ b/config/principals.yaml	2026-09-16 21:28:36
+@@ -2,6 +2,7 @@
+ users:
+   alice: { display_name: Alice (SRE on call), roles: [sre, incident-commander] }
+   bob:   { display_name: Bob (developer), roles: [developer] }
++  carol: { display_name: Carol (change manager), roles: [change-manager] }
+ # Chat user ids (Slack-shaped payloads) map to platform users.
+ chat_users:
+   U04ALICE: alice

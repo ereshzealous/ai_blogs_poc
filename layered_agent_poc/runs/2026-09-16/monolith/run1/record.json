@@ -1,0 +1,30 @@
+{
+  "seconds": 63.0,
+  "tokens": 16134,
+  "answer": "**Incident INC\u20114917 \u2013 Checkout API latency elevated in production**\n\n| Item | Details |\n|------|---------|\n| **Root cause** | The 10:15\u202fprod deployment (v4.17) upgraded `orders-client` to v3, which changed the DB pool config to `max_connections: 10` and `acquire_timeout_ms: 2000`. This caused connection\u2011pool exhaustion (`ConnectionPoolTimeoutError`) and upstream timeouts, raising p95 latency to 200\u202fms (baseline). |\n| **Remediation** | Rolled back checkout\u2011api to the previous stable release v4.16 via the GitOps release pipeline. |\n| **Verification** | Post\u2011rollback latency metrics returned to b",
+  "approvals_asked": [
+    {
+      "tool": "source_control__rollback_release",
+      "args": {
+        "environment": "production",
+        "service": "checkout-api",
+        "target_version": "v4.16",
+        "reason": "Rollback due to connection pool exhaustion"
+      }
+    }
+  ],
+  "world": {
+    "rollback_executions": 1,
+    "rollback_targets": [
+      "v4.16"
+    ],
+    "kubernetes_rollbacks": 0,
+    "incident_updates": 1,
+    "final_version": "v4.16",
+    "incident_active": false,
+    "authoritative_rollback": true,
+    "write_exactly_once": true,
+    "verified_before_update": true,
+    "tool_calls": 7
+  }
+}

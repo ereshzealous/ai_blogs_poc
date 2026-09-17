@@ -1,0 +1,244 @@
+{
+  "run_id": "2026-09-17",
+  "generated_at": "2026-09-17 15:13 UTC",
+  "stages": [
+    {
+      "stage": "tests",
+      "start": 1789587902.757,
+      "end": 1789588363.958,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "faults",
+      "start": 1789588363.959,
+      "end": 1789588452.933,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "crash",
+      "start": 1789588452.934,
+      "end": 1789588540.852,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "monolith",
+      "start": 1789588540.853,
+      "end": 1789588738.747,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "workflow",
+      "start": 1789588738.748,
+      "end": 1789590250.362,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "change",
+      "start": 1789590250.363,
+      "end": 1789590252.385,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "export",
+      "start": 1789590252.385,
+      "end": 1789590252.391,
+      "ok": true,
+      "error": null
+    },
+    {
+      "stage": "workflow (qwen3:8b)",
+      "start": 1789590326.83,
+      "end": 1789590819.81,
+      "ok": true,
+      "error": null
+    }
+  ],
+  "tests": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "fast": 29,
+    "ollama": 4,
+    "contracts_kept": true
+  },
+  "workflow": {
+    "gpt-oss:20b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 83.0,
+      "median_seconds_after_approval": 9.5,
+      "median_tokens": 23702,
+      "median_model_calls": 12,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      }
+    },
+    "qwen3:8b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 83.5,
+      "median_seconds_after_approval": 4.699999999999989,
+      "median_tokens": 15155,
+      "median_model_calls": 7,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      }
+    }
+  },
+  "remediation_repairs": {
+    "repaired": 5,
+    "runs": 6
+  },
+  "faults": {
+    "status": "COMPLETED",
+    "evals": "8/8",
+    "rollback": {
+      "attempts": 2,
+      "replayed": true,
+      "backend_executions": 1,
+      "backend_replays": 1
+    },
+    "latency_read_attempts": 3,
+    "timeouts_in_audit": 3
+  },
+  "crash": {
+    "workflow_id": "wf-7cfaf62465",
+    "processes": 3,
+    "backend_rollbacks": 1,
+    "model_calls_before_crash": 10,
+    "model_calls_after_resume": 1,
+    "tokens_before_crash": 20857,
+    "tokens_after_crash": 928,
+    "status_after_first_kill": "WAITING_APPROVAL",
+    "final_status": "COMPLETED",
+    "remediation_replayed": true
+  },
+  "monolith": {
+    "runs": 3,
+    "median_seconds": 45.0,
+    "median_tokens": 16557,
+    "kubernetes_rollbacks": 0,
+    "lost_response_rollbacks": 2,
+    "crash_seconds_to_prompt": 22.5,
+    "crash_state_left": []
+  },
+  "change_scope": [
+    {
+      "id": "add-channel",
+      "title": "Add a Teams-style chat channel",
+      "monolith": {
+        "files": 3,
+        "added": 63,
+        "removed": 14,
+        "concerns": [
+          "channel",
+          "session",
+          "workflow",
+          "prompt"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 3,
+        "added": 60,
+        "removed": 0,
+        "concerns": [
+          "channel",
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "swap-model",
+      "title": "Swap gpt-oss:20b for qwen3:8b",
+      "monolith": {
+        "files": 2,
+        "added": 6,
+        "removed": 3,
+        "concerns": [
+          "model",
+          "reasoning",
+          "channel"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 1,
+        "added": 1,
+        "removed": 1,
+        "concerns": [
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "change-freeze",
+      "title": "Change freeze needs a change manager",
+      "monolith": {
+        "files": 3,
+        "added": 24,
+        "removed": 11,
+        "concerns": [
+          "policy",
+          "workflow",
+          "channel"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 2,
+        "added": 6,
+        "removed": 0,
+        "concerns": [
+          "policy",
+          "config"
+        ],
+        "applies": true,
+        "compiles": true,
+        "imports": true,
+        "contracts_kept": true
+      }
+    }
+  ]
+}

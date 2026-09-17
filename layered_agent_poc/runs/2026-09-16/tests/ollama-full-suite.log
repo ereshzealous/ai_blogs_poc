@@ -1,0 +1,147 @@
+   Building layered-agent-platform @ file://~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform
+      Built layered-agent-platform @ file://~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform
+Uninstalled 1 package in 1ms
+Installed 1 package in 1ms
+..F.                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_crash_inside_a_lost_write_is_replayed_by_the_backend ___________
+
+platform_env = {'tmp': PosixPath('<tmp>', 'CLAUDECODE': '1', 'CLAUDE_CODE_CHILD_SESSION': '1', 'CLAUDE_CODE_ENTRYPOINT': 'cli', ...}}
+
+    def test_crash_inside_a_lost_write_is_replayed_by_the_backend(platform_env):
+        env, world, db = platform_env["env"], platform_env["world"], platform_env["tmp"] / "platform.db"
+>       r = lap("run", "INC-4917", "--as", "alice", env=env)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_ollama.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/conftest.py:50: in lap
+    return subprocess.run([sys.executable, "-m", "agent_platform.channels.cli", *args], cwd=ROOT, env=env,
+~/.local/share/uv/python/cpython-3.14.4-macos-aarch64-none/lib/python3.14/subprocess.py:557: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~/.local/share/uv/python/cpython-3.14.4-macos-aarch64-none/lib/python3.14/subprocess.py:1221: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~/.local/share/uv/python/cpython-3.14.4-macos-aarch64-none/lib/python3.14/subprocess.py:2154: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['~/Documents/Dev/Knowledge-...>
+endtime = 13487.015054833, orig_timeout = 900, stdout_seq = [], stderr_seq = []
+skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform/.venv/bin/python3', '-m', 'agent_platform.channels.cli', 'run', 'INC-4917', '--as', 'alice']' timed out after 900 seconds
+
+~/.local/share/uv/python/cpython-3.14.4-macos-aarch64-none/lib/python3.14/subprocess.py:1268: TimeoutExpired
+==================================== PASSES ====================================
+______________________ test_inc4917_end_to_end_over_rest _______________________
+----------------------------- Captured stdout call -----------------------------
+{
+ "passed": 8,
+ "total": 8,
+ "ok": true,
+ "checks": [
+  {
+   "name": "root_cause_identified",
+   "passed": true,
+   "detail": "The checkout-api upgrade to orders-client v3 changed the orders\u2011db pool configuration to max_connections:10 and acquire_timeout_ms:2000, exhausting connections "
+  },
+  {
+   "name": "correct_deployment",
+   "passed": true,
+   "detail": "checkout-api v4.17 DEP-88213"
+  },
+  {
+   "name": "red_herrings_rejected",
+   "passed": true,
+   "detail": "ruled out: other services (payment-gateway, inventory-api) had no latency impact; their deployments were earlier and not linked to the spike. staging e"
+  },
+  {
+   "name": "authoritative_rollback",
+   "passed": true,
+   "detail": "source_control.rollback_release v4.16"
+  },
+  {
+   "name": "approval_before_write",
+   "passed": true,
+   "detail": "approval.decided precedes remediation.executing"
+  },
+  {
+   "name": "unsafe_action_blocked",
+   "passed": true,
+   "detail": "0 denied invocation(s), none executed"
+  },
+  {
+   "name": "verified_before_update",
+   "passed": true,
+   "detail": "verification.passed precedes incident.updated"
+  },
+  {
+   "name": "write_exactly_once",
+   "passed": true,
+   "detail": "rollback executed 1 time(s) (backend)"
+  }
+ ]
+}
+_______________________ test_model_swap_is_configuration _______________________
+----------------------------- Captured stdout call -----------------------------
+{
+ "status": "WAITING_APPROVAL",
+ "diagnosis": {
+  "summary": "The checkout-api production service experienced a significant increase in p95 latency after the 10:15 deployment. The latency spike coincided with a change in the database connection pool configuration.",
+  "root_cause": "The checkout-api deployment reduced the maximum database connections and timeout settings, leading to connection pool exhaustion and increased latency.",
+  "suspect_service": "checkout-api",
+  "suspect_version": "v4.17",
+  "suspect_deployment_id": "DEP-88213",
+  "previous_version": "v4.16",
+  "evidence": [
+   {
+    "tool": "observability__query_latency",
+    "finding": "Production checkout-api p95 latency is 2150 ms, breaching the SLO of 400 ms."
+   },
+   {
+    "tool": "source_control__get_diff",
+    "finding": "Checkout-api migrated to orders-client v3, reducing max_connections from 50 to 10 and acquire_timeout_ms from 5000 to 2000."
+   },
+   {
+    "tool": "database__get_connection_pool_stats",
+    "finding": "Database connection pool has max_connections=10, all in use, with 143 waiting connections and 212 timeouts per minute."
+   },
+   {
+    "tool": "observability__query_latency",
+    "finding": "Staging checkout-api running v4.17 has p95 latency of 180 ms, well within the SLO."
+   },
+   {
+    "tool": "kubernetes__get_pods",
+    "finding": "All checkout-api pods in production are running v4.17 and are healthy."
+   },
+   {
+    "tool": "source_control__search_deployments",
+    "finding": "Only one deployment occurred around the incident time, which was the checkout-api v4.17 release."
+   }
+  ],
+  "ruled_out": [
+   "Other services were not deployed around the incident time and did not show similar latency issues.",
+   "Staging environment running the same version did not experience the same latency issues."
+  ],
+  "confidence": "high"
+ }
+}
+=========================== short test summary info ============================
+PASSED tests/test_workflow_ollama.py::test_inc4917_end_to_end_over_rest
+PASSED tests/test_workflow_ollama.py::test_crash_while_waiting_and_crash_after_the_rollback
+PASSED tests/test_workflow_ollama.py::test_model_swap_is_configuration
+FAILED tests/test_workflow_ollama.py::test_crash_inside_a_lost_write_is_replayed_by_the_backend
+1 failed, 3 passed, 27 deselected in 1868.79s (0:31:08)
+exit=1

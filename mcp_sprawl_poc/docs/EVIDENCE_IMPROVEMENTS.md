@@ -641,7 +641,18 @@ An explicit substitutes field and one canonical tool per job in the registry wou
   context 32,768, K, the case-file hash `fa577c03…`, the discovery code hash `7cc86903…`, the catalog, registry and
   policy hashes, and the embedding model digest. The catalogs come from generator seed 4917.
 
-## 9. Rebuild the reports
+## 9. Discovery v5: capability resolution
+
+v5 is the next profile after v4, and it has its own document: [`docs/CAPABILITY_RESOLUTION_V5.md`](CAPABILITY_RESOLUTION_V5.md).
+It was designed from v4's misses in section 8, frozen with its calibrated thresholds, and measured once on a third
+held-out set of 200 requests (120 clear, 60 ambiguous, 20 trap) written blind afterwards.
+
+At 500 tools it resolved 86.7% of clear and ambiguous requests, against 69.4% for v4 and 60.0% for showing every
+tool; it ended all 20 trap requests safely; and 5.6% of its decisions were confidently wrong, against 28.9% for v4.
+It asks one question in 54% of requests, and it did not reach the 99% resolution the method aimed at. The full
+result, including where it fell short, is in section 11 of that document.
+
+## 10. Rebuild the reports
 
 Every report below is rebuilt from the committed run files, without a model.
 

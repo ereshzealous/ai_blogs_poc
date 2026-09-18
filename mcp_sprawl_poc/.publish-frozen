@@ -1,0 +1,28 @@
+# Byte-exact and hash-frozen artefacts of this POC. A diff here usually means something regenerated or relabelled
+# them. Publish with --allow-frozen only when the change is intended and recorded in benchmark/prompts/CHANGELOG.md.
+
+# The published run and its report: the README claims both rebuild byte for byte from the raw rows.
+benchmark/runs/gpt-oss-20b-2026-09-15/**
+benchmark/reports/gpt-oss-20b-2026-09-15/**
+
+# Catalogs and registry: regenerated deterministically from seed 4917, and hashed in every run config.
+benchmark/catalogs/catalog_*.json
+benchmark/catalogs/registry.json
+benchmark/catalogs/catalog_summary.json
+
+# Case sets frozen before the runs that used them; each hash is recorded in benchmark/prompts/CHANGELOG.md.
+benchmark/prompts/cases.yaml
+benchmark/prompts/holdout_cases.yaml
+benchmark/prompts/holdout2_cases.yaml
+benchmark/prompts/holdout3_cases.yaml
+
+# The capability catalog that discovery v5 was frozen with (hashed in every v5 run config).
+benchmark/catalogs/capabilities.json
+
+# Held-out and calibration evidence: a rerun must use a new run id rather than change these rows.
+benchmark/runs/holdout-*/**
+benchmark/runs/holdout2-*/**
+benchmark/runs/holdout3-*/**
+benchmark/runs/v5-calibration-*/**
+benchmark/reports/holdout3-*/**
+benchmark/reports/v5-calibration-*/**

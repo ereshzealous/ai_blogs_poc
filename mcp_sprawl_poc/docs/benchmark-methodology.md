@@ -79,6 +79,15 @@ set.
   candidates, and the named-identifier signal applies.
 - **One write slot** when the model judged the request a read.
 
+`v5` (`--discovery v5`) is capability resolution (`docs/CAPABILITY_RESOLUTION_V5.md`). It keeps v4's rewrite and
+adds: a deterministic entity lookup over the scenario inventory; a declared capability catalog
+(`benchmark/catalogs/capabilities.json`) that names one authoritative implementation per job, so discovery shows one
+tool per capability; "use for / not for" guidance in the search document and in the definition the model sees; and a
+confidence decision. When the model's pick is not discovery's leading capability, the rewrite disagrees with it, or
+the score margin is below the calibrated threshold for that risk tier, v5 asks **one** question about meaning (never
+tool names) and resolves again with the answer. `--ask off` never asks; `--ablation` switches off entity lookup or
+the declared capabilities.
+
 The rewrite call's tokens are recorded per decision and included in the reported input tokens.
 
 **Asking the user (`--clarify`).** The selection model also gets an `ask_user` tool, to use when no tool clearly fits
@@ -144,6 +153,15 @@ separate agent from a brief with no example phrasings. The agent had no access t
 the discovery code or any run. The set was frozen, together with the discovery v4 code hash, before any run used it.
 It measures discovery v4, which was developed on the main set and the first held-out set. Use
 `--case-set holdout2` and `--split holdout2`.
+
+**Third held-out set.** `benchmark/prompts/holdout3_cases.yaml` has 200 cases (split `holdout3`, policy v2): 120
+clear, 60 deliberately ambiguous and 20 trap requests that name a deprecated or unregistered tool. Every case carries
+a hidden `intent` (system, resource, action, environment) that the simulated user answers from, and ambiguous cases
+list the core tools they sit between. It was written by a separate agent from `benchmark/prompts/holdout3_brief.md`
+and the pack that `python -m benchmark.dev.holdout3_author_pack` writes, with no access to the registry, the
+capability catalog, any discovery code, the docs or any run. It measures discovery v5, and is scored with
+`benchmark/evaluator/resolution.py`: clear requests measure resolution, ambiguous ones measure whether the system
+knows when to ask, and trap requests measure refusal or redirection.
 
 **What "new" means for the held-out sets.** The requests are new. The tools, catalogs, registry, policy, scenario data
 and model are the same ones used while discovery was developed. The held-out sets measure how discovery handles
@@ -226,6 +244,11 @@ receipts, ends a run after three pushbacks without progress, and writes the fina
   a fixed prefix, so warm latency understates the cold cost of a large catalog; token counts are the
   provider-independent measure.
 - **Mock-data gaps.** The scenario defines feature flags in production only, so `set_flag` on the staging flag in case R11 returns a backend error even when the model's call is correct. This lowers valid-call rate for R11 in every mode equally. The data was not changed during the published run.
+- **A high ask rate is possible.** Discovery v5's thresholds target 99% precision on decisions it makes alone. On
+  held-out set 3 that meant asking in 54% of requests at 500 tools. Coverage, precision and ask rate are always
+  reported together.
+- **Calibration and test mixes must match.** v5's thresholds were calibrated on cases with no deliberate ambiguity,
+  and precision on decisions made alone fell from 99% on that data to 88% on a set that is 30% ambiguous.
 - **Scripted approver.** A human might approve a wrong invocation. The policy engine guarantees the
   *question* is asked; it cannot guarantee the answer. The selection benchmark's approver knows the golden answer.
 - **Inferred equivalence.** Discovery v4 treats tools as interchangeable when their registry fields match (collision

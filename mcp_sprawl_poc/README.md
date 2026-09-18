@@ -301,9 +301,12 @@ stopped. `config.json` records catalog, registry, policy and case hashes, the mo
 | `--seed` | 7 | |
 | `--num-ctx` | 131072 | Ollama context window; large enough that no prompt is truncated |
 | `--max-steps` | 16 | agent benchmark only |
-| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run), `v2` (experimental; no gain on test), `v3` (router fixes, adaptive top-K) or `v4` (a model-written first step, equivalent tools collapsed, identifier candidates) |
+| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run), `v2` (experimental; no gain on test), `v3` (router fixes, adaptive top-K), `v4` (a model-written first step, equivalent tools collapsed, identifier candidates) or `v5` (capability resolution: entity lookup, declared canonical capabilities, one meaning-based question) |
 | `--clarify` | off | selection only: the model may ask the user to choose between two or three tools; a simulated user answers |
-| `--case-set` | `main` | `main` (`cases.yaml`, dev/test split), `holdout` (60 cases) or `holdout2` (100 cases), both written after the published run |
+| `--ask` | `intent` | discovery v5 only: ask one question when the decision is not confident, or `off` to never ask |
+| `--ablation` | none | discovery v5 only: `no-entities` or `no-canonical`, to measure what each part contributes |
+| `--policy` | `auto` | policy version: `auto` follows the case set (v1, or v2 for held-out set 3), or force `v1` / `v2` |
+| `--case-set` | `main` | `main` (`cases.yaml`, dev/test split) or the held-out sets `holdout` (60), `holdout2` (100) and `holdout3` (200, with clear, ambiguous and trap requests) |
 | `--agent-guard` | `auto` | agent benchmark only: `auto` (evidence guard in control-plane mode), `legacy` or `evidence` |
 
 ### Compare discovery profiles and agent guards
@@ -502,6 +505,44 @@ capability, and the call ran without error. v4's tokens include its rewrite call
   arguments the schema rejects, and some cases name resources the mock backends lack.
 
 Full method, development evidence and limits: [`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
+
+**Discovery v5 on 200 new requests (held-out set 3).** v5 resolves a request to a capability before it looks at
+tools: it recognises the things a request names (a pod, a flag, a channel, an instance), maps every tool to a
+declared capability with one authoritative implementation, and measures its own confidence. When the evidence is not
+enough it asks **one** question about meaning, never about tool names, and searches again with the answer. The set
+has 120 clear, 60 deliberately ambiguous and 20 trap requests (the user asks for a deprecated or unregistered tool),
+each with a hidden intent that a simulated user answers from. Method, calibration and limits:
+[`docs/CAPABILITY_RESOLUTION_V5.md`](docs/CAPABILITY_RESOLUTION_V5.md).
+
+![Capability resolution by arm on held-out set 3.](benchmark/reports/holdout3-2026-09-17/resolution-by-arm.png)
+
+| Held-out set 3 (180 clear and ambiguous requests per size) | Baseline (all tools) | Search, 7 tools | Control plane v4 | Control plane v5 |
+|---|---|---|---|---|
+| Resolved, 50 tools | 84% | 75% | 82% | **89%** |
+| Resolved, 100 tools | 81% | 72% | 81% | **89%** |
+| Resolved, 250 tools | 68% | 58% | 78% | **88%** |
+| Resolved, 500 tools | 60% | 44% | 69% | **87%** |
+| Clear requests at 500 tools | 72% | 55% | 83% | **97%** |
+| Ambiguous requests at 500 tools | 37% | 23% | 42% | **67%** |
+| Wrongly confident at 500 tools | 40% | 52% | 29% | **6%** |
+| Trap requests refused or redirected | 0% | 0% | 65% | **100%** |
+| Unsafe selections / sent at 500 tools | 37 / 37 | 52 / 52 | 25 / 9 | **12 / 1** |
+| Input tokens per decision at 500 tools | 24,559 | 636 | 1,365 | 1,831 |
+
+- **It degrades far more slowly.** Showing every tool loses 24 points between 50 and 500 tools; v5 loses 2.7.
+- **The question earns its place.** Against the same v5 that never asks, at 500 tools: 87% against 80% resolved,
+  67% against 50% on ambiguous requests, and 6% against 18% wrongly confident. Clear requests barely move.
+- **It asks often:** 54% of requests at 500 tools, 70% at 50. That is the price of calibrating to 99% precision on a
+  weak confidence signal, and it is reported rather than tuned away.
+- **It did not reach the 99% the method aimed at.** Resolution is 87% at 500 tools, the right tool was shown in 91%
+  of cases, and decisions made without asking were 88% right (97% on clear requests alone). The thresholds were
+  calibrated on cases with no deliberate ambiguity, and they did not transfer to a set that is 30% ambiguous.
+- **Arguments remain unsolved:** 51% of decisions both chose the right tool and ran without error.
+- **What each part contributes at 500 tools** ([ablations](benchmark/reports/holdout3-ablations-2026-09-17/summary.md)):
+  the question is worth 6.7 points and cuts wrongly confident decisions from 18% to 6%; declared canonical
+  capabilities are worth 4.5 points and most of the safety (without them, six unsafe calls reach a server instead of
+  one, and trap handling falls from 100% to 85%); entity lookup is worth 0.6 points of resolution but 7 points of ask
+  rate, because knowing that a name is a flag or a pod avoids a question.
 
 **First held-out set (discovery v3).** Sixty new requests were written independently after the published run and
 frozen before this measurement.

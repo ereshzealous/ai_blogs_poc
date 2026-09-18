@@ -23,7 +23,8 @@ from control_plane.registry.registry import CapabilityRegistry
 
 IDENTITY = Identity("oncall-1", ("sre-oncall",))
 DISCOVERY_HELP = ("control-plane discovery profile: v1 (published), v2 (experimental rerank signals), "
-                  "v3 (router fixes, adaptive top-K) or v4 (v3 plus a model-written query and duplicate collapse; needs Ollama)")
+                  "v3 (router fixes, adaptive top-K), v4 (v3 plus a model-written query and duplicate collapse; needs Ollama) "
+                  "or v5 (capability resolution: entities and declared capabilities; needs Ollama)")
 FLAGSHIP = ("Checkout API latency increased immediately after the 10:15 production deployment. Investigate the incident, "
             "identify the likely cause, recommend the safest remediation, and update the incident.")
 
@@ -55,7 +56,7 @@ def cmd_discover(args: argparse.Namespace) -> None:
     manifest = json.loads((CATALOG_DIR / f"{args.catalog}.json").read_text())
     tools = {f"{t['server']}.{t['name']}": (t["server"], t["name"], t["description"], t["input_schema"]) for t in manifest["tools"]}
     rewriter = None
-    if args.discovery == "v4":
+    if args.discovery in ("v4", "v5"):
         from agent.llm import make_llm
         from control_plane.discovery.rewrite import QueryRewriter
 
@@ -106,7 +107,7 @@ async def _demo(args: argparse.Namespace) -> None:
                        world_db=out_dir / "world.sqlite") as gw:
         published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
         rewriter = None
-        if args.discovery == "v4":
+        if args.discovery in ("v4", "v5"):
             from control_plane.discovery.rewrite import QueryRewriter
 
             rewriter = QueryRewriter(llm)
@@ -146,7 +147,7 @@ def main() -> None:
     p.add_argument("--mode", default="control_plane", choices=["search", "control_plane"])
     p.add_argument("--k", type=int, default=5)
     p.add_argument("--lexical-only", action="store_true", help="skip embeddings (no Ollama needed)")
-    p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4"], help=DISCOVERY_HELP)
+    p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4", "v5"], help=DISCOVERY_HELP)
     p.add_argument("--user", default="oncall-1", help="caller whose scopes discovery v2 checks")
     p.add_argument("--roles", default="sre-oncall")
     p.set_defaults(fn=cmd_discover)
@@ -166,7 +167,7 @@ def main() -> None:
     p.add_argument("--think", default=None, help="ollama think level (default low) or openai reasoning_effort")
     p.add_argument("--agent-guard", default="auto", choices=["auto", "legacy", "evidence"],
                    help="auto: the evidence guard in control_plane mode, the legacy agent elsewhere")
-    p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4"], help=DISCOVERY_HELP)
+    p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4", "v5"], help=DISCOVERY_HELP)
     p.add_argument("--k", type=int, default=5)
     p.add_argument("--auto-approve", action="store_true")
     p.set_defaults(fn=lambda a: anyio.run(_demo, a))

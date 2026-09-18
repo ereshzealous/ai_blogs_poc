@@ -21,7 +21,7 @@ import yaml
 from agent.evidence import EvidenceLedger, diagnose, verify_recovery
 from agent.incident_agent import ACTIVE_INCIDENT, run_incident_agent
 from agent.llm import make_llm
-from benchmark.runner import ENFORCEMENT, RUNS_DIR, JsonlWriter, _base_config, _now, _write_config
+from benchmark.runner import ENFORCEMENT, RUNS_DIR, JsonlWriter, _base_config, _now, _write_config, policy_version
 from control_plane.discovery.pipeline import DiscoveryService
 from control_plane.discovery.rewrite import QueryRewriter
 from control_plane.discovery.semantic import OllamaEmbedder
@@ -277,7 +277,7 @@ async def run_agent_benchmark(args: argparse.Namespace) -> None:
     scenarios = yaml.safe_load(SCENARIOS_FILE.read_text())["scenarios"]
     if args.cases:
         scenarios = [s for s in scenarios if s["id"] in set(args.cases.split(","))]
-    registry, policy = CapabilityRegistry.load(), PolicyEngine.load()
+    registry, policy = CapabilityRegistry.load(), PolicyEngine.load(version=policy_version(args))
     llm = make_llm(args.provider, args.model, seed=args.seed, num_ctx=args.num_ctx, think=args.think, temperature=args.temperature)
     embedder = OllamaEmbedder()
     guards = {m: guard_for(m, args.agent_guard) for m in modes}
@@ -305,7 +305,7 @@ async def run_agent_benchmark(args: argparse.Namespace) -> None:
         families = {f"{t['server']}.{t['name']}": t["family"] for t in json.loads(manifest.read_text())["tools"]}
         async with Gateway(manifest, registry, policy, audit=audit, world_db=world_db) as gw:
             published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
-            rewriter = QueryRewriter(llm) if args.discovery == "v4" else None
+            rewriter = QueryRewriter(llm) if args.discovery in ("v4", "v5") else None
             discovery = DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy,
                                          rewriter=rewriter)
             for mode, scenario in pending:

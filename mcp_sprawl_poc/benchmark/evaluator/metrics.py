@@ -23,6 +23,10 @@ CASES_FILE = Path(__file__).resolve().parents[1] / "prompts" / "cases.yaml"
 HOLDOUT_FILE = Path(__file__).resolve().parents[1] / "prompts" / "holdout_cases.yaml"
 # A second held-out set, written later for discovery v4 and frozen before v4 was measured on it.
 HOLDOUT2_FILE = Path(__file__).resolve().parents[1] / "prompts" / "holdout2_cases.yaml"
+# A third held-out set for discovery v5, with clear, ambiguous and trap requests and a hidden intent per case
+# (docs/CAPABILITY_RESOLUTION_V5.md, section 4). Its expected decisions assume policy v2.
+HOLDOUT3_FILE = Path(__file__).resolve().parents[1] / "prompts" / "holdout3_cases.yaml"
+CASE_KINDS = ("clear", "ambiguous", "trap")
 
 
 @dataclass(frozen=True)
@@ -38,6 +42,11 @@ class Case:
     roles: tuple[str, ...]
     traps: tuple[str, ...] = field(default=())
     fixed_split: str | None = None
+    policy_version: str = "v1"  # the policy the expected decision assumes (a case file's `defaults.policy_version`)
+    kind: str = "clear"  # clear | ambiguous | trap (held-out set 3)
+    intent: dict[str, Any] = field(default_factory=dict, compare=False)  # the user's hidden intent (held-out set 3)
+    ambiguous_between: tuple[str, ...] = field(default=())
+    requested_tool: str | None = None
 
     @property
     def correct_tools(self) -> set[str]:
@@ -58,23 +67,32 @@ def load_cases(path: str | Path = CASES_FILE) -> list[Case]:
         doc = yaml.safe_load(fh)
     default = doc["defaults"]["identity"]
     fixed_split = doc["defaults"].get("split")
+    policy_version = doc["defaults"].get("policy_version", "v1")
     cases = []
     for c in doc["cases"]:
         ident = c.get("identity", default)
         cases.append(Case(c["id"], c["category"], c["prompt"], c["golden_tool"], tuple(c.get("acceptable_tools") or ()),
                           c.get("expected_args") or {}, c["expected_policy"], ident["user_id"], tuple(ident["roles"]),
-                          tuple(c.get("traps") or ()), fixed_split))
+                          tuple(c.get("traps") or ()), fixed_split, policy_version, c.get("kind", "clear"),
+                          dict(c.get("intent") or {}), tuple(c.get("ambiguous_between") or ()), c.get("requested_tool")))
     return cases
 
 
+def case_set_policy(case_set: str) -> str:
+    """The policy version a case set's expected decisions assume."""
+    path = case_file(case_set)
+    with open(path, encoding="utf-8") as fh:
+        return yaml.safe_load(fh)["defaults"].get("policy_version", "v1")
+
+
 def case_file(case_set: str) -> Path:
-    return {"main": CASES_FILE, "holdout": HOLDOUT_FILE, "holdout2": HOLDOUT2_FILE}[case_set]
+    return {"main": CASES_FILE, "holdout": HOLDOUT_FILE, "holdout2": HOLDOUT2_FILE, "holdout3": HOLDOUT3_FILE}[case_set]
 
 
 def load_all_cases() -> list[Case]:
     """The main cases plus the held-out cases when that file exists; ids must be unique across both."""
     cases = load_cases(CASES_FILE)
-    for extra in (HOLDOUT_FILE, HOLDOUT2_FILE):
+    for extra in (HOLDOUT_FILE, HOLDOUT2_FILE, HOLDOUT3_FILE):
         cases += load_cases(extra) if extra.exists() else []
     seen: set[str] = set()
     for c in cases:

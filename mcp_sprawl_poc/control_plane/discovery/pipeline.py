@@ -13,6 +13,9 @@ signal, one write tool after the reads (from a separate search over write tools,
 rewrite.py), collapses equivalent tools to the authoritative one, adds the named-identifier signal, and keeps v3's
 write slot when the model judged the request a read; without a usable rewrite it behaves like v3 plus the collapse and
 the identifier signal.
+`v5` (opt-in) is capability resolution: entity lookup, declared canonical capabilities, capability-level scores and a
+confidence decision with one meaning-based question (control_plane/discovery/resolver.py, clarify.py;
+docs/CAPABILITY_RESOLUTION_V5.md). Use `resolve()`; `control_plane()` returns its shortlist.
 
 Both use the same retriever implementation and the same K, so the difference between them is what the
 registry and router add, not a better search algorithm.
@@ -35,7 +38,7 @@ from control_plane.routing.router import IntentRouter, Route
 from control_plane.telemetry import span
 
 
-PROFILES = ("v1", "v2", "v3", "v4")
+PROFILES = ("v1", "v2", "v3", "v4", "v5")
 
 
 class PublishedLike(Protocol):
@@ -48,6 +51,14 @@ class PublishedLike(Protocol):
 def mcp_document(name: str, server: str, description: str, input_schema: Mapping[str, Any]) -> str:
     params = " ".join(input_schema.get("properties", {}).keys())
     return f"{server} {name} {name.replace('_', ' ')}. {description} Parameters: {params}"
+
+
+def capability_document(base: str, catalog: Any, tool_id: str) -> str:
+    """Discovery v5: the registry document plus the tool's declared job and its guidance."""
+    cap = catalog.get(tool_id)
+    if cap is None:
+        return base
+    return f"{base} Job: {cap.action} {cap.resource} in {cap.system}. {catalog.guidance(tool_id)}".rstrip()
 
 
 def registry_document(base: str, rec: RegistryRecord | None) -> str:
@@ -76,16 +87,19 @@ class DiscoveryResult:
 class DiscoveryService:
     def __init__(self, tools: Mapping[str, tuple[str, str, str, Mapping[str, Any]]], registry: CapabilityRegistry,
                  embedder: OllamaEmbedder | None, *, router: IntentRouter | None = None, weights: RerankWeights | None = None,
-                 depth: int = 30, profile: str = "v1", policy: Any | None = None, rewriter: Any | None = None):
+                 depth: int = 30, profile: str = "v1", policy: Any | None = None, rewriter: Any | None = None,
+                 ablation: str | None = None):
         """`tools` maps tool_id -> (server, name, description, input_schema), as published over MCP."""
         self.registry = registry
-        self.router = router or IntentRouter(profile="v3" if profile in ("v3", "v4") else "v1")
+        self.router = router or IntentRouter(profile="v3" if profile in ("v3", "v4", "v5") else "v1")
         if profile not in PROFILES:
             raise ValueError(f"unknown discovery profile {profile!r}; choose one of {', '.join(PROFILES)}")
         if profile == "v2" and policy is None:
             raise ValueError("discovery v2 needs the policy engine to check the caller's scopes")
-        if profile == "v4" and rewriter is None:
-            raise ValueError("discovery v4 needs a rewriter (control_plane.discovery.rewrite.QueryRewriter)")
+        if profile in ("v4", "v5") and rewriter is None:
+            raise ValueError(f"discovery {profile} needs a rewriter (control_plane.discovery.rewrite.QueryRewriter)")
+        if ablation is not None and profile != "v5":
+            raise ValueError("ablations apply to discovery v5 only")
         self.rewriter = rewriter
         self.weights = weights or {"v2": V2_WEIGHTS, "v4": V4_WEIGHTS}.get(profile, RerankWeights())
         self.depth = depth
@@ -97,6 +111,24 @@ class DiscoveryService:
         enriched = {tid: registry_document(doc, registry.get(tid)) for tid, doc in plain.items()}
         self.search_retriever = HybridRetriever(BM25Index(plain), EmbeddingIndex(plain, embedder) if embedder else None)
         self.cp_retriever = HybridRetriever(BM25Index(enriched), EmbeddingIndex(enriched, embedder) if embedder else None)
+        self.resolver = None
+        if profile == "v5":
+            from control_plane.discovery.entities import EntityResolver
+            from control_plane.discovery.resolver import CapabilityResolver
+            from control_plane.registry.capabilities import CapabilityCatalog
+
+            self.catalog = CapabilityCatalog.load()
+            documents = {tid: capability_document(doc, self.catalog, tid) for tid, doc in enriched.items()}
+            retriever = HybridRetriever(BM25Index(documents), EmbeddingIndex(documents, embedder) if embedder else None)
+            self.resolver = CapabilityResolver(self, self.catalog, EntityResolver.from_scenario(), retriever, ablation)
+
+    def resolve(self, request: str, k: int = 5, retrieval: str = "hybrid", constraint: Any | None = None,
+                default_environment: str | None = "production") -> Any:
+        """Discovery v5 (control_plane/discovery/resolver.py)."""
+        if self.resolver is None:
+            raise ValueError("resolve() needs discovery profile v5")
+        return self.resolver.resolve(request, k=k, retrieval=retrieval, constraint=constraint,
+                                     default_environment=default_environment)
 
     # -- mode B ---------------------------------------------------------------------------------
     def search(self, request: str, k: int = 5, retrieval: str = "hybrid") -> DiscoveryResult:
@@ -122,6 +154,10 @@ class DiscoveryService:
     def control_plane(self, request: str, k: int = 5, default_environment: str | None = "production",
                       retrieval: str = "hybrid", identity: Any | None = None) -> DiscoveryResult:
         """`identity` (v2 only) is the caller whose scopes the scope-aware rerank checks."""
+        if self.resolver is not None:
+            res = self.resolve(request, k=k, retrieval=retrieval, default_environment=default_environment)
+            return DiscoveryResult("control_plane", res.tool_ids, res.latency_ms, res.route, res.stages, res.capabilities,
+                                   res.rewrite, res.rewrite_usage)
         t0 = time.perf_counter()
         with span("discovery.control_plane", k=k, retrieval=retrieval, catalog_size=len(self.tool_ids)) as s:
             route = self.router.route(request, default_environment=default_environment)

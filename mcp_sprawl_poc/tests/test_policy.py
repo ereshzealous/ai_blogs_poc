@@ -6,7 +6,7 @@ import pytest
 
 from benchmark.evaluator.metrics import load_all_cases
 from control_plane.policy.approvals import ApprovalRequest, ApprovalStatus, ApprovalStore
-from control_plane.policy.engine import Decision, Identity, PolicyInput, invocation_digest
+from control_plane.policy.engine import Decision, Identity, PolicyEngine, PolicyInput, invocation_digest
 from control_plane.policy.environment import resolve_environment
 
 
@@ -84,10 +84,14 @@ def test_policy_ignores_mcp_annotations(policy, registry, inventory, oncall):
     assert r.decision is Decision.REQUIRE_APPROVAL
 
 
+POLICIES = {version: PolicyEngine.load(version=version) for version in ("v1", "v2")}
+
+
 @pytest.mark.parametrize("case", load_all_cases(), ids=lambda c: c.id)
-def test_every_case_expected_policy(policy, registry, inventory, case):
+def test_every_case_expected_policy(registry, inventory, case):
+    """Each case file's expected decisions assume the policy version it declares (v1 unless stated)."""
     args = {k: (v[0] if isinstance(v, list) else ("x" if v == "*" else v)) for k, v in case.expected_args.items()}
-    r = decide(policy, registry, inventory, Identity(case.user_id, case.roles), case.golden_tool, args)
+    r = decide(POLICIES[case.policy_version], registry, inventory, Identity(case.user_id, case.roles), case.golden_tool, args)
     assert r.decision.value == case.expected_policy
 
 

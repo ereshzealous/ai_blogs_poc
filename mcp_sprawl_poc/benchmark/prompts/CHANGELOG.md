@@ -66,3 +66,33 @@ report records the SHA-256 of the `cases.yaml` it used.
 - **Discovery v4 frozen before this set was run.** Discovery and selection code hash
   (`benchmark.runner.discovery_code_sha256`) `7cc869037b415f0806ad907a63a4c7ee0cd52407113df4c5b6d411aecf989f1a`, recorded
   at 21:46 UTC on 2026-09-16. Each final run's `config.json` records the hash it ran with.
+
+## 2026-09-17 · discovery v5 frozen, before held-out set 3 was written
+
+- **No case file changed.** The main set and the first two held-out sets keep their expected decisions, which assume
+  policy v1. Case files may now declare `defaults.policy_version`. Held-out set 3 declares v2, which adds one
+  argument-aware rule: resolving or closing an incident through `itsm.update_incident` needs approval.
+- **Discovery v5 was frozen at 15:51 UTC**, with discovery and selection code hash
+  (`benchmark.runner.discovery_code_sha256`) `e78e438423a608a7102512310d790616c99359610835a7a4575c7eb056b5fc01`. The
+  hash covers the capability catalog, the calibrated thresholds and the scenario inventory.
+- **Method, calibration and changes before the freeze:** `docs/CAPABILITY_RESOLUTION_V5.md`.
+
+## 2026-09-17 · held-out set 3, frozen before any run used it
+
+- **`benchmark/prompts/holdout3_cases.yaml`: 200 new cases (H301–H500), split `holdout3`, policy v2.** Frozen at
+  SHA-256 `7acf50b706bddefdcce7aac017d16f857015b9815bbb4f8ac0e9140dec091dfe` at 16:17 UTC, after discovery v5 was frozen.
+  - **Kinds:** 120 clear, 60 ambiguous and 20 trap.
+  - **Categories:** direct 30, cross_domain 24, multi_step 24, risky 30, adversarial 32, ambiguity 60.
+  - **Expected decisions:** 162 ALLOW, 23 REQUIRE_APPROVAL and 15 DENY.
+  - **Coverage:** all 50 core tools are golden tools, 2 to 7 times each. Nine cases use the developer identity.
+  - **Unknown entities:** 19 cases name something that is not in the inventory.
+- **How it was written.** A separate agent wrote it from `benchmark/prompts/holdout3_brief.md` and the author pack
+  (`python -m benchmark.dev.holdout3_author_pack`).
+  - **What it could see:** the published tool list, the entity inventory, the scoring code and the two validation
+    tests.
+  - **What it could not see:** the registry, the capability catalog, any discovery code, the docs or any run.
+  - **What it ran:** only the policy helper and the validation tests. It reported counts only, and the requests were
+    not read before the runs.
+- **Checks before the runs:** the discovery code hash was still
+  `e78e438423a608a7102512310d790616c99359610835a7a4575c7eb056b5fc01`, the case file was the only repository file
+  changed, and the validation tests passed.

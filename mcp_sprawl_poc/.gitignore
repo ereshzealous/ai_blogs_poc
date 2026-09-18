@@ -26,10 +26,10 @@ benchmark/runs/*/*.sqlite*
 .idea/
 .vscode/
 
-# Secrets never belong in this repository
+# Secrets never belong in this repository (no negation: a gitignore-style copy filter may not honour it)
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
 
 # Not part of this repository: article, diagrams and research material live outside it
 *.excalidraw
@@ -38,3 +38,5 @@ benchmark/runs/*/*.sqlite*
 /docs/images/
 /docs/research/
 /inputs/
+benchmark/runs/_v5-*/
+benchmark/reports/_v5-*/

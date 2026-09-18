@@ -23,13 +23,16 @@ import anyio
 import httpx
 
 from agent.llm import PROVIDERS, ChatModel, ProviderError, describe_connect_error, make_llm, temperature_arg
-from agent.selection import exposed_to_tool_id, select_tool
-from benchmark.evaluator.metrics import Case, case_file, load_cases, retrieval_scores, score_selection
+from agent.selection import Selection, exposed_to_tool_id, select_tool
+from benchmark.evaluator.metrics import Case, case_file, case_set_policy, load_cases, retrieval_scores, score_selection
+from control_plane.discovery.clarify import answer_constraint, build_question, clarification_note, simulated_answer
 from control_plane.discovery.pipeline import DiscoveryService
+from control_plane.discovery.resolver import decide
+from control_plane.discovery.v5_thresholds import THRESHOLDS as V5_THRESHOLDS
 from control_plane.discovery.rewrite import QueryRewriter
 from control_plane.discovery.semantic import OllamaEmbedder
 from control_plane.gateway.gateway import Gateway, InvocationContext
-from control_plane.paths import CATALOG_DIR, REPO_ROOT
+from control_plane.paths import CATALOG_DIR, POLICY_FILES, REPO_ROOT
 from control_plane.policy.approvals import ApprovalRequest
 from control_plane.policy.engine import Identity, PolicyEngine, PolicyResult
 from control_plane.registry.registry import CapabilityRegistry
@@ -83,7 +86,8 @@ def _write_config(run_dir: Path, section: str, config: dict[str, Any]) -> None:
 
 
 DISCOVERY_CODE = ("control_plane/discovery", "control_plane/ranking", "control_plane/routing", "agent/selection.py",
-                  "agent/prompts.py")
+                  "agent/prompts.py", "control_plane/registry/capabilities.py", "control_plane/registry/vocabulary.py",
+                  "benchmark/catalogs/capabilities.json", "mock_data/inc4917/scenario.yaml")
 
 
 def discovery_code_sha256() -> str:
@@ -96,12 +100,22 @@ def discovery_code_sha256() -> str:
     return digest.hexdigest()
 
 
+def policy_version(args: argparse.Namespace) -> str:
+    """`--policy`, or the version the case set's expected decisions assume (agent scenarios: v1)."""
+    chosen = getattr(args, "policy", "auto")
+    if chosen != "auto":
+        return chosen
+    return "v1" if getattr(args, "command", "selection") == "agent" else case_set_policy(getattr(args, "case_set", "main"))
+
+
 def _base_config(args: argparse.Namespace, catalogs: list[str]) -> dict[str, Any]:
+    version = policy_version(args)
     return {
         "started_at": _now(),
         "catalogs": {c: {"sha256": _sha256(CATALOG_DIR / f"{c}.json")} for c in catalogs},
         "registry_sha256": _sha256(CATALOG_DIR / "registry.json"),
-        "policy_sha256": _sha256(REPO_ROOT / "control_plane" / "policy" / "policies.yaml"),
+        "policy_version": version,
+        "policy_sha256": _sha256(POLICY_FILES[version]),
         "cases_sha256": _sha256(case_file(getattr(args, "case_set", "main"))),
         "discovery_code_sha256": discovery_code_sha256(),
         "k": getattr(args, "k", None),
@@ -126,7 +140,7 @@ def run_retrieval(args: argparse.Namespace) -> None:
     run_dir = RUNS_DIR / args.run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     catalogs = args.catalogs.split(",")
-    registry, policy = CapabilityRegistry.load(), PolicyEngine.load()
+    registry, policy = CapabilityRegistry.load(), PolicyEngine.load(version=policy_version(args))
     embedder = OllamaEmbedder()
     cases = _select_cases(args)
     _write_config(run_dir, "retrieval", _base_config(args, catalogs) | {"embedding_model": embedder.model, "embedding_digest": embedder.digest})
@@ -174,7 +188,9 @@ async def run_selection(args: argparse.Namespace) -> None:
     configure_tracing(run_dir / "spans.jsonl")
     audit = AuditLog(run_dir / "audit.jsonl")
     catalogs, modes = args.catalogs.split(","), args.modes.split(",")
-    registry, policy = CapabilityRegistry.load(), PolicyEngine.load()
+    registry, policy = CapabilityRegistry.load(), PolicyEngine.load(version=policy_version(args))
+    if args.discovery == "v5" and args.ask == "intent" and not any(v is not None for v in V5_THRESHOLDS.values()):
+        raise ValueError("discovery v5 has no calibrated thresholds yet; calibrate first or use --ask off")
     llm = make_llm(args.provider, args.model, seed=args.seed, num_ctx=args.num_ctx, think=args.think, temperature=args.temperature)
     embedder = OllamaEmbedder()
     cases = _select_cases(args)
@@ -188,7 +204,7 @@ async def run_selection(args: argparse.Namespace) -> None:
     no_tool_tokens: dict[str, int] = json.loads(tokens_path.read_text()) if tokens_path.exists() else {}
     c10 = set(_manifest_tools("catalog_10"))
     world_db = run_dir / "world.sqlite"
-    rewriter = QueryRewriter(llm) if args.discovery == "v4" else None  # one cache for every catalog
+    rewriter = QueryRewriter(llm) if args.discovery in ("v4", "v5") else None  # one cache for every catalog
 
     for case in cases:  # prompt size without any tool definitions, measured once per case
         if case.id not in no_tool_tokens:
@@ -212,7 +228,8 @@ async def run_selection(args: argparse.Namespace) -> None:
         async with Gateway(manifest, registry, policy, audit=audit, world_db=world_db) as gw:
             published = {p.tool_id: (p.server, p.tool.name, p.tool.description or "", p.tool.input_schema) for p in gw.tools.values()}
             by_tool_id = {p.tool_id: p for p in gw.tools.values()}
-            discovery = (DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy, rewriter=rewriter)
+            discovery = (DiscoveryService(published, registry, embedder, profile=args.discovery, policy=policy, rewriter=rewriter,
+                                          ablation=args.ablation if args.discovery == "v5" else None)
                          if any(m != "baseline" for m, _ in pending) else None)
             all_defs = [p.definition() for p in gw.tools.values()]
             for mode in modes:
@@ -229,15 +246,20 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
     identity = Identity(case.user_id, case.roles)
     run_id = f"{args.run_id}:{catalog}:{mode}:{case.id}"
     disc = None
+    v5: dict[str, Any] = {}
     t_case = time.perf_counter()
     with span("benchmark.case", case_id=case.id, catalog=catalog, mode=mode, scenario_id="INC-4917", catalog_size=len(gw.tools)) as s:
         if mode == "baseline":
             defs = all_defs
         else:
             assert discovery is not None
-            disc = (discovery.search(case.prompt, k=args.k) if mode == "search"
-                    else discovery.control_plane(case.prompt, k=args.k, identity=identity))
-            defs = [by_tool_id[t].definition() for t in disc.tool_ids if t in by_tool_id]
+            if mode == "control_plane" and args.discovery == "v5":
+                disc = discovery.resolve(case.prompt, k=args.k)
+                defs = v5_definitions(disc.tool_ids, by_tool_id, discovery.catalog)
+            else:
+                disc = (discovery.search(case.prompt, k=args.k) if mode == "search"
+                        else discovery.control_plane(case.prompt, k=args.k, identity=identity))
+                defs = [by_tool_id[t].definition() for t in disc.tool_ids if t in by_tool_id]
             s.set_attribute("discovery.candidates", ",".join(disc.tool_ids))
             s.set_attribute("discovery.latency_ms", round(disc.latency_ms, 3))
         def simulated_user(options: list[str], question: str) -> str | None:
@@ -247,6 +269,8 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
         with span("agent.select_tool", tools_in_prompt=len(defs)):
             sel = select_tool(llm, defs, case.prompt, identity,
                               ask_user=simulated_user if args.clarify and mode != "baseline" else None)
+        if mode == "control_plane" and args.discovery == "v5":
+            sel, v5 = resolve_with_one_question(args, discovery, by_tool_id, llm, case, identity, disc, sel)
         s.set_attribute("selected_tool", sel.tool_id or "")
         props = by_tool_id[sel.tool_id].tool.input_schema.get("properties", {}) if sel.tool_id in by_tool_id else {}
         score = score_selection(case, sel.tool_id, sel.arguments, registry=registry, catalog_tool_ids=set(by_tool_id),
@@ -283,6 +307,10 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
         "total_tokens": (sel.prompt_tokens or 0) + (sel.completion_tokens or 0) if sel.prompt_tokens is not None else None,
         **({"asked": sel.clarification is not None, "clarification": sel.clarification, "selection_calls": sel.calls}
            if args.clarify and mode != "baseline" else {}),
+        "kind": case.kind, "policy_version": policy_version(args),
+        **({"intent": case.intent, "requested_tool": case.requested_tool, "ambiguous_between": list(case.ambiguous_between)}
+           if case.intent else {}),
+        **v5,
         "prompt_tokens_without_tools": no_tool_tokens.get(case.id),
         "tool_definition_tokens": (resp.prompt_tokens - no_tool_tokens[case.id]) if resp.prompt_tokens and case.id in no_tool_tokens else None,
         "llm_latency_ms": round(resp.latency_ms, 1), "prompt_eval_ms": round(resp.prompt_eval_ms, 1) if resp.prompt_eval_ms else None,
@@ -292,8 +320,53 @@ async def _selection_case(args, gw: Gateway, discovery: DiscoveryService | None,
     }
     out.write(row)
     mark = "✓" if score["exact"] else ("~" if score["capability_correct"] else "✗")
+    asked = " asked" if v5.get("asked") else ""
     print(f"  {mark} {case.id:4s} {mode:13s} {str(sel.tool_id):45s} policy={row['policy_decision']} "
-          f"tok={resp.prompt_tokens} {resp.latency_ms / 1000:.1f}s", flush=True)
+          f"tok={resp.prompt_tokens} {resp.latency_ms / 1000:.1f}s{asked}", flush=True)
+
+
+def v5_definitions(tool_ids: list[str], by_tool_id: dict[str, Any], catalog: Any) -> list[dict[str, Any]]:
+    """The published definitions, with the capability's "use for / not for" guidance appended to the description."""
+    defs = []
+    for t in tool_ids:
+        d = by_tool_id[t].definition()
+        guidance = catalog.guidance(t)
+        if guidance:
+            d = {"type": "function", "function": {**d["function"], "description": f"{d['function']['description']} {guidance}".strip()}}
+        defs.append(d)
+    return defs
+
+
+def resolve_with_one_question(args: argparse.Namespace, discovery: DiscoveryService, by_tool_id: dict[str, Any], llm: ChatModel,
+                              case: Case, identity: Identity, first: Any, sel: Selection) -> tuple[Selection, dict[str, Any]]:
+    """Discovery v5 after the first pick: decide, and if needed ask one question and resolve again
+    (docs/CAPABILITY_RESOLUTION_V5.md, sections 3 and 8)."""
+    catalog = discovery.catalog
+    decision = decide(first, sel.tool_id, V5_THRESHOLDS, catalog=catalog)
+    info: dict[str, Any] = {"v5_first": first.to_dict(), "v5_decision": decision.to_dict(), "asked": False, "abstained": False,
+                            "v5_final_candidates": first.tool_ids, "selection_calls": 1}
+    if args.ask == "off" or decision.auto:
+        return sel, info
+    question = build_question(first, sel.tool_id, catalog=catalog)
+    if question is None:
+        info["no_question"] = True
+        return sel, info
+    answer = simulated_answer(case.intent, question)
+    constraint = answer_constraint(question, answer, catalog=catalog)
+    info |= {"asked": True, "question": question.to_dict(), "answer": answer.to_dict(),
+             "constraint": constraint.to_dict() if constraint is not None else None, "first_selected": sel.tool_id}
+    if constraint is None:  # the user is unsure and every option writes: no call
+        info["abstained"] = True
+        return Selection(None, None, {}, 0, sel.response, prompt_tokens=sel.prompt_tokens,
+                         completion_tokens=sel.completion_tokens), info
+    second = discovery.resolve(case.prompt, k=args.k, constraint=constraint)
+    defs = v5_definitions(second.tool_ids, by_tool_id, catalog)
+    again = select_tool(llm, defs, case.prompt + clarification_note(question, answer), identity)
+    info |= {"v5_second": second.to_dict(), "v5_final_candidates": second.tool_ids, "selection_calls": 2}
+    total = [x for x in (sel.prompt_tokens, again.prompt_tokens) if x is not None]
+    out = [x for x in (sel.completion_tokens, again.completion_tokens) if x is not None]
+    return Selection(again.exposed_name, again.tool_id, again.arguments, again.tool_call_count, again.response,
+                     prompt_tokens=sum(total) if total else None, completion_tokens=sum(out) if out else None, calls=2), info
 
 
 # ----------------------------------------------------------------------------------------------
@@ -303,16 +376,24 @@ def main() -> None:
     for name in ("retrieval", "selection", "agent"):
         p = sub.add_parser(name)
         p.add_argument("--run-id", required=True)
-        p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4"],
+        p.add_argument("--discovery", default="v1", choices=["v1", "v2", "v3", "v4", "v5"],
                        help="control-plane discovery profile: v1 (published), v2 (experimental rerank signals), "
-                            "v3 (router fixes, adaptive top-K) or v4 (v3 plus a model-written query and duplicate collapse)")
+                            "v3 (router fixes, adaptive top-K), v4 (v3 plus a model-written query and duplicate collapse) "
+                            "or v5 (capability resolution: entities, canonical capabilities, one question)")
+        p.add_argument("--ablation", default=None, choices=["no-entities", "no-canonical"],
+                       help="discovery v5 only: switch off entity lookup, or use v4's inferred merging instead of declared capabilities")
+        p.add_argument("--ask", default="intent", choices=["intent", "off"],
+                       help="discovery v5 only: ask one question when not confident (the simulated user answers from the "
+                            "case's hidden intent), or never ask")
+        p.add_argument("--policy", default="auto", choices=["auto", "v1", "v2"],
+                       help="policy version; auto uses the version the case set declares (agent scenarios: v1)")
         p.add_argument("--catalogs", default=",".join(LADDER + OVERLAP))
         p.add_argument("--cases", default="")
         p.add_argument("--split", default="all", choices=["all", "dev", "test"])
         p.add_argument("--clarify", action="store_true",
                        help="selection only: the model may ask the user to choose between tools (search and control-plane modes)")
-        p.add_argument("--case-set", default="main", choices=["main", "holdout", "holdout2"],
-                       help="main: cases.yaml (dev/test split); holdout, holdout2: held-out sets written after the published run")
+        p.add_argument("--case-set", default="main", choices=["main", "holdout", "holdout2", "holdout3"],
+                       help="main: cases.yaml (dev/test split); holdout, holdout2, holdout3: held-out sets written after the published run")
         if name != "retrieval":
             p.add_argument("--modes", default=",".join(MODES))
             p.add_argument("--k", type=int, default=5)

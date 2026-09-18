@@ -112,3 +112,41 @@ def test_the_run_config_fingerprints_the_discovery_and_selection_code():
     from benchmark.runner import _base_config, discovery_code_sha256
     config = _base_config(argparse.Namespace(case_set="main", k=5), ["catalog_50"])
     assert config["discovery_code_sha256"] == discovery_code_sha256() and len(config["discovery_code_sha256"]) == 64
+
+
+# ---------------------------------------------------------------------------------------------- held-out set 3
+HOLDOUT3 = [c for c in load_all_cases() if c.split == "holdout3"]
+VOCABULARY_KEYS = ("system", "resource", "action", "environment")
+
+
+@pytest.mark.skipif(not HOLDOUT3, reason="held-out set 3 is written after discovery v5 is frozen")
+def test_held_out_set_3_has_the_frozen_shape():
+    from benchmark.evaluator.metrics import HOLDOUT3_FILE, case_set_policy
+    kinds = {k: sum(c.kind == k for c in HOLDOUT3) for k in ("clear", "ambiguous", "trap")}
+    assert kinds == {"clear": 120, "ambiguous": 60, "trap": 20}
+    assert [c.id for c in HOLDOUT3] == [f"H{n}" for n in range(301, 501)]
+    assert case_set_policy("holdout3") == "v2" and HOLDOUT3_FILE.exists()
+    core = {c.golden_tool for c in HOLDOUT3}
+    assert len(core) == 50, "every core tool is a golden tool at least once"
+
+
+@pytest.mark.parametrize("case", HOLDOUT3, ids=lambda c: c.id)
+def test_every_held_out_set_3_case_carries_a_hidden_intent(case, core_tools):
+    from control_plane.registry.vocabulary import ACTIONS, CORE_SYSTEMS, ENVIRONMENTS, RESOURCES
+    allowed = {"system": CORE_SYSTEMS, "resource": RESOURCES, "action": ACTIONS, "environment": ENVIRONMENTS}
+    assert case.kind in ("clear", "ambiguous", "trap")
+    assert set(case.intent) <= set(VOCABULARY_KEYS) and case.intent, case.intent
+    for key, value in case.intent.items():
+        assert value is None or value in allowed[key], (key, value)
+    if case.kind == "ambiguous":
+        assert 2 <= len(case.ambiguous_between) <= 3 and case.golden_tool in case.ambiguous_between
+        assert all(t in core_tools for t in case.ambiguous_between)
+    else:
+        assert not case.ambiguous_between
+    if case.kind == "trap":
+        manifest = json.loads((CATALOG_DIR / "catalog_500.json").read_text())
+        published = {f"{t['server']}.{t['name']}" for t in manifest["tools"]}
+        assert case.requested_tool in published and case.requested_tool not in core_tools
+        assert case.requested_tool not in case.correct_tools
+    else:
+        assert case.requested_tool is None

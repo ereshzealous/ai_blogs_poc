@@ -15,7 +15,7 @@ from typing import Any
 
 import yaml
 
-from control_plane.paths import POLICY_FILE
+from control_plane.paths import LATEST_POLICY, POLICY_FILES
 from control_plane.registry.registry import RegistryRecord
 
 
@@ -70,10 +70,12 @@ class PolicyEngine:
         self.config = config
         self.rules = config["rules"]
         self.default = Decision(config.get("default_decision", "DENY"))
+        self.version = f"v{config.get('version', 1)}"
 
     @classmethod
-    def load(cls, path: str | Path = POLICY_FILE) -> PolicyEngine:
-        with open(path, encoding="utf-8") as fh:
+    def load(cls, path: str | Path | None = None, *, version: str | None = None) -> PolicyEngine:
+        """The policy file at `path`, else the named version (v1, v2), else the latest version."""
+        with open(path or POLICY_FILES[version or LATEST_POLICY], encoding="utf-8") as fh:
             return cls(yaml.safe_load(fh))
 
     # -- scopes -----------------------------------------------------------------------------
@@ -91,6 +93,8 @@ class PolicyEngine:
         digest = invocation_digest(inp.tool_id, inp.arguments, inp.environment, inp.request_id)
         missing = self.missing_scopes(inp.identity, rec.required_scopes) if rec else []
         facts: dict[str, Any] = {
+            "tool_id": inp.tool_id,
+            "arguments": inp.arguments,
             "registered": rec is not None,
             "lifecycle": rec.lifecycle if rec else None,
             "deprecated": rec.deprecated if rec else None,
@@ -115,7 +119,11 @@ class PolicyEngine:
             actual = facts.get(key)
             if actual is None:
                 return False
-            if isinstance(expected, list):
+            if key == "arguments":  # argument-aware rules (policy v2): every named argument must take a listed value
+                if not all(str(actual.get(name, "")).strip().lower() in {str(v).lower() for v in allowed}
+                           for name, allowed in expected.items()):
+                    return False
+            elif isinstance(expected, list):
                 if actual not in expected:
                     return False
             elif actual != expected:

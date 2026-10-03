@@ -71,8 +71,22 @@ def verify(base: Path) -> dict[str, Any]:
                 passed = sum(1 for x in r["eval"]["checks"] if x["passed"])
                 if r["eval"]["ok"] != (passed == r["eval"]["total"]):
                     bad.append(f"{model} {r['workflow_id']}: eval.ok disagrees with its own checks")
-        c.add("platform runs", not bad, "; ".join(bad) or f"{sum(s['runs'] for s in plat.values())} records match their summary",
-              "workflow/*/run*/record.json")
+        # the medians the article prints, recomputed from the records the report and the visual edition read
+        import statistics
+
+        for model, s in plat.items():
+            recs = [load(p) for p in sorted((base / "workflow" / model.replace(":", "_")).glob("run*/record.json"))]
+            if not recs:
+                continue
+            for key, values in (("median_seconds_to_approval", [r["seconds_to_approval"] for r in recs]),
+                                ("median_seconds_total", [r["seconds_total"] for r in recs]),
+                                ("median_tokens", [sum(u["input_tokens"] + u["output_tokens"] for u in r["usage"]) for r in recs]),
+                                ("median_model_calls", [len(r["usage"]) for r in recs])):
+                again = round(statistics.median(values), 1)
+                if s[key] != again:
+                    bad.append(f"{model} {key}: records give {again}, summary says {s[key]}")
+        c.add("platform runs", not bad, "; ".join(bad) or f"{sum(s['runs'] for s in plat.values())} records match their summary, "
+              "medians included", "workflow/*/run*/record.json")
 
         # every run that claims a rollback has one execution in that run's own enterprise database
         bad = []

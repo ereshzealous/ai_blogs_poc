@@ -4,7 +4,7 @@ Every claim the article makes about this POC, and the file in run `2026-09-17-re
 
 - Run: `runs/2026-09-17-recorded/` (live, profile `full`, finished 2026-09-17T13:51:26Z)
 - Values: `facts.json`, recomputed from the raw records by `verification.json` (10 checks passed, 0 failed, 1 not applicable)
-- Inputs: `freeze.json` (88 files, digest `d79bdad08835bb21`)
+- Inputs: `freeze.json` (88 files, digest `aa5cea0bee8d4bab`)
 - Claims about specifications and other people's writing are not here. They are checked as links and quotes in
   the article's research notes.
 

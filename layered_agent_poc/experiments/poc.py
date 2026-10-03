@@ -7,6 +7,7 @@
     uv run poc plan show <plan>              what a plan runs, which faults and kills it injects, what counts as a pass
     uv run poc run --plan <plan>             run a plan: quick, standard, full, replay, chaos, or your own YAML file
         --models M [M ...]  --runs N  --only a,b  --skip a,b  --set key=value  --replay [RUN]  --run-id ID  --resume [ID]
+    uv run poc verify [latest|<run-id>]      recompute a run's numbers from its raw records and check every published claim
     uv run poc runs                          every run on this machine, with its result and report
     uv run poc open [latest|demo|index|<run-id>]
 
@@ -320,6 +321,11 @@ def summarize(run_id: str) -> tuple[bool, list[tuple[str, str, str]]]:
     rows = [("ok" if stages and not bad else "fail", "Stages", f"{len(stages) - len(bad)}/{len(stages)} passed" + (f"; failed: {', '.join(bad)}" if bad else ""))]
     plan = plans.for_run(base, meta.get("profile"))
     rows += plans.evaluate(base, plan)
+    v = json.loads((base / "verification.json").read_text()) if (base / "verification.json").exists() else None
+    if v:
+        rows.append(("ok" if v["ok"] else "fail", "Evidence",
+                     f"{v['passed']} check(s) recomputed from the raw records, {v['failed']} failed"
+                     + (f", {v['skipped']} not applicable" if v["skipped"] else "")))
     if meta.get("mode") == "replay":
         rows.append(("skip", "Mode", f"replayed model traffic from {meta.get('replay_from')}; timings are not model timings"))
     return all(st != "fail" for st, _, _ in rows), rows
@@ -355,7 +361,7 @@ def run(plan: dict[str, Any], run_id: str | None, resume: bool, want_open: bool,
     table(rows)
     report = base / "report" / "index.html"
     print(f"\n  report   {report.relative_to(ROOT)}   (uv run poc open latest)")
-    print(f"  plan     runs/{rid}/plan.yaml   ·   all runs: uv run poc runs")
+    print(f"  plan     runs/{rid}/plan.yaml   ·   facts runs/{rid}/facts.json   ·   all runs: uv run poc runs")
     if code or not ok:
         print(f"  retry    uv run poc run --resume {rid}   (re-runs only the stages that failed)")
     open_file(report, want_open)
@@ -487,6 +493,8 @@ def main() -> None:
     ps.add_argument("action", choices=["show"])
     ps.add_argument("target", help="a plan name or YAML file")
     ps.add_argument("--set", action="append", default=[], metavar="KEY=VALUE", help="show the plan with these overrides")
+    vf = sub.add_parser("verify", help="recompute a run's numbers from its raw records and check every published claim")
+    vf.add_argument("target", nargs="?", default="latest", help="latest or a run id")
     rs = sub.add_parser("runs", help="every run on this machine")
     rs.add_argument("--open", action="store_true")
     op = sub.add_parser("open", help="open a report")
@@ -551,6 +559,31 @@ def main() -> None:
         except plans.PlanError as exc:
             sys.exit(c(str(exc), "red"))
         sys.exit(run(resolved, run_id, bool(a.resume), not a.no_open, a.skip_check))
+    if a.cmd == "verify":
+        from experiments import claims as claims_mod
+        from experiments import facts as facts_mod
+        from experiments import freeze as freeze_mod
+        from experiments import verify as verify_mod
+
+        base = resolve_latest(RUNS / "latest") if a.target == "latest" else RUNS / a.target
+        if not base or not base.is_dir():
+            sys.exit(c(f"no run {a.target}", "red"))
+        heading(f"Verifying runs/{base.name}")
+        facts_mod.write(base)
+        result = verify_mod.write(base)
+        table([(r["status"] if r["status"] != "pass" else "ok", r["check"], r["detail"]) for r in result["checks"]])
+        if (base / "freeze.json").exists():
+            d = freeze_mod.check(base)
+            moved = len(d["changed"]) + len(d["added"]) + len(d["removed"])
+            print(f"\n  freeze   {'the tree matches this run' if not moved else f'{moved} input file(s) differ from this run'}")
+        problems, matrix = claims_mod.write(base, {r["check"]: r for r in result["checks"]})
+        for problem in problems:
+            print(c(f"  claims   {problem}", "red"))
+        print(f"  claims   {matrix.relative_to(ROOT)}   ·   "
+              f"{len(json.loads(claims_mod.CLAIMS.read_text())['claims'])} published claims, "
+              f"{len(problems) or 'no'} problem(s)")
+        print(f"  facts    runs/{base.name}/facts.json   ·   detail: runs/{base.name}/verification.json")
+        sys.exit(0 if result["ok"] else 1)
     if a.cmd == "runs":
         sys.exit(runs(a.open))
     sys.exit(open_report(a.target))

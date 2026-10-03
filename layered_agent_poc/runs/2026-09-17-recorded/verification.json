@@ -1,0 +1,83 @@
+{
+  "run_id": "2026-09-17-recorded",
+  "verified_at": "2026-10-03T16:19:46Z",
+  "ok": true,
+  "passed": 10,
+  "failed": 0,
+  "skipped": 1,
+  "freeze": {
+    "digest": "d79bdad08835bb21523112d681baff04ae9448131a28b20eb4b40952b6459885",
+    "retrospective": true,
+    "changed": [],
+    "added": [],
+    "removed": []
+  },
+  "checks": [
+    {
+      "check": "platform runs",
+      "status": "pass",
+      "detail": "6 records match their summary",
+      "evidence": "workflow/*/run*/record.json"
+    },
+    {
+      "check": "writes land once",
+      "status": "pass",
+      "detail": "each completed run executed exactly one rollback",
+      "evidence": "workflow/*/run*/enterprise.db \u00b7 executions"
+    },
+    {
+      "check": "approval binds the write",
+      "status": "pass",
+      "detail": "every rollback ran under its own approved digest",
+      "evidence": "workflow/*/run*/record.json \u00b7 audit"
+    },
+    {
+      "check": "lost write response",
+      "status": "pass",
+      "detail": "database: 1 execution(s), 1 replay(s); summary: 1 and 1",
+      "evidence": "faults/enterprise.db \u00b7 executions, replays"
+    },
+    {
+      "check": "crash and resume",
+      "status": "pass",
+      "detail": "database: 1 rollback(s) from 3 process(es), workflow COMPLETED; summary: 1, 3, COMPLETED",
+      "evidence": "crash/enterprise.db \u00b7 crash/platform.db"
+    },
+    {
+      "check": "one trace across the kills",
+      "status": "pass",
+      "detail": "1 workflow trace(s); 86 spans from 3 process(es), and the run used 3",
+      "evidence": "crash/otel/traces/*.jsonl"
+    },
+    {
+      "check": "monolith baseline",
+      "status": "pass",
+      "detail": "database: 2 rollback(s); summary: 2",
+      "evidence": "monolith/lost-response/enterprise.db"
+    },
+    {
+      "check": "test counts",
+      "status": "pass",
+      "detail": "JUnit files: 33 passed; summary: 33",
+      "evidence": "tests/*.xml"
+    },
+    {
+      "check": "plan expectations",
+      "status": "pass",
+      "detail": "9 expectation(s) met",
+      "evidence": "plan.yaml \u00b7 facts.json"
+    },
+    {
+      "check": "tree against the freeze",
+      "status": "skip",
+      "detail": "this tree is the tree that ran (the freeze itself was written after the run)",
+      "evidence": "freeze.json"
+    },
+    {
+      "check": "published claims carry their evidence",
+      "status": "pass",
+      "detail": "23 claims resolved",
+      "evidence": "docs/claims.json"
+    }
+  ]
+}

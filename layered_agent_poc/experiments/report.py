@@ -499,6 +499,73 @@ def s_traces(base: Path, d: dict[str, Any]) -> str:
               "Each run's spans are in its <code>otel/traces/</code> folder.</p>")
 
 
+def s_evidence(base: Path, d: dict[str, Any]) -> str:
+    """What holds the numbers up: the inputs, the recomputation and the published claims."""
+    ver = load(base / "verification.json") if (base / "verification.json").exists() else None
+    fz = load(base / "freeze.json") if (base / "freeze.json").exists() else None
+    claims_doc = load(ROOT / "docs" / "claims.json")
+    evidence = load(base / "article-evidence.json") if (base / "article-evidence.json").exists() else None
+    mark = {"pass": ("pass", "green"), "fail": ("fail", "red"), "skip": ("n/a", "gray")}
+
+    tiles = []
+    if ver:
+        tiles.append(stat("Checks recomputed", f'{ver["passed"]} passed', f'{ver["failed"]} failed · {ver["skipped"]} not applicable',
+                          "red" if ver["failed"] else "green"))
+    tiles.append(stat("Published claims", str(len(claims_doc["claims"])), "each with a file behind it", "blue"))
+    if fz:
+        tiles.append(stat("Inputs frozen", f'{fz["files"]} files', f'digest {fz["digest"][:12]}', "gray"))
+    body = ('<p>Every number in the report and in the article comes from <code>facts.json</code>, which is built from this '
+            'run\'s own files. The checks below recompute those values from the raw records underneath it: the databases the '
+            'mock enterprise wrote, the audit log the gateway wrote, the spans the telemetry layer wrote and the JUnit files '
+            'the test run wrote. A check that the run cannot support is reported as not applicable, never as a pass.</p>'
+            + f'<div class="stats">{"".join(tiles)}</div>')
+
+    if ver:
+        body += "<h3>Checks</h3>" + table(["", "Check", "What it found", "Read from"],
+                                          [[chip(*mark[r["status"]]), esc(r["check"]), esc(r["detail"]),
+                                            code(r["evidence"]) if r["evidence"] else "—"] for r in ver["checks"]])
+    if fz:
+        drift = (ver or {}).get("freeze") or {}
+        moved = drift.get("changed", []) + drift.get("added", []) + drift.get("removed", [])
+        body += ("<h3>Inputs</h3><p>" + ("The configuration, prompts, policy and code behind this run are hashed in "
+                 f"<code>freeze.json</code>: {fz['files']} files, digest <code>{esc(fz['digest'][:16])}</code>, Python "
+                 f"{esc(fz['python'])}.") + (" The freeze was written after the run, so it records the tree as it was then, "
+                 "not as it was at the first model call." if fz.get("retrospective") else "") + "</p>"
+                 + ("<p class=small>" + (f"{len(moved)} input file(s) differ from this tree now: "
+                    + " ".join(code(x, small=True) for x in moved[:8]) + ". The recorded evidence stands; a byte-identical "
+                    "reproduction needs the frozen tree." if moved else "This tree is the tree that ran.") + "</p>"))
+
+    rows = []
+    for c in claims_doc["claims"]:
+        bits = []
+        if c["verified_by"]:
+            bits.append("checks: " + ", ".join(esc(n) for n in c["verified_by"]))
+        if c["facts"]:
+            bits.append("facts: " + " ".join(code(f, small=True) for f in c["facts"][:4])
+                        + (f' +{len(c["facts"]) - 4}' if len(c["facts"]) > 4 else ""))
+        if c["tests"]:
+            bits.append("tests: " + " ".join(code(n.split("::")[-1], small=True) for n in c["tests"]))
+        rows.append([code(c["id"], nowrap=True), esc(c["claim"]) + f'<br><span class=small>{esc(c["section"])}</span>',
+                     "<br>".join(bits) or "—", f'<span class=small>{esc(c["limits"])}</span>'])
+    body += ("<h3>Claims and their evidence</h3>"
+             + f'<p>{len(rows)} claims, from <code>docs/claims.json</code>. The full table with values is in '
+               '<code>docs/claim-evidence-matrix.md</code>, rebuilt whenever a run is verified.</p>'
+             + details(f"Every published claim ({len(rows)})",
+                       table(["Id", "Claim", "Rests on", "What it does not show"], rows)))
+    if evidence:
+        body += ("<h3>The article's numbers</h3>"
+                 + f'<p>{len(evidence["values"])} values are substituted into the article, each one recording the '
+                   '<code>facts.json</code> path it came from, in <code>article-evidence.json</code>. No number in the '
+                   'article is typed by hand.</p>'
+                 + details("Every substituted value",
+                           table(["Placeholder", "Value", "From facts.json"],
+                                 [[code("{{" + k + "}}", nowrap=True),
+                                   esc(v["value"][:90] + ("…" if len(v["value"]) > 90 else "")),
+                                   " ".join(code(f, small=True) for f in v["facts"]) or f'<span class=small>{esc(v.get("not_measured", "—"))}</span>']
+                                  for k, v in evidence["values"].items()])))
+    return body + note("Rebuild all of this from the run with <code>uv run poc verify " + esc(base.name) + "</code>.")
+
+
 def s_files(base: Path) -> str:
     rows = []
     for p in sorted(base.rglob("*")):
@@ -540,6 +607,8 @@ def build_html(base: Path, d: dict[str, Any], bare: bool = False, title: str | N
          lambda: s_change(base, d), "change_scope" in d),
         ("memory", "E7", "Memory, knowledge and context", "Different kinds of state, different stores, different rules.", lambda: s_memory(base, d), "workflow" in d),
         ("tracing", "E8", "Traces", "Every span is written to JSONL as it ends, so a trace survives a SIGKILL.", lambda: s_traces(base, d), "workflow" in d),
+        ("evidence", "Evidence", "What holds the numbers up", "Each published number recomputed from the raw records, the inputs that produced them, and every claim with the file behind it.",
+         lambda: s_evidence(base, d), (base / "verification.json").exists() or (base / "facts.json").exists()),
         ("files", "Provenance", "Where the numbers come from", "The run directory.", lambda: s_files(base), True),
     ]
     toc, body = [], []

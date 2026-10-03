@@ -1,6 +1,6 @@
 # Run 2026-09-17-recorded
 
-Generated 2026-09-17 16:33 UTC from the files in `runs/2026-09-17-recorded/`. Open `report/index.html` for everything.
+Generated 2026-10-03 16:19 UTC from the files in `runs/2026-09-17-recorded/`. Open `report/index.html` for everything.
 
 ## Stages
 

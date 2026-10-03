@@ -317,7 +317,34 @@ Recordings are plain JSON lines (`traffic/chat.jsonl`, `traffic/embed.jsonl`). E
 | Console output of a run | `runs/<run-id>/run.log`, with each stage's start, end and result in `stages.json`, the resolved plan in `plan.yaml`, and the mode in `run.json` |
 | Tests recorded with a run | `runs/<run-id>/tests/`: JUnit XML, pytest output and `lint-imports.log` |
 | The systems of record | `uv run python -m mock_enterprise status` |
-| The run behind the article | `runs/2026-09-17-recorded/report/index.html` |
+| The run behind the article | `runs/2026-09-17-recorded/report/index.html`, and its *What holds the numbers up* section |
+| The evidence for a number | `runs/<run-id>/facts.json`, checked by `runs/<run-id>/verification.json` (see below) |
+
+## How the numbers are checked
+
+Every number in the article, the README and the reports comes from one file per run, and nothing recomputes it a
+second way. Four files make that checkable:
+
+| File | What it holds | Written by |
+|---|---|---|
+| `runs/<id>/freeze.json` | the sha256 of every input the run depended on: config, prompts, policy, runbooks, code, plan, lockfile | `experiments/freeze.py`, at the start of the run |
+| `runs/<id>/facts.json` | every measured value the run supports, and nothing it does not | `experiments/facts.py` |
+| `runs/<id>/verification.json` | each of those values recomputed from the raw records underneath: the mock enterprise's databases, the gateway's audit log, the telemetry layer's spans, the JUnit files | `experiments/verify.py` |
+| `docs/claim-evidence-matrix.md` | every claim the article makes, with the facts path, the check, the run files and the tests behind it, and what it does not show | `experiments/claims.py` from `docs/claims.json` |
+
+```bash
+uv run poc verify                      # the latest run: recompute, then rebuild the matrix
+uv run poc verify 2026-09-17-recorded  # the run the article cites
+```
+
+The checks recompute rather than re-read. "Writes land once" counts rows in each run's own `enterprise.db`;
+"approval binds the write" compares the digest the gateway verified with the digest the approver decided on; "one
+trace across the kills" finds the trace that holds the workflow span and counts the processes that wrote into it;
+"test counts" re-counts the JUnit files. A check the run cannot support is reported as not applicable, never as a
+pass, and `poc verify` exits non-zero if any check fails or any claim's evidence is missing.
+
+A run's freeze is a record, not a lock. When the tree has moved on, `poc verify` says so and the recorded evidence
+still stands; only a tree with the frozen digest reproduces it byte for byte.
 
 ## Steps at a glance
 

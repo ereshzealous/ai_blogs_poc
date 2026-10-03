@@ -710,6 +710,11 @@ def main() -> None:
         save(meta_path, meta)
         if not (base / "plan.yaml").exists() or (a.what == "all" and not a.resume):
             (base / "plan.yaml").write_text(plans.dump(PLAN))
+    if keep_meta and ((a.what == "all" and not a.resume) or not (base / "freeze.json").exists()):
+        from experiments import freeze
+
+        fz = freeze.write(base, PLAN)
+        print(f"=== FREEZE {json.loads(fz.read_text())['digest'][:16]} · {json.loads(fz.read_text())['files']} input files", flush=True)
     done = set()
     if a.resume and (base / "stages.json").exists():
         done = {s["stage"] for s in json.loads((base / "stages.json").read_text()) if s["ok"]}
@@ -752,6 +757,22 @@ def main() -> None:
     if keep_meta:
         meta.update(finished=now(), failed_stages=failed)
         save(meta_path, meta)
+    if a.what == "all" and "report" not in failed:
+        from experiments import claims as claims_mod
+        from experiments import facts as facts_mod
+        from experiments import verify as verify_mod
+
+        facts_mod.write(base)
+        result = verify_mod.write(base)
+        problems, matrix = claims_mod.write(base, {r["check"]: r for r in result["checks"]})
+        print(f"=== CLAIMS {len(problems) or 'no'} problem(s) · {matrix.relative_to(ROOT)}", flush=True)
+        for row in result["checks"]:
+            if row["status"] == "fail":
+                print(f"  !! verification: {row['check']}: {row['detail']}", flush=True)
+        print(f"=== VERIFY {result['passed']} passed, {result['failed']} failed, {result['skipped']} not applicable "
+              f"· runs/{a.run_id}/verification.json", flush=True)
+        if not result["ok"]:
+            failed.append("verify")
     if a.what == "all":
         print(f"=== ALL DONE · report: runs/{a.run_id}/report/index.html · summary: runs/{a.run_id}/report/summary.md", flush=True)
     sys.exit(1 if failed else 0)

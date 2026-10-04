@@ -1,0 +1,98 @@
+diff --color -ruN base/monolith/api.py m3/monolith/api.py
+--- a/monolith/api.py	2026-09-16 21:28:36
++++ b/monolith/api.py	2026-09-16 21:29:22
+@@ -27,12 +27,13 @@
+     async def approver(tool: str, args: dict[str, Any]) -> bool:
+         # The HTTP caller cannot answer a prompt, so we park the question and wait (up to 10 minutes).
+         event = asyncio.Event()
+-        PENDING[user] = {"tool": tool, "args": args, "event": event, "approved": False}
++        PENDING[user] = {"tool": tool, "args": args, "event": event, "approved": False, "approver": ""}
+         try:
+             await asyncio.wait_for(event.wait(), timeout=600)
+         except TimeoutError:
+             return False
+-        return PENDING.pop(user)["approved"]
++        decision = PENDING.pop(user)
++        return decision["approved"], decision["approver"]
+     return approver
+ 
+ 
+@@ -48,10 +49,11 @@
+ 
+ 
+ @app.post("/approve")
+-async def approve(x_user_id: str = Header(...), yes: bool = True) -> dict[str, Any]:
++async def approve(x_user_id: str = Header(...), x_approver_id: str = Header(...), yes: bool = True) -> dict[str, Any]:
+     pending = PENDING.get(x_user_id)
+     if not pending:
+         return {"error": "nothing to approve"}
+     pending["approved"] = yes
++    pending["approver"] = x_approver_id
+     pending["event"].set()
+     return {"ok": True}
+diff --color -ruN base/monolith/cli.py m3/monolith/cli.py
+--- a/monolith/cli.py	2026-09-16 21:28:36
++++ b/monolith/cli.py	2026-09-16 21:29:22
+@@ -12,9 +12,9 @@
+            "recommend the safest remediation, apply the approved action and update the incident.")
+ 
+ 
+-async def _auto_yes(tool: str, args: dict) -> bool:
+-    print(f"[auto-approved] {tool} {args}")
+-    return True
++async def _auto_yes(tool: str, args: dict) -> tuple[bool, str]:
++    print(f"[auto-approved by carol] {tool} {args}")
++    return True, "carol"
+ 
+ 
+ async def main_async(args: argparse.Namespace) -> None:
+diff --color -ruN base/monolith/incident_agent.py m3/monolith/incident_agent.py
+--- a/monolith/incident_agent.py	2026-09-16 21:28:36
++++ b/monolith/incident_agent.py	2026-09-16 21:29:22
+@@ -26,6 +26,8 @@
+ MODEL = "gpt-oss:20b"
+ SERVERS = ("itsm", "source_control", "observability", "database", "kubernetes")
+ WRITE_TOOLS = {"rollback_release", "rollback_deployment", "update_incident"}
++CHANGE_FREEZE = True  # production changes need a change manager during the freeze
++ROLES = {"alice": {"sre", "incident-commander"}, "bob": {"developer"}, "carol": {"change-manager"}}
+ 
+ SYSTEM_PROMPT = """You are an incident response agent for our production systems.
+ Investigate incidents with the tools, find the root cause, fix it, verify, and update the incident.
+@@ -37,14 +39,20 @@
+ 
+ log = logging.getLogger("incident_agent")
+ 
+-Approver = Callable[[str, dict[str, Any]], Awaitable[bool]]
++Approver = Callable[[str, dict[str, Any]], Awaitable[tuple[bool, str]]]
+ 
+ 
+-async def ask_on_terminal(tool: str, args: dict[str, Any]) -> bool:
+-    answer = await asyncio.to_thread(input, f"\nThe agent wants to run {tool} {json.dumps(args)}. Approve? [y/N] ")
+-    return answer.strip().lower().startswith("y")
++async def ask_on_terminal(tool: str, args: dict[str, Any]) -> tuple[bool, str]:
++    who = await asyncio.to_thread(input, "\nApprover name: ")
++    answer = await asyncio.to_thread(input, f"The agent wants to run {tool} {json.dumps(args)}. Approve? [y/N] ")
++    return answer.strip().lower().startswith("y"), who.strip()
+ 
+ 
++def may_approve(approver: str) -> bool:
++    needed = "change-manager" if CHANGE_FREEZE else "incident-commander"
++    return needed in ROLES.get(approver, set())
++
++
+ class IncidentAgent:
+     def __init__(self, model: str = MODEL, approver: Approver = ask_on_terminal, user: str = "alice"):
+         self.model = model
+@@ -119,8 +127,11 @@
+                 name, args = call["function"]["name"], call["function"].get("arguments") or {}
+                 tool = name.split("__", 1)[-1]
+                 if tool in WRITE_TOOLS and args.get("environment", "production") == "production" and tool != "update_incident":
+-                    if not await self.approver(name, args):
++                    approved, approver = await self.approver(name, args)
++                    if not approved:
+                         result = "The user did not approve this action."
++                    elif not may_approve(approver):
++                        result = f"{approver} may not approve production changes during the change freeze."
+                     else:
+                         result = await self.call_tool(name, args)
+                 else:

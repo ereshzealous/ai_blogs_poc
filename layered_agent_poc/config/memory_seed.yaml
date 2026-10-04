@@ -1,0 +1,22 @@
+# Episodic memories the platform "remembers" from earlier incidents (synthetic). Each has provenance and an expiry.
+- scope: checkout-api
+  kind: episodic
+  content: "INC-4630 (2026-07-14): checkout-api p95 rose after a release shrank the orders-db connection pool; rolling the release back through the release pipeline fixed it in 6 minutes."
+  source: postmortem PM-4630
+  confidence: 0.8
+  created_at: "2026-07-15T09:00:00Z"
+  expires_at: "2027-01-15T00:00:00Z"
+- scope: checkout-api
+  kind: episodic
+  content: "INC-4411 (2026-05-02): a direct `kubectl rollout undo` on checkout-api was reverted by the GitOps controller within 2 minutes."
+  source: postmortem PM-4411
+  confidence: 0.9
+  created_at: "2026-05-03T09:00:00Z"
+  expires_at: "2027-05-03T00:00:00Z"
+- scope: checkout-api
+  kind: episodic
+  content: "Q1 2026: connection-pool alerts on checkout-api were mostly false positives."
+  source: alert review AR-2026-Q1
+  confidence: 0.5
+  created_at: "2026-04-02T09:00:00Z"
+  expires_at: "2026-06-30T00:00:00Z"

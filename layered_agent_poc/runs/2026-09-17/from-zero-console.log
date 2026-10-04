@@ -1,0 +1,136 @@
+
+##### 2. models (19:42:21 UTC)
+pulling manifest
+pulling e7b273f96360: 100% ▕██████████████████▏  13 GB                         
+pulling fa6710a93d78: 100% ▕██████████████████▏ 7.2 KB                         
+pulling f60356777647: 100% ▕██████████████████▏  11 KB                         
+pulling d8ba2f9a17b3: 100% ▕██████████████████▏   18 B                         
+pulling 776beb3adb23: 100% ▕██████████████████▏  489 B                         
+verifying sha256 digest 
+writing manifest 
+success 
+pulling manifest
+pulling a3de86cd1c13: 100% ▕██████████████████▏ 5.2 GB                         
+pulling ae370d884f10: 100% ▕██████████████████▏ 1.7 KB                         
+pulling d18a5cc71b84: 100% ▕██████████████████▏  11 KB                         
+pulling cff3f395ef37: 100% ▕██████████████████▏  120 B                         
+pulling 05a61d37b084: 100% ▕██████████████████▏  487 B                         
+verifying sha256 digest 
+writing manifest 
+success 
+pulling manifest
+pulling 970aa74c0a90: 100% ▕██████████████████▏ 274 MB                         
+pulling c71d239df917: 100% ▕██████████████████▏  11 KB                         
+pulling ce4a164fc046: 100% ▕██████████████████▏   17 B                         
+pulling 31df23ea7daa: 100% ▕██████████████████▏  420 B                         
+verifying sha256 digest 
+writing manifest 
+success 
+nomic-embed-text:latest    0a109f422b47    274 MB    Less than a second ago    
+qwen3:8b                   500a1f067a9f    5.2 GB    2 seconds ago             
+gpt-oss:20b                17052f91a42e    13 GB     3 seconds ago             
+
+##### 3. uv sync (19:42:26 UTC)
+ + typing-inspection==0.4.4
+ + uvicorn==0.53.0
+
+##### 4. checks (19:42:27 UTC)
+enterprise world reset: checkout-api production back on v4.17, incident active
+MCP tools: 11 from 5 servers
+Ollama models: all present
+29 passed, 4 deselected in 46.71s
+Contracts: 7 kept, 0 broken.
+
+##### 5. one incident (19:43:19 UTC)
+⏸ wf-d615581d48  INC-4917  WAITING_APPROVAL  (step: await_approval, channel: cli, by: alice)
+  diagnosis   checkout-api v4.17 (DEP-88213), confidence high
+  root cause  orders-client v3 reconfigured the orders‑db connection pool to max_connections=10 and acquire_timeout_ms=2000, exhausting the pool and blocking checkout requests.
+  proposal    source_control.rollback_release → v4.16 in production
+  policy      REQUIRE_APPROVAL (P4-prod-high-risk-approval)
+  approval    apr-e0bf9087df PENDING (needs role incident-commander)
+  tokens 23499 · checkpoints 5 · trace 7e4da715a9dcc77e4e4e432c16cf3744
+workflow: wf-d615581d48
+forbidden: bob lacks role 'incident-commander'
+✔ wf-d615581d48  INC-4917  COMPLETED  (step: complete, channel: cli, by: alice)
+  diagnosis   checkout-api v4.17 (DEP-88213), confidence high
+  root cause  orders-client v3 reconfigured the orders‑db connection pool to max_connections=10 and acquire_timeout_ms=2000, exhausting the pool and blocking checkout requests.
+  proposal    source_control.rollback_release → v4.16 in production
+  policy      REQUIRE_APPROVAL (P4-prod-high-risk-approval)
+  approval    apr-e0bf9087df APPROVED by alice
+  remediation executed attempts=1 replayed=False op=02b156444bd0e9907e23
+  verify      ok p95=200 ms (SLO 400)
+  incident    resolved: Root cause: orders-client v3 reconfigured orders-db pool to max_connections=10, exhausting connections and blocking checkout requests. Action: Rolled back check
+  tokens 24399 · checkpoints 10 · trace 7e4da715a9dcc77e4e4e432c16cf3744
+{
+  "passed": 8,
+  "total": 8,
+  "ok": true,
+wrote <clone>/runs/reports/wf-d615581d48.html
+{
+  "now": "2026-09-08T10:50:00+00:00",
+  "checkout-api/production": "v4.16",
+  "incident_active": false,
+  "rollbacks_executed": 1,
+  "rollback_replays": 0
+}
+
+##### 6. every experiment (19:45:02 UTC)
+=== STAGE tests START 19:45:02
+[tests] Fast tests ...
+  -> 29 passed, 0 failed, 0 skipped
+[tests] Model tests ...
+  -> 4 passed, 0 failed, 0 skipped
+  -> import contracts: kept
+=== STAGE tests OK 19:52:43
+=== STAGE faults START 19:52:43
+[faults] timeouts on query_latency during verify + lost rollback response ...
+  -> {"attempts": 2, "replayed": true, "backend_executions": 1, "backend_replays": 1}, verify attempts [{'attempts': 3, 'step': 'verify'}]
+=== STAGE faults OK 19:54:12
+=== STAGE crash START 19:54:12
+[crash] run with SIGKILL after the approval checkpoint ...
+[crash] approve, SIGKILL right after the rollback executes (before its checkpoint) ...
+[crash] resume in a third process ...
+  -> {"backend_rollbacks": 1, "processes": 3, "tokens_before_crash": 20857, "tokens_after_crash": 928}
+=== STAGE crash OK 19:55:40
+=== STAGE monolith START 19:55:40
+[monolith] run 1/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 45.0 s
+[monolith] run 2/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 47.0 s
+[monolith] run 3/3 (auto-approve) ...
+  -> {"rollback_executions": 1, "rollback_targets": ["v4.16"], "kubernetes_rollbacks": 0, "incident_updates": 1, "final_version": "v4.16", "incident_active": false, "authoritative_rollback": true, "write_e in 31.2 s
+[monolith] lost rollback response ...
+source_control__rollback_release timed out, retrying (1/3)
+  -> rollbacks executed 2
+[monolith] SIGKILL while waiting for approval ...
+=== STAGE monolith OK 19:58:58
+=== STAGE workflow START 19:58:58
+[workflow] gpt-oss:20b run 1/3 ...
+  -> COMPLETED evals 8/8 in 95.5 s
+[workflow] gpt-oss:20b run 2/3 ...
+  -> COMPLETED evals 8/8 in 83.8 s
+[workflow] gpt-oss:20b run 3/3 ...
+  -> COMPLETED evals 8/8 in 91.6 s
+[workflow] qwen3:8b run 1/3 ...
+  -> FAILED evals 2/8 in 753.3 s
+[workflow] qwen3:8b run 2/3 ...
+  -> FAILED evals 2/8 in 241.7 s
+[workflow] qwen3:8b run 3/3 ...
+  -> FAILED evals 2/8 in 241.4 s
+=== STAGE workflow OK 20:24:10
+=== STAGE change START 20:24:10
+add-channel    monolith 3 files +63/-14 ['channel', 'session', 'workflow', 'prompt']  |  layered 3 files +60/-0 ['channel', 'config']  (applies=True, contracts_kept=True)
+swap-model     monolith 2 files +6/-3 ['model', 'reasoning', 'channel']  |  layered 1 files +1/-1 ['config']  (applies=True, contracts_kept=True)
+change-freeze  monolith 3 files +24/-11 ['policy', 'workflow', 'channel']  |  layered 2 files +6/-0 ['policy', 'config']  (applies=True, contracts_kept=True)
+wrote runs/2026-09-17/change-scope.json
+=== STAGE change OK 20:24:12
+=== STAGE export START 20:24:12
+[export] trace from runs/2026-09-17/workflow/gpt-oss_20b/run1/record.json; wrote diagram data to runs/2026-09-17/diagram-data
+=== STAGE export OK 20:24:12
+=== STAGE report START 20:24:12
+[report] runs/2026-09-17/report/index.html
+=== STAGE report OK 20:24:12
+=== ALL DONE · report: runs/2026-09-17/report/index.html · summary: runs/2026-09-17/report/summary.md
+exit=0
+
+##### FROM-ZERO DONE (20:24:12 UTC)

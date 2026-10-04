@@ -1,0 +1,23 @@
+[
+  {
+    "label": "Model tests, full suite",
+    "date": "2026-09-16",
+    "kind": "pytest-log",
+    "file": "ollama-full-suite.log",
+    "note": "uv run pytest -m ollama. One test hit its 900 s timeout: another process was using gpt-oss:20b with a different num_ctx, so Ollama reloaded the model on each call. Local paths in this copy are replaced with ~ and <tmp>."
+  },
+  {
+    "label": "Model test re-run alone",
+    "date": "2026-09-16",
+    "kind": "pytest-log",
+    "file": "ollama-lostwrite-alone.log",
+    "note": "The timed-out test, run on its own after num_ctx was aligned to 32768 and the test timeout raised to 2700 s."
+  },
+  {
+    "label": "Fast tests, re-run after the review edits",
+    "date": "2026-09-17",
+    "kind": "junit",
+    "file": "fast-2026-09-17.xml",
+    "note": "uv run pytest -m \"not ollama\" --junitxml. No model needed."
+  }
+]

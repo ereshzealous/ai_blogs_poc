@@ -1,0 +1,21 @@
+# An example of a custom plan: harsher faults and more kills than the article's run. Needs Ollama (live).
+# Copy it, change what you want to test, then:  uv run poc plan show chaos  and  uv run poc run --plan chaos
+name: chaos
+description: More failure, one model. Faults from the start of the workflow, and three SIGKILLs in one workflow.
+minutes: 4
+models: [gpt-oss:20b]
+runs: 1
+experiments: [tests, faults, crash]
+tests:
+  model_tests: false
+faults:
+  arm_at: start                    # the investigation's reads time out too
+  inject:
+    - {tool: observability.query_latency, mode: timeout, times: 2, delay_s: 3.0}
+    - {tool: source_control.rollback_release, mode: lose_response, times: 1, delay_s: 4.0}
+    - {tool: itsm.update_incident, mode: lose_response, times: 1, delay_s: 5.0}
+crash:
+  kill_at:
+    - after_step:investigate                        # before any proposal exists
+    - after_step:await_approval                     # while waiting for a human
+    - executed:source_control.rollback_release      # after the write, before its checkpoint

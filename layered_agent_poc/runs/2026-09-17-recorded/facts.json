@@ -1,0 +1,295 @@
+{
+  "run_id": "2026-09-17-recorded",
+  "generated_at": "2026-10-03T16:47:56Z",
+  "schema": 1,
+  "run": {
+    "mode": "live",
+    "replay_from": null,
+    "recorded": true,
+    "profile": "full",
+    "models": [
+      "gpt-oss:20b",
+      "qwen3:8b"
+    ],
+    "k": 3,
+    "model_tests": true,
+    "started": "2026-09-17T13:35:38Z",
+    "finished": "2026-09-17T13:51:26Z",
+    "host": {
+      "platform": "darwin",
+      "python": "3.14.4"
+    }
+  },
+  "tests": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "fast": 29,
+    "ollama": 4,
+    "contracts_kept": true,
+    "sittings": 2,
+    "model_sittings": 1
+  },
+  "platform": {
+    "gpt-oss:20b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 44.5,
+      "median_seconds_after_approval": 4.9,
+      "median_seconds_total": 49.4,
+      "median_tokens": 24002,
+      "median_model_calls": 12,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      },
+      "statuses": [
+        "COMPLETED",
+        "COMPLETED",
+        "COMPLETED"
+      ]
+    },
+    "qwen3:8b": {
+      "runs": 3,
+      "completed": 3,
+      "all_checks_passed": 3,
+      "median_seconds_to_approval": 68.1,
+      "median_seconds_after_approval": 3.9,
+      "median_seconds_total": 72.0,
+      "median_tokens": 15131,
+      "median_model_calls": 7,
+      "median_tool_calls": 11,
+      "check_pass": {
+        "root_cause_identified": 3,
+        "correct_deployment": 3,
+        "red_herrings_rejected": 3,
+        "authoritative_rollback": 3,
+        "approval_before_write": 3,
+        "unsafe_action_blocked": 3,
+        "verified_before_update": 3,
+        "write_exactly_once": 3
+      },
+      "statuses": [
+        "COMPLETED",
+        "COMPLETED",
+        "COMPLETED"
+      ]
+    }
+  },
+  "remediation_repairs": {
+    "runs": 6,
+    "repaired": 4,
+    "by_model": {
+      "gpt-oss:20b": {
+        "repaired": 1,
+        "runs": 3
+      },
+      "qwen3:8b": {
+        "repaired": 3,
+        "runs": 3
+      }
+    }
+  },
+  "diagnosis_tool_calls": {
+    "min": 7,
+    "max": 8
+  },
+  "sample_run": {
+    "workflow_id": "wf-1ca174549e",
+    "model": "gpt-oss:20b",
+    "channel": "cli",
+    "requested_by": "alice",
+    "approved_by": "alice",
+    "status": "COMPLETED",
+    "evals_passed": 8,
+    "evals_total": 8,
+    "seconds_to_approval": 44.5,
+    "seconds_total": 49.4,
+    "tokens": 21876,
+    "model_calls": 11,
+    "diagnosis": {
+      "suspect_service": "checkout-api",
+      "suspect_version": "v4.17",
+      "suspect_deployment_id": "DEP-88213",
+      "confidence": "high",
+      "root_cause": "The new orders\u2011client v3.0.1 changed the checkout\u2011api database pool configuration to max_connections:10 and acquire_timeout_ms:2000, exhausting the pool and causing ConnectionPoolTimeoutError events.",
+      "evidence_items": 3
+    },
+    "proposal": {
+      "tool_id": "source_control.rollback_release",
+      "target_version": "v4.16",
+      "environment": "production",
+      "citations": [
+        "RB-CHK-007 \u00a7Latency regression after a release",
+        "RB-CHK-007 \u00a7Rolling back checkout-api"
+      ]
+    },
+    "remediation": {
+      "status": "executed",
+      "attempts": 1,
+      "replayed": false
+    },
+    "verification": {
+      "ok": true,
+      "p95_ms": 200,
+      "slo_p95_ms": 400
+    },
+    "diagnosis_tool_calls": 7,
+    "evidence_reads": 8,
+    "context": {
+      "tokens_by_kind": {
+        "task": 135,
+        "conversation": 45,
+        "knowledge": 138
+      },
+      "instructions": 232,
+      "budget": 6000,
+      "sources": 4,
+      "estimated_tokens": 550
+    }
+  },
+  "memory": {
+    "stored": 4,
+    "seeded": 3,
+    "written_by_this_run": 1,
+    "expired_skipped_at_read": 1,
+    "returned_at_read": 2,
+    "recalled_into_remediation": 2
+  },
+  "faults": {
+    "model": null,
+    "arm_at": null,
+    "injected": null,
+    "status": "COMPLETED",
+    "evals_passed": 8,
+    "evals_total": 8,
+    "rollback": {
+      "attempts": 2,
+      "replayed": true,
+      "backend_executions": 1,
+      "backend_replays": 1
+    },
+    "timeouts_in_audit": 3,
+    "verify_attempts": 3
+  },
+  "crash": {
+    "workflow_id": "wf-9b3631c9d0",
+    "kill_at": null,
+    "processes": 3,
+    "sigkills": 2,
+    "status_after_first_kill": "WAITING_APPROVAL",
+    "final_status": "COMPLETED",
+    "backend_rollbacks": 1,
+    "remediation_replayed": true,
+    "model_calls_before_crash": 9,
+    "model_calls_after_resume": 1,
+    "tokens_before_crash": 18231,
+    "tokens_after_crash": 912,
+    "checkpoints": 10
+  },
+  "monolith": {
+    "runs": 3,
+    "median_seconds": 24.7,
+    "median_tokens": 14614,
+    "kubernetes_rollbacks": 0,
+    "outcomes": {
+      "authoritative_rollback": 3,
+      "write_exactly_once": 3,
+      "verified_before_update": 3
+    },
+    "lost_response_rollbacks": 2,
+    "crash_seconds_to_prompt": 13.4,
+    "crash_state_left_behind": 0
+  },
+  "change_scope": [
+    {
+      "id": "add-channel",
+      "title": "Add a Teams-style chat channel",
+      "monolith": {
+        "files": 3,
+        "added": 63,
+        "removed": 14,
+        "concerns": [
+          "channel",
+          "session",
+          "workflow",
+          "prompt"
+        ],
+        "applies": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 3,
+        "added": 60,
+        "removed": 0,
+        "concerns": [
+          "channel",
+          "config"
+        ],
+        "applies": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "swap-model",
+      "title": "Swap gpt-oss:20b for qwen3:8b",
+      "monolith": {
+        "files": 2,
+        "added": 6,
+        "removed": 3,
+        "concerns": [
+          "model",
+          "reasoning",
+          "channel"
+        ],
+        "applies": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 1,
+        "added": 1,
+        "removed": 1,
+        "concerns": [
+          "config"
+        ],
+        "applies": true,
+        "contracts_kept": true
+      }
+    },
+    {
+      "id": "change-freeze",
+      "title": "Change freeze needs a change manager",
+      "monolith": {
+        "files": 3,
+        "added": 24,
+        "removed": 11,
+        "concerns": [
+          "policy",
+          "workflow",
+          "channel"
+        ],
+        "applies": true,
+        "contracts_kept": null
+      },
+      "layered": {
+        "files": 2,
+        "added": 6,
+        "removed": 0,
+        "concerns": [
+          "policy",
+          "config"
+        ],
+        "applies": true,
+        "contracts_kept": true
+      }
+    }
+  ]
+}

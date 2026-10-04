@@ -1,0 +1,88 @@
+{
+  "workflow_id": "wf-9b3631c9d0",
+  "run": {
+    "returncode": -9,
+    "seconds": 56.8,
+    "status_after": "WAITING_APPROVAL"
+  },
+  "approve": {
+    "returncode": -9,
+    "seconds": 2.0,
+    "status_after": "RUNNING",
+    "backend_rollbacks_after_crash": 1
+  },
+  "resume": {
+    "returncode": 0,
+    "seconds": 7.5,
+    "status": "COMPLETED",
+    "remediation_replayed": true
+  },
+  "backend_rollbacks": 1,
+  "processes": 3,
+  "checkpoints": [
+    {
+      "seq": 1,
+      "step": "created",
+      "next_step": "intake",
+      "pid": 70783
+    },
+    {
+      "seq": 2,
+      "step": "intake",
+      "next_step": "investigate",
+      "pid": 70783
+    },
+    {
+      "seq": 3,
+      "step": "investigate",
+      "next_step": "propose_remediation",
+      "pid": 70783
+    },
+    {
+      "seq": 4,
+      "step": "propose_remediation",
+      "next_step": "await_approval",
+      "pid": 70783
+    },
+    {
+      "seq": 5,
+      "step": "await_approval",
+      "next_step": "await_approval",
+      "pid": 70783
+    },
+    {
+      "seq": 6,
+      "step": "await_approval",
+      "next_step": "remediate",
+      "pid": 70936
+    },
+    {
+      "seq": 7,
+      "step": "remediate",
+      "next_step": "verify",
+      "pid": 70963
+    },
+    {
+      "seq": 8,
+      "step": "verify",
+      "next_step": "record",
+      "pid": 70963
+    },
+    {
+      "seq": 9,
+      "step": "record",
+      "next_step": "complete",
+      "pid": 70963
+    },
+    {
+      "seq": 10,
+      "step": "complete",
+      "next_step": null,
+      "pid": 70963
+    }
+  ],
+  "model_calls_before_crash": 9,
+  "model_calls_after_resume": 1,
+  "tokens_before_crash": 18231,
+  "tokens_after_crash": 912
+}

@@ -1,0 +1,20 @@
+=== STAGE tests START 16:16:27
+[tests] Fast tests ...
+  -> 50 passed, 0 failed, 0 skipped
+  -> import contracts: kept
+=== STAGE tests OK 16:17:23
+=== STAGE faults START 16:17:23
+[faults] gpt-oss:20b, armed at start: observability.query_latency times out ×2; source_control.rollback_release commits, then loses its response ×1; itsm.update_incident commits, then loses its response ×1 ...
+  -> {"attempts": 2, "replayed": true, "backend_executions": 1, "backend_replays": 1}, verify attempts [{'attempts': 1, 'step': 'verify'}]
+=== STAGE faults OK 16:18:23
+=== STAGE crash START 16:18:23
+[crash] process 1: lap run INC-4917 --as alice, SIGKILL at after_step:investigate ...
+[crash] process 2: lap resume, SIGKILL at after_step:await_approval ...
+[crash] process 3: lap approve --as alice, SIGKILL at executed:source_control.rollback_release ...
+[crash] process 4: lap resume ...
+  -> {"backend_rollbacks": 1, "processes": 4, "tokens_before_crash": 19468, "tokens_after_crash": 2336}, final COMPLETED
+=== STAGE crash OK 16:19:33
+=== STAGE report START 16:19:33
+[report] runs/chaos-check/report/index.html
+=== STAGE report OK 16:19:33
+=== ALL DONE · report: runs/chaos-check/report/index.html · summary: runs/chaos-check/report/summary.md

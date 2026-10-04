@@ -1,0 +1,128 @@
+{
+  "workflow_id": "wf-c6f8478260",
+  "kill_at": [
+    "after_step:investigate",
+    "after_step:await_approval",
+    "executed:source_control.rollback_release"
+  ],
+  "model": "gpt-oss:20b",
+  "sequence": [
+    {
+      "process": 1,
+      "command": "lap run INC-4917 --as alice",
+      "crash_on": "after_step:investigate",
+      "returncode": -9,
+      "seconds": 34.7,
+      "status_after": "RUNNING"
+    },
+    {
+      "process": 2,
+      "command": "lap resume",
+      "crash_on": "after_step:await_approval",
+      "returncode": -9,
+      "seconds": 6.8,
+      "status_after": "WAITING_APPROVAL"
+    },
+    {
+      "process": 3,
+      "command": "lap approve --as alice",
+      "crash_on": "executed:source_control.rollback_release",
+      "returncode": -9,
+      "seconds": 1.9,
+      "status_after": "RUNNING"
+    },
+    {
+      "process": 4,
+      "command": "lap resume",
+      "crash_on": null,
+      "returncode": 0,
+      "seconds": 6.5,
+      "status_after": "COMPLETED"
+    }
+  ],
+  "run": {
+    "returncode": -9,
+    "seconds": 34.7,
+    "status_after": "RUNNING"
+  },
+  "approve": {
+    "returncode": -9,
+    "seconds": 1.9,
+    "status_after": "RUNNING",
+    "backend_rollbacks_after_crash": 1
+  },
+  "resume": {
+    "returncode": 0,
+    "seconds": 6.5,
+    "status": "COMPLETED",
+    "remediation_replayed": true
+  },
+  "backend_rollbacks": 1,
+  "processes": 4,
+  "checkpoints": [
+    {
+      "seq": 1,
+      "step": "created",
+      "next_step": "intake",
+      "pid": 94655
+    },
+    {
+      "seq": 2,
+      "step": "intake",
+      "next_step": "investigate",
+      "pid": 94655
+    },
+    {
+      "seq": 3,
+      "step": "investigate",
+      "next_step": "propose_remediation",
+      "pid": 94655
+    },
+    {
+      "seq": 4,
+      "step": "propose_remediation",
+      "next_step": "await_approval",
+      "pid": 94720
+    },
+    {
+      "seq": 5,
+      "step": "await_approval",
+      "next_step": "await_approval",
+      "pid": 94720
+    },
+    {
+      "seq": 6,
+      "step": "await_approval",
+      "next_step": "remediate",
+      "pid": 94762
+    },
+    {
+      "seq": 7,
+      "step": "remediate",
+      "next_step": "verify",
+      "pid": 94790
+    },
+    {
+      "seq": 8,
+      "step": "verify",
+      "next_step": "record",
+      "pid": 94790
+    },
+    {
+      "seq": 9,
+      "step": "record",
+      "next_step": "complete",
+      "pid": 94790
+    },
+    {
+      "seq": 10,
+      "step": "complete",
+      "next_step": null,
+      "pid": 94790
+    }
+  ],
+  "model_calls_before_crash": 9,
+  "model_calls_after_resume": 2,
+  "tokens_before_crash": 19468,
+  "tokens_after_crash": 2336
+}

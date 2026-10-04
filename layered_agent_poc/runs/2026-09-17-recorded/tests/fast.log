@@ -1,0 +1,36 @@
+.............................                                            [100%]
+==================================== PASSES ====================================
+______________ test_monolith_retry_executes_the_same_write_twice _______________
+------------------------------ Captured log call -------------------------------
+WARNING  incident_agent:incident_agent.py:112 source_control__rollback_release timed out, retrying (1/3)
+=========================== short test summary info ============================
+PASSED tests/test_architecture.py::test_layer_boundaries_hold
+PASSED tests/test_architecture.py::test_agents_do_not_mention_models_or_transports
+PASSED tests/test_channels.py::test_rest_and_chat_produce_the_same_command
+PASSED tests/test_channels.py::test_unknown_chat_user_is_rejected
+PASSED tests/test_channels.py::test_approval_without_a_pending_request_is_a_conflict
+PASSED tests/test_channels.py::test_cli_builds_the_same_command
+PASSED tests/test_policy.py::test_read_only_is_allowed
+PASSED tests/test_policy.py::test_direct_kubernetes_rollback_of_a_gitops_service_is_denied
+PASSED tests/test_policy.py::test_write_to_another_environment_than_the_incident_is_denied
+PASSED tests/test_policy.py::test_production_release_rollback_needs_an_incident_commander
+PASSED tests/test_policy.py::test_approval_digest_is_bound_to_arguments_and_workflow
+PASSED tests/test_policy.py::test_unregistered_tool_is_denied
+PASSED tests/test_policy.py::test_low_risk_write_is_allowed
+PASSED tests/test_reliability.py::test_read_timeout_is_retried_with_a_bound
+PASSED tests/test_reliability.py::test_read_gives_up_after_its_retry_budget
+PASSED tests/test_reliability.py::test_lost_response_on_a_write_does_not_execute_twice
+PASSED tests/test_reliability.py::test_monolith_retry_executes_the_same_write_twice
+PASSED tests/test_reliability.py::test_same_operation_is_replayed_from_the_platform_record
+PASSED tests/test_reliability.py::test_key_reuse_with_different_arguments_is_rejected_by_the_backend
+PASSED tests/test_reliability.py::test_high_risk_write_needs_a_grant_for_this_exact_invocation
+PASSED tests/test_reliability.py::test_denied_action_never_reaches_the_backend
+PASSED tests/test_reliability.py::test_agent_toolbox_hides_keys_and_blocks_unoffered_tools
+PASSED tests/test_reports.py::test_run_report_covers_every_recorded_stage
+PASSED tests/test_reports.py::test_workflow_page_shows_the_whole_record
+PASSED tests/test_state.py::test_expired_memories_are_not_recalled
+PASSED tests/test_state.py::test_memory_requires_provenance
+PASSED tests/test_state.py::test_checkpoints_are_append_only_and_latest_wins
+PASSED tests/test_state.py::test_lease_of_a_dead_worker_can_be_taken_over
+PASSED tests/test_state.py::test_approvals_are_bound_to_one_digest
+29 passed, 4 deselected in 34.61s

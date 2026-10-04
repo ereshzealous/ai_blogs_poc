@@ -1,0 +1,12 @@
+diff --color -ruN base/config/platform.yaml l2/config/platform.yaml
+--- a/config/platform.yaml	2026-09-16 21:28:36
++++ b/config/platform.yaml	2026-09-16 21:28:36
+@@ -13,7 +13,7 @@
+   url: http://localhost:11434
+   request_timeout_s: 240
+   routes:
+-    reasoning: { model: gpt-oss:20b, fallback: qwen3:8b }
++    reasoning: { model: qwen3:8b, fallback: gpt-oss:20b }
+     summary:   { model: gpt-oss:20b, fallback: qwen3:8b }
+     embeddings: { model: nomic-embed-text }
+   # Provider-specific behaviour is a model profile, not agent code.

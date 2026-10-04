@@ -1,0 +1,35 @@
+# Three requirement changes, each implemented twice: once in monolith/ and once in agent_platform/.
+# The patches were written by hand for this POC (they are not a benchmark). Files and line counts are measured from
+# the patches; the concern labels are a human reading of each hunk, from a fixed vocabulary:
+#   channel, session, workflow, reasoning, prompt, model, tools, policy, retries, telemetry, config
+changes:
+  - id: add-channel
+    title: Add a Teams-style chat channel
+    monolith:
+      patch: add-channel.monolith.patch
+      concerns: [channel, session, workflow, prompt]
+      notes: "New teams.py; api.py moves sessions and parked approvals from per-user to per-conversation; the agent gains an output style in its prompt."
+    layered:
+      patch: add-channel.layered.patch
+      concerns: [channel, config]
+      notes: "New channels/teams_webhook.py; one include_router line; two identity mappings."
+  - id: swap-model
+    title: Swap gpt-oss:20b for qwen3:8b
+    monolith:
+      patch: swap-model.monolith.patch
+      concerns: [model, reasoning, channel]
+      notes: "Model constant, the provider-specific 'think' value, tool-argument parsing inside the agent loop, the CLI default."
+    layered:
+      patch: swap-model.layered.patch
+      concerns: [config]
+      notes: "One route in config/platform.yaml. Provider options already live in model profiles. Evals must be re-run."
+  - id: change-freeze
+    title: Change freeze needs a change manager
+    monolith:
+      patch: change-freeze.monolith.patch
+      concerns: [policy, workflow, channel]
+      notes: "Roles and the approval rule move into the agent; the approver callback, CLI and REST change shape."
+    layered:
+      patch: change-freeze.layered.patch
+      concerns: [policy, config]
+      notes: "One policy rule and one synthetic principal."

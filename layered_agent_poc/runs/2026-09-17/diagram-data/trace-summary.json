@@ -1,0 +1,265 @@
+{
+  "placeholder": false,
+  "run_id": "2026-09-17",
+  "model": "gpt-oss:20b",
+  "workflow_id": "wf-ad738e65bd",
+  "spans": [
+    {
+      "name": "invoke_workflow incident-remediation",
+      "depth": 0,
+      "start_ms": 0,
+      "duration_ms": 92687.9,
+      "kind": "workflow",
+      "note": "2 process segments"
+    },
+    {
+      "name": "workflow.step intake",
+      "depth": 1,
+      "start_ms": 0.1,
+      "duration_ms": 3.3,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "execute_tool itsm.get_incident",
+      "depth": 2,
+      "start_ms": 0.2,
+      "duration_ms": 3.1,
+      "kind": "tool",
+      "note": "ALLOW"
+    },
+    {
+      "name": "workflow.step investigate",
+      "depth": 1,
+      "start_ms": 3.8,
+      "duration_ms": 63534.8,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "context.assemble",
+      "depth": 2,
+      "start_ms": 3.9,
+      "duration_ms": 58.0,
+      "kind": "context",
+      "note": null
+    },
+    {
+      "name": "invoke_agent diagnosis-agent",
+      "depth": 2,
+      "start_ms": 62.1,
+      "duration_ms": 63471.6,
+      "kind": "agent",
+      "note": "8 turns \u00b7 7 tool calls (2 of 9 model calls shown)"
+    },
+    {
+      "name": "chat gpt-oss:20b",
+      "depth": 3,
+      "start_ms": 63.2,
+      "duration_ms": 1969.5,
+      "kind": "chat",
+      "note": "1089\u219239 tok"
+    },
+    {
+      "name": "execute_tool itsm.get_incident",
+      "depth": 3,
+      "start_ms": 2034.0,
+      "duration_ms": 16.1,
+      "kind": "tool",
+      "note": "ALLOW"
+    },
+    {
+      "name": "chat gpt-oss:20b",
+      "depth": 3,
+      "start_ms": 2050.5,
+      "duration_ms": 3876.3,
+      "kind": "chat",
+      "note": "1263\u219247 tok"
+    },
+    {
+      "name": "execute_tool source_control.search_deployments",
+      "depth": 3,
+      "start_ms": 5927.3,
+      "duration_ms": 16.5,
+      "kind": "tool",
+      "note": "ALLOW"
+    },
+    {
+      "name": "workflow.step propose_remediation",
+      "depth": 1,
+      "start_ms": 63543.3,
+      "duration_ms": 20644.3,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "context.assemble",
+      "depth": 2,
+      "start_ms": 63544.4,
+      "duration_ms": 61.1,
+      "kind": "context",
+      "note": null
+    },
+    {
+      "name": "invoke_agent remediation-agent",
+      "depth": 2,
+      "start_ms": 63606.0,
+      "duration_ms": 20579.0,
+      "kind": "agent",
+      "note": "structured answer, no tools \u00b7 1 repair"
+    },
+    {
+      "name": "chat gpt-oss:20b",
+      "depth": 3,
+      "start_ms": 63611.9,
+      "duration_ms": 11963.6,
+      "kind": "chat",
+      "note": "1406\u2192104 tok"
+    },
+    {
+      "name": "chat gpt-oss:20b",
+      "depth": 3,
+      "start_ms": 75582.3,
+      "duration_ms": 8600.7,
+      "kind": "chat",
+      "note": "1595\u2192112 tok"
+    },
+    {
+      "name": "policy.evaluate",
+      "depth": 2,
+      "start_ms": 84186.1,
+      "duration_ms": 0.1,
+      "kind": "policy",
+      "note": "REQUIRE_APPROVAL"
+    },
+    {
+      "name": "workflow.step await_approval",
+      "depth": 1,
+      "start_ms": 84188.9,
+      "duration_ms": 1.1,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "workflow.step await_approval",
+      "depth": 1,
+      "start_ms": 84190.9,
+      "duration_ms": 0.2,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "human approval (alice)",
+      "depth": 1,
+      "start_ms": 84190.9,
+      "duration_ms": 0,
+      "kind": "approval",
+      "note": "waited 1.0 s"
+    },
+    {
+      "name": "workflow.step remediate",
+      "depth": 1,
+      "start_ms": 84192.6,
+      "duration_ms": 21.5,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "execute_tool source_control.rollback_release",
+      "depth": 2,
+      "start_ms": 84193.1,
+      "duration_ms": 20.4,
+      "kind": "tool",
+      "note": "REQUIRE_APPROVAL"
+    },
+    {
+      "name": "workflow.step verify",
+      "depth": 1,
+      "start_ms": 84215.1,
+      "duration_ms": 10.0,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "execute_tool observability.query_latency",
+      "depth": 2,
+      "start_ms": 84215.3,
+      "duration_ms": 9.7,
+      "kind": "tool",
+      "note": "ALLOW"
+    },
+    {
+      "name": "workflow.step record",
+      "depth": 1,
+      "start_ms": 84225.5,
+      "duration_ms": 8458.5,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "context.assemble",
+      "depth": 2,
+      "start_ms": 84225.6,
+      "duration_ms": 0.0,
+      "kind": "context",
+      "note": null
+    },
+    {
+      "name": "invoke_agent summary-agent",
+      "depth": 2,
+      "start_ms": 84225.7,
+      "duration_ms": 8436.0,
+      "kind": "agent",
+      "note": "structured answer, no tools"
+    },
+    {
+      "name": "chat gpt-oss:20b",
+      "depth": 3,
+      "start_ms": 84226.5,
+      "duration_ms": 8432.3,
+      "kind": "chat",
+      "note": "803\u2192102 tok"
+    },
+    {
+      "name": "execute_tool itsm.update_incident",
+      "depth": 2,
+      "start_ms": 92666.9,
+      "duration_ms": 16.3,
+      "kind": "tool",
+      "note": "ALLOW"
+    },
+    {
+      "name": "workflow.step complete",
+      "depth": 1,
+      "start_ms": 92685.6,
+      "duration_ms": 1.6,
+      "kind": "step",
+      "note": null
+    },
+    {
+      "name": "memory.write",
+      "depth": 2,
+      "start_ms": 92685.7,
+      "duration_ms": 0.2,
+      "kind": "memory",
+      "note": null
+    }
+  ],
+  "totals": {
+    "wall_ms": 93693,
+    "active_ms": 92688,
+    "approval_wait_ms": 1005,
+    "model_calls": 12,
+    "input_tokens": 22243,
+    "output_tokens": 1459,
+    "tool_calls": 11,
+    "retries": 0,
+    "policy": {
+      "ALLOW": 10,
+      "REQUIRE_APPROVAL": 2,
+      "DENY": 0
+    },
+    "checkpoints": 10,
+    "evals": "8/8"
+  }
+}

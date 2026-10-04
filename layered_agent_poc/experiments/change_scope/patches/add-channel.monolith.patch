@@ -1,0 +1,141 @@
+diff --color -ruN base/monolith/api.py m1/monolith/api.py
+--- a/monolith/api.py	2026-09-16 21:28:36
++++ b/monolith/api.py	2026-09-16 21:29:22
+@@ -15,43 +15,53 @@
+ from monolith.incident_agent import IncidentAgent
+ 
+ app = FastAPI(title="incident agent (monolith)")
+-AGENTS: dict[str, IncidentAgent] = {}  # one agent (and its memory) per user, in this process only
+-PENDING: dict[str, dict[str, Any]] = {}  # approvals we are waiting for, in this process only
++AGENTS: dict[str, IncidentAgent] = {}  # one agent (and its memory) per conversation, in this process only
++PENDING: dict[str, dict[str, Any]] = {}  # approvals we are waiting for, per conversation, in this process only
+ 
+ 
+ class Ask(BaseModel):
+     request: str
+ 
+ 
+-async def _api_approver_for(user: str):
++async def _api_approver_for(conversation: str):
+     async def approver(tool: str, args: dict[str, Any]) -> bool:
+-        # The HTTP caller cannot answer a prompt, so we park the question and wait (up to 10 minutes).
++        # The caller cannot answer a prompt, so we park the question and wait (up to 10 minutes).
+         event = asyncio.Event()
+-        PENDING[user] = {"tool": tool, "args": args, "event": event, "approved": False}
++        PENDING[conversation] = {"tool": tool, "args": args, "event": event, "approved": False}
+         try:
+             await asyncio.wait_for(event.wait(), timeout=600)
+         except TimeoutError:
+             return False
+-        return PENDING.pop(user)["approved"]
++        return PENDING.pop(conversation)["approved"]
+     return approver
+ 
+ 
+-@app.post("/investigate")
+-async def investigate(body: Ask, x_user_id: str = Header(...)) -> dict[str, Any]:
+-    agent = AGENTS.get(x_user_id)
++async def agent_for(conversation: str, user: str, output: str = "markdown") -> IncidentAgent:
++    agent = AGENTS.get(conversation)
+     if agent is None:
+-        agent = IncidentAgent(approver=await _api_approver_for(x_user_id), user=x_user_id)
++        agent = IncidentAgent(approver=await _api_approver_for(conversation), user=user, output=output)
+         await agent.connect()
+-        AGENTS[x_user_id] = agent
++        AGENTS[conversation] = agent
++    return agent
++
++
++@app.post("/investigate")
++async def investigate(body: Ask, x_user_id: str = Header(...)) -> dict[str, Any]:
++    agent = await agent_for(f"rest:{x_user_id}", x_user_id)
+     answer = await agent.run(body.request)
+     return {"answer": answer, "tokens": agent.token_count, "format": "markdown"}
+ 
+ 
+ @app.post("/approve")
+ async def approve(x_user_id: str = Header(...), yes: bool = True) -> dict[str, Any]:
+-    pending = PENDING.get(x_user_id)
++    pending = PENDING.get(f"rest:{x_user_id}")
+     if not pending:
+         return {"error": "nothing to approve"}
+     pending["approved"] = yes
+     pending["event"].set()
+     return {"ok": True}
++
++
++from monolith.teams import router as teams_router  # noqa: E402
++
++app.include_router(teams_router)
+diff --color -ruN base/monolith/incident_agent.py m1/monolith/incident_agent.py
+--- a/monolith/incident_agent.py	2026-09-16 21:28:36
++++ b/monolith/incident_agent.py	2026-09-16 21:29:22
+@@ -35,6 +35,11 @@
+ - Update the incident with the cause, the action and the verification at the end.
+ Be concise."""
+ 
++OUTPUT_STYLE = {
++    "markdown": "Format the final answer as Markdown.",
++    "teams": "Format the final answer as short plain-text lines (no Markdown tables or headings); it is shown in a Teams card.",
++}
++
+ log = logging.getLogger("incident_agent")
+ 
+ Approver = Callable[[str, dict[str, Any]], Awaitable[bool]]
+@@ -46,8 +51,10 @@
+ 
+ 
+ class IncidentAgent:
+-    def __init__(self, model: str = MODEL, approver: Approver = ask_on_terminal, user: str = "alice"):
++    def __init__(self, model: str = MODEL, approver: Approver = ask_on_terminal, user: str = "alice",
++                 output: str = "markdown"):
+         self.model = model
++        self.output = output
+         self.approver = approver
+         self.user = user
+         self.history: list[dict[str, Any]] = []  # our "memory"
+@@ -107,7 +114,7 @@
+     # -- the loop ------------------------------------------------------------------------------------
+     async def run(self, request: str, max_turns: int = 20) -> str:
+         self.history.append({"role": "user", "content": f"[{self.user}] {request}"})
+-        messages = [{"role": "system", "content": SYSTEM_PROMPT}] + self.history
++        messages = [{"role": "system", "content": SYSTEM_PROMPT + "\n" + OUTPUT_STYLE[self.output]}] + self.history
+         for _ in range(max_turns):
+             msg = await self.chat(messages)
+             calls = msg.get("tool_calls") or []
+diff --color -ruN base/monolith/teams.py m1/monolith/teams.py
+--- a/monolith/teams.py	1970-01-01 05:30:00
++++ b/monolith/teams.py	2026-09-16 21:29:22
+@@ -0,0 +1,32 @@
++"""Teams channel for the monolith. Teams cannot wait on a blocking prompt, so approvals go through card actions."""
++
++from __future__ import annotations
++
++import re
++from typing import Any
++
++from fastapi import APIRouter, Request
++
++from monolith.api import AGENTS, PENDING, agent_for
++
++router = APIRouter()
++
++
++@router.post("/teams/messages")
++async def messages(request: Request) -> dict[str, Any]:
++    activity = await request.json()
++    conversation = activity.get("conversation", {}).get("id", "default")
++    user = activity.get("from", {}).get("name", "unknown")
++    if activity.get("type") == "invoke":
++        pending = PENDING.get(conversation)
++        if not pending:
++            return {"type": "message", "text": "Nothing to approve."}
++        pending["approved"] = activity.get("value", {}).get("action") == "approve"
++        pending["event"].set()
++        return {"type": "message", "text": f"{user}: decision recorded."}
++    if not re.search(r"\bINC-\d+\b", activity.get("text", "")):
++        return {"type": "message", "text": "Mention an incident id, e.g. INC-4917."}
++    agent = await agent_for(conversation, user, output="teams")
++    answer = await agent.run(activity["text"])
++    return {"type": "message", "attachments": [{"contentType": "application/vnd.microsoft.card.adaptive",
++            "content": {"type": "AdaptiveCard", "version": "1.5", "body": [{"type": "TextBlock", "wrap": True, "text": answer}]}}]}

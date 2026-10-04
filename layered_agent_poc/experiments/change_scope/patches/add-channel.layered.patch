@@ -1,0 +1,91 @@
+diff --color -ruN base/agent_platform/channels/rest.py l1/agent_platform/channels/rest.py
+--- a/agent_platform/channels/rest.py	2026-09-16 21:28:36
++++ b/agent_platform/channels/rest.py	2026-09-16 21:28:36
+@@ -16,6 +16,7 @@
+ from pydantic import BaseModel
+ 
+ from agent_platform.channels.chat_webhook import router as chat_router
++from agent_platform.channels.teams_webhook import router as teams_router
+ from agent_platform.contracts import ApprovalDecision, StartInvestigation
+ from agent_platform.service import Forbidden, PlatformService
+ 
+@@ -106,6 +107,7 @@
+         return {"ok": True, "pid": os.getpid(), "tools": len(svc().pool.tools)}
+ 
+     app.include_router(chat_router, prefix="/v1/chat")
++    app.include_router(teams_router, prefix="/v1/teams")
+     return app
+ 
+ 
+diff --color -ruN base/agent_platform/channels/teams_webhook.py l1/agent_platform/channels/teams_webhook.py
+--- a/agent_platform/channels/teams_webhook.py	1970-01-01 05:30:00
++++ b/agent_platform/channels/teams_webhook.py	2026-09-16 21:28:36
+@@ -0,0 +1,56 @@
++"""Teams channel: Bot Framework-shaped activities (simulated). Renders replies as Adaptive Cards."""
++
++from __future__ import annotations
++
++import re
++from typing import Any
++
++from fastapi import APIRouter, HTTPException, Request
++
++from agent_platform.contracts import ApprovalDecision, StartInvestigation
++from agent_platform.identity.principals import resolve_chat_user
++from agent_platform.service import Forbidden
++
++router = APIRouter()
++INCIDENT = re.compile(r"\bINC-\d+\b")
++
++
++def card(view: dict[str, Any]) -> dict[str, Any]:
++    body: list[dict[str, Any]] = [{"type": "TextBlock", "weight": "Bolder",
++                                   "text": f"{view['incident_id']} · {view['workflow_id']} · {view['status']}"}]
++    actions = []
++    a = view.get("approval")
++    if a and a["status"] == "PENDING":
++        body.append({"type": "TextBlock", "wrap": True, "text": f"Approval needed: {a['tool_id']} {a['arguments']}"})
++        actions = [{"type": "Action.Submit", "title": t, "data": {"action": t.lower(), "workflow_id": view["workflow_id"]}}
++                   for t in ("Approve", "Reject")]
++    return {"type": "AdaptiveCard", "version": "1.5", "body": body, "actions": actions}
++
++
++@router.post("/messages")
++async def messages(request: Request) -> dict[str, Any]:
++    activity = await request.json()
++    svc = request.app.state.svc
++    try:
++        user = resolve_chat_user(activity.get("from", {}).get("aadObjectId", ""))
++    except Forbidden as exc:
++        raise HTTPException(403, str(exc)) from exc
++    from agent_platform.channels.rest import background
++
++    if activity.get("type") == "invoke":
++        value = activity.get("value", {})
++        cmd = ApprovalDecision(workflow_id=value["workflow_id"], approver_id=user.user_id, approve=value["action"] == "approve")
++        try:
++            svc.check_approver(cmd)
++        except (Forbidden, ValueError) as exc:
++            return {"type": "message", "text": f"Not done: {exc}"}
++        background(request.app, svc.decide_approval(cmd))
++        return {"type": "message", "text": f"{user.display_name}: {value['action']} recorded."}
++    match = INCIDENT.search(activity.get("text", ""))
++    if not match:
++        return {"type": "message", "text": "Mention an incident id, e.g. INC-4917."}
++    wf_id, run = svc.submit(StartInvestigation(incident_id=match.group(0), request=activity["text"], user_id=user.user_id,
++                                               channel="teams", session_id=f"teams-{activity.get('conversation', {}).get('id')}"))
++    background(request.app, run)
++    return {"type": "message", "attachments": [{"contentType": "application/vnd.microsoft.card.adaptive",
++                                                "content": card(svc.workflow(wf_id))}]}
+diff --color -ruN base/config/principals.yaml l1/config/principals.yaml
+--- a/config/principals.yaml	2026-09-16 21:28:36
++++ b/config/principals.yaml	2026-09-16 21:28:36
+@@ -6,6 +6,8 @@
+ chat_users:
+   U04ALICE: alice
+   U04BOB: bob
++  8f2c1a7e-alice-aad: alice
++  1b9d4e02-bob-aad: bob
+ agent:
+   id: agent:incident-remediation
+   scopes: [incidents:read, incidents:write, deploys:read, telemetry:read, releases:rollback]

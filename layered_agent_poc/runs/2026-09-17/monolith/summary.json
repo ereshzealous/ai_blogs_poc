@@ -1,0 +1,123 @@
+{
+  "runs": [
+    {
+      "seconds": 45.0,
+      "tokens": 16557,
+      "world": {
+        "rollback_executions": 1,
+        "rollback_targets": [
+          "v4.16"
+        ],
+        "kubernetes_rollbacks": 0,
+        "incident_updates": 1,
+        "final_version": "v4.16",
+        "incident_active": false,
+        "authoritative_rollback": true,
+        "write_exactly_once": true,
+        "verified_before_update": true,
+        "tool_calls": 7
+      },
+      "approvals_asked": [
+        {
+          "tool": "source_control__rollback_release",
+          "args": {
+            "environment": "production",
+            "service": "checkout-api",
+            "target_version": "v4.16",
+            "reason": "Rollback due to latency spike after deployment"
+          }
+        }
+      ]
+    },
+    {
+      "seconds": 47.0,
+      "tokens": 16557,
+      "world": {
+        "rollback_executions": 1,
+        "rollback_targets": [
+          "v4.16"
+        ],
+        "kubernetes_rollbacks": 0,
+        "incident_updates": 1,
+        "final_version": "v4.16",
+        "incident_active": false,
+        "authoritative_rollback": true,
+        "write_exactly_once": true,
+        "verified_before_update": true,
+        "tool_calls": 7
+      },
+      "approvals_asked": [
+        {
+          "tool": "source_control__rollback_release",
+          "args": {
+            "environment": "production",
+            "service": "checkout-api",
+            "target_version": "v4.16",
+            "reason": "Rollback due to latency spike after deployment"
+          }
+        }
+      ]
+    },
+    {
+      "seconds": 31.2,
+      "tokens": 13707,
+      "world": {
+        "rollback_executions": 1,
+        "rollback_targets": [
+          "v4.16"
+        ],
+        "kubernetes_rollbacks": 0,
+        "incident_updates": 1,
+        "final_version": "v4.16",
+        "incident_active": false,
+        "authoritative_rollback": true,
+        "write_exactly_once": true,
+        "verified_before_update": false,
+        "tool_calls": 6
+      },
+      "approvals_asked": [
+        {
+          "tool": "source_control__rollback_release",
+          "args": {
+            "environment": "production",
+            "service": "checkout-api",
+            "target_version": "v4.16",
+            "reason": "Rollback due to connection pool exhaustion"
+          }
+        }
+      ]
+    }
+  ],
+  "lost_response": {
+    "seconds": 52.1,
+    "tokens": 16557,
+    "world": {
+      "rollback_executions": 2,
+      "rollback_targets": [
+        "v4.16",
+        "v4.16"
+      ],
+      "kubernetes_rollbacks": 0,
+      "incident_updates": 1,
+      "final_version": "v4.16",
+      "incident_active": false,
+      "authoritative_rollback": true,
+      "write_exactly_once": false,
+      "verified_before_update": true,
+      "tool_calls": 8
+    }
+  },
+  "crash": {
+    "seconds_until_approval_prompt": 22.5,
+    "returncode": -9,
+    "state_left_behind": [],
+    "resume_command": null,
+    "note": "The monolith keeps the conversation in memory; after SIGKILL a restart starts the investigation over."
+  },
+  "outcomes": {
+    "authoritative_rollback": 3,
+    "write_exactly_once": 3,
+    "verified_before_update": 2
+  },
+  "kubernetes_rollbacks": 0
+}

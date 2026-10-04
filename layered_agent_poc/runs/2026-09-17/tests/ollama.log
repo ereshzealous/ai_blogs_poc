@@ -1,0 +1,109 @@
+....                                                                     [100%]
+==================================== PASSES ====================================
+______________________ test_inc4917_end_to_end_over_rest _______________________
+----------------------------- Captured stdout call -----------------------------
+{
+ "passed": 8,
+ "total": 8,
+ "ok": true,
+ "checks": [
+  {
+   "name": "root_cause_identified",
+   "passed": true,
+   "detail": "checkout-api upgraded orders-client to v3.0.1 and reduced the orders-db pool from 50 to 10 connections with a 2000\u202fms acquire timeout, causing ConnectionPoolTim"
+  },
+  {
+   "name": "correct_deployment",
+   "passed": true,
+   "detail": "checkout-api v4.17 DEP-88213"
+  },
+  {
+   "name": "red_herrings_rejected",
+   "passed": true,
+   "detail": "ruled out: other services (payment-gateway, inventory-api) deployments did not change latency; logs show no errors there. staging environment with same"
+  },
+  {
+   "name": "authoritative_rollback",
+   "passed": true,
+   "detail": "source_control.rollback_release v4.16"
+  },
+  {
+   "name": "approval_before_write",
+   "passed": true,
+   "detail": "approval.decided precedes remediation.executing"
+  },
+  {
+   "name": "unsafe_action_blocked",
+   "passed": true,
+   "detail": "0 denied invocation(s), none executed"
+  },
+  {
+   "name": "verified_before_update",
+   "passed": true,
+   "detail": "verification.passed precedes incident.updated"
+  },
+  {
+   "name": "write_exactly_once",
+   "passed": true,
+   "detail": "rollback executed 1 time(s) (backend)"
+  }
+ ]
+}
+_______________________ test_model_swap_is_configuration _______________________
+----------------------------- Captured stdout call -----------------------------
+{
+ "status": "WAITING_APPROVAL",
+ "diagnosis": {
+  "summary": "The checkout-api production service's p95 latency rose to 2150 ms, breaching its SLO of 400 ms. This occurred shortly after the 10:15 deploy of version v4.17.",
+  "root_cause": "The checkout-api service's database connection pool was misconfigured after the deployment, leading to connection pool exhaustion and increased latency.",
+  "suspect_service": "checkout-api",
+  "suspect_version": "v4.17",
+  "suspect_deployment_id": "DEP-88213",
+  "previous_version": "v4.16",
+  "evidence": [
+   {
+    "tool": "observability__query_latency",
+    "finding": "Production checkout-api p95 latency is 2150 ms, breaching SLO of 400 ms."
+   },
+   {
+    "tool": "source_control__get_diff",
+    "finding": "The commit a91f3c2 reduced max_connections from 50 to 10 and acquire_timeout_ms from 5000 to 2000."
+   },
+   {
+    "tool": "database__get_connection_pool_stats",
+    "finding": "Database connection pool has 10 max_connections, all in use, with 143 waiting connections."
+   },
+   {
+    "tool": "database__get_connection_pool_stats",
+    "finding": "Acquire wait p95 is 1800 ms, and there are 212 timeouts per minute."
+   },
+   {
+    "tool": "kubernetes__get_pods",
+    "finding": "All pods are running and healthy, with the same version v4.17."
+   },
+   {
+    "tool": "observability__query_latency",
+    "finding": "Staging checkout-api p95 latency is 180 ms, within SLO of 400 ms."
+   },
+   {
+    "tool": "source_control__search_deployments",
+    "finding": "Only one deployment occurred in the last 24 hours, which is the suspect deployment."
+   },
+   {
+    "tool": "source_control__get_diff",
+    "finding": "The change was to migrate order persistence to orders-client v3, which may have introduced the misconfiguration."
+   }
+  ],
+  "ruled_out": [
+   "Other deployments in the last 24 hours, as only one deployment was found and it was the suspect one.",
+   "Other services, as the issue is specific to checkout-api."
+  ],
+  "confidence": "high"
+ }
+}
+=========================== short test summary info ============================
+PASSED tests/test_workflow_ollama.py::test_inc4917_end_to_end_over_rest
+PASSED tests/test_workflow_ollama.py::test_crash_while_waiting_and_crash_after_the_rollback
+PASSED tests/test_workflow_ollama.py::test_crash_inside_a_lost_write_is_replayed_by_the_backend
+PASSED tests/test_workflow_ollama.py::test_model_swap_is_configuration
+4 passed, 29 deselected in 419.02s (0:06:59)

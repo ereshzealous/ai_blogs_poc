@@ -1,0 +1,30 @@
+{
+  "seconds": 24.7,
+  "tokens": 14614,
+  "answer": "**Incident\u202fINC\u20114917 \u2013 Checkout API latency elevated**\n\n| Step | Action |\n|------|--------|\n| 1 | Reviewed production deployments \u2192 v4.17 deployed at\u202f10:15. |\n| 2 | Latency metrics show p95 jumped from 200\u202fms to ~2150\u202fms after the deploy. |\n| 3 | Diff of commit `a91f3c2` reveals a migration to **orders\u2011client v3** that reduced DB pool size (max_connections:\u202f10, acquire_timeout_ms:\u202f2000). |\n| 4 | The new pool limits caused frequent connection timeouts and high latency. |\n| 5 | Rolled back the service to **v4.16** via GitOps release pipeline (`source_control__rollback_release`). |\n| 6 | Post\u2011roll",
+  "approvals_asked": [
+    {
+      "tool": "source_control__rollback_release",
+      "args": {
+        "environment": "production",
+        "service": "checkout-api",
+        "target_version": "v4.16",
+        "reason": "Rollback due to high latency after migration"
+      }
+    }
+  ],
+  "world": {
+    "rollback_executions": 1,
+    "rollback_targets": [
+      "v4.16"
+    ],
+    "kubernetes_rollbacks": 0,
+    "incident_updates": 1,
+    "final_version": "v4.16",
+    "incident_active": false,
+    "authoritative_rollback": true,
+    "write_exactly_once": true,
+    "verified_before_update": true,
+    "tool_calls": 7
+  }
+}

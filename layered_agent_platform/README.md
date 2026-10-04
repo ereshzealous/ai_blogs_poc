@@ -13,6 +13,8 @@ Then the POC changes requirements, kills processes and loses network responses, 
 
 It is the companion to the article **"Your Agent Works in a Demo. Why Does It Break in Production?"**, Part 2 of the series that began with [MCP tool sprawl](../mcp_sprawl_poc). Everything runs on one laptop with local models. The MCP protocol, the models, the database and the process kills are real; the enterprise systems are simulated.
 
+**Who builds on it.** This folder is kept as a library for other POCs. `memory_context_state_poc` (not yet published) builds against its `agent_platform` package. `headless_ai_poc` did until its 2026-10-05 release, when the rebuilt F3 POC replaced it; that POC is self-contained and has no dependency on this folder, and the first version, which did, is kept at the tag `headless_ai_poc-2026-09-17`. A change to the `agent_platform` service facade, its commands or its configuration still has to be announced to the maintainers of the dependents ([PUBLISHING.md](../PUBLISHING.md), rule 9).
+
 **In this README:**
 
 1. [Why this exists](#why-this-exists)

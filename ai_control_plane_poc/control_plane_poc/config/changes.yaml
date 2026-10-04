@@ -1,0 +1,59 @@
+# T4 · the central changes the experiments publish, one at a time, through the control plane's publish API.
+#
+# Each change is a reviewed, attributable patch to the desired state: `set` a value at a dotted path. Publishing one
+# produces a new immutable, signed bundle version. No change here touches acp/agents/: that is the point.
+
+restart-requires-approval:
+  reason: "Production restarts now need an incident commander (post-incident review INC-4471)"
+  author: platform.admin
+  second_approver: sre.lead
+  set:
+    agents.incident-agent.tools.restart_service:
+      - { when: { environment: staging }, effect: allow }
+      - { when: { environment: production }, effect: approval_required }
+
+suspend-incident-agent:
+  reason: "Suspected prompt-injection in incident-agent; stop it while we investigate"
+  author: oncall.ic
+  emergency: true
+  set:
+    agents.incident-agent.status: suspended
+
+restore-incident-agent:
+  reason: "Investigation closed; restore incident-agent"
+  author: oncall.ic
+  set:
+    agents.incident-agent.status: active
+
+support-tool-call-budget:
+  reason: "Cap support-agent tool calls per run while a refund loop is investigated"
+  author: support.lead
+  set:
+    agents.support-agent.limits.max_tool_calls: 2
+
+support-daily-budget-exhausted:
+  reason: "Support team's daily AI budget reduced to what is already spent"
+  author: support.lead
+  set:
+    agents.support-agent.limits.daily_budget: 0.001
+
+revoke-observability-mcp:
+  reason: "observability-mcp 2.3.1 advisory: disable the server for every agent until patched"
+  author: platform.admin
+  emergency: true
+  set:
+    mcp_servers.observability-mcp.status: disabled
+
+migrate-default-model:
+  reason: "Move the standard profile's default from fast-model to large-model"
+  author: platform.admin
+  second_approver: ml.lead
+  set:
+    models.profiles.standard.default: large-model
+
+withdraw-private-model:
+  reason: "private-model endpoint failed its residency audit; withdraw it"
+  author: platform.admin
+  emergency: true
+  set:
+    models.catalog.private-model.status: disabled

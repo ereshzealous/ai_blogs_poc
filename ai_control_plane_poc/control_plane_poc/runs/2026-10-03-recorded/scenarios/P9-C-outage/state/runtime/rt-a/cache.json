@@ -1,0 +1,260 @@
+{
+ "bundle": {
+  "change": {
+   "author": "oncall.ic",
+   "emergency": true,
+   "id": "suspend-incident-agent",
+   "kind": "restricting",
+   "reason": "Suspected prompt-injection in incident-agent; stop it while we investigate",
+   "second_approver": null,
+   "set": {
+    "agents.incident-agent.status": "suspended"
+   }
+  },
+  "desired_state": {
+   "agents": {
+    "finance-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/finance-agent",
+     "limits": {
+      "daily_budget": 50.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "finance-eng",
+     "purpose": "Reconcile the ledger and flag anomalies",
+     "risk_level": "medium",
+     "status": "active",
+     "team": "finance",
+     "tools": {
+      "flag_transaction": "allow",
+      "read_ledger": "allow"
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    },
+    "incident-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/incident-agent",
+     "limits": {
+      "daily_budget": 100.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "sre-team",
+     "purpose": "Investigate production incidents and remediate them",
+     "risk_level": "high",
+     "status": "suspended",
+     "team": "sre",
+     "tools": {
+      "delete_resource": "deny",
+      "query_logs": "allow",
+      "query_metrics": "allow",
+      "restart_service": [
+       {
+        "effect": "allow",
+        "when": {
+         "environment": "staging"
+        }
+       },
+       {
+        "effect": "allow",
+        "when": {
+         "environment": "production"
+        }
+       }
+      ]
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    },
+    "support-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/support-agent",
+     "limits": {
+      "daily_budget": 50.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "support-platform",
+     "purpose": "Resolve customer cases, including refunds",
+     "risk_level": "medium",
+     "status": "active",
+     "team": "support",
+     "tools": {
+      "query_logs": "allow",
+      "read_case": "allow",
+      "refund_customer": [
+       {
+        "effect": "allow",
+        "when": {
+         "amount_lte": 100
+        }
+       },
+       {
+        "effect": "approval_required",
+        "when": {
+         "amount_gt": 100
+        }
+       }
+      ]
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    }
+   },
+   "approvals": {
+    "refund_customer": {
+     "approvers": [
+      "finance.lead"
+     ],
+     "expires_in_ticks": 240
+    },
+    "restart_service": {
+     "approvers": [
+      "ic.dev",
+      "ic.ana"
+     ],
+     "expires_in_ticks": 60
+    }
+   },
+   "emergency": {
+    "deny_all_mutations": false
+   },
+   "failure_policy": {
+    "max_staleness_ticks": 30,
+    "unreachable": {
+     "credential": "deny",
+     "mutation": "fail_closed",
+     "read": "last_known_good"
+    }
+   },
+   "mcp_servers": {
+    "billing-mcp": {
+     "status": "enabled",
+     "trust": "internal",
+     "version": "3.1.0"
+    },
+    "deploy-mcp": {
+     "status": "enabled",
+     "trust": "internal",
+     "version": "1.9.0"
+    },
+    "observability-mcp": {
+     "status": "enabled",
+     "trust": "internal",
+     "version": "2.3.1"
+    },
+    "support-mcp": {
+     "status": "enabled",
+     "trust": "internal",
+     "version": "4.0.2"
+    }
+   },
+   "models": {
+    "catalog": {
+     "fast-model": {
+      "data_classes": [
+       "public",
+       "internal"
+      ],
+      "residency": "us",
+      "status": "active",
+      "usd_per_1k_tokens": 0.2
+     },
+     "large-model": {
+      "data_classes": [
+       "public",
+       "internal"
+      ],
+      "residency": "us",
+      "status": "active",
+      "usd_per_1k_tokens": 1.5
+     },
+     "legacy-model": {
+      "data_classes": [
+       "public"
+      ],
+      "residency": "us",
+      "status": "deprecated",
+      "usd_per_1k_tokens": 0.1
+     },
+     "private-model": {
+      "data_classes": [
+       "public",
+       "internal",
+       "confidential"
+      ],
+      "residency": "eu-private",
+      "status": "active",
+      "usd_per_1k_tokens": 0.8
+     }
+    },
+    "profiles": {
+     "standard": {
+      "confidential": "private-model",
+      "default": "fast-model",
+      "fallback": [
+       "large-model"
+      ]
+     }
+    }
+   },
+   "tools": {
+    "delete_resource": {
+     "credential": "secret://deploy/admin",
+     "mutation": true,
+     "risk": "critical",
+     "server": "deploy-mcp"
+    },
+    "flag_transaction": {
+     "credential": "secret://billing/flag",
+     "mutation": true,
+     "risk": "low",
+     "server": "billing-mcp"
+    },
+    "query_logs": {
+     "credential": "secret://observability/read",
+     "mutation": false,
+     "risk": "low",
+     "server": "observability-mcp"
+    },
+    "query_metrics": {
+     "credential": "secret://observability/read",
+     "mutation": false,
+     "risk": "low",
+     "server": "observability-mcp"
+    },
+    "read_case": {
+     "credential": "secret://support/read",
+     "mutation": false,
+     "risk": "low",
+     "server": "support-mcp"
+    },
+    "read_ledger": {
+     "credential": "secret://billing/read",
+     "mutation": false,
+     "risk": "low",
+     "server": "billing-mcp"
+    },
+    "refund_customer": {
+     "credential": "secret://billing/refund",
+     "mutation": true,
+     "risk": "high",
+     "server": "billing-mcp"
+    },
+    "restart_service": {
+     "credential": "secret://deploy/restart",
+     "mutation": true,
+     "risk": "high",
+     "server": "deploy-mcp"
+    }
+   }
+  },
+  "parent": "v1",
+  "published_tick": 25,
+  "version": "v2"
+ },
+ "synced_tick": 70,
+ "version": "v2"
+}

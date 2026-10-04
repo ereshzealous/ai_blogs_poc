@@ -1,0 +1,91 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "restart_service decided under v1",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  },
+  {
+   "check": "restart_service executed (decision allow)",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  },
+  {
+   "check": "deploy system of record shows exactly 1 restart",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  },
+  {
+   "check": "audit event names the config version and the rule",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  },
+  {
+   "check": "the system saw a short-lived, tool-scoped credential, not a static secret",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  },
+  {
+   "check": "agent code unchanged, one runtime process",
+   "experiment": "P1",
+   "passed": true,
+   "scenario": "P1-C-baseline"
+  }
+ ],
+ "expected": "ALLOW, executed once, attributed to v1",
+ "experiment": "P1",
+ "id": "P1-C-baseline",
+ "input": {
+  "agent": "incident-agent",
+  "config": "v1",
+  "task": {
+   "environment": "production",
+   "service": "payment-service"
+  }
+ },
+ "measures": [
+  [
+   "config_version",
+   "v1"
+  ],
+  [
+   "decision",
+   "ALLOW"
+  ],
+  [
+   "restarts",
+   1
+  ],
+  [
+   "rule",
+   "agents.incident-agent.tools.restart_service[1]"
+  ]
+ ],
+ "observed": "executed under v1; restarts=1",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P1 — BASELINE: THE CONTROL PLANE ALLOWS                                        │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agent              incident-agent                                              │\n│ Agent code         sha256 677bca2acd66…                                        │\n│ Request            restart_service payment-service production                  │\n│ Policy version     v1                                                          │\n│ Rule               agents.incident-agent.tools.restart_service[1]              │\n│ Decision           ALLOW                                                       │\n│ Executed           YES · 1 restart in the deploy system                        │\n│ Credential         minted for restart_service only, 5-tick TTL                 │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ restart_service decided under v1\n  ✓ restart_service executed (decision allow)\n  ✓ deploy system of record shows exactly 1 restart\n  ✓ audit event names the config version and the rule\n  ✓ the system saw a short-lived, tool-scoped credential, not a static secret\n  ✓ agent code unchanged, one runtime process\n\n  PROOF P1: PASS\n  Test assertions: 6/6 passed",
+ "question": "Under v1, does the incident agent's production restart run, and is it attributed to v1?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v1",
+   "tick": 0,
+   "what": "bootstrap desired state"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "executed under v1",
+   "tick": 10,
+   "what": "restart_service payment-service production"
+  }
+ ],
+ "use_case": "incident-agent restarts payment-service in production under v1",
+ "variant": "C",
+ "where": null
+}

@@ -1,0 +1,328 @@
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P1 — BASELINE: THE CONTROL PLANE ALLOWS                                        │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              incident-agent                                              │
+│ Agent code         sha256 677bca2acd66…                                        │
+│ Request            restart_service payment-service production                  │
+│ Policy version     v1                                                          │
+│ Rule               agents.incident-agent.tools.restart_service[1]              │
+│ Decision           ALLOW                                                       │
+│ Executed           YES · 1 restart in the deploy system                        │
+│ Credential         minted for restart_service only, 5-tick TTL                 │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ restart_service decided under v1
+  ✓ restart_service executed (decision allow)
+  ✓ deploy system of record shows exactly 1 restart
+  ✓ audit event names the config version and the rule
+  ✓ the system saw a short-lived, tool-scoped credential, not a static secret
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P1: PASS  (6/6 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P2 — CENTRAL POLICY CHANGE                                                     │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              incident-agent                                              │
+│ Agent code         sha256 677bca2acd66…  UNCHANGED                             │
+│ Runtime process    started once · SAME process for both requests               │
+│ Request            restart_service payment-service production (identical)      │
+│ Before             v1 → ALLOW → executed                                       │
+│ Central change     v2 · restart-requires-approval · platform.admin             │
+│ After              v2 → APPROVAL_REQUIRED → NOT executed                       │
+│ Approval           approval-001 (pending)                                      │
+│ Files changed      acp/: 0 · control plane store: 4                            │
+│ Audit              action.executed (v1) → approval.requested (v2)              │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ same request: both runs sent an identical agent + task (digest compared)
+  ✓ same runtime process served both requests (never restarted)
+  ✓ agent code sha256 identical before and after the change
+  ✓ files changed under acp/ by the policy change: 0
+  ✓ control plane store changed (new bundle, signature, pointer, changelog)
+  ✓ before: v1 ALLOW, executed
+  ✓ after: v2 APPROVAL_REQUIRED, not executed
+  ✓ deploy system still shows 1 restart (the side effect did not happen)
+  ✓ approval request emitted and pending
+
+  PROOF P2: PASS  (9/9 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P3 — APPROVAL, THEN EXACTLY ONE EXECUTION                                      │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              incident-agent                                              │
+│ Policy version     v2 (restart requires approval)                              │
+│ Held action        approval-001 · restart_service payment-service production   │
+│ Before approval    resume → APPROVAL_PENDING · restarts 0                      │
+│ incident-agent     approve → an agent cannot approve its own action            │
+│ support.lead       approve → support.lead is not an eligible approver for      │
+│                    restart_service                                             │
+│ ic.dev             approve → approved                                          │
+│ Resume             APPROVED_AND_EXECUTED · restarts 1                          │
+│ Resume again       ALREADY_EXECUTED · restarts still 1                         │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ held action not executed before approval (resume refused, 0 restarts)
+  ✓ the agent cannot approve its own action
+  ✓ an ineligible principal cannot approve
+  ✓ the eligible incident commander's approval is accepted
+  ✓ resume after approval executes under the current policy
+  ✓ a second resume does not execute again (ALREADY_EXECUTED)
+  ✓ deploy system shows exactly 1 restart
+  ✓ the executed event carries the approval id
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P3: PASS  (9/9 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P4 — SUSPEND: THE KILL SWITCH                                                  │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              incident-agent · status active → suspended                  │
+│ Central change     v2 · suspend-incident-agent · oncall.ic (break-glass)       │
+│ Run in flight      run-001 paused after query_logs; 2 later calls → 0 executed │
+│ New run            run-002 → DENIED AGENT_SUSPENDED · 0 tool calls · 0 model   │
+│                    calls                                                       │
+│ Other agents       support-agent run-003 → every call executed                 │
+│ Restore alone      oncall.ic → REJECTED (widening needs a second approver)     │
+│ Restore            v3 · oncall.ic + sre.lead → run-004 executes                │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ in-flight run: every call after the suspension was denied (0 executed)
+  ✓ in-flight run: denial reason is AGENT_SUSPENDED under the new version
+  ✓ new run denied at start: 0 tool calls, 0 model calls
+  ✓ no production restart happened
+  ✓ support-agent unaffected (every call executed)
+  ✓ restoring needs a second person: oncall.ic alone rejected
+  ✓ restore with sre.lead as second approver works at the next run
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P4: PASS  (8/8 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P5 — BUDGETS AND QUOTAS                                                        │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              support-agent                                               │
+│ Central change     v2 · max_tool_calls = 2 · support.lead                      │
+│ CALL 1             read_case → EXECUTED                                        │
+│ CALL 2             query_logs → EXECUTED                                       │
+│ CALL 3             refund_customer → DENY · TOOL_CALL_BUDGET_EXCEEDED          │
+│ Refunds            1 (from run-001, before the quota)                          │
+│ Central change     v3 · daily budget below today's spend ($0.7104)             │
+│ Next run           run-003 → DENIED DAILY_BUDGET_EXHAUSTED                     │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ before the quota: 3 tool calls executed, 1 refund
+  ✓ call 1 ALLOW, call 2 ALLOW
+  ✓ call 3 DENY TOOL_CALL_BUDGET_EXCEEDED
+  ✓ billing system shows 1 refund (the capped run refunded nothing)
+  ✓ exhausted daily budget: next run denied at start
+  ✓ the budget is metered centrally (shared spend meter), not per process
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P5: PASS  (7/7 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P6 — REVOKE ONE MCP SERVER FOR EVERY AGENT                                     │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Shared tool        query_logs (observability-mcp)                              │
+│ Before             incident-agent → ALLOW · support-agent → ALLOW              │
+│ Central change     v2 · observability-mcp = disabled · platform.admin (break-  │
+│                    glass)                                                      │
+│ After              incident-agent → DENY · support-agent → DENY                │
+│                    (MCP_SERVER_DISABLED)                                       │
+│ Unaffected         finance-agent → every call executed                         │
+│ observability-mcp  3 calls before · 0 after                                    │
+│ Agent code         UNCHANGED · 0 files edited · 0 redeploys                    │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ before: incident-agent query_logs ALLOW
+  ✓ before: support-agent query_logs ALLOW
+  ✓ after: incident-agent query_logs DENY MCP_SERVER_DISABLED
+  ✓ after: support-agent query_logs DENY MCP_SERVER_DISABLED
+  ✓ observability-mcp received 0 calls after the revocation
+  ✓ finance-agent (no observability tools) unaffected
+  ✓ one central change, 0 agent files changed
+
+  PROOF P6: PASS  (7/7 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P7 — MODEL GOVERNANCE                                                          │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agents             incident-agent (internal data) · support-agent              │
+│                    (confidential case)                                         │
+│ Agent code         names no model: 0 catalog names in acp/agents/              │
+│ v1                 incident → fast-model · support → private-model             │
+│ Central change     v2 · default model → large-model (platform.admin + ml.lead) │
+│ v2                 incident → large-model · support → private-model            │
+│ Central change     v3 · private-model withdrawn (break-glass)                  │
+│ v3                 incident → large-model · support → DENIED (no fallback to a │
+│                    public model)                                               │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ agent source names no model (0 catalog names in acp/agents/)
+  ✓ v1: incident-agent served by fast-model
+  ✓ v2: incident-agent served by large-model, agent unchanged
+  ✓ confidential data always served by private-model while it is allowed
+  ✓ v3: private-model withdrawn → confidential call DENIED, no fallback to a
+    public model
+  ✓ no confidential prompt ever reached a model without confidential clearance
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P7: PASS  (7/7 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P8 — STAGED ROLLOUT AND ROLLBACK                                               │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Agent              finance-agent (20 + 20 + 10 runs)                           │
+│ Change             v2 · default model → large-model, published inactive        │
+│ Canary 25%         4 of 20 runs on v2 (large-model) · rest on v1               │
+│ Rollback           0 of 20 runs on v2                                          │
+│ Promote            10 of 10 runs on v2                                         │
+│ Agent code         UNCHANGED · no redeploy at any step                         │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ canary reached some but not all runs
+  ✓ canary membership = deterministic bucket < 25
+  ✓ every run used exactly one version, and its model matches it
+  ✓ after rollback: 0 runs on the canary version
+  ✓ after promote: every run on the new version
+  ✓ agent code unchanged, one runtime process
+
+  PROOF P8: PASS  (6/6 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P9a — CONTROL PLANE UNREACHABLE                                                │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Runtime            rt-a · last-known-good v1 cached                            │
+│ Read (query_logs)  ALLOW from last-known-good v1                               │
+│ Mutation (restart) DENY · CONTROL_PLANE_UNREACHABLE (fail closed)              │
+│ Suspension         v2 published during the partition                           │
+│ …after it          3 read/model calls still executed on v1  ← QUALIFIED        │
+│ Past staleness     DENY · POLICY_STALE for everything                          │
+│ Partition heals    next run → DENY · AGENT_SUSPENDED                           │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ reads during the outage ran on the last-known-good bundle (v1)
+  ✓ production mutation during the outage failed closed
+    (CONTROL_PLANE_UNREACHABLE)
+  ✓ deploy system: only the warm run's restart (1)
+  ✓ QUALIFIED: the suspension could not reach a partitioned runtime; reads
+    continued under v1
+  ✓ beyond max_staleness every run is denied (POLICY_STALE)
+  ✓ after recovery the suspension lands at the next enforcement point
+
+  PROOF P9a: PASS  (6/6 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P9b — TAMPERED BUNDLE IN TRANSIT                                               │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Attack             v2 altered to allow delete_resource and production restarts │
+│ Runtime            signature check FAILED → 5 config.rejected events           │
+│ Applied            v1 (last-known-good); the altered bundle never applied      │
+│ Mutation           restart_service → DENY · BUNDLE_REJECTED (fail closed)      │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ the altered bundle failed signature verification and was not applied
+  ✓ the mutation failed closed while no verified current bundle was available
+    (BUNDLE_REJECTED)
+  ✓ deploy system: no production restart, no deletion
+
+  PROOF P9b: PASS  (3/3 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P9c — CREDENTIAL BROKER DOWN                                                   │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Policy             v1 · query_logs, query_metrics ALLOW                        │
+│ Broker             unavailable                                                 │
+│ Result             every tool call → DENY · CREDENTIAL_UNAVAILABLE             │
+│ Systems            0 calls received · 0 restarts                               │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)
+  ✓ no system received a call without a credential
+  ✓ deploy system: 0 restarts
+
+  PROOF P9c: PASS  (3/3 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P10 — DESIRED VS OBSERVED STATE                                                │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Desired            v2 (restart requires approval)                              │
+│ rt-a observed      v2 → restart held for approval                              │
+│ rt-b observed      v1 → restart EXECUTED (lagging replica, no error)           │
+│ Drift              2 findings · stale_config rt-b ·                            │
+│                    executed_under_superseded_config                            │
+│ Under desired      that restart → APPROVAL_REQUIRED                            │
+│ Reconcile          replica fixed · stale instances 0                           │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ rt-a applied v2 and held the restart for approval
+  ✓ rt-b, behind the lagging replica, executed the restart under v1
+  ✓ drift detected: rt-b observed v1 while desired is v2
+  ✓ drift detected: a mutation executed under a superseded version
+  ✓ re-evaluated under the desired version, that action required approval
+  ✓ after reconcile: no instance on a stale version
+  ✓ agent code unchanged; both runtime processes never restarted
+
+  PROOF P10: PASS  (7/7 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P11a — BASELINE: GOVERNANCE INSIDE EVERY AGENT                                 │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Change             production restarts need approval                           │
+│ Edit               incident_agent.py · sha256 aae655907550… → 3a424afcaad3…    │
+│ Running process    after the edit → restart EXECUTED  ← policy not in effect   │
+│ Redeployed process restart → PENDING_APPROVAL                                  │
+│ All four changes   7 file edits · 17 lines · 7 agent redeploys                 │
+│ Credentials        8 static credential literals in agent code                  │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ before the edit the embedded agent restarts production
+  ✓ BROKEN: after the edit, the running process still restarts production (no
+    central change is possible)
+  ✓ only a redeployed process (new code hash) holds the restart
+  ✓ the embedded agents hold long-lived static credentials in code
+
+  PROOF P11a: BASELINE BROKEN (as expected)  (4/4 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P11b — THE SAME FOUR CHANGES THROUGH THE CONTROL PLANE                         │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Changes            model default · restart approval · revoke MCP · suspend     │
+│ Published          v2 … v5 · 4 signed bundle versions                          │
+│ Agent code         0 files edited · 0 redeploys · one runtime process          │
+│                    throughout                                                  │
+│ Effect             each change applied at the next enforcement point           │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ default model moved at the next run (large-model)
+  ✓ restart held for approval at the next run
+  ✓ observability tools denied at the next run
+  ✓ incident-agent denied at the next run
+  ✓ 0 agent files edited, 0 processes restarted, 4 bundle versions
+
+  PROOF P11b: PASS  (5/5 checks)
+
+╭────────────────────────────────────────────────────────────────────────────────╮
+│ P12 — GOVERNING THE CONTROL PLANE ITSELF                                       │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ incident-agent     grant itself delete_resource → REJECTED · incident-agent is │
+│                    not a control-plane administrator                           │
+│ support.lead       raise incident-agent's tool quota → REJECTED · support.lead │
+│                    has no scope over incident-agent                            │
+│ platform.admin     widen incident-agent's tools alone → REJECTED · a widening  │
+│                    change needs a second approver                              │
+│ platform.admin     platform.admin as its own second approver → REJECTED · the  │
+│                    second approver must be a different person                  │
+│ oncall.ic          raise a quota via break-glass → REJECTED · a break-glass    │
+│                    change may only restrict behaviour                          │
+│ platform.admin     a plaintext credential in the registry (with sre.lead) →    │
+│                    REJECTED · tool restart_service: credential must be a       │
+│                    secret:// reference, never a value                          │
+│ oncall.ic          suspend incident-agent (break-glass) → ACCEPTED · v2        │
+│ oncall.ic          restore incident-agent alone → REJECTED · a widening change │
+│                    needs a second approver                                     │
+│ oncall.ic          restore incident-agent with sre.lead → ACCEPTED · v3        │
+│ Change log         10 rows, hash-chained · verifies; one edited row → chain    │
+│                    broken                                                      │
+╰────────────────────────────────────────────────────────────────────────────────╯
+  ✓ an agent cannot change the control plane (not an administrator)
+  ✓ scope: a team lead cannot change another team's agent
+  ✓ two-person rule: a widening change needs a second approver
+  ✓ two-person rule: the second approver must be a different person
+  ✓ break-glass may only restrict
+  ✓ validation: a plaintext credential never becomes a version
+  ✓ break-glass suspension accepted from one on-call person
+  ✓ restoring (widening) needs a second person
+  ✓ every attempt is on the change log, accepted or rejected
+  ✓ the change log is hash-chained and verifies
+  ✓ editing one change-log row breaks the chain
+  ✓ every version is signed; no bundle contains a plaintext credential
+
+  PROOF P12: PASS  (12/12 checks)

@@ -1,0 +1,34 @@
+# T4 · P11 · the same four governance changes, made the only way the embedded baseline allows: by editing agent code.
+#
+# Each entry lists the exact edits (file, old text, new text) a team would have to make in acp/embedded/. The proof
+# applies them to a copy, counts files, lines and agents touched, and shows the change has no effect until the agent
+# process is restarted with the new code.
+
+restart-requires-approval:
+  - file: incident_agent.py
+    old: "    return False  # production restarts run straight away\n"
+    new: "    return tool == \"restart_service\" and args.get(\"environment\") == \"production\"\n"
+
+revoke-observability-mcp:
+  - file: incident_agent.py
+    old: "ALLOWED_TOOLS = {\"query_logs\", \"query_metrics\", \"restart_service\"}\n"
+    new: "ALLOWED_TOOLS = {\"restart_service\"}  # observability-mcp advisory: removed query_logs, query_metrics\n"
+  - file: support_agent.py
+    old: "ALLOWED_TOOLS = {\"read_case\", \"query_logs\", \"refund_customer\"}\n"
+    new: "ALLOWED_TOOLS = {\"read_case\", \"refund_customer\"}  # observability-mcp advisory: removed query_logs\n"
+
+suspend-incident-agent:
+  - file: incident_agent.py
+    old: "def run(task, tools):\n"
+    new: "SUSPENDED = True  # suspected prompt injection\n\n\ndef run(task, tools):\n    if SUSPENDED:\n        return {\"summary\": None, \"remediation\": \"suspended\"}\n"
+
+migrate-default-model:
+  - file: incident_agent.py
+    old: "MODEL = {\"name\": \"fast-model\", \"usd_per_1k_tokens\": 0.2, \"residency\": \"us\"}\n"
+    new: "MODEL = {\"name\": \"large-model\", \"usd_per_1k_tokens\": 1.5, \"residency\": \"us\"}\n"
+  - file: support_agent.py
+    old: "MODEL = {\"name\": \"fast-model\", \"usd_per_1k_tokens\": 0.2, \"residency\": \"us\"}\n"
+    new: "MODEL = {\"name\": \"large-model\", \"usd_per_1k_tokens\": 1.5, \"residency\": \"us\"}\n"
+  - file: finance_agent.py
+    old: "MODEL = {\"name\": \"fast-model\", \"usd_per_1k_tokens\": 0.2, \"residency\": \"us\"}\n"
+    new: "MODEL = {\"name\": \"large-model\", \"usd_per_1k_tokens\": 1.5, \"residency\": \"us\"}\n"

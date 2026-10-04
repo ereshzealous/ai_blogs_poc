@@ -1,0 +1,123 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "agent source names no model (0 catalog names in acp/agents/)",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "v1: incident-agent served by fast-model",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "v2: incident-agent served by large-model, agent unchanged",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "confidential data always served by private-model while it is allowed",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "no confidential prompt ever reached a model without confidential clearance",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  },
+  {
+   "check": "agent code unchanged, one runtime process",
+   "experiment": "P7",
+   "passed": true,
+   "scenario": "P7-C-models"
+  }
+ ],
+ "expected": "default moves with no agent change; confidential data never falls back to an uncleared model",
+ "experiment": "P7",
+ "id": "P7-C-models",
+ "input": {
+  "agents": [
+   "incident-agent",
+   "support-agent"
+  ],
+  "changes": [
+   "migrate-default-model",
+   "withdraw-private-model"
+  ]
+ },
+ "measures": [
+  [
+   "v1_incident_model",
+   "fast-model"
+  ],
+  [
+   "v2_incident_model",
+   "large-model"
+  ],
+  [
+   "v3_support_model",
+   "DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS"
+  ],
+  [
+   "confidential_calls",
+   2
+  ],
+  [
+   "model_names_in_agent_code",
+   0
+  ]
+ ],
+ "observed": "fast-model → large-model; confidential under v3: DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P7 — MODEL GOVERNANCE                                                          │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agents             incident-agent (internal data) · support-agent              │\n│                    (confidential case)                                         │\n│ Agent code         names no model: 0 catalog names in acp/agents/              │\n│ v1                 incident → fast-model · support → private-model             │\n│ Central change     v2 · default model → large-model (platform.admin + ml.lead) │\n│ v2                 incident → large-model · support → private-model            │\n│ Central change     v3 · private-model withdrawn (break-glass)                  │\n│ v3                 incident → large-model · support → DENIED (no fallback to a │\n│                    public model)                                               │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ agent source names no model (0 catalog names in acp/agents/)\n  ✓ v1: incident-agent served by fast-model\n  ✓ v2: incident-agent served by large-model, agent unchanged\n  ✓ confidential data always served by private-model while it is allowed\n  ✓ v3: private-model withdrawn → confidential call DENIED, no fallback to a\n    public model\n  ✓ no confidential prompt ever reached a model without confidential clearance\n  ✓ agent code unchanged, one runtime process\n\n  PROOF P7: PASS  (7/7 checks)",
+ "question": "Can the control plane move the default model and withdraw a model without an agent naming one?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v2 (widening)",
+   "tick": 20,
+   "version": "v2",
+   "what": "publish migrate-default-model"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "v3 (restricting)",
+   "tick": 40,
+   "version": "v3",
+   "what": "publish withdraw-private-model"
+  },
+  {
+   "actor": "runtime",
+   "result": "incident-agent → fast-model · support-agent (confidential) → private-model",
+   "tick": 0,
+   "what": "model calls under v1"
+  },
+  {
+   "actor": "runtime",
+   "result": "incident-agent → large-model · support-agent (confidential) → private-model",
+   "tick": 0,
+   "what": "model calls under v2"
+  },
+  {
+   "actor": "runtime",
+   "result": "incident-agent → large-model · support-agent (confidential) → DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS",
+   "tick": 0,
+   "what": "model calls under v3"
+  }
+ ],
+ "use_case": "move the default model, then withdraw the only model allowed for confidential data",
+ "variant": "C",
+ "where": null
+}

@@ -1,0 +1,136 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "before: incident-agent query_logs ALLOW",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "before: support-agent query_logs ALLOW",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "observability-mcp received 0 calls after the revocation",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "finance-agent (no observability tools) unaffected",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  },
+  {
+   "check": "one central change, 0 agent files changed",
+   "experiment": "P6",
+   "passed": true,
+   "scenario": "P6-C-revoke-mcp"
+  }
+ ],
+ "expected": "both dependent agents denied, finance untouched, 0 calls reach the server",
+ "experiment": "P6",
+ "id": "P6-C-revoke-mcp",
+ "input": {
+  "agents": [
+   "incident-agent",
+   "support-agent",
+   "finance-agent"
+  ],
+  "change": "revoke-observability-mcp"
+ },
+ "measures": [
+  [
+   "revoke_version",
+   "v2"
+  ],
+  [
+   "observability_calls_before",
+   3
+  ],
+  [
+   "observability_calls_after",
+   0
+  ],
+  [
+   "calls_denied_mcp_disabled",
+   3
+  ],
+  [
+   "agents_affected",
+   2
+  ],
+  [
+   "agents_unaffected",
+   1
+  ]
+ ],
+ "observed": "0 observability calls after revoke; 3 calls denied",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P6 — REVOKE ONE MCP SERVER FOR EVERY AGENT                                     │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Shared tool        query_logs (observability-mcp)                              │\n│ Before             incident-agent → ALLOW · support-agent → ALLOW              │\n│ Central change     v2 · observability-mcp = disabled · platform.admin (break-  │\n│                    glass)                                                      │\n│ After              incident-agent → DENY · support-agent → DENY                │\n│                    (MCP_SERVER_DISABLED)                                       │\n│ Unaffected         finance-agent → every call executed                         │\n│ observability-mcp  3 calls before · 0 after                                    │\n│ Agent code         UNCHANGED · 0 files edited · 0 redeploys                    │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ before: incident-agent query_logs ALLOW\n  ✓ before: support-agent query_logs ALLOW\n  ✓ after: incident-agent query_logs DENY MCP_SERVER_DISABLED\n  ✓ after: support-agent query_logs DENY MCP_SERVER_DISABLED\n  ✓ observability-mcp received 0 calls after the revocation\n  ✓ finance-agent (no observability tools) unaffected\n  ✓ one central change, 0 agent files changed\n\n  PROOF P6: PASS  (7/7 checks)",
+ "question": "Does disabling one server centrally stop every agent that uses it, and no other?",
+ "steps": [
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:executed, query_metrics:executed, fast-model:executed, restart_service:executed",
+   "tick": 10,
+   "what": "before revocation"
+  },
+  {
+   "actor": "support-agent",
+   "result": "read_case:executed, query_logs:executed, private-model:executed",
+   "tick": 15,
+   "what": "before revocation"
+  },
+  {
+   "actor": "finance-agent",
+   "result": "read_ledger:executed, flag_transaction:executed, fast-model:executed",
+   "tick": 20,
+   "what": "before revocation"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "v2 (restricting)",
+   "tick": 30,
+   "version": "v2",
+   "what": "publish revoke-observability-mcp"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:denied(MCP_SERVER_DISABLED), query_metrics:denied(MCP_SERVER_DISABLED), fast-model:executed",
+   "tick": 40,
+   "what": "after revocation"
+  },
+  {
+   "actor": "support-agent",
+   "result": "read_case:executed, query_logs:denied(MCP_SERVER_DISABLED), private-model:executed",
+   "tick": 45,
+   "what": "after revocation"
+  },
+  {
+   "actor": "finance-agent",
+   "result": "read_ledger:executed, flag_transaction:executed, fast-model:executed",
+   "tick": 50,
+   "what": "after revocation"
+  }
+ ],
+ "use_case": "disable observability-mcp once: incident-agent and support-agent lose it, finance-agent does not",
+ "variant": "C",
+ "where": null
+}

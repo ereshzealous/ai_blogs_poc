@@ -1,0 +1,99 @@
+# T4 · AI Control Plane: the seed desired state (published as v1 at the start of every experiment).
+#
+# This file is the only place governance is written down. The agents in acp/agents/ never read it; they receive
+# decisions through the runtime, which receives a signed, versioned bundle built from this file plus the central
+# changes in changes.yaml. Credentials appear only as references (secret://...), never as values.
+
+agents:
+  incident-agent:
+    owner: sre-team
+    team: sre
+    purpose: Investigate production incidents and remediate them
+    environment: production
+    risk_level: high
+    identity: spiffe://acp.example/agent/incident-agent
+    workload: spiffe://acp.example/ns/agents/sa/agent-runtime
+    status: active
+    model_profile: standard
+    tools:
+      query_logs: allow
+      query_metrics: allow
+      restart_service:
+        - { when: { environment: staging }, effect: allow }
+        - { when: { environment: production }, effect: allow }
+      delete_resource: deny
+    limits: { max_tool_calls: 10, max_cost_per_run: 5.0, daily_budget: 100.0 }
+
+  support-agent:
+    owner: support-platform
+    team: support
+    purpose: Resolve customer cases, including refunds
+    environment: production
+    risk_level: medium
+    identity: spiffe://acp.example/agent/support-agent
+    workload: spiffe://acp.example/ns/agents/sa/agent-runtime
+    status: active
+    model_profile: standard
+    tools:
+      read_case: allow
+      query_logs: allow
+      refund_customer:
+        - { when: { amount_lte: 100 }, effect: allow }
+        - { when: { amount_gt: 100 }, effect: approval_required }
+    limits: { max_tool_calls: 10, max_cost_per_run: 5.0, daily_budget: 50.0 }
+
+  finance-agent:
+    owner: finance-eng
+    team: finance
+    purpose: Reconcile the ledger and flag anomalies
+    environment: production
+    risk_level: medium
+    identity: spiffe://acp.example/agent/finance-agent
+    workload: spiffe://acp.example/ns/agents/sa/agent-runtime
+    status: active
+    model_profile: standard
+    tools:
+      read_ledger: allow
+      flag_transaction: allow
+    limits: { max_tool_calls: 10, max_cost_per_run: 5.0, daily_budget: 50.0 }
+
+# The tool / MCP registry: which server provides each tool, how risky it is, and which credential it binds to.
+tools:
+  query_logs:       { server: observability-mcp, mutation: false, risk: low,      credential: "secret://observability/read" }
+  query_metrics:    { server: observability-mcp, mutation: false, risk: low,      credential: "secret://observability/read" }
+  restart_service:  { server: deploy-mcp,        mutation: true,  risk: high,     credential: "secret://deploy/restart" }
+  delete_resource:  { server: deploy-mcp,        mutation: true,  risk: critical, credential: "secret://deploy/admin" }
+  read_case:        { server: support-mcp,       mutation: false, risk: low,      credential: "secret://support/read" }
+  refund_customer:  { server: billing-mcp,       mutation: true,  risk: high,     credential: "secret://billing/refund" }
+  read_ledger:      { server: billing-mcp,       mutation: false, risk: low,      credential: "secret://billing/read" }
+  flag_transaction: { server: billing-mcp,       mutation: true,  risk: low,      credential: "secret://billing/flag" }
+
+mcp_servers:
+  observability-mcp: { status: enabled, version: "2.3.1", trust: internal }
+  deploy-mcp:        { status: enabled, version: "1.9.0", trust: internal }
+  support-mcp:       { status: enabled, version: "4.0.2", trust: internal }
+  billing-mcp:       { status: enabled, version: "3.1.0", trust: internal }
+
+models:
+  catalog:
+    fast-model:    { status: active,     data_classes: [public, internal],               residency: us,         usd_per_1k_tokens: 0.2 }
+    large-model:   { status: active,     data_classes: [public, internal],               residency: us,         usd_per_1k_tokens: 1.5 }
+    private-model: { status: active,     data_classes: [public, internal, confidential], residency: eu-private, usd_per_1k_tokens: 0.8 }
+    legacy-model:  { status: deprecated, data_classes: [public],                         residency: us,         usd_per_1k_tokens: 0.1 }
+  profiles:
+    standard: { default: fast-model, fallback: [large-model], confidential: private-model }
+
+approvals:
+  restart_service: { approvers: [ic.dev, ic.ana], expires_in_ticks: 60 }
+  refund_customer: { approvers: [finance.lead], expires_in_ticks: 240 }
+
+emergency:
+  deny_all_mutations: false
+
+# What the runtime does when it cannot reach the control plane. Different answers for different risk.
+failure_policy:
+  max_staleness_ticks: 30
+  unreachable:
+    read: last_known_good
+    mutation: fail_closed
+    credential: deny

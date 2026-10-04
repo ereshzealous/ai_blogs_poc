@@ -1,0 +1,6111 @@
+{
+ "kit": "4.1.0",
+ "schema": "evidence-kit/4",
+ "meta": {
+  "series": "Production AI Engineering",
+  "id": "T4",
+  "topic": "AI control plane",
+  "label": "T4 · Lab Console · run 2026-10-03-recorded",
+  "title": "One control plane, three agents, twelve proofs: scenario by scenario",
+  "question": "Change the control plane, never the agents, and read the effect from the systems of record. For every scenario: what went in, what came out, where a property was qualified or broke, and where each number came from.",
+  "claim": [
+   "Every scenario, its input and output.",
+   "Every central change, and what the runtime did next."
+  ],
+  "byline": "T4 · Production AI Engineering",
+  "filed": "2026-10-03",
+  "brand": "Production AI Engineering",
+  "tagline": "Build. Test. Learn. Ship responsibly.",
+  "note": "Generated from the run directories; rebuild after every run",
+  "state": "RECORDED",
+  "links": [
+   {
+    "label": "Evidence Check",
+    "href": "ai-control-plane-evidence.html"
+   },
+   {
+    "label": "Run report",
+    "href": "ai-control-plane-report.html"
+   },
+   {
+    "label": "Real vs simulated",
+    "href": "ai-control-plane-real-vs-simulated.html"
+   }
+  ]
+ },
+ "dimensions": {
+  "factor": {
+   "label": "Proof",
+   "unit": "",
+   "all": "All proofs",
+   "values": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "primary": 1
+  },
+  "result": {
+   "pass": "As expected",
+   "fail": "Not as expected"
+  },
+  "severity": [
+   {
+    "id": "none",
+    "label": "Held",
+    "tone": "ok"
+   },
+   {
+    "id": "qualified",
+    "label": "Qualified",
+    "tone": "warn"
+   },
+   {
+    "id": "broken",
+    "label": "Negative control",
+    "tone": "bad"
+   }
+  ],
+  "variants": [
+   {
+    "key": "E",
+    "name": "Embedded governance",
+    "color": "red",
+    "policy": "each agent carries its own model, allowlist, approval rule, budget and static credentials (P11 baseline)"
+   },
+   {
+    "key": "C",
+    "name": "Control plane",
+    "color": "green",
+    "policy": "signed, versioned desired state distributed to a long-lived runtime that enforces it at every call",
+    "governed": true
+   }
+  ],
+  "groups": {
+   "CORE": "CORE",
+   "CAPABILITY": "CAPABILITY",
+   "BOUNDARIES": "BOUNDARIES",
+   "NEGATIVE CONTROL": "NEGATIVE CONTROL",
+   "GOVERN THE GOVERNOR": "GOVERN THE GOVERNOR"
+  }
+ },
+ "facts": {
+  "C.broken": {
+   "value": 0,
+   "display": "0",
+   "denominator": 14,
+   "derivation": "Control plane scenarios with outcome broken",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.broken.kn": {
+   "value": "0/14",
+   "display": "0/14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.held": {
+   "value": 12,
+   "display": "12",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P1-C-baseline",
+     "P2-C-central-change",
+     "P3-C-approval",
+     "P4-C-suspend",
+     "P5-C-budgets",
+     "P6-C-revoke-mcp",
+     "P7-C-models",
+     "P8-C-canary",
+     "P9-C-broker-down",
+     "P9-C-tampered-bundle",
+     "P11-C-control-plane",
+     "P12-C-governing-the-control-plane"
+    ]
+   },
+   "denominator": 14,
+   "derivation": "Control plane scenarios with outcome held",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.held.kn": {
+   "value": "12/14",
+   "display": "12/14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.qualified": {
+   "value": 2,
+   "display": "2",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P9-C-outage",
+     "P10-C-drift"
+    ]
+   },
+   "denominator": 14,
+   "derivation": "Control plane scenarios with outcome qualified",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.qualified.kn": {
+   "value": "2/14",
+   "display": "2/14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.runs": {
+   "value": 14,
+   "display": "14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.broken": {
+   "value": 1,
+   "display": "1",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P11-E-embedded"
+    ]
+   },
+   "denominator": 1,
+   "derivation": "Governance embedded in agents scenarios with outcome broken",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.broken.kn": {
+   "value": "1/1",
+   "display": "1/1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.held": {
+   "value": 0,
+   "display": "0",
+   "denominator": 1,
+   "derivation": "Governance embedded in agents scenarios with outcome held",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.held.kn": {
+   "value": "0/1",
+   "display": "0/1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.qualified": {
+   "value": 0,
+   "display": "0",
+   "denominator": 1,
+   "derivation": "Governance embedded in agents scenarios with outcome qualified",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.qualified.kn": {
+   "value": "0/1",
+   "display": "0/1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "E.runs": {
+   "value": 1,
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.as_expected": {
+   "value": 15,
+   "display": "15",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → checks"
+  },
+  "all.broken": {
+   "value": 1,
+   "display": "1",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P11-E-embedded"
+    ]
+   },
+   "derivation": "scenarios with outcome broken",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.held": {
+   "value": 12,
+   "display": "12",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P1-C-baseline",
+     "P2-C-central-change",
+     "P3-C-approval",
+     "P4-C-suspend",
+     "P5-C-budgets",
+     "P6-C-revoke-mcp",
+     "P7-C-models",
+     "P8-C-canary",
+     "P9-C-broker-down",
+     "P9-C-tampered-bundle",
+     "P11-C-control-plane",
+     "P12-C-governing-the-control-plane"
+    ]
+   },
+   "derivation": "scenarios with outcome held",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.qualified": {
+   "value": 2,
+   "display": "2",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "P9-C-outage",
+     "P10-C-drift"
+    ]
+   },
+   "derivation": "scenarios with outcome qualified",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "checks.passed": {
+   "value": 100,
+   "display": "100",
+   "source": "checks.json"
+  },
+  "checks.total": {
+   "value": 100,
+   "display": "100",
+   "source": "checks.json"
+  },
+  "proof.checks": {
+   "value": 79,
+   "display": "79",
+   "source": "evidence/runs/2026-10-03-recorded/checks.jsonl"
+  },
+  "proof.expected_failure": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-recorded/checks.jsonl"
+  },
+  "proof.limitation": {
+   "value": 2,
+   "display": "2",
+   "source": "evidence/runs/2026-10-03-recorded/checks.jsonl"
+  },
+  "proof.pass": {
+   "value": 73,
+   "display": "73",
+   "source": "evidence/runs/2026-10-03-recorded/checks.jsonl"
+  },
+  "run.events": {
+   "value": 828,
+   "display": "828",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → state/"
+  },
+  "run.experiments": {
+   "value": 12,
+   "display": "12",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "run.filed": {
+   "value": "2026-10-03",
+   "display": "2026-10-03",
+   "source": "the run id"
+  },
+  "run.id": {
+   "value": "2026-10-03-recorded",
+   "display": "2026-10-03-recorded",
+   "source": "control_plane_poc/runs/2026-10-03-recorded"
+  },
+  "run.python": {
+   "value": "3.12.13",
+   "display": "3.12.13",
+   "source": "manifest.json → python"
+  },
+  "run.scenarios": {
+   "value": 15,
+   "display": "15",
+   "unit": "scenarios",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "run.sources": {
+   "value": 2,
+   "display": "2",
+   "source": "control_plane_poc/runs/*"
+  },
+  "variant.C.name": {
+   "value": "Control plane",
+   "display": "Control plane",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.C.name_lower": {
+   "value": "control plane",
+   "display": "control plane",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.E.name": {
+   "value": "Embedded governance",
+   "display": "Embedded governance",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.E.name_lower": {
+   "value": "embedded governance",
+   "display": "embedded governance",
+   "source": "learning.toml → dimensions.variants"
+  }
+ },
+ "provenance": {
+  "freeze": null
+ },
+ "claims": {
+  "title": ""
+ },
+ "hypotheses": [],
+ "failures": [],
+ "failure_classes": [],
+ "metrics": [
+  {
+   "id": "held-C",
+   "variant": "C",
+   "headline": "12/14 held",
+   "statement": "12 of 14 control-plane scenarios kept the governed property they test",
+   "breakdown_title": "By proof",
+   "source": "C.held",
+   "rows": [
+    "P1-C-baseline",
+    "P2-C-central-change",
+    "P3-C-approval",
+    "P4-C-suspend",
+    "P5-C-budgets",
+    "P6-C-revoke-mcp",
+    "P7-C-models",
+    "P8-C-canary",
+    "P9-C-broker-down",
+    "P9-C-tampered-bundle",
+    "P11-C-control-plane",
+    "P12-C-governing-the-control-plane"
+   ],
+   "breakdown": [
+    {
+     "label": "P1",
+     "count": 1,
+     "rows": [
+      "P1-C-baseline"
+     ]
+    },
+    {
+     "label": "P2",
+     "count": 1,
+     "rows": [
+      "P2-C-central-change"
+     ]
+    },
+    {
+     "label": "P3",
+     "count": 1,
+     "rows": [
+      "P3-C-approval"
+     ]
+    },
+    {
+     "label": "P4",
+     "count": 1,
+     "rows": [
+      "P4-C-suspend"
+     ]
+    },
+    {
+     "label": "P5",
+     "count": 1,
+     "rows": [
+      "P5-C-budgets"
+     ]
+    },
+    {
+     "label": "P6",
+     "count": 1,
+     "rows": [
+      "P6-C-revoke-mcp"
+     ]
+    },
+    {
+     "label": "P7",
+     "count": 1,
+     "rows": [
+      "P7-C-models"
+     ]
+    },
+    {
+     "label": "P8",
+     "count": 1,
+     "rows": [
+      "P8-C-canary"
+     ]
+    },
+    {
+     "label": "P9",
+     "count": 2,
+     "rows": [
+      "P9-C-broker-down",
+      "P9-C-tampered-bundle"
+     ]
+    },
+    {
+     "label": "P10",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P11",
+     "count": 1,
+     "rows": [
+      "P11-C-control-plane"
+     ]
+    },
+    {
+     "label": "P12",
+     "count": 1,
+     "rows": [
+      "P12-C-governing-the-control-plane"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qualified-C",
+   "variant": "C",
+   "headline": "2/14 qualified",
+   "statement": "2 of 14 control-plane scenarios held only within a stated bound",
+   "breakdown_title": "By proof",
+   "source": "C.qualified",
+   "rows": [
+    "P9-C-outage",
+    "P10-C-drift"
+   ],
+   "breakdown": [
+    {
+     "label": "P1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P7",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P8",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P9",
+     "count": 1,
+     "rows": [
+      "P9-C-outage"
+     ]
+    },
+    {
+     "label": "P10",
+     "count": 1,
+     "rows": [
+      "P10-C-drift"
+     ]
+    },
+    {
+     "label": "P11",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P12",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  },
+  {
+   "id": "broken-E",
+   "variant": "E",
+   "headline": "1/1 negative control",
+   "statement": "1 of 1 embedded-baseline scenarios lost the governed property, as the baseline is meant to show",
+   "breakdown_title": "By proof",
+   "source": "E.broken",
+   "rows": [
+    "P11-E-embedded"
+   ],
+   "breakdown": [
+    {
+     "label": "P1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P7",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P8",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P9",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P10",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "P11",
+     "count": 1,
+     "rows": [
+      "P11-E-embedded"
+     ]
+    },
+    {
+     "label": "P12",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  }
+ ],
+ "datasets": {
+  "matrix": {
+   "head": [
+    "Group",
+    "Proof",
+    "Property under test",
+    "E · Embedded governance",
+    "C · Control plane"
+   ],
+   "rows": [
+    [
+     "CORE",
+     "**P1** · Baseline",
+     "under v1 the protected action is allowed, executed once and attributed to v1",
+     "—",
+     "✓ `baseline`"
+    ],
+    [
+     "CORE",
+     "**P2** · Central change",
+     "behaviour changes centrally with agent code, runtime process and request held fixed",
+     "—",
+     "✓ `central-change`"
+    ],
+    [
+     "CAPABILITY",
+     "**P3** · Approval",
+     "a held action stays unexecuted until an eligible approver approves, then runs exactly once",
+     "—",
+     "✓ `approval`"
+    ],
+    [
+     "CAPABILITY",
+     "**P4** · Suspend",
+     "a central suspension stops new and in-flight runs of one agent, and only that agent",
+     "—",
+     "✓ `suspend`"
+    ],
+    [
+     "CAPABILITY",
+     "**P5** · Budgets",
+     "a central quota and budget stop the run at the configured limit",
+     "—",
+     "✓ `budgets`"
+    ],
+    [
+     "CAPABILITY",
+     "**P6** · Revoke MCP",
+     "disabling one MCP server centrally stops every agent that uses it, and no other",
+     "—",
+     "✓ `revoke-mcp`"
+    ],
+    [
+     "CAPABILITY",
+     "**P7** · Models",
+     "the model is chosen by the control plane, by data class, never named by the agent",
+     "—",
+     "✓ `models`"
+    ],
+    [
+     "CAPABILITY",
+     "**P8** · Rollout",
+     "a canary reaches only its bucket; rollback returns every run to stable",
+     "—",
+     "✓ `canary`"
+    ],
+    [
+     "BOUNDARIES",
+     "**P9** · Outage",
+     "without the control plane, reads continue within a staleness bound and mutations fail closed",
+     "—",
+     "✓ `broker-down` · ~ `outage` · ✓ `tampered-bundle`"
+    ],
+    [
+     "BOUNDARIES",
+     "**P10** · Drift",
+     "the control plane observes a runtime that has drifted from desired state, and what it did meanwhile",
+     "—",
+     "~ `drift`"
+    ],
+    [
+     "NEGATIVE CONTROL",
+     "**P11** · Embedded baseline",
+     "governance embedded in agents: the property is broken by design",
+     "✕ `embedded`",
+     "✓ `control-plane`"
+    ],
+    [
+     "GOVERN THE GOVERNOR",
+     "**P12** · Self-governance",
+     "the control plane's own changes are authorized, validated and on a tamper-evident log",
+     "—",
+     "✓ `governing-the-control-plane`"
+    ]
+   ]
+  },
+  "problems": {
+   "head": [
+    "Scenario",
+    "Design",
+    "Outcome",
+    "Step",
+    "What the record shows"
+   ],
+   "rows": [
+    {
+     "row": "P9-C-outage",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`P9-C-outage`",
+      "Control plane",
+      "**QUALIFIED**",
+      "`config.unreachable`",
+      "config.unreachable: a suspension cannot reach a partitioned runtime; exposure bounded by max_staleness and fail-closed mutations"
+     ]
+    },
+    {
+     "row": "P10-C-drift",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`P10-C-drift`",
+      "Control plane",
+      "**QUALIFIED**",
+      "`distribution`",
+      "distribution: a lagging replica served v1 without error; policy did not prevent the restart, observation caught it"
+     ]
+    },
+    {
+     "row": "P11-E-embedded",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`P11-E-embedded`",
+      "Governance embedded in agents",
+      "**NEGATIVE CONTROL**",
+      "`agent code`",
+      "agent code: the running process kept its embedded rule until redeployed"
+     ]
+    }
+   ]
+  },
+  "every": {
+   "head": [
+    "Group",
+    "Scenario",
+    "Use case",
+    "Design",
+    "Outcome",
+    "Assertions",
+    "Recorded events"
+   ],
+   "rows": [
+    {
+     "row": "P1-C-baseline",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CORE",
+      "`P1-C-baseline`",
+      "incident-agent restarts payment-service in production under v1",
+      "Control plane",
+      "✓ **HELD**",
+      "6/6",
+      "12"
+     ]
+    },
+    {
+     "row": "P2-C-central-change",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CORE",
+      "`P2-C-central-change`",
+      "the same restart request, before and after one central policy change",
+      "Control plane",
+      "✓ **HELD**",
+      "9/9",
+      "23"
+     ]
+    },
+    {
+     "row": "P3-C-approval",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P3-C-approval`",
+      "an approval-required restart: refused approvers, one approval, one execution",
+      "Control plane",
+      "✓ **HELD**",
+      "9/9",
+      "16"
+     ]
+    },
+    {
+     "row": "P4-C-suspend",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P4-C-suspend`",
+      "suspend incident-agent centrally: mid-run, new runs, other agents, restore",
+      "Control plane",
+      "✓ **HELD**",
+      "8/8",
+      "36"
+     ]
+    },
+    {
+     "row": "P5-C-budgets",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P5-C-budgets`",
+      "a central tool-call quota and an exhausted daily budget for support-agent",
+      "Control plane",
+      "✓ **HELD**",
+      "7/7",
+      "27"
+     ]
+    },
+    {
+     "row": "P6-C-revoke-mcp",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P6-C-revoke-mcp`",
+      "disable observability-mcp once: incident-agent and support-agent lose it, finance-agent does not",
+      "Control plane",
+      "✓ **HELD**",
+      "7/7",
+      "51"
+     ]
+    },
+    {
+     "row": "P7-C-models",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P7-C-models`",
+      "move the default model, then withdraw the only model allowed for confidential data",
+      "Control plane",
+      "✓ **HELD**",
+      "7/7",
+      "60"
+     ]
+    },
+    {
+     "row": "P8-C-canary",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "CAPABILITY",
+      "`P8-C-canary`",
+      "roll a new default model out to 25% of finance-agent runs, roll back, then promote",
+      "Control plane",
+      "✓ **HELD**",
+      "6/6",
+      "412"
+     ]
+    },
+    {
+     "row": "P9-C-broker-down",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "BOUNDARIES",
+      "`P9-C-broker-down`",
+      "the control plane is reachable but the credential broker is not",
+      "Control plane",
+      "✓ **HELD**",
+      "3/3",
+      "8"
+     ]
+    },
+    {
+     "row": "P9-C-outage",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "BOUNDARIES",
+      "`P9-C-outage`",
+      "the control plane becomes unreachable from the runtime, and a suspension is published during the outage",
+      "Control plane",
+      "~ **QUALIFIED**",
+      "6/6",
+      "47"
+     ]
+    },
+    {
+     "row": "P9-C-tampered-bundle",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "BOUNDARIES",
+      "`P9-C-tampered-bundle`",
+      "a bundle altered in transit to grant delete_resource",
+      "Control plane",
+      "✓ **HELD**",
+      "3/3",
+      "27"
+     ]
+    },
+    {
+     "row": "P10-C-drift",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "BOUNDARIES",
+      "`P10-C-drift`",
+      "two runtime instances; one sits behind a lagging replica that still serves v1",
+      "Control plane",
+      "~ **QUALIFIED**",
+      "7/7",
+      "55"
+     ]
+    },
+    {
+     "row": "P11-E-embedded",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "NEGATIVE CONTROL",
+      "`P11-E-embedded`",
+      "the same four governance changes, when governance lives inside each agent",
+      "Governance embedded in agents",
+      "✕ **NEGATIVE CONTROL**",
+      "4/4",
+      "8"
+     ]
+    },
+    {
+     "row": "P11-C-control-plane",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "NEGATIVE CONTROL",
+      "`P11-C-control-plane`",
+      "the same four governance changes, through the control plane",
+      "Control plane",
+      "✓ **HELD**",
+      "5/5",
+      "35"
+     ]
+    },
+    {
+     "row": "P12-C-governing-the-control-plane",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "GOVERN THE GOVERNOR",
+      "`P12-C-governing-the-control-plane`",
+      "attempts to change the control plane, legitimate and not",
+      "Control plane",
+      "✓ **HELD**",
+      "13/13",
+      "11"
+     ]
+    }
+   ]
+  },
+  "allruns": {
+   "head": [
+    "Run",
+    "Kind",
+    "Scenarios",
+    "Held",
+    "Qualified",
+    "Broken",
+    "Directory"
+   ],
+   "rows": [
+    [
+     "`2026-10-03-recorded`",
+     "recorded",
+     "15",
+     "12",
+     "2",
+     "1",
+     "`control_plane_poc/runs/2026-10-03-recorded/scenarios`"
+    ],
+    [
+     "`2026-09-30-recorded`",
+     "recorded",
+     "15",
+     "12",
+     "2",
+     "1",
+     "`control_plane_poc/runs/2026-09-30-recorded/scenarios`"
+    ]
+   ]
+  },
+  "lineage": {
+   "head": [
+    "Stage",
+    "Where (per scenario, in the run)",
+    "Carries"
+   ],
+   "rows": [
+    [
+     "Input · desired state and changes",
+     "`control_plane_poc/config/*.yaml`",
+     "seed desired state, named central changes, administrators, the embedded baseline's edits (hashes in manifest.json)"
+    ],
+    [
+     "Input · the proof",
+     "`control_plane_poc/acp/experiments.py → p1()`",
+     "the runs, changes and faults the proof applies"
+    ],
+    [
+     "Control plane · versions",
+     "`scenarios/‹scenario›/state/controlplane/bundles`",
+     "every signed bundle version this scenario published"
+    ],
+    [
+     "Control plane · change log",
+     "`scenarios/‹scenario›/state/controlplane/changelog.jsonl`",
+     "every accepted and rejected change, hash-chained"
+    ],
+    [
+     "Runtime · audit",
+     "`scenarios/‹scenario›/state/runtime/rt-a/audit.jsonl`",
+     "every decision, with its config version, source and rule"
+    ],
+    [
+     "Runtime · requests",
+     "`scenarios/‹scenario›/transcript.jsonl`",
+     "each request to a runtime process and its response"
+    ],
+    [
+     "Systems of record",
+     "`scenarios/‹scenario›/state/systems`",
+     "what each simulated system and model endpoint saw; side effects in effects.json"
+    ],
+    [
+     "Scenario record",
+     "`scenarios/‹scenario›/scenario.json`",
+     "input, expected, observed, outcome, measures, checks, proof card"
+    ],
+    [
+     "Proof aggregate",
+     "`P1.json`",
+     "this scenario rolled up with its siblings"
+    ],
+    [
+     "Checks",
+     "`checks.json`",
+     "every pass/fail check of the run"
+    ],
+    [
+     "Published numbers",
+     "`facts.json`",
+     "the values both editions and the evidence documents substitute"
+    ]
+   ]
+  },
+  "systems": {
+   "items": [
+    [
+     "layers",
+     "Control plane",
+     "versions · signatures · change log"
+    ],
+    [
+     "cpu",
+     "Runtime process",
+     "long-lived · enforcement at every call"
+    ],
+    [
+     "server",
+     "Services",
+     "approvals · broker · spend meter"
+    ],
+    [
+     "box",
+     "Simulated systems",
+     "deploy · billing · support · observability · models"
+    ],
+    [
+     "check",
+     "Checks",
+     "checks.json"
+    ]
+   ],
+   "label": "What every scenario touches"
+  },
+  "checks": {
+   "head": [
+    "Exp",
+    "Check",
+    "Result",
+    "Scenarios that answer it"
+   ],
+   "rows": [
+    [
+     "P1",
+     "restart_service decided under v1",
+     "✓ pass",
+     "`P1-C-baseline`"
+    ],
+    [
+     "P1",
+     "restart_service executed (decision allow)",
+     "✓ pass",
+     "`P1-C-baseline`"
+    ],
+    [
+     "P1",
+     "deploy system of record shows exactly 1 restart",
+     "✓ pass",
+     "`P1-C-baseline`"
+    ],
+    [
+     "P1",
+     "audit event names the config version and the rule",
+     "✓ pass",
+     "`P1-C-baseline`"
+    ],
+    [
+     "P1",
+     "the system saw a short-lived, tool-scoped credential, not a static secret",
+     "✓ pass",
+     "`P1-C-baseline`"
+    ],
+    [
+     "P1",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P2",
+     "same request: request hash cb0531217710 before and after",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "same runtime process: rt-a/pid-1 answered both requests, never restarted",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "same agent code: sha256 677bca2acd66 before, at import and after",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "files changed under acp/ by the policy change: 0",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "control plane store changed (new bundle, signature, pointer, changelog)",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "before: v1 ALLOW, executed",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "after: v2 APPROVAL_REQUIRED, not executed",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "deploy system still shows 1 restart (the side effect did not happen)",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P2",
+     "approval request emitted and pending",
+     "✓ pass",
+     "`P2-C-central-change`"
+    ],
+    [
+     "P3",
+     "held action not executed before approval (resume refused, 0 restarts)",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "the agent cannot approve its own action",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "an ineligible principal cannot approve",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "the eligible incident commander's approval is accepted",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "resume after approval executes under the current policy",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "a second resume does not execute again (ALREADY_EXECUTED)",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "deploy system shows exactly 1 restart",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "the executed event carries the approval id",
+     "✓ pass",
+     "`P3-C-approval`"
+    ],
+    [
+     "P3",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P4",
+     "in-flight run: every call after the suspension was denied (0 executed)",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "in-flight run: denial reason is AGENT_SUSPENDED under the new version",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "new run denied at start: 0 tool calls, 0 model calls",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "no production restart happened",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "support-agent unaffected (every call executed)",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "restoring needs a second person: oncall.ic alone rejected",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "restore with sre.lead as second approver works at the next run",
+     "✓ pass",
+     "`P4-C-suspend`"
+    ],
+    [
+     "P4",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P5",
+     "before the quota: 3 tool calls executed, 1 refund",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "call 1 ALLOW, call 2 ALLOW",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "billing system shows 1 refund (the capped run refunded nothing)",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "exhausted daily budget: next run denied at start",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "the budget is metered centrally (shared spend meter), not per process",
+     "✓ pass",
+     "`P5-C-budgets`"
+    ],
+    [
+     "P5",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P6",
+     "before: incident-agent query_logs ALLOW",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "before: support-agent query_logs ALLOW",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "observability-mcp received 0 calls after the revocation",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "finance-agent (no observability tools) unaffected",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P6",
+     "one central change, 0 agent files changed",
+     "✓ pass",
+     "`P6-C-revoke-mcp`"
+    ],
+    [
+     "P7",
+     "agent source names no model (0 catalog names in acp/agents/)",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "v1: incident-agent served by fast-model",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "v2: incident-agent served by large-model, agent unchanged",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "confidential data always served by private-model while it is allowed",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "no confidential prompt ever reached a model without confidential clearance",
+     "✓ pass",
+     "`P7-C-models`"
+    ],
+    [
+     "P7",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P8",
+     "canary reached some but not all runs",
+     "✓ pass",
+     "`P8-C-canary`"
+    ],
+    [
+     "P8",
+     "canary membership = deterministic bucket < 25",
+     "✓ pass",
+     "`P8-C-canary`"
+    ],
+    [
+     "P8",
+     "every run used exactly one version, and its model matches it",
+     "✓ pass",
+     "`P8-C-canary`"
+    ],
+    [
+     "P8",
+     "after rollback: 0 runs on the canary version",
+     "✓ pass",
+     "`P8-C-canary`"
+    ],
+    [
+     "P8",
+     "after promote: every run on the new version",
+     "✓ pass",
+     "`P8-C-canary`"
+    ],
+    [
+     "P8",
+     "agent code unchanged, one runtime process",
+     "✓ pass",
+     "`P1-C-baseline` `P3-C-approval` `P4-C-suspend` `P5-C-budgets` `P7-C-models` `P8-C-canary`"
+    ],
+    [
+     "P9",
+     "reads during the outage ran on the last-known-good bundle (v1)",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "deploy system: only the warm run's restart (1)",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "beyond max_staleness every run is denied (POLICY_STALE)",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "after recovery the suspension lands at the next enforcement point",
+     "✓ pass",
+     "`P9-C-outage`"
+    ],
+    [
+     "P9",
+     "the altered bundle failed signature verification and was not applied",
+     "✓ pass",
+     "`P9-C-tampered-bundle`"
+    ],
+    [
+     "P9",
+     "the mutation failed closed while no verified current bundle was available (BUNDLE_REJECTED)",
+     "✓ pass",
+     "`P9-C-tampered-bundle`"
+    ],
+    [
+     "P9",
+     "deploy system: no production restart, no deletion",
+     "✓ pass",
+     "`P9-C-tampered-bundle`"
+    ],
+    [
+     "P9",
+     "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+     "✓ pass",
+     "`P9-C-broker-down`"
+    ],
+    [
+     "P9",
+     "no system received a call without a credential",
+     "✓ pass",
+     "`P9-C-broker-down`"
+    ],
+    [
+     "P9",
+     "deploy system: 0 restarts",
+     "✓ pass",
+     "`P9-C-broker-down`"
+    ],
+    [
+     "P10",
+     "rt-a applied v2 and held the restart for approval",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "rt-b, behind the lagging replica, executed the restart under v1",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "drift detected: rt-b observed v1 while desired is v2",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "drift detected: a mutation executed under a superseded version",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "re-evaluated under the desired version, that action required approval",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "after reconcile: no instance on a stale version",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P10",
+     "agent code unchanged; both runtime processes never restarted",
+     "✓ pass",
+     "`P10-C-drift`"
+    ],
+    [
+     "P11",
+     "before the edit the embedded agent restarts production",
+     "✓ pass",
+     "`P11-E-embedded`"
+    ],
+    [
+     "P11",
+     "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+     "✓ pass",
+     "`P11-E-embedded`"
+    ],
+    [
+     "P11",
+     "only a redeployed process (new code hash) holds the restart",
+     "✓ pass",
+     "`P11-E-embedded`"
+    ],
+    [
+     "P11",
+     "the embedded agents hold long-lived static credentials in code",
+     "✓ pass",
+     "`P11-E-embedded`"
+    ],
+    [
+     "P11",
+     "default model moved at the next run (large-model)",
+     "✓ pass",
+     "`P11-C-control-plane`"
+    ],
+    [
+     "P11",
+     "restart held for approval at the next run",
+     "✓ pass",
+     "`P11-C-control-plane`"
+    ],
+    [
+     "P11",
+     "observability tools denied at the next run",
+     "✓ pass",
+     "`P11-C-control-plane`"
+    ],
+    [
+     "P11",
+     "incident-agent denied at the next run",
+     "✓ pass",
+     "`P11-C-control-plane`"
+    ],
+    [
+     "P11",
+     "0 agent files edited, 0 processes restarted, 4 bundle versions",
+     "✓ pass",
+     "`P11-C-control-plane`"
+    ],
+    [
+     "P12",
+     "an agent cannot change the control plane (not an administrator)",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "scope: a team lead cannot change another team's agent",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "scope: a team lead may restrict its own agent alone",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "two-person rule: a widening change needs a second approver",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "two-person rule: the second approver must be a different person",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "break-glass may only restrict",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "validation: a plaintext credential never becomes a version",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "break-glass suspension accepted from one on-call person",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "restoring (widening) needs a second person",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "every attempt is on the change log, accepted or rejected",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "the change log is hash-chained and verifies",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "editing one change-log row breaks the chain",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ],
+    [
+     "P12",
+     "every version is signed; no bundle contains a plaintext credential",
+     "✓ pass",
+     "`P12-C-governing-the-control-plane`"
+    ]
+   ]
+  },
+  "proof": {
+   "head": [
+    "Check",
+    "Experiment",
+    "What must hold",
+    "Observed",
+    "Status",
+    "Finding"
+   ],
+   "rows": [
+    [
+     "`T4-R1-C01`",
+     "P1 · Baseline: the control plane allows",
+     "Every P1 scenario assertion held",
+     "`6` (== p1.assertions_total (6))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R1-C02`",
+     "P1 · Baseline: the control plane allows",
+     "The restart was decided ALLOW by the decision function",
+     "`ALLOW` (== ALLOW)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R1-C03`",
+     "P1 · Baseline: the control plane allows",
+     "The decision names config version v1",
+     "`v1` (== v1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R1-C04`",
+     "P1 · Baseline: the control plane allows",
+     "The deploy system of record shows exactly one restart",
+     "`1` (== 1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C01`",
+     "P2 · One central change, same agent",
+     "Every P2 scenario assertion held",
+     "`9` (== p2.assertions_total (9))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C02`",
+     "P2 · One central change, same agent",
+     "Same agent code: sha256 before equals sha256 after",
+     "`677bca2acd66` (== p2.agent_sha_before (677bca2acd66))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C03`",
+     "P2 · One central change, same agent",
+     "Same runtime process answered both requests",
+     "`rt-a/pid-1` (== p2.runtime_pid_before (rt-a/pid-1))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C04`",
+     "P2 · One central change, same agent",
+     "Same request: request hash before equals request hash after",
+     "`cb0531217710` (== p2.request_hash_before (cb0531217710))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C05`",
+     "P2 · One central change, same agent",
+     "Agent edits: 0",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C06`",
+     "P2 · One central change, same agent",
+     "Redeploys: 0",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C07`",
+     "P2 · One central change, same agent",
+     "The control plane version changed between the two requests",
+     "`v2` (!= p2.before_version (v1))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C08`",
+     "P2 · One central change, same agent",
+     "Before: ALLOW",
+     "`ALLOW` (== ALLOW)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C09`",
+     "P2 · One central change, same agent",
+     "After: APPROVAL_REQUIRED",
+     "`APPROVAL_REQUIRED` (== APPROVAL_REQUIRED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R2-C10`",
+     "P2 · One central change, same agent",
+     "No new side effect in the deploy system of record after the change",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R3-C01`",
+     "P3 · Approval, then exactly one execution",
+     "Every P3 scenario assertion held",
+     "`9` (== p3.assertions_total (9))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R3-C02`",
+     "P3 · Approval, then exactly one execution",
+     "No restart before approval",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R3-C03`",
+     "P3 · Approval, then exactly one execution",
+     "Exactly one restart after approval",
+     "`1` (== 1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R3-C04`",
+     "P3 · Approval, then exactly one execution",
+     "A duplicate resume is refused",
+     "`ALREADY_EXECUTED` (== ALREADY_EXECUTED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R3-C05`",
+     "P3 · Approval, then exactly one execution",
+     "Ineligible approvers, the agent among them, were refused",
+     "`2` (>= 1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R4-C01`",
+     "P4 · Suspend: the kill switch",
+     "Every P4 scenario assertion held",
+     "`8` (== p4.assertions_total (8))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R4-C02`",
+     "P4 · Suspend: the kill switch",
+     "No in-flight call executed after the suspension",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R4-C03`",
+     "P4 · Suspend: the kill switch",
+     "A new run is denied",
+     "`denied AGENT_SUSPENDED` (== denied AGENT_SUSPENDED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R4-C04`",
+     "P4 · Suspend: the kill switch",
+     "Another agent's calls kept executing",
+     "`4` (> 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R4-C05`",
+     "P4 · Suspend: the kill switch",
+     "Restoring alone is rejected (widening needs a second person)",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R5-C01`",
+     "P5 · Budgets and quotas",
+     "Every P5 scenario assertion held",
+     "`7` (== p5.assertions_total (7))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R5-C02`",
+     "P5 · Budgets and quotas",
+     "The call beyond the quota is denied",
+     "`denied TOOL_CALL_BUDGET_EXCEEDED` (== denied TOOL_CALL_BUDGET_EXCEEDED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R5-C03`",
+     "P5 · Budgets and quotas",
+     "The run after the budget is exhausted is denied",
+     "`denied DAILY_BUDGET_EXHAUSTED` (== denied DAILY_BUDGET_EXHAUSTED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R6-C01`",
+     "P6 · Revoke one MCP server for every agent",
+     "Every P6 scenario assertion held",
+     "`7` (== p6.assertions_total (7))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R6-C02`",
+     "P6 · Revoke one MCP server for every agent",
+     "No call reached the server after revocation",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R6-C03`",
+     "P6 · Revoke one MCP server for every agent",
+     "Calls to the revoked server were denied",
+     "`3` (> 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R6-C04`",
+     "P6 · Revoke one MCP server for every agent",
+     "An agent that does not use the server was unaffected",
+     "`1` (>= 1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R7-C01`",
+     "P7 · Model governance",
+     "Every P7 scenario assertion held",
+     "`7` (== p7.assertions_total (7))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R7-C02`",
+     "P7 · Model governance",
+     "No model name in agent code",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R7-C03`",
+     "P7 · Model governance",
+     "The default model moved centrally",
+     "`large-model` (!= p7.v1_incident_model (fast-model))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R7-C04`",
+     "P7 · Model governance",
+     "Confidential data with no cleared model fails closed",
+     "`DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS` (== DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R8-C01`",
+     "P8 · Staged rollout and rollback",
+     "Every P8 scenario assertion held",
+     "`6` (== p8.assertions_total (6))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R8-C02`",
+     "P8 · Staged rollout and rollback",
+     "Some canary runs took the new version",
+     "`4` (> 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R8-C03`",
+     "P8 · Staged rollout and rollback",
+     "Not every canary run took the new version",
+     "`4` (< p8.canary_runs (20))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R8-C04`",
+     "P8 · Staged rollout and rollback",
+     "After rollback no run took the new version",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C01`",
+     "P9 · When the control plane is unreachable",
+     "Every P9a scenario assertion held",
+     "`6` (== p9.outage.assertions_total (6))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C02`",
+     "P9 · When the control plane is unreachable",
+     "A mutation during the outage fails closed",
+     "`CONTROL_PLANE_UNREACHABLE` (== CONTROL_PLANE_UNREACHABLE)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C03`",
+     "P9 · When the control plane is unreachable",
+     "Past the staleness bound everything is denied",
+     "`POLICY_STALE` (== POLICY_STALE)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C04`",
+     "P9 · When the control plane is unreachable",
+     "Once the partition heals, the suspension applies",
+     "`AGENT_SUSPENDED` (== AGENT_SUSPENDED)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C05`",
+     "P9 · When the control plane is unreachable",
+     "The tampered bundle was rejected; the runtime stayed on v1",
+     "`v1` (== v1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C06`",
+     "P9 · When the control plane is unreachable",
+     "Every P9b and P9c scenario assertion held",
+     "`3` (== p9.tamper.assertions_total (3))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C07`",
+     "P9 · When the control plane is unreachable",
+     "With the broker down, calls policy would allow were denied",
+     "`2` (> 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R9-C08`",
+     "P9 · When the control plane is unreachable",
+     "Ideal kill switch: no call executes after a suspension is published",
+     "`3` (== 0)",
+     "FAIL",
+     "LIMITATION OBSERVED"
+    ],
+    [
+     "`T4-R10-C01`",
+     "P10 · Desired vs observed state",
+     "Every P10 scenario assertion held",
+     "`7` (== p10.assertions_total (7))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R10-C02`",
+     "P10 · Desired vs observed state",
+     "rt-b observed a version other than the desired one",
+     "`v1` (!= p10.desired (v2))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R10-C03`",
+     "P10 · Desired vs observed state",
+     "Drift was detected",
+     "`2` (> 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R10-C04`",
+     "P10 · Desired vs observed state",
+     "No instance stale after reconcile",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R10-C05`",
+     "P10 · Desired vs observed state",
+     "Ideal: no action executes under a superseded version",
+     "`1` (== 0)",
+     "FAIL",
+     "LIMITATION OBSERVED"
+    ],
+    [
+     "`T4-R11-C01`",
+     "P11 · Negative control: governance inside every agent",
+     "Governed: every P11b scenario assertion held",
+     "`5` (== p11.cp.assertions_total (5))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R11-C02`",
+     "P11 · Negative control: governance inside every agent",
+     "Governed: no agent file edited",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R11-C03`",
+     "P11 · Negative control: governance inside every agent",
+     "Governed: no redeploy",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R11-C04`",
+     "P11 · Negative control: governance inside every agent",
+     "The negative control completed and observed what it was built to observe",
+     "`4` (== p11.embedded.assertions_total (4))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R11-C05`",
+     "P11 · Negative control: governance inside every agent",
+     "Safeguard removed: a governance change needs no agent edit",
+     "`7` (== 0)",
+     "EXPECTED_FAILURE",
+     "EXPECTED FAILURE"
+    ],
+    [
+     "`T4-R11-C06`",
+     "P11 · Negative control: governance inside every agent",
+     "Safeguard removed: a governance change needs no redeploy",
+     "`7` (== 0)",
+     "EXPECTED_FAILURE",
+     "EXPECTED FAILURE"
+    ],
+    [
+     "`T4-R11-C07`",
+     "P11 · Negative control: governance inside every agent",
+     "Safeguard removed: the running process applies the change at its next decision",
+     "`executed` (== pending_approval)",
+     "EXPECTED_FAILURE",
+     "EXPECTED FAILURE"
+    ],
+    [
+     "`T4-R11-C08`",
+     "P11 · Negative control: governance inside every agent",
+     "Safeguard removed: agent code holds no static credential",
+     "`8` (== 0)",
+     "EXPECTED_FAILURE",
+     "EXPECTED FAILURE"
+    ],
+    [
+     "`T4-R12-C01`",
+     "P12 · Governing the control plane itself",
+     "Every P12 scenario assertion held",
+     "`13` (== p12.assertions_total (13))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C02`",
+     "P12 · Governing the control plane itself",
+     "An agent cannot change the control plane",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C03`",
+     "P12 · Governing the control plane itself",
+     "A team lead cannot change another team's agent",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C04`",
+     "P12 · Governing the control plane itself",
+     "An authorized team admin restricting its own scope is allowed",
+     "`accepted` (== accepted)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C05`",
+     "P12 · Governing the control plane itself",
+     "A widening change by one person is rejected",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C06`",
+     "P12 · Governing the control plane itself",
+     "Self-approval is rejected",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C07`",
+     "P12 · Governing the control plane itself",
+     "Break-glass may not widen",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C08`",
+     "P12 · Governing the control plane itself",
+     "Validation: a plaintext credential never becomes a version",
+     "`rejected` (== rejected)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C09`",
+     "P12 · Governing the control plane itself",
+     "Every attempt, accepted or rejected, is a change-log row",
+     "`11` (> p12.attempts (10))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C10`",
+     "P12 · Governing the control plane itself",
+     "The change log verifies",
+     "`yes` (== yes)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R12-C11`",
+     "P12 · Governing the control plane itself",
+     "Editing one change-log row breaks the chain",
+     "`no` (== no)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C01`",
+     "Evidence integrity and replay",
+     "Every runtime audit log's hash chain verifies",
+     "`14` (== raw.audit_chains (14))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C02`",
+     "Evidence integrity and replay",
+     "Every control-plane change log's hash chain verifies",
+     "`14` (== raw.changelogs (14))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C03`",
+     "Evidence integrity and replay",
+     "Every bundle's signature verifies",
+     "`34` (== raw.bundles (34))",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C04`",
+     "Evidence integrity and replay",
+     "No bundle contains a plaintext credential",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C05`",
+     "Evidence integrity and replay",
+     "No runtime process was restarted in any scenario",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C06`",
+     "Evidence integrity and replay",
+     "One agent source hash across every scenario",
+     "`1` (== 1)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C07`",
+     "Evidence integrity and replay",
+     "Rerun from source: no file differs beyond masked process ids",
+     "`0` (== 0)",
+     "PASS",
+     "PASS"
+    ],
+    [
+     "`T4-R13-C08`",
+     "Evidence integrity and replay",
+     "Every recorded request hash recomputes from its request",
+     "`93` (== raw.run_requests (93))",
+     "PASS",
+     "PASS"
+    ]
+   ]
+  }
+ },
+ "runs": [
+  {
+   "id": "2026-10-03-recorded",
+   "label": "2026-10-03-recorded · recorded run",
+   "kind": "recorded",
+   "path": "control_plane_poc/runs/2026-10-03-recorded/scenarios",
+   "note": "deterministic: fixed agent plans, simulated systems and clock; real runtime processes, control plane and enforcement",
+   "rows": [
+    {
+     "id": "P1-C-baseline",
+     "case": "P1-baseline",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "restart_service decided under v1",
+       true
+      ],
+      [
+       "restart_service executed (decision allow)",
+       true
+      ],
+      [
+       "deploy system of record shows exactly 1 restart",
+       true
+      ],
+      [
+       "audit event names the config version and the rule",
+       true
+      ],
+      [
+       "the system saw a short-lived, tool-scoped credential, not a static secret",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "config version",
+       "v1"
+      ],
+      [
+       "decision",
+       "ALLOW"
+      ],
+      [
+       "restarts",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "12"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P1"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CORE"
+      ]
+     ]
+    },
+    {
+     "id": "P2-C-central-change",
+     "case": "P2-central-change",
+     "key": "C",
+     "x": 2,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "same request: request hash cb0531217710 before and after",
+       true
+      ],
+      [
+       "same runtime process: rt-a/pid-1 answered both requests, never restarted",
+       true
+      ],
+      [
+       "same agent code: sha256 677bca2acd66 before, at import and after",
+       true
+      ],
+      [
+       "files changed under acp/ by the policy change: 0",
+       true
+      ],
+      [
+       "control plane store changed (new bundle, signature, pointer, changelog)",
+       true
+      ],
+      [
+       "before: v1 ALLOW, executed",
+       true
+      ],
+      [
+       "after: v2 APPROVAL_REQUIRED, not executed",
+       true
+      ],
+      [
+       "deploy system still shows 1 restart (the side effect did not happen)",
+       true
+      ],
+      [
+       "approval request emitted and pending",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "before version",
+       "v1"
+      ],
+      [
+       "before decision",
+       "ALLOW"
+      ],
+      [
+       "before executed",
+       "yes"
+      ],
+      [
+       "after version",
+       "v2"
+      ],
+      [
+       "after decision",
+       "APPROVAL_REQUIRED"
+      ],
+      [
+       "after executed",
+       "no"
+      ],
+      [
+       "approval id",
+       "approval-001"
+      ],
+      [
+       "acp files changed",
+       "0"
+      ],
+      [
+       "control plane files changed",
+       "4"
+      ],
+      [
+       "restarts",
+       "1"
+      ],
+      [
+       "agent code sha256",
+       "677bca2acd66"
+      ],
+      [
+       "agent sha before",
+       "677bca2acd66"
+      ],
+      [
+       "agent sha after",
+       "677bca2acd66"
+      ],
+      [
+       "runtime pid before",
+       "rt-a/pid-1"
+      ],
+      [
+       "runtime pid after",
+       "rt-a/pid-1"
+      ],
+      [
+       "request hash before",
+       "cb0531217710"
+      ],
+      [
+       "request hash after",
+       "cb0531217710"
+      ],
+      [
+       "restarts after v1",
+       "1"
+      ],
+      [
+       "restarts after v2",
+       "1"
+      ],
+      [
+       "side effect delta",
+       "0"
+      ],
+      [
+       "agent edits",
+       "0"
+      ],
+      [
+       "redeploys",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "23"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "9/9"
+      ],
+      [
+       "Proof",
+       "P2"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CORE"
+      ]
+     ]
+    },
+    {
+     "id": "P3-C-approval",
+     "case": "P3-approval",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "held action not executed before approval (resume refused, 0 restarts)",
+       true
+      ],
+      [
+       "the agent cannot approve its own action",
+       true
+      ],
+      [
+       "an ineligible principal cannot approve",
+       true
+      ],
+      [
+       "the eligible incident commander's approval is accepted",
+       true
+      ],
+      [
+       "resume after approval executes under the current policy",
+       true
+      ],
+      [
+       "a second resume does not execute again (ALREADY_EXECUTED)",
+       true
+      ],
+      [
+       "deploy system shows exactly 1 restart",
+       true
+      ],
+      [
+       "the executed event carries the approval id",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "approval id",
+       "approval-001"
+      ],
+      [
+       "restarts before approval",
+       "0"
+      ],
+      [
+       "refused approvers",
+       "2"
+      ],
+      [
+       "approved by",
+       "ic.dev"
+      ],
+      [
+       "restarts after",
+       "1"
+      ],
+      [
+       "duplicate resume",
+       "ALREADY_EXECUTED"
+      ],
+      [
+       "Recorded events",
+       "16"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "9/9"
+      ],
+      [
+       "Proof",
+       "P3"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P4-C-suspend",
+     "case": "P4-suspend",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "in-flight run: every call after the suspension was denied (0 executed)",
+       true
+      ],
+      [
+       "in-flight run: denial reason is AGENT_SUSPENDED under the new version",
+       true
+      ],
+      [
+       "new run denied at start: 0 tool calls, 0 model calls",
+       true
+      ],
+      [
+       "no production restart happened",
+       true
+      ],
+      [
+       "support-agent unaffected (every call executed)",
+       true
+      ],
+      [
+       "restoring needs a second person: oncall.ic alone rejected",
+       true
+      ],
+      [
+       "restore with sre.lead as second approver works at the next run",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "suspend version",
+       "v2"
+      ],
+      [
+       "inflight calls after suspension",
+       "2"
+      ],
+      [
+       "inflight executed after suspension",
+       "0"
+      ],
+      [
+       "new run",
+       "denied AGENT_SUSPENDED"
+      ],
+      [
+       "other agent calls executed",
+       "4"
+      ],
+      [
+       "restore alone",
+       "rejected"
+      ],
+      [
+       "restore version",
+       "v3"
+      ],
+      [
+       "Recorded events",
+       "36"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "8/8"
+      ],
+      [
+       "Proof",
+       "P4"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P5-C-budgets",
+     "case": "P5-budgets",
+     "key": "C",
+     "x": 5,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "before the quota: 3 tool calls executed, 1 refund",
+       true
+      ],
+      [
+       "call 1 ALLOW, call 2 ALLOW",
+       true
+      ],
+      [
+       "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+       true
+      ],
+      [
+       "billing system shows 1 refund (the capped run refunded nothing)",
+       true
+      ],
+      [
+       "exhausted daily budget: next run denied at start",
+       true
+      ],
+      [
+       "the budget is metered centrally (shared spend meter), not per process",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "quota version",
+       "v2"
+      ],
+      [
+       "max tool calls",
+       "2"
+      ],
+      [
+       "refunds",
+       "1"
+      ],
+      [
+       "budget version",
+       "v3"
+      ],
+      [
+       "spent usd",
+       "0.7104"
+      ],
+      [
+       "Recorded events",
+       "27"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P5"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P6-C-revoke-mcp",
+     "case": "P6-revoke-mcp",
+     "key": "C",
+     "x": 6,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "before: incident-agent query_logs ALLOW",
+       true
+      ],
+      [
+       "before: support-agent query_logs ALLOW",
+       true
+      ],
+      [
+       "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+       true
+      ],
+      [
+       "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+       true
+      ],
+      [
+       "observability-mcp received 0 calls after the revocation",
+       true
+      ],
+      [
+       "finance-agent (no observability tools) unaffected",
+       true
+      ],
+      [
+       "one central change, 0 agent files changed",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "revoke version",
+       "v2"
+      ],
+      [
+       "observability calls before",
+       "3"
+      ],
+      [
+       "observability calls after",
+       "0"
+      ],
+      [
+       "calls denied mcp disabled",
+       "3"
+      ],
+      [
+       "agents affected",
+       "2"
+      ],
+      [
+       "agents unaffected",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "51"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P6"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P7-C-models",
+     "case": "P7-models",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "agent source names no model (0 catalog names in acp/agents/)",
+       true
+      ],
+      [
+       "v1: incident-agent served by fast-model",
+       true
+      ],
+      [
+       "v2: incident-agent served by large-model, agent unchanged",
+       true
+      ],
+      [
+       "confidential data always served by private-model while it is allowed",
+       true
+      ],
+      [
+       "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+       true
+      ],
+      [
+       "no confidential prompt ever reached a model without confidential clearance",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "v1 incident model",
+       "fast-model"
+      ],
+      [
+       "v2 incident model",
+       "large-model"
+      ],
+      [
+       "confidential calls",
+       "2"
+      ],
+      [
+       "model names in agent code",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "60"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P7"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P8-C-canary",
+     "case": "P8-canary",
+     "key": "C",
+     "x": 8,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "canary reached some but not all runs",
+       true
+      ],
+      [
+       "canary membership = deterministic bucket < 25",
+       true
+      ],
+      [
+       "every run used exactly one version, and its model matches it",
+       true
+      ],
+      [
+       "after rollback: 0 runs on the canary version",
+       true
+      ],
+      [
+       "after promote: every run on the new version",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "canary version",
+       "v2"
+      ],
+      [
+       "canary percent",
+       "25"
+      ],
+      [
+       "canary runs",
+       "20"
+      ],
+      [
+       "canary runs on new",
+       "4"
+      ],
+      [
+       "rollback runs on new",
+       "0"
+      ],
+      [
+       "promoted runs on new",
+       "10"
+      ],
+      [
+       "Recorded events",
+       "412"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P8"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-broker-down",
+     "case": "P9-broker-down",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+       true
+      ],
+      [
+       "no system received a call without a credential",
+       true
+      ],
+      [
+       "deploy system: 0 restarts",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "tool calls denied",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "8"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-outage",
+     "case": "P9-outage",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "qualified",
+     "note": "config.unreachable: a suspension cannot reach a partitioned runtime; exposure bounded by max_staleness and fail-closed mutations",
+     "flags": [
+      [
+       "reads during the outage ran on the last-known-good bundle (v1)",
+       true
+      ],
+      [
+       "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+       true
+      ],
+      [
+       "deploy system: only the warm run's restart (1)",
+       true
+      ],
+      [
+       "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+       true
+      ],
+      [
+       "beyond max_staleness every run is denied (POLICY_STALE)",
+       true
+      ],
+      [
+       "after recovery the suspension lands at the next enforcement point",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "lkg version",
+       "v1"
+      ],
+      [
+       "reads on lkg",
+       "4"
+      ],
+      [
+       "calls executed after suspension published",
+       "3"
+      ],
+      [
+       "max staleness ticks",
+       "30"
+      ],
+      [
+       "stale run",
+       "POLICY_STALE"
+      ],
+      [
+       "recovered run",
+       "AGENT_SUSPENDED"
+      ],
+      [
+       "Recorded events",
+       "47"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "config.unreachable"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-tampered-bundle",
+     "case": "P9-tampered-bundle",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "the altered bundle failed signature verification and was not applied",
+       true
+      ],
+      [
+       "the mutation failed closed while no verified current bundle was available (BUNDLE_REJECTED)",
+       true
+      ],
+      [
+       "deploy system: no production restart, no deletion",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "rejected events",
+       "5"
+      ],
+      [
+       "applied version",
+       "v1"
+      ],
+      [
+       "restart decision",
+       "BUNDLE_REJECTED"
+      ],
+      [
+       "Recorded events",
+       "27"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P10-C-drift",
+     "case": "P10-drift",
+     "key": "C",
+     "x": 10,
+     "pass": true,
+     "sev": "qualified",
+     "note": "distribution: a lagging replica served v1 without error; policy did not prevent the restart, observation caught it",
+     "flags": [
+      [
+       "rt-a applied v2 and held the restart for approval",
+       true
+      ],
+      [
+       "rt-b, behind the lagging replica, executed the restart under v1",
+       true
+      ],
+      [
+       "drift detected: rt-b observed v1 while desired is v2",
+       true
+      ],
+      [
+       "drift detected: a mutation executed under a superseded version",
+       true
+      ],
+      [
+       "re-evaluated under the desired version, that action required approval",
+       true
+      ],
+      [
+       "after reconcile: no instance on a stale version",
+       true
+      ],
+      [
+       "agent code unchanged; both runtime processes never restarted",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "desired",
+       "v2"
+      ],
+      [
+       "observed rt a",
+       "v2"
+      ],
+      [
+       "observed rt b",
+       "v1"
+      ],
+      [
+       "drift findings",
+       "2"
+      ],
+      [
+       "executed under superseded",
+       "1"
+      ],
+      [
+       "stale after reconcile",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "55"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "distribution"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P10"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P11-E-embedded",
+     "case": "P11-embedded",
+     "key": "E",
+     "x": 11,
+     "pass": true,
+     "sev": "broken",
+     "note": "agent code: the running process kept its embedded rule until redeployed",
+     "flags": [
+      [
+       "before the edit the embedded agent restarts production",
+       true
+      ],
+      [
+       "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+       true
+      ],
+      [
+       "only a redeployed process (new code hash) holds the restart",
+       true
+      ],
+      [
+       "the embedded agents hold long-lived static credentials in code",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "files edited",
+       "7"
+      ],
+      [
+       "lines changed",
+       "17"
+      ],
+      [
+       "redeploys",
+       "7"
+      ],
+      [
+       "static credential literals",
+       "8"
+      ],
+      [
+       "restart before redeploy",
+       "executed"
+      ],
+      [
+       "restart after redeploy",
+       "pending_approval"
+      ],
+      [
+       "restart-requires-approval.files",
+       "1"
+      ],
+      [
+       "revoke-observability-mcp.files",
+       "2"
+      ],
+      [
+       "suspend-incident-agent.files",
+       "1"
+      ],
+      [
+       "migrate-default-model.files",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "8"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "NEGATIVE CONTROL"
+      ],
+      [
+       "Where it broke",
+       "agent code"
+      ],
+      [
+       "Checks",
+       "4/4"
+      ],
+      [
+       "Proof",
+       "P11"
+      ],
+      [
+       "Design",
+       "Governance embedded in agents"
+      ],
+      [
+       "Group",
+       "NEGATIVE CONTROL"
+      ]
+     ]
+    },
+    {
+     "id": "P11-C-control-plane",
+     "case": "P11-control-plane",
+     "key": "C",
+     "x": 11,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "default model moved at the next run (large-model)",
+       true
+      ],
+      [
+       "restart held for approval at the next run",
+       true
+      ],
+      [
+       "observability tools denied at the next run",
+       true
+      ],
+      [
+       "incident-agent denied at the next run",
+       true
+      ],
+      [
+       "0 agent files edited, 0 processes restarted, 4 bundle versions",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "files edited",
+       "0"
+      ],
+      [
+       "lines changed",
+       "0"
+      ],
+      [
+       "redeploys",
+       "0"
+      ],
+      [
+       "bundle versions",
+       "4"
+      ],
+      [
+       "static credential literals",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "35"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "5/5"
+      ],
+      [
+       "Proof",
+       "P11"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "NEGATIVE CONTROL"
+      ]
+     ]
+    },
+    {
+     "id": "P12-C-governing-the-control-plane",
+     "case": "P12-governing-the-control-plane",
+     "key": "C",
+     "x": 12,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "an agent cannot change the control plane (not an administrator)",
+       true
+      ],
+      [
+       "scope: a team lead cannot change another team's agent",
+       true
+      ],
+      [
+       "scope: a team lead may restrict its own agent alone",
+       true
+      ],
+      [
+       "two-person rule: a widening change needs a second approver",
+       true
+      ],
+      [
+       "two-person rule: the second approver must be a different person",
+       true
+      ],
+      [
+       "break-glass may only restrict",
+       true
+      ],
+      [
+       "validation: a plaintext credential never becomes a version",
+       true
+      ],
+      [
+       "break-glass suspension accepted from one on-call person",
+       true
+      ],
+      [
+       "restoring (widening) needs a second person",
+       true
+      ],
+      [
+       "every attempt is on the change log, accepted or rejected",
+       true
+      ],
+      [
+       "the change log is hash-chained and verifies",
+       true
+      ],
+      [
+       "editing one change-log row breaks the chain",
+       true
+      ],
+      [
+       "every version is signed; no bundle contains a plaintext credential",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "attempts",
+       "10"
+      ],
+      [
+       "accepted",
+       "3"
+      ],
+      [
+       "rejected",
+       "7"
+      ],
+      [
+       "changelog rows",
+       "11"
+      ],
+      [
+       "versions",
+       "4"
+      ],
+      [
+       "agent self grant",
+       "rejected"
+      ],
+      [
+       "cross team change",
+       "rejected"
+      ],
+      [
+       "own scope restriction",
+       "accepted"
+      ],
+      [
+       "widening alone",
+       "rejected"
+      ],
+      [
+       "self approval",
+       "rejected"
+      ],
+      [
+       "break glass widening",
+       "rejected"
+      ],
+      [
+       "plaintext credential",
+       "rejected"
+      ],
+      [
+       "break glass suspension",
+       "accepted"
+      ],
+      [
+       "restore with second person",
+       "accepted"
+      ],
+      [
+       "changelog verifies",
+       "yes"
+      ],
+      [
+       "tampered changelog verifies",
+       "no"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "13/13"
+      ],
+      [
+       "Proof",
+       "P12"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "GOVERN THE GOVERNOR"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2026-09-30-recorded",
+   "label": "2026-09-30-recorded · recorded run",
+   "kind": "recorded",
+   "path": "control_plane_poc/runs/2026-09-30-recorded/scenarios",
+   "note": "deterministic: fixed agent plans, simulated systems and clock; real runtime processes, control plane and enforcement",
+   "rows": [
+    {
+     "id": "P1-C-baseline",
+     "case": "P1-baseline",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "restart_service decided under v1",
+       true
+      ],
+      [
+       "restart_service executed (decision allow)",
+       true
+      ],
+      [
+       "deploy system of record shows exactly 1 restart",
+       true
+      ],
+      [
+       "audit event names the config version and the rule",
+       true
+      ],
+      [
+       "the system saw a short-lived, tool-scoped credential, not a static secret",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "config version",
+       "v1"
+      ],
+      [
+       "decision",
+       "ALLOW"
+      ],
+      [
+       "restarts",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "12"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P1"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CORE"
+      ]
+     ]
+    },
+    {
+     "id": "P2-C-central-change",
+     "case": "P2-central-change",
+     "key": "C",
+     "x": 2,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "same request: both runs sent an identical agent + task (digest compared)",
+       true
+      ],
+      [
+       "same runtime process served both requests (never restarted)",
+       true
+      ],
+      [
+       "agent code sha256 identical before and after the change",
+       true
+      ],
+      [
+       "files changed under acp/ by the policy change: 0",
+       true
+      ],
+      [
+       "control plane store changed (new bundle, signature, pointer, changelog)",
+       true
+      ],
+      [
+       "before: v1 ALLOW, executed",
+       true
+      ],
+      [
+       "after: v2 APPROVAL_REQUIRED, not executed",
+       true
+      ],
+      [
+       "deploy system still shows 1 restart (the side effect did not happen)",
+       true
+      ],
+      [
+       "approval request emitted and pending",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "before version",
+       "v1"
+      ],
+      [
+       "before decision",
+       "ALLOW"
+      ],
+      [
+       "before executed",
+       "yes"
+      ],
+      [
+       "after version",
+       "v2"
+      ],
+      [
+       "after decision",
+       "APPROVAL_REQUIRED"
+      ],
+      [
+       "after executed",
+       "no"
+      ],
+      [
+       "approval id",
+       "approval-001"
+      ],
+      [
+       "acp files changed",
+       "0"
+      ],
+      [
+       "control plane files changed",
+       "4"
+      ],
+      [
+       "restarts",
+       "1"
+      ],
+      [
+       "agent code sha256",
+       "677bca2acd66"
+      ],
+      [
+       "Recorded events",
+       "23"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "9/9"
+      ],
+      [
+       "Proof",
+       "P2"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CORE"
+      ]
+     ]
+    },
+    {
+     "id": "P3-C-approval",
+     "case": "P3-approval",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "held action not executed before approval (resume refused, 0 restarts)",
+       true
+      ],
+      [
+       "the agent cannot approve its own action",
+       true
+      ],
+      [
+       "an ineligible principal cannot approve",
+       true
+      ],
+      [
+       "the eligible incident commander's approval is accepted",
+       true
+      ],
+      [
+       "resume after approval executes under the current policy",
+       true
+      ],
+      [
+       "a second resume does not execute again (ALREADY_EXECUTED)",
+       true
+      ],
+      [
+       "deploy system shows exactly 1 restart",
+       true
+      ],
+      [
+       "the executed event carries the approval id",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "approval id",
+       "approval-001"
+      ],
+      [
+       "restarts before approval",
+       "0"
+      ],
+      [
+       "refused approvers",
+       "2"
+      ],
+      [
+       "approved by",
+       "ic.dev"
+      ],
+      [
+       "restarts after",
+       "1"
+      ],
+      [
+       "duplicate resume",
+       "ALREADY_EXECUTED"
+      ],
+      [
+       "Recorded events",
+       "16"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "9/9"
+      ],
+      [
+       "Proof",
+       "P3"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P4-C-suspend",
+     "case": "P4-suspend",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "in-flight run: every call after the suspension was denied (0 executed)",
+       true
+      ],
+      [
+       "in-flight run: denial reason is AGENT_SUSPENDED under the new version",
+       true
+      ],
+      [
+       "new run denied at start: 0 tool calls, 0 model calls",
+       true
+      ],
+      [
+       "no production restart happened",
+       true
+      ],
+      [
+       "support-agent unaffected (every call executed)",
+       true
+      ],
+      [
+       "restoring needs a second person: oncall.ic alone rejected",
+       true
+      ],
+      [
+       "restore with sre.lead as second approver works at the next run",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "suspend version",
+       "v2"
+      ],
+      [
+       "inflight calls after suspension",
+       "2"
+      ],
+      [
+       "inflight executed after suspension",
+       "0"
+      ],
+      [
+       "new run",
+       "denied AGENT_SUSPENDED"
+      ],
+      [
+       "other agent calls executed",
+       "4"
+      ],
+      [
+       "restore alone",
+       "rejected"
+      ],
+      [
+       "restore version",
+       "v3"
+      ],
+      [
+       "Recorded events",
+       "36"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "8/8"
+      ],
+      [
+       "Proof",
+       "P4"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P5-C-budgets",
+     "case": "P5-budgets",
+     "key": "C",
+     "x": 5,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "before the quota: 3 tool calls executed, 1 refund",
+       true
+      ],
+      [
+       "call 1 ALLOW, call 2 ALLOW",
+       true
+      ],
+      [
+       "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+       true
+      ],
+      [
+       "billing system shows 1 refund (the capped run refunded nothing)",
+       true
+      ],
+      [
+       "exhausted daily budget: next run denied at start",
+       true
+      ],
+      [
+       "the budget is metered centrally (shared spend meter), not per process",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "quota version",
+       "v2"
+      ],
+      [
+       "max tool calls",
+       "2"
+      ],
+      [
+       "refunds",
+       "1"
+      ],
+      [
+       "budget version",
+       "v3"
+      ],
+      [
+       "spent usd",
+       "0.7104"
+      ],
+      [
+       "Recorded events",
+       "27"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P5"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P6-C-revoke-mcp",
+     "case": "P6-revoke-mcp",
+     "key": "C",
+     "x": 6,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "before: incident-agent query_logs ALLOW",
+       true
+      ],
+      [
+       "before: support-agent query_logs ALLOW",
+       true
+      ],
+      [
+       "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+       true
+      ],
+      [
+       "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+       true
+      ],
+      [
+       "observability-mcp received 0 calls after the revocation",
+       true
+      ],
+      [
+       "finance-agent (no observability tools) unaffected",
+       true
+      ],
+      [
+       "one central change, 0 agent files changed",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "revoke version",
+       "v2"
+      ],
+      [
+       "observability calls before",
+       "3"
+      ],
+      [
+       "observability calls after",
+       "0"
+      ],
+      [
+       "calls denied mcp disabled",
+       "3"
+      ],
+      [
+       "agents affected",
+       "2"
+      ],
+      [
+       "agents unaffected",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "51"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P6"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P7-C-models",
+     "case": "P7-models",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "agent source names no model (0 catalog names in acp/agents/)",
+       true
+      ],
+      [
+       "v1: incident-agent served by fast-model",
+       true
+      ],
+      [
+       "v2: incident-agent served by large-model, agent unchanged",
+       true
+      ],
+      [
+       "confidential data always served by private-model while it is allowed",
+       true
+      ],
+      [
+       "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+       true
+      ],
+      [
+       "no confidential prompt ever reached a model without confidential clearance",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "v1 incident model",
+       "fast-model"
+      ],
+      [
+       "v2 incident model",
+       "large-model"
+      ],
+      [
+       "confidential calls",
+       "2"
+      ],
+      [
+       "model names in agent code",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "60"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P7"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P8-C-canary",
+     "case": "P8-canary",
+     "key": "C",
+     "x": 8,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "canary reached some but not all runs",
+       true
+      ],
+      [
+       "canary membership = deterministic bucket < 25",
+       true
+      ],
+      [
+       "every run used exactly one version, and its model matches it",
+       true
+      ],
+      [
+       "after rollback: 0 runs on the canary version",
+       true
+      ],
+      [
+       "after promote: every run on the new version",
+       true
+      ],
+      [
+       "agent code unchanged, one runtime process",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "canary version",
+       "v2"
+      ],
+      [
+       "canary percent",
+       "25"
+      ],
+      [
+       "canary runs",
+       "20"
+      ],
+      [
+       "canary runs on new",
+       "4"
+      ],
+      [
+       "rollback runs on new",
+       "0"
+      ],
+      [
+       "promoted runs on new",
+       "10"
+      ],
+      [
+       "Recorded events",
+       "412"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P8"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "CAPABILITY"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-broker-down",
+     "case": "P9-broker-down",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+       true
+      ],
+      [
+       "no system received a call without a credential",
+       true
+      ],
+      [
+       "deploy system: 0 restarts",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "tool calls denied",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "8"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-outage",
+     "case": "P9-outage",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "qualified",
+     "note": "config.unreachable: a suspension cannot reach a partitioned runtime; exposure bounded by max_staleness and fail-closed mutations",
+     "flags": [
+      [
+       "reads during the outage ran on the last-known-good bundle (v1)",
+       true
+      ],
+      [
+       "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+       true
+      ],
+      [
+       "deploy system: only the warm run's restart (1)",
+       true
+      ],
+      [
+       "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+       true
+      ],
+      [
+       "beyond max_staleness every run is denied (POLICY_STALE)",
+       true
+      ],
+      [
+       "after recovery the suspension lands at the next enforcement point",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "lkg version",
+       "v1"
+      ],
+      [
+       "reads on lkg",
+       "4"
+      ],
+      [
+       "calls executed after suspension published",
+       "3"
+      ],
+      [
+       "max staleness ticks",
+       "30"
+      ],
+      [
+       "stale run",
+       "POLICY_STALE"
+      ],
+      [
+       "recovered run",
+       "AGENT_SUSPENDED"
+      ],
+      [
+       "Recorded events",
+       "47"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "config.unreachable"
+      ],
+      [
+       "Checks",
+       "6/6"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P9-C-tampered-bundle",
+     "case": "P9-tampered-bundle",
+     "key": "C",
+     "x": 9,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "the altered bundle failed signature verification and was not applied",
+       true
+      ],
+      [
+       "the mutation failed closed while no verified current bundle was available (BUNDLE_REJECTED)",
+       true
+      ],
+      [
+       "deploy system: no production restart, no deletion",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "rejected events",
+       "5"
+      ],
+      [
+       "applied version",
+       "v1"
+      ],
+      [
+       "restart decision",
+       "BUNDLE_REJECTED"
+      ],
+      [
+       "Recorded events",
+       "27"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Proof",
+       "P9"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P10-C-drift",
+     "case": "P10-drift",
+     "key": "C",
+     "x": 10,
+     "pass": true,
+     "sev": "qualified",
+     "note": "distribution: a lagging replica served v1 without error; policy did not prevent the restart, observation caught it",
+     "flags": [
+      [
+       "rt-a applied v2 and held the restart for approval",
+       true
+      ],
+      [
+       "rt-b, behind the lagging replica, executed the restart under v1",
+       true
+      ],
+      [
+       "drift detected: rt-b observed v1 while desired is v2",
+       true
+      ],
+      [
+       "drift detected: a mutation executed under a superseded version",
+       true
+      ],
+      [
+       "re-evaluated under the desired version, that action required approval",
+       true
+      ],
+      [
+       "after reconcile: no instance on a stale version",
+       true
+      ],
+      [
+       "agent code unchanged; both runtime processes never restarted",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "desired",
+       "v2"
+      ],
+      [
+       "observed rt a",
+       "v2"
+      ],
+      [
+       "observed rt b",
+       "v1"
+      ],
+      [
+       "drift findings",
+       "2"
+      ],
+      [
+       "executed under superseded",
+       "1"
+      ],
+      [
+       "stale after reconcile",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "55"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "distribution"
+      ],
+      [
+       "Checks",
+       "7/7"
+      ],
+      [
+       "Proof",
+       "P10"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "BOUNDARIES"
+      ]
+     ]
+    },
+    {
+     "id": "P11-E-embedded",
+     "case": "P11-embedded",
+     "key": "E",
+     "x": 11,
+     "pass": true,
+     "sev": "broken",
+     "note": "agent code: the running process kept its embedded rule until redeployed",
+     "flags": [
+      [
+       "before the edit the embedded agent restarts production",
+       true
+      ],
+      [
+       "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+       true
+      ],
+      [
+       "only a redeployed process (new code hash) holds the restart",
+       true
+      ],
+      [
+       "the embedded agents hold long-lived static credentials in code",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "files edited",
+       "7"
+      ],
+      [
+       "lines changed",
+       "17"
+      ],
+      [
+       "redeploys",
+       "7"
+      ],
+      [
+       "static credential literals",
+       "8"
+      ],
+      [
+       "restart before redeploy",
+       "executed"
+      ],
+      [
+       "restart after redeploy",
+       "pending_approval"
+      ],
+      [
+       "restart-requires-approval.files",
+       "1"
+      ],
+      [
+       "revoke-observability-mcp.files",
+       "2"
+      ],
+      [
+       "suspend-incident-agent.files",
+       "1"
+      ],
+      [
+       "migrate-default-model.files",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "8"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "NEGATIVE CONTROL"
+      ],
+      [
+       "Where it broke",
+       "agent code"
+      ],
+      [
+       "Checks",
+       "4/4"
+      ],
+      [
+       "Proof",
+       "P11"
+      ],
+      [
+       "Design",
+       "Governance embedded in agents"
+      ],
+      [
+       "Group",
+       "NEGATIVE CONTROL"
+      ]
+     ]
+    },
+    {
+     "id": "P11-C-control-plane",
+     "case": "P11-control-plane",
+     "key": "C",
+     "x": 11,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "default model moved at the next run (large-model)",
+       true
+      ],
+      [
+       "restart held for approval at the next run",
+       true
+      ],
+      [
+       "observability tools denied at the next run",
+       true
+      ],
+      [
+       "incident-agent denied at the next run",
+       true
+      ],
+      [
+       "0 agent files edited, 0 processes restarted, 4 bundle versions",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "files edited",
+       "0"
+      ],
+      [
+       "lines changed",
+       "0"
+      ],
+      [
+       "redeploys",
+       "0"
+      ],
+      [
+       "bundle versions",
+       "4"
+      ],
+      [
+       "static credential literals",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "35"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "5/5"
+      ],
+      [
+       "Proof",
+       "P11"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "NEGATIVE CONTROL"
+      ]
+     ]
+    },
+    {
+     "id": "P12-C-governing-the-control-plane",
+     "case": "P12-governing-the-control-plane",
+     "key": "C",
+     "x": 12,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "an agent cannot change the control plane (not an administrator)",
+       true
+      ],
+      [
+       "scope: a team lead cannot change another team's agent",
+       true
+      ],
+      [
+       "two-person rule: a widening change needs a second approver",
+       true
+      ],
+      [
+       "two-person rule: the second approver must be a different person",
+       true
+      ],
+      [
+       "break-glass may only restrict",
+       true
+      ],
+      [
+       "validation: a plaintext credential never becomes a version",
+       true
+      ],
+      [
+       "break-glass suspension accepted from one on-call person",
+       true
+      ],
+      [
+       "restoring (widening) needs a second person",
+       true
+      ],
+      [
+       "every attempt is on the change log, accepted or rejected",
+       true
+      ],
+      [
+       "the change log is hash-chained and verifies",
+       true
+      ],
+      [
+       "editing one change-log row breaks the chain",
+       true
+      ],
+      [
+       "every version is signed; no bundle contains a plaintext credential",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "attempts",
+       "9"
+      ],
+      [
+       "accepted",
+       "2"
+      ],
+      [
+       "rejected",
+       "7"
+      ],
+      [
+       "changelog rows",
+       "10"
+      ],
+      [
+       "versions",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "10"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "12/12"
+      ],
+      [
+       "Proof",
+       "P12"
+      ],
+      [
+       "Design",
+       "Control plane"
+      ],
+      [
+       "Group",
+       "GOVERN THE GOVERNOR"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "cases": {
+  "P1-baseline": {
+   "group": "CORE",
+   "title": "incident-agent restarts payment-service in production under v1",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P1 · Baseline"
+    ],
+    [
+     "Group",
+     "CORE · baseline"
+    ],
+    [
+     "Property",
+     "under v1 the protected action is allowed, executed once and attributed to v1"
+    ],
+    [
+     "Question",
+     "Under v1, does the production restart run, attributed to v1?"
+    ]
+   ],
+   "chips": []
+  },
+  "P2-central-change": {
+   "group": "CORE",
+   "title": "the same restart request, before and after one central policy change",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P2 · Central change"
+    ],
+    [
+     "Group",
+     "CORE · core"
+    ],
+    [
+     "Property",
+     "behaviour changes centrally with agent code, runtime process and request held fixed"
+    ],
+    [
+     "Question",
+     "Change only the control plane: does the same process, code and request now stop for approval?"
+    ]
+   ],
+   "chips": []
+  },
+  "P3-approval": {
+   "group": "CAPABILITY",
+   "title": "an approval-required restart: refused approvers, one approval, one execution",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P3 · Approval"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "a held action stays unexecuted until an eligible approver approves, then runs exactly once"
+    ],
+    [
+     "Question",
+     "Does the held action wait for an eligible human, then run exactly once?"
+    ]
+   ],
+   "chips": []
+  },
+  "P4-suspend": {
+   "group": "CAPABILITY",
+   "title": "suspend incident-agent centrally: mid-run, new runs, other agents, restore",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P4 · Suspend"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "a central suspension stops new and in-flight runs of one agent, and only that agent"
+    ],
+    [
+     "Question",
+     "Does a central suspension stop a run in flight and new runs, and only that agent?"
+    ]
+   ],
+   "chips": []
+  },
+  "P5-budgets": {
+   "group": "CAPABILITY",
+   "title": "a central tool-call quota and an exhausted daily budget for support-agent",
+   "who": "agent: support-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P5 · Budgets"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "a central quota and budget stop the run at the configured limit"
+    ],
+    [
+     "Question",
+     "Does a quota stop the third call, and an exhausted budget the next run?"
+    ]
+   ],
+   "chips": []
+  },
+  "P6-revoke-mcp": {
+   "group": "CAPABILITY",
+   "title": "disable observability-mcp once: incident-agent and support-agent lose it, finance-agent does not",
+   "who": "agents: ['incident-agent', 'support-agent', 'finance-agent']",
+   "facts": [
+    [
+     "Experiment",
+     "P6 · Revoke MCP"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "disabling one MCP server centrally stops every agent that uses it, and no other"
+    ],
+    [
+     "Question",
+     "Does disabling one server stop every agent that uses it, and no other?"
+    ]
+   ],
+   "chips": []
+  },
+  "P7-models": {
+   "group": "CAPABILITY",
+   "title": "move the default model, then withdraw the only model allowed for confidential data",
+   "who": "agents: ['incident-agent', 'support-agent']",
+   "facts": [
+    [
+     "Experiment",
+     "P7 · Models"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "the model is chosen by the control plane, by data class, never named by the agent"
+    ],
+    [
+     "Question",
+     "Can the default model move, and a model be withdrawn, with no model named in agent code?"
+    ]
+   ],
+   "chips": []
+  },
+  "P8-canary": {
+   "group": "CAPABILITY",
+   "title": "roll a new default model out to 25% of finance-agent runs, roll back, then promote",
+   "who": "agent: finance-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P8 · Rollout"
+    ],
+    [
+     "Group",
+     "CAPABILITY · capability"
+    ],
+    [
+     "Property",
+     "a canary reaches only its bucket; rollback returns every run to stable"
+    ],
+    [
+     "Question",
+     "Does a canary reach only its bucket, and rollback return every run to stable?"
+    ]
+   ],
+   "chips": []
+  },
+  "P9-broker-down": {
+   "group": "BOUNDARIES",
+   "title": "the control plane is reachable but the credential broker is not",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P9 · Outage"
+    ],
+    [
+     "Group",
+     "BOUNDARIES · boundary"
+    ],
+    [
+     "Property",
+     "without the control plane, reads continue within a staleness bound and mutations fail closed"
+    ],
+    [
+     "Question",
+     "What happens without the control plane: reads, mutations, staleness, tampering, broker?"
+    ]
+   ],
+   "chips": []
+  },
+  "P9-outage": {
+   "group": "BOUNDARIES",
+   "title": "the control plane becomes unreachable from the runtime, and a suspension is published during the outage",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P9 · Outage"
+    ],
+    [
+     "Group",
+     "BOUNDARIES · boundary"
+    ],
+    [
+     "Property",
+     "without the control plane, reads continue within a staleness bound and mutations fail closed"
+    ],
+    [
+     "Question",
+     "What happens without the control plane: reads, mutations, staleness, tampering, broker?"
+    ]
+   ],
+   "chips": []
+  },
+  "P9-tampered-bundle": {
+   "group": "BOUNDARIES",
+   "title": "a bundle altered in transit to grant delete_resource",
+   "who": "agent: incident-agent",
+   "facts": [
+    [
+     "Experiment",
+     "P9 · Outage"
+    ],
+    [
+     "Group",
+     "BOUNDARIES · boundary"
+    ],
+    [
+     "Property",
+     "without the control plane, reads continue within a staleness bound and mutations fail closed"
+    ],
+    [
+     "Question",
+     "What happens without the control plane: reads, mutations, staleness, tampering, broker?"
+    ]
+   ],
+   "chips": []
+  },
+  "P10-drift": {
+   "group": "BOUNDARIES",
+   "title": "two runtime instances; one sits behind a lagging replica that still serves v1",
+   "who": "instances: ['rt-a', 'rt-b']",
+   "facts": [
+    [
+     "Experiment",
+     "P10 · Drift"
+    ],
+    [
+     "Group",
+     "BOUNDARIES · boundary"
+    ],
+    [
+     "Property",
+     "the control plane observes a runtime that has drifted from desired state, and what it did meanwhile"
+    ],
+    [
+     "Question",
+     "Can the control plane see a runtime quietly running an old version, and what it did?"
+    ]
+   ],
+   "chips": []
+  },
+  "P11-embedded": {
+   "group": "NEGATIVE CONTROL",
+   "title": "the same four governance changes, when governance lives inside each agent",
+   "who": "agents: acp/embedded/*.py",
+   "facts": [
+    [
+     "Experiment",
+     "P11 · Embedded baseline"
+    ],
+    [
+     "Group",
+     "NEGATIVE CONTROL · negative-control"
+    ],
+    [
+     "Property",
+     "governance embedded in agents: the property is broken by design"
+    ],
+    [
+     "Question",
+     "Without a control plane, what do the same changes cost, and when do they apply?"
+    ]
+   ],
+   "chips": []
+  },
+  "P11-control-plane": {
+   "group": "NEGATIVE CONTROL",
+   "title": "the same four governance changes, through the control plane",
+   "who": "agents: acp/agents/*.py",
+   "facts": [
+    [
+     "Experiment",
+     "P11 · Embedded baseline"
+    ],
+    [
+     "Group",
+     "NEGATIVE CONTROL · negative-control"
+    ],
+    [
+     "Property",
+     "governance embedded in agents: the property is broken by design"
+    ],
+    [
+     "Question",
+     "Without a control plane, what do the same changes cost, and when do they apply?"
+    ]
+   ],
+   "chips": []
+  },
+  "P12-governing-the-control-plane": {
+   "group": "GOVERN THE GOVERNOR",
+   "title": "attempts to change the control plane, legitimate and not",
+   "who": "control plane",
+   "facts": [
+    [
+     "Experiment",
+     "P12 · Self-governance"
+    ],
+    [
+     "Group",
+     "GOVERN THE GOVERNOR · governor"
+    ],
+    [
+     "Property",
+     "the control plane's own changes are authorized, validated and on a tamper-evident log"
+    ],
+    [
+     "Question",
+     "Who may change the control plane, and is every attempt on the record?"
+    ]
+   ],
+   "chips": []
+  }
+ },
+ "default_row": null,
+ "artifacts": {
+  "frozen": [
+   [
+    "config/admins.yaml",
+    "d50ac188b5e93ba11f8b59ee79d4a050b8f572a8ee610c72e0aacdb761e30cc0",
+    true
+   ],
+   [
+    "config/changes.yaml",
+    "c361eea5eea4b33f68913eb373db55bec3219625b7a1a500dfcebdb926ec3a06",
+    true
+   ],
+   [
+    "config/desired-state.yaml",
+    "fefd01cba34f58e4cf73a374f0835ab465bbb6838b913b5496c7ba5b83e1d115",
+    true
+   ],
+   [
+    "config/embedded-changes.yaml",
+    "af9f2ccd574f84e8258d74b3fde0dee073ee29cdaf17ad76438dd7e784a0987e",
+    true
+   ],
+   [
+    "config/signing.key",
+    "23212547394f7b713518ec78ea03a647f8578942d1ff8ea00146208e6afd4801",
+    true
+   ]
+  ],
+  "models": [
+   [
+    "agents",
+    "deterministic plans (acp/agents/*.py); no model"
+   ]
+  ],
+  "run_meta": [
+   [
+    "Run",
+    "2026-10-03-recorded"
+   ],
+   [
+    "Python",
+    "3.12.13"
+   ],
+   [
+    "Agents",
+    "fixed deterministic plans; no LLM"
+   ],
+   [
+    "Simulated",
+    "enterprise systems (deploy, billing, support, observability) and their MCP servers; model endpoints (deterministic text, token counts); network partition, lagging replica and in-transit tampering (flags in state/network/); credential broker (in-process minting); logical clock (ticks)"
+   ],
+   [
+    "Real",
+    "separate long-lived runtime processes (subprocess, JSON lines); control-plane versioning, signing (HMAC-SHA256), pointer, rollout; change authorization, validation, hash-chained change log; decision function and enforcement points; hash-chained runtime audit; code hashing of agent sources; file-based state shared between processes"
+   ]
+  ],
+  "checks": [
+   "restart_service decided under v1",
+   "restart_service executed (decision allow)",
+   "deploy system of record shows exactly 1 restart",
+   "audit event names the config version and the rule",
+   "the system saw a short-lived, tool-scoped credential, not a static secret",
+   "agent code unchanged, one runtime process",
+   "same request: request hash cb0531217710 before and after",
+   "same runtime process: rt-a/pid-1 answered both requests, never restarted",
+   "same agent code: sha256 677bca2acd66 before, at import and after",
+   "files changed under acp/ by the policy change: 0",
+   "control plane store changed (new bundle, signature, pointer, changelog)",
+   "before: v1 ALLOW, executed",
+   "after: v2 APPROVAL_REQUIRED, not executed",
+   "deploy system still shows 1 restart (the side effect did not happen)",
+   "approval request emitted and pending",
+   "held action not executed before approval (resume refused, 0 restarts)",
+   "the agent cannot approve its own action",
+   "an ineligible principal cannot approve",
+   "the eligible incident commander's approval is accepted",
+   "resume after approval executes under the current policy",
+   "a second resume does not execute again (ALREADY_EXECUTED)",
+   "deploy system shows exactly 1 restart",
+   "the executed event carries the approval id",
+   "agent code unchanged, one runtime process",
+   "in-flight run: every call after the suspension was denied (0 executed)",
+   "in-flight run: denial reason is AGENT_SUSPENDED under the new version",
+   "new run denied at start: 0 tool calls, 0 model calls",
+   "no production restart happened",
+   "support-agent unaffected (every call executed)",
+   "restoring needs a second person: oncall.ic alone rejected",
+   "restore with sre.lead as second approver works at the next run",
+   "agent code unchanged, one runtime process",
+   "before the quota: 3 tool calls executed, 1 refund",
+   "call 1 ALLOW, call 2 ALLOW",
+   "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+   "billing system shows 1 refund (the capped run refunded nothing)",
+   "exhausted daily budget: next run denied at start",
+   "the budget is metered centrally (shared spend meter), not per process",
+   "agent code unchanged, one runtime process",
+   "before: incident-agent query_logs ALLOW",
+   "before: support-agent query_logs ALLOW",
+   "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+   "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+   "observability-mcp received 0 calls after the revocation",
+   "finance-agent (no observability tools) unaffected",
+   "one central change, 0 agent files changed",
+   "agent source names no model (0 catalog names in acp/agents/)",
+   "v1: incident-agent served by fast-model",
+   "v2: incident-agent served by large-model, agent unchanged",
+   "confidential data always served by private-model while it is allowed",
+   "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+   "no confidential prompt ever reached a model without confidential clearance",
+   "agent code unchanged, one runtime process",
+   "canary reached some but not all runs",
+   "canary membership = deterministic bucket < 25",
+   "every run used exactly one version, and its model matches it",
+   "after rollback: 0 runs on the canary version",
+   "after promote: every run on the new version",
+   "agent code unchanged, one runtime process",
+   "reads during the outage ran on the last-known-good bundle (v1)",
+   "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+   "deploy system: only the warm run's restart (1)",
+   "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+   "beyond max_staleness every run is denied (POLICY_STALE)",
+   "after recovery the suspension lands at the next enforcement point",
+   "the altered bundle failed signature verification and was not applied",
+   "the mutation failed closed while no verified current bundle was available (BUNDLE_REJECTED)",
+   "deploy system: no production restart, no deletion",
+   "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+   "no system received a call without a credential",
+   "deploy system: 0 restarts",
+   "rt-a applied v2 and held the restart for approval",
+   "rt-b, behind the lagging replica, executed the restart under v1",
+   "drift detected: rt-b observed v1 while desired is v2",
+   "drift detected: a mutation executed under a superseded version",
+   "re-evaluated under the desired version, that action required approval",
+   "after reconcile: no instance on a stale version",
+   "agent code unchanged; both runtime processes never restarted",
+   "before the edit the embedded agent restarts production",
+   "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+   "only a redeployed process (new code hash) holds the restart",
+   "the embedded agents hold long-lived static credentials in code",
+   "default model moved at the next run (large-model)",
+   "restart held for approval at the next run",
+   "observability tools denied at the next run",
+   "incident-agent denied at the next run",
+   "0 agent files edited, 0 processes restarted, 4 bundle versions",
+   "an agent cannot change the control plane (not an administrator)",
+   "scope: a team lead cannot change another team's agent",
+   "scope: a team lead may restrict its own agent alone",
+   "two-person rule: a widening change needs a second approver",
+   "two-person rule: the second approver must be a different person",
+   "break-glass may only restrict",
+   "validation: a plaintext credential never becomes a version",
+   "break-glass suspension accepted from one on-call person",
+   "restoring (widening) needs a second person",
+   "every attempt is on the change log, accepted or rejected",
+   "the change log is hash-chained and verifies",
+   "editing one change-log row breaks the chain",
+   "every version is signed; no bundle contains a plaintext credential",
+   "every scenario's outcome is read from its state directory: runtime audit, change log, systems of record (acp/experiments.py)"
+  ]
+ },
+ "pages": [
+  {
+   "id": "overview",
+   "title": "Overview",
+   "icon": "home",
+   "blocks": [
+    {
+     "type": "run_card",
+     "kpis": [
+      [
+       "15",
+       "Scenarios"
+      ],
+      [
+       "12",
+       "Held"
+      ],
+      [
+       "2",
+       "Qualified"
+      ],
+      [
+       "1",
+       "Negative control (by design)"
+      ],
+      [
+       "100/100",
+       "Test assertions passed"
+      ],
+      [
+       "828",
+       "Recorded events"
+      ]
+     ],
+     "flow_title": "What every scenario records",
+     "flow": [
+      {
+       "icon": "layers",
+       "title": "Control plane",
+       "sub": "validate, authorize, version, sign",
+       "tone": "purple"
+      },
+      {
+       "icon": "refresh",
+       "title": "Distribution",
+       "sub": "pointer + signed bundle",
+       "tone": "blue"
+      },
+      {
+       "icon": "cpu",
+       "title": "Runtime",
+       "sub": "long-lived; enforces every call",
+       "tone": "blue"
+      },
+      {
+       "icon": "server",
+       "title": "Services",
+       "sub": "approvals, broker, spend",
+       "tone": "orange"
+      },
+      {
+       "icon": "box",
+       "title": "Systems",
+       "sub": "their own log of what they saw",
+       "tone": "gray"
+      },
+      {
+       "icon": "check",
+       "title": "Checks",
+       "sub": "read from the systems of record",
+       "tone": "green"
+      }
+     ],
+     "systems": "systems",
+     "badges": [
+      [
+       "flask",
+       "Run 2026-10-03-recorded"
+      ],
+      [
+       "check",
+       "Test assertions 100/100"
+      ],
+      [
+       "refresh",
+       "Deterministic: a rerun is byte-identical (make verify)"
+      ],
+      [
+       "cpu",
+       "Recorded run: fixed agent plans (make live: a local LLM)"
+      ]
+     ]
+    },
+    {
+     "type": "metric_grid",
+     "style": "margin-top:16px",
+     "items": [
+      {
+       "value": "12/14",
+       "label": "Control plane · held",
+       "metric": "held-C"
+      },
+      {
+       "value": "2/14",
+       "label": "Control plane · qualified",
+       "metric": "qualified-C"
+      },
+      {
+       "value": "1/1",
+       "label": "Negative control · broke by design",
+       "metric": "broken-E"
+      }
+     ]
+    },
+    {
+     "type": "table",
+     "data": "matrix",
+     "title": "Every proof, grouped: core, capability, boundaries, negative control, govern the governor",
+     "sub": "✓ held · ~ qualified (held within a stated bound) · ✕ negative control (the embedded baseline: property broken by design). One mark per scenario; select a scenario on the Scenarios page for its contract, steps and lineage."
+    },
+    {
+     "type": "callout",
+     "icon": "bulb",
+     "title": "How a scenario's outcome is decided",
+     "text": "CORE: P1 is the baseline and P2 the core proof (one central change; agent code, runtime process and request held fixed). CAPABILITY: P3–P8. BOUNDARIES: P9–P10, qualified by design. NEGATIVE CONTROL: P11. GOVERN THE GOVERNOR: P12. Held means the governed property the scenario tests held. Qualified means it held only within a stated bound: a kill switch cannot reach a partitioned runtime (P9), and drift was detected rather than prevented (P10). Negative control: the embedded baseline (P11) lost the property, which is exactly what it exists to show; it is not a failed test. Outcomes are read from each scenario's state directory, never from an agent's own account. Separately, the run's test assertions confirm every scenario behaved as expected: 15 of 15 did."
+    }
+   ]
+  },
+  {
+   "id": "runs",
+   "title": "Scenarios",
+   "icon": "list",
+   "count": "rows",
+   "blocks": [
+    {
+     "type": "case_explorer",
+     "heading": "Scenarios",
+     "flag_tab": "Qualified and negative control",
+     "search": "Search scenario ids, use cases, where a property was qualified or broke…",
+     "csv_head": "scenario,use_case,design,{factor},as_expected,outcome,where",
+     "columns": [
+      {
+       "label": "Outcome",
+       "show": "severity"
+      },
+      {
+       "label": "Where it broke",
+       "kv": "Where it broke"
+      },
+      {
+       "label": "Checks",
+       "kv": "Checks"
+      },
+      {
+       "label": "Design",
+       "kv": "Design"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "problems",
+   "title": "Qualified & negative control",
+   "icon": "alert",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "Where a property was qualified, and the negative control",
+     "sub": "Every scenario whose governed property did not simply hold, the step where it was qualified or broke, and what the record shows. Select a row for its steps."
+    },
+    {
+     "type": "table",
+     "data": "problems",
+     "title": "Qualified and negative control · run 2026-10-03-recorded",
+     "sub": "2 qualified and 1 negative control (broken by design), out of 15 scenarios."
+    },
+    {
+     "type": "table",
+     "data": "every",
+     "title": "All scenarios",
+     "sub": "15 scenarios across 12 proofs. Select a row for its input, output, steps and lineage."
+    }
+   ]
+  },
+  {
+   "id": "checks",
+   "title": "Checks",
+   "icon": "check",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "Proof checks and test assertions",
+     "sub": "Two counts, never merged. Proof checks (pae-proof/v1) compare facts read from the run: 79 checks, 73 pass, 2 limitation observed (the qualified boundaries), 4 expected failure (the negative control). Test assertions are each scenario's own checks: 100 of 100 passed."
+    },
+    {
+     "type": "table",
+     "data": "proof",
+     "title": "Proof checks · run 2026-10-03-recorded",
+     "sub": "From evidence/runs/2026-10-03-recorded/checks.jsonl. A LIMITATION OBSERVED is a result the articles print as a qualification, not a broken proof; an EXPECTED FAILURE is the negative control breaking as designed."
+    },
+    {
+     "type": "table",
+     "data": "checks",
+     "title": "Test assertions · run 2026-10-03-recorded",
+     "sub": "Written into the POC's code and evaluated by the run into checks.json. A failing assertion fails the run and the evidence documents refuse to build."
+    }
+   ]
+  },
+  {
+   "id": "lineage",
+   "title": "Data lineage",
+   "icon": "layers",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "From the scenario's inputs to the published number",
+     "sub": "The files that carry each scenario's data, in order. Every scenario's Data lineage tab lists its own files with record counts."
+    },
+    {
+     "type": "table",
+     "data": "lineage",
+     "title": "Per-scenario lineage",
+     "sub": "Paths inside the run directory; ‹scenario› is the scenario id, for example the first row on the Scenarios page."
+    },
+    {
+     "type": "table",
+     "data": "allruns",
+     "title": "Runs found",
+     "sub": "Every run directory with recorded scenarios is listed here and selectable on the Scenarios page (2 found). A new run appears after the page is rebuilt."
+    }
+   ]
+  },
+  {
+   "id": "raw",
+   "title": "Raw evidence",
+   "icon": "folder",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "artifacts",
+     "sub": "Where every value on these pages comes from.",
+     "files": [
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/scenario.json",
+       "each scenario's input, expected and observed result, outcome, checks and proof card"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/state/controlplane/",
+       "every signed bundle version and the hash-chained change log"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/state/runtime/‹instance›/audit.jsonl",
+       "every runtime decision with its config version, source and rule (hash-chained)"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/state/systems/",
+       "what each simulated system and model endpoint saw, and the side effects"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/proof.txt",
+       "every proof card, as acp proof prints it"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/checks.json",
+       "the run's checks (100/100)"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/facts.json",
+       "every number the editions and evidence documents substitute"
+      ],
+      [
+       "control_plane_poc/runs/2026-10-03-recorded/manifest.json",
+       "environment, config hashes, what is real and what is simulated"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reproduce",
+   "title": "Reproduce",
+   "icon": "terminal",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "reproduce",
+     "quick_sub": "From the ai_control_plane folder.",
+     "quickstart": [
+      [
+       "Set up the POC (Python, uv)",
+       "make setup"
+      ],
+      [
+       "Run the tests",
+       "make test"
+      ],
+      [
+       "Run every proof and rebuild this page",
+       "make run"
+      ],
+      [
+       "Rerun every proof and compare with the published run",
+       "make verify"
+      ],
+      [
+       "Proof verification",
+       "make evidence"
+      ],
+      [
+       "The final gate",
+       "make verify-all"
+      ],
+      [
+       "Rebuild this page only",
+       "make console"
+      ]
+     ],
+     "environment": [
+      [
+       "Python",
+       "3.12.13",
+       "uv sync --group dev"
+      ],
+      [
+       "Scenarios",
+       "15 per run",
+       "make run"
+      ]
+     ],
+     "replay_title": "Determinism",
+     "replay_sub": "The run is deterministic: make verify reruns every proof into a fresh copy and compares it with the published run. One explicit normalization: raw process ids (volatile.json) are masked.",
+     "reproduced_as": "identical (process ids masked)"
+    }
+   ]
+  }
+ ],
+ "case_tabs": [
+  {
+   "id": "io",
+   "label": "Input & output"
+  },
+  {
+   "id": "steps",
+   "label": "Steps"
+  },
+  {
+   "id": "lineage",
+   "label": "Data lineage"
+  },
+  {
+   "id": "logs",
+   "label": "Systems"
+  }
+ ],
+ "statements": {},
+ "svg": {},
+ "charts": {},
+ "figures": {},
+ "sections": {},
+ "generated": {
+  "at": "2026-10-04 00:47 IST",
+  "by": "tools/build_lab_console.py",
+  "runs": [
+   "2026-10-03-recorded",
+   "2026-09-30-recorded"
+  ],
+  "primary": "2026-10-03-recorded"
+ }
+}

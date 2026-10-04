@@ -1,0 +1,602 @@
+[
+ {
+  "check": "restart_service decided under v1",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "restart_service executed (decision allow)",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "deploy system of record shows exactly 1 restart",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "audit event names the config version and the rule",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "the system saw a short-lived, tool-scoped credential, not a static secret",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P1",
+  "passed": true,
+  "scenario": "P1-C-baseline"
+ },
+ {
+  "check": "same request: request hash cb0531217710 before and after",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "same runtime process: rt-a/pid-1 answered both requests, never restarted",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "same agent code: sha256 677bca2acd66 before, at import and after",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "files changed under acp/ by the policy change: 0",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "control plane store changed (new bundle, signature, pointer, changelog)",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "before: v1 ALLOW, executed",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "after: v2 APPROVAL_REQUIRED, not executed",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "deploy system still shows 1 restart (the side effect did not happen)",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "approval request emitted and pending",
+  "experiment": "P2",
+  "passed": true,
+  "scenario": "P2-C-central-change"
+ },
+ {
+  "check": "held action not executed before approval (resume refused, 0 restarts)",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "the agent cannot approve its own action",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "an ineligible principal cannot approve",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "the eligible incident commander's approval is accepted",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "resume after approval executes under the current policy",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "a second resume does not execute again (ALREADY_EXECUTED)",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "deploy system shows exactly 1 restart",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "the executed event carries the approval id",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P3",
+  "passed": true,
+  "scenario": "P3-C-approval"
+ },
+ {
+  "check": "in-flight run: every call after the suspension was denied (0 executed)",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "in-flight run: denial reason is AGENT_SUSPENDED under the new version",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "new run denied at start: 0 tool calls, 0 model calls",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "no production restart happened",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "support-agent unaffected (every call executed)",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "restoring needs a second person: oncall.ic alone rejected",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "restore with sre.lead as second approver works at the next run",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P4",
+  "passed": true,
+  "scenario": "P4-C-suspend"
+ },
+ {
+  "check": "before the quota: 3 tool calls executed, 1 refund",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "call 1 ALLOW, call 2 ALLOW",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "billing system shows 1 refund (the capped run refunded nothing)",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "exhausted daily budget: next run denied at start",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "the budget is metered centrally (shared spend meter), not per process",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P5",
+  "passed": true,
+  "scenario": "P5-C-budgets"
+ },
+ {
+  "check": "before: incident-agent query_logs ALLOW",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "before: support-agent query_logs ALLOW",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "after: incident-agent query_logs DENY MCP_SERVER_DISABLED",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "after: support-agent query_logs DENY MCP_SERVER_DISABLED",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "observability-mcp received 0 calls after the revocation",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "finance-agent (no observability tools) unaffected",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "one central change, 0 agent files changed",
+  "experiment": "P6",
+  "passed": true,
+  "scenario": "P6-C-revoke-mcp"
+ },
+ {
+  "check": "agent source names no model (0 catalog names in acp/agents/)",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "v1: incident-agent served by fast-model",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "v2: incident-agent served by large-model, agent unchanged",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "confidential data always served by private-model while it is allowed",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "v3: private-model withdrawn → confidential call DENIED, no fallback to a public model",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "no confidential prompt ever reached a model without confidential clearance",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P7",
+  "passed": true,
+  "scenario": "P7-C-models"
+ },
+ {
+  "check": "canary reached some but not all runs",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "canary membership = deterministic bucket < 25",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "every run used exactly one version, and its model matches it",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "after rollback: 0 runs on the canary version",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "after promote: every run on the new version",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "agent code unchanged, one runtime process",
+  "experiment": "P8",
+  "passed": true,
+  "scenario": "P8-C-canary"
+ },
+ {
+  "check": "reads during the outage ran on the last-known-good bundle (v1)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "deploy system: only the warm run's restart (1)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "beyond max_staleness every run is denied (POLICY_STALE)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "after recovery the suspension lands at the next enforcement point",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-outage"
+ },
+ {
+  "check": "the altered bundle failed signature verification and was not applied",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-tampered-bundle"
+ },
+ {
+  "check": "the mutation failed closed while no verified current bundle was available (BUNDLE_REJECTED)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-tampered-bundle"
+ },
+ {
+  "check": "deploy system: no production restart, no deletion",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-tampered-bundle"
+ },
+ {
+  "check": "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-broker-down"
+ },
+ {
+  "check": "no system received a call without a credential",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-broker-down"
+ },
+ {
+  "check": "deploy system: 0 restarts",
+  "experiment": "P9",
+  "passed": true,
+  "scenario": "P9-C-broker-down"
+ },
+ {
+  "check": "rt-a applied v2 and held the restart for approval",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "rt-b, behind the lagging replica, executed the restart under v1",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "drift detected: rt-b observed v1 while desired is v2",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "drift detected: a mutation executed under a superseded version",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "re-evaluated under the desired version, that action required approval",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "after reconcile: no instance on a stale version",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "agent code unchanged; both runtime processes never restarted",
+  "experiment": "P10",
+  "passed": true,
+  "scenario": "P10-C-drift"
+ },
+ {
+  "check": "before the edit the embedded agent restarts production",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-E-embedded"
+ },
+ {
+  "check": "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-E-embedded"
+ },
+ {
+  "check": "only a redeployed process (new code hash) holds the restart",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-E-embedded"
+ },
+ {
+  "check": "the embedded agents hold long-lived static credentials in code",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-E-embedded"
+ },
+ {
+  "check": "default model moved at the next run (large-model)",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-C-control-plane"
+ },
+ {
+  "check": "restart held for approval at the next run",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-C-control-plane"
+ },
+ {
+  "check": "observability tools denied at the next run",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-C-control-plane"
+ },
+ {
+  "check": "incident-agent denied at the next run",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-C-control-plane"
+ },
+ {
+  "check": "0 agent files edited, 0 processes restarted, 4 bundle versions",
+  "experiment": "P11",
+  "passed": true,
+  "scenario": "P11-C-control-plane"
+ },
+ {
+  "check": "an agent cannot change the control plane (not an administrator)",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "scope: a team lead cannot change another team's agent",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "scope: a team lead may restrict its own agent alone",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "two-person rule: a widening change needs a second approver",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "two-person rule: the second approver must be a different person",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "break-glass may only restrict",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "validation: a plaintext credential never becomes a version",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "break-glass suspension accepted from one on-call person",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "restoring (widening) needs a second person",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "every attempt is on the change log, accepted or rejected",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "the change log is hash-chained and verifies",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "editing one change-log row breaks the chain",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ },
+ {
+  "check": "every version is signed; no bundle contains a plaintext credential",
+  "experiment": "P12",
+  "passed": true,
+  "scenario": "P12-C-governing-the-control-plane"
+ }
+]

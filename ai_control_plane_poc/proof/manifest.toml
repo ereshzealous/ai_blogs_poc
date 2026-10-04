@@ -1,0 +1,114 @@
+# T4 · AI Control Plane · proof manifest (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# What a reader needs to know about the proof that is not a number: the article, the execution profile, the
+# REAL / SIMULATED / INJECTED / ARCHITECTURE declaration (every REAL item names the check that shows it ran) and the
+# entry points. Numbers are {{facts}}. The run manifest (evidence/runs/<run>/manifest.json) is built from this file and
+# the run's own recorded manifest by tools/proof_pack.py.
+
+schema = "pae-proof/v1"
+
+[article]
+id = "T4"
+series = "Production AI Engineering"
+learning = "T4"
+title = "AI Control Plane"
+headline = "Agents should contain business reasoning, not enterprise governance."
+question = "When governance is defined in a control plane instead of inside each agent, does one central change govern what several running agents may do, without editing, restarting or redeploying any of them?"
+thesis = ["Runtime executes.", "Control Plane governs.", "Enforcement points enforce.", "Observability proves."]
+principle = "Central governance. Distributed enforcement."
+poc = "control_plane_poc"
+scenario = "Three agents (incident, support, finance) in long-lived runtime processes, governed by signed, versioned bundles; enterprise systems, MCP servers and models simulated as systems of record"
+one_line = "This POC tests whether governance defined once, centrally, changes what running agents may do at their next enforcement point, with agent code, runtime process and request held fixed, and what happens at the boundaries: outage, tampering, drift and the control plane's own administration."
+
+[run]
+runtime_mode = "deterministic: agents follow fixed plans, no model; logical ticks instead of wall time"
+replay_level = "EXACT"
+replay_contract = "every file of the run is byte-identical on a rerun from source, except volatile.json, whose raw process ids are masked (labels and process counts must match)"
+
+[entrypoints]
+verify = "make verify-all"
+test = "make test"
+proof = "make proof"
+replay = "make verify"
+negative_control = "make proof P=P11"
+lab = "make console"
+package = "make pack"
+make = "make verify-all · make test · make run · make verify · make pack · make evidence · make console · make docs"
+
+[paths]
+published = "evidence/published.json"
+lab = "results/lab-console.html"
+medium = "medium/ai-control-plane-medium.html"
+technical = "technical/ai-control-plane-technical.html"
+readme = "README.md"
+verification = "evidence/verification/verification.json"
+contract = "vendor/kit5/evidence_kit/proof_contract/PROOF_STANDARD.md"
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised"
+items = [
+  { text = "Separate, long-lived runtime processes (subprocess, JSON lines); {{raw.runtime_processes}} across the run, {{raw.runtime_restarts}} restarted", check = "T4-R13-C05" },
+  { text = "Control-plane versioning: immutable bundles, HMAC-SHA256 signatures, a pointer, staged rollout and rollback", check = "T4-R13-C03" },
+  { text = "Change authorization, validation and a hash-chained change log", check = "T4-R13-C02" },
+  { text = "The decision function and the enforcement points every tool and model call passes through", check = "T4-R1-C02" },
+  { text = "A hash-chained runtime audit, every decision naming its config version and rule", check = "T4-R13-C01" },
+  { text = "Agent source hashing before, at import and after; request hashing", check = "T4-R13-C06" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a faithful local substitute for an enterprise or external system"
+items = [
+  { text = "Enterprise systems of record (deploy, billing, support, observability) and the MCP servers in front of them: in-process, with an effects ledger" },
+  { text = "Model endpoints: deterministic text and token counts behind a model gateway" },
+  { text = "The credential broker: in-process minting of short-lived, audience-bound credentials" },
+  { text = "Distribution: bundles and pointer read from shared files; network partition and lagging replica set by flags" },
+  { text = "Time: logical ticks" },
+]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure or unsafe condition introduced on purpose"
+items = [
+  { text = "Control plane unreachable from a runtime (P9a)", check = "T4-R9-C02" },
+  { text = "A bundle altered in transit (P9b)", check = "T4-R9-C05" },
+  { text = "Credential broker down (P9c)", check = "T4-R9-C07" },
+  { text = "A lagging replica serving an old pointer without error (P10)", check = "T4-R10-C02" },
+  { text = "The negative control: governance embedded in every agent instead of a control plane (P11a)", check = "T4-R11-C05" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "design this POC does not exercise"
+items = [
+  { text = "Real network distribution, key management and HA of the control plane; tenant and environment isolation; admin MFA" },
+  { text = "Real MCP protocol traffic and interoperability; real model behaviour (the optional live mode is illustrative only)" },
+  { text = "Latency, throughput and availability" },
+]
+
+[[profile]]
+group = "RUNTIME"
+rows = [
+  ["Processes", "{{raw.runtime_processes}} runtime processes, one per instance per scenario; restarted: {{raw.runtime_restarts}}", "T4-R13-C05"],
+  ["Agents", "three, fixed deterministic plans; agent source sha256 {{run.agent_code_sha256}} in every scenario", "T4-R13-C06"],
+]
+
+[[profile]]
+group = "CONTROL PLANE"
+rows = [
+  ["Bundles", "{{raw.bundles}} signed versions across the run; {{raw.plaintext_credentials_in_bundles}} plaintext credentials", "T4-R13-C03"],
+  ["Change log", "{{raw.changelogs}} hash-chained logs, all verifying", "T4-R13-C02"],
+]
+
+[[profile]]
+group = "OBSERVABILITY"
+rows = [["Audit", "{{run.audit_events}} runtime audit events on {{raw.audit_chains}} hash-chained logs", "T4-R13-C01"]]
+
+[[profile]]
+group = "REPLAY"
+rows = [["Level", "{{replay.level}}: {{replay.deterministic_equivalent}} files byte-identical, {{replay.nondeterministic}} with raw process ids masked, {{replay.not_equivalent}} different", "T4-R13-C07"]]
+
+[[profile]]
+group = "NEGATIVE CONTROL"
+rows = [["Safeguard removed", "the control plane: with governance embedded, {{p11.embedded.files_edited}} edits and {{p11.embedded.redeploys}} redeploys, and the running process kept the old rule", "T4-R11-C05"]]

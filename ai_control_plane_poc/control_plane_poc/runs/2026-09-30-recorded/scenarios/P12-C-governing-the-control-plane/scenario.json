@@ -1,0 +1,178 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "an agent cannot change the control plane (not an administrator)",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "scope: a team lead cannot change another team's agent",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "two-person rule: a widening change needs a second approver",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "two-person rule: the second approver must be a different person",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "break-glass may only restrict",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "validation: a plaintext credential never becomes a version",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "break-glass suspension accepted from one on-call person",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "restoring (widening) needs a second person",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "every attempt is on the change log, accepted or rejected",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "the change log is hash-chained and verifies",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "editing one change-log row breaks the chain",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  },
+  {
+   "check": "every version is signed; no bundle contains a plaintext credential",
+   "experiment": "P12",
+   "passed": true,
+   "scenario": "P12-C-governing-the-control-plane"
+  }
+ ],
+ "expected": "illegitimate changes rejected and logged; legitimate ones versioned and signed",
+ "experiment": "P12",
+ "id": "P12-C-governing-the-control-plane",
+ "input": {
+  "attempts": [
+   "grant itself delete_resource",
+   "raise incident-agent's tool quota",
+   "widen incident-agent's tools alone",
+   "platform.admin as its own second approver",
+   "raise a quota via break-glass",
+   "a plaintext credential in the registry (with sre.lead)",
+   "suspend incident-agent (break-glass)",
+   "restore incident-agent alone",
+   "restore incident-agent with sre.lead"
+  ]
+ },
+ "measures": [
+  [
+   "attempts",
+   9
+  ],
+  [
+   "accepted",
+   2
+  ],
+  [
+   "rejected",
+   7
+  ],
+  [
+   "changelog_rows",
+   10
+  ],
+  [
+   "versions",
+   3
+  ]
+ ],
+ "observed": "2 accepted, 7 rejected, all 10 on a verifying chain",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P12 — GOVERNING THE CONTROL PLANE ITSELF                                       │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ incident-agent     grant itself delete_resource → REJECTED · incident-agent is │\n│                    not a control-plane administrator                           │\n│ support.lead       raise incident-agent's tool quota → REJECTED · support.lead │\n│                    has no scope over incident-agent                            │\n│ platform.admin     widen incident-agent's tools alone → REJECTED · a widening  │\n│                    change needs a second approver                              │\n│ platform.admin     platform.admin as its own second approver → REJECTED · the  │\n│                    second approver must be a different person                  │\n│ oncall.ic          raise a quota via break-glass → REJECTED · a break-glass    │\n│                    change may only restrict behaviour                          │\n│ platform.admin     a plaintext credential in the registry (with sre.lead) →    │\n│                    REJECTED · tool restart_service: credential must be a       │\n│                    secret:// reference, never a value                          │\n│ oncall.ic          suspend incident-agent (break-glass) → ACCEPTED · v2        │\n│ oncall.ic          restore incident-agent alone → REJECTED · a widening change │\n│                    needs a second approver                                     │\n│ oncall.ic          restore incident-agent with sre.lead → ACCEPTED · v3        │\n│ Change log         10 rows, hash-chained · verifies; one edited row → chain    │\n│                    broken                                                      │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ an agent cannot change the control plane (not an administrator)\n  ✓ scope: a team lead cannot change another team's agent\n  ✓ two-person rule: a widening change needs a second approver\n  ✓ two-person rule: the second approver must be a different person\n  ✓ break-glass may only restrict\n  ✓ validation: a plaintext credential never becomes a version\n  ✓ break-glass suspension accepted from one on-call person\n  ✓ restoring (widening) needs a second person\n  ✓ every attempt is on the change log, accepted or rejected\n  ✓ the change log is hash-chained and verifies\n  ✓ editing one change-log row breaks the chain\n  ✓ every version is signed; no bundle contains a plaintext credential\n\n  PROOF P12: PASS  (12/12 checks)",
+ "question": "Who may change the control plane, and is every change, accepted or rejected, on the record?",
+ "steps": [
+  {
+   "actor": "incident-agent",
+   "result": "rejected: incident-agent is not a control-plane administrator",
+   "tick": 10,
+   "what": "grant itself delete_resource"
+  },
+  {
+   "actor": "support.lead",
+   "result": "rejected: support.lead has no scope over incident-agent",
+   "tick": 11,
+   "what": "raise incident-agent's tool quota"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "rejected: a widening change needs a second approver",
+   "tick": 12,
+   "what": "widen incident-agent's tools alone"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "rejected: the second approver must be a different person",
+   "tick": 13,
+   "what": "platform.admin as its own second approver"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "rejected: a break-glass change may only restrict behaviour",
+   "tick": 14,
+   "what": "raise a quota via break-glass"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "rejected: tool restart_service: credential must be a secret:// reference, never a value",
+   "tick": 15,
+   "what": "a plaintext credential in the registry (with sre.lead)"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "accepted: v2",
+   "tick": 16,
+   "what": "suspend incident-agent (break-glass)"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "rejected: a widening change needs a second approver",
+   "tick": 17,
+   "what": "restore incident-agent alone"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "accepted: v3",
+   "tick": 18,
+   "what": "restore incident-agent with sre.lead"
+  }
+ ],
+ "use_case": "attempts to change the control plane, legitimate and not",
+ "variant": "C",
+ "where": null
+}

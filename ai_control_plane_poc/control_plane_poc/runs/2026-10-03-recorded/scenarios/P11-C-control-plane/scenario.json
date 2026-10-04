@@ -1,0 +1,130 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "default model moved at the next run (large-model)",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-C-control-plane"
+  },
+  {
+   "check": "restart held for approval at the next run",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-C-control-plane"
+  },
+  {
+   "check": "observability tools denied at the next run",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-C-control-plane"
+  },
+  {
+   "check": "incident-agent denied at the next run",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-C-control-plane"
+  },
+  {
+   "check": "0 agent files edited, 0 processes restarted, 4 bundle versions",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-C-control-plane"
+  }
+ ],
+ "expected": "each change takes effect at the next run with no code change",
+ "experiment": "P11",
+ "id": "P11-C-control-plane",
+ "input": {
+  "agents": "acp/agents/*.py",
+  "changes": [
+   "restart-requires-approval",
+   "revoke-observability-mcp",
+   "suspend-incident-agent",
+   "migrate-default-model"
+  ]
+ },
+ "measures": [
+  [
+   "files_edited",
+   0
+  ],
+  [
+   "lines_changed",
+   0
+  ],
+  [
+   "redeploys",
+   0
+  ],
+  [
+   "bundle_versions",
+   4
+  ],
+  [
+   "static_credential_literals",
+   0
+  ]
+ ],
+ "observed": "4 versions; 0 edits; 0 redeploys",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P11b — THE SAME FOUR CHANGES THROUGH THE CONTROL PLANE                         │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Changes            model default · restart approval · revoke MCP · suspend     │\n│ Published          v2 … v5 · 4 signed bundle versions                          │\n│ Agent code         0 files edited · 0 redeploys · one runtime process          │\n│                    throughout                                                  │\n│ Effect             each change applied at the next enforcement point           │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ default model moved at the next run (large-model)\n  ✓ restart held for approval at the next run\n  ✓ observability tools denied at the next run\n  ✓ incident-agent denied at the next run\n  ✓ 0 agent files edited, 0 processes restarted, 4 bundle versions\n\n  PROOF P11b: PASS\n  Test assertions: 5/5 passed",
+ "question": "Without a control plane, what does the same set of governance changes cost, and when do they take effect?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v2 (widening)",
+   "tick": 10,
+   "version": "v2",
+   "what": "publish migrate-default-model"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "v3 (restricting)",
+   "tick": 20,
+   "version": "v3",
+   "what": "publish restart-requires-approval"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "v4 (restricting)",
+   "tick": 30,
+   "version": "v4",
+   "what": "publish revoke-observability-mcp"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "v5 (restricting)",
+   "tick": 40,
+   "version": "v5",
+   "what": "publish suspend-incident-agent"
+  },
+  {
+   "actor": "runtime",
+   "result": "pending_approval",
+   "tick": 0,
+   "what": "effect of restart-requires-approval"
+  },
+  {
+   "actor": "runtime",
+   "result": "MCP_SERVER_DISABLED",
+   "tick": 0,
+   "what": "effect of revoke-observability-mcp"
+  },
+  {
+   "actor": "runtime",
+   "result": "AGENT_SUSPENDED",
+   "tick": 0,
+   "what": "effect of suspend-incident-agent"
+  },
+  {
+   "actor": "runtime",
+   "result": "large-model",
+   "tick": 0,
+   "what": "effect of migrate-default-model"
+  }
+ ],
+ "use_case": "the same four governance changes, through the control plane",
+ "variant": "C",
+ "where": null
+}

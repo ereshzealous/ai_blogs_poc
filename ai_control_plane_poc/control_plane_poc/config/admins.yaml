@@ -1,0 +1,19 @@
+# T4 · who may change the control plane, and how (the control plane governs agents; this governs the control plane).
+#
+#   scope        which agents' desired state the principal may change ("*" = every agent and the shared registries)
+#   break_glass  may publish an emergency change that only RESTRICTS (suspend, disable, revoke) without a second approver
+#   production   a change that widens or rewrites production behaviour needs a second, different approver
+#
+# Agents are not administrators. Their identities appear nowhere in this file.
+
+admins:
+  platform.admin: { scope: ["*"],              break_glass: true,  can_approve: true }
+  sre.lead:       { scope: [incident-agent],   break_glass: false, can_approve: true }
+  support.lead:   { scope: [support-agent],    break_glass: false, can_approve: true }
+  ml.lead:        { scope: ["models"],         break_glass: false, can_approve: true }
+  oncall.ic:      { scope: [incident-agent],   break_glass: true,  can_approve: false }
+
+approvers:
+  ic.dev:       { role: incident-commander }
+  ic.ana:       { role: incident-commander }
+  finance.lead: { role: finance-approver }

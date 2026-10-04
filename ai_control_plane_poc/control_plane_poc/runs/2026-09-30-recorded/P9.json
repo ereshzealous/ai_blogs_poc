@@ -1,0 +1,37 @@
+{
+ "checks_passed": 12,
+ "checks_total": 12,
+ "expected_failures": [],
+ "experiment": "P9",
+ "measures": {
+  "P9-C-broker-down": {
+   "tool_calls_denied": 2
+  },
+  "P9-C-outage": {
+   "calls_executed_after_suspension_published": 3,
+   "lkg_version": "v1",
+   "max_staleness_ticks": 30,
+   "mutation_during_outage": "CONTROL_PLANE_UNREACHABLE",
+   "reads_on_lkg": 4,
+   "recovered_run": "AGENT_SUSPENDED",
+   "stale_run": "POLICY_STALE"
+  },
+  "P9-C-tampered-bundle": {
+   "applied_version": "v1",
+   "rejected_events": 5,
+   "restart_decision": "BUNDLE_REJECTED"
+  }
+ },
+ "outcomes": {
+  "P9-C-broker-down": "held",
+  "P9-C-outage": "qualified",
+  "P9-C-tampered-bundle": "held"
+ },
+ "question": "What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?",
+ "scenarios": [
+  "P9-C-outage",
+  "P9-C-tampered-bundle",
+  "P9-C-broker-down"
+ ],
+ "title": "When the control plane is unreachable"
+}

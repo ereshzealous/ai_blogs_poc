@@ -1,0 +1,273 @@
+# T4 · AI Control Plane · claims → experiments → checks (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# Every material claim the editions make, without its numbers (they are facts). `verdict` is tested against the checks
+# by the kit (supported: every check PASS; contradicted: a FAIL; control: an EXPECTED_FAILURE; limitation: names what it
+# rests_on). `class` is what a reader sees, and tools/verify_evidence.py checks that it goes with the verdict:
+#
+#   SUPPORTED          supported | implementation    the recorded evidence shows it
+#   QUALIFIED          supported                     shown within a stated bound (`qualification`), with the
+#                                                    LIMITATION OBSERVED checks that measure the bound (`bound_checks`)
+#   NEGATIVE CONTROL   control                       the property broke, by design, when its safeguard was removed
+#   NOT SUPPORTED      contradicted                  a stronger version of a claim the evidence contradicts
+#   ARGUED             limitation                    reasoned in the editions, not tested by this POC
+#   NOT TESTED         limitation                    out of this POC's scope
+#
+# `article` names where the claim is stated (the Evidence Check row, Medium and Technical section headings); `facts`
+# lists the result facts the editions print for it.
+
+[[claims]]
+id = "T4-C01"
+class = "SUPPORTED"
+statement = "One central change altered an agent's governed behaviour with the same agent code, the same runtime process and the same request; no agent edit, no redeploy."
+observed = "{{p2.before_decision}} under `{{p2.before_version}}` → {{p2.after_decision}} under `{{p2.after_version}}`; agent sha256 `{{p2.agent_sha_before}}` → `{{p2.agent_sha_after}}`; process `{{p2.runtime_pid_before}}` → `{{p2.runtime_pid_after}}`; request `{{p2.request_hash_before}}` → `{{p2.request_hash_after}}`; edits {{p2.agent_edits}}, redeploys {{p2.redeploys}}; restarts {{p2.restarts_after_v1}} → {{p2.restarts_after_v2}}"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R2"]
+checks = ["T4-R2-C01", "T4-R2-C02", "T4-R2-C03", "T4-R2-C04", "T4-R2-C05", "T4-R2-C06", "T4-R2-C07", "T4-R2-C08", "T4-R2-C09", "T4-R2-C10"]
+article = ["evidence"]
+facts = ["p2.before_decision", "p2.after_decision", "p2.before_version", "p2.after_version", "p2.agent_sha_before", "p2.agent_sha_after",
+         "p2.runtime_pid_before", "p2.runtime_pid_after", "p2.request_hash_before", "p2.request_hash_after", "p2.agent_edits", "p2.redeploys",
+         "p2.restarts_after_v1", "p2.restarts_after_v2", "p2.side_effect_delta", "p2.acp_files_changed", "p2.approval_id",
+         "p2.agent_code_sha256", "p2.control_plane_files_changed", "p2.restarts"]
+
+[[claims]]
+id = "T4-C02"
+class = "SUPPORTED"
+statement = "Before any change the governed path allows the action, executes it once and attributes it to the version and rule that allowed it."
+observed = "{{p1.decision}} under `{{p1.config_version}}` by `{{p1.rule}}`; {{p1.restarts}} restart in the deploy system"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R1"]
+checks = ["T4-R1-C01", "T4-R1-C02", "T4-R1-C03", "T4-R1-C04"]
+article = ["evidence"]
+facts = ["p1.decision", "p1.config_version", "p1.restarts", "p1.rule"]
+
+[[claims]]
+id = "T4-C03"
+class = "SUPPORTED"
+statement = "A held action does not execute before an eligible human approves, executes exactly once after, and the agent cannot approve its own action."
+observed = "{{p3.restarts_before_approval}} restarts before approval, {{p3.restarts_after}} after; duplicate resume `{{p3.duplicate_resume}}`; {{p3.refused_approvers}} approvers refused, the agent among them"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R3"]
+checks = ["T4-R3-C01", "T4-R3-C02", "T4-R3-C03", "T4-R3-C04", "T4-R3-C05"]
+article = ["evidence"]
+facts = ["p3.restarts_before_approval", "p3.restarts_after", "p3.duplicate_resume", "p3.refused_approvers", "p3.approved_by"]
+
+[[claims]]
+id = "T4-C04"
+class = "SUPPORTED"
+statement = "A central suspension stops a run in flight at its next enforcement point, stops new runs, leaves other agents alone, and restoring needs a second person."
+observed = "{{p4.inflight_executed_after_suspension}} of {{p4.inflight_calls_after_suspension}} later calls executed; new run `{{p4.new_run}}`; {{p4.other_agent_calls_executed}} calls of another agent executed; restore alone `{{p4.restore_alone}}`"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R4"]
+checks = ["T4-R4-C01", "T4-R4-C02", "T4-R4-C03", "T4-R4-C04", "T4-R4-C05"]
+article = ["evidence"]
+facts = ["p4.inflight_executed_after_suspension", "p4.inflight_calls_after_suspension", "p4.new_run", "p4.other_agent_calls_executed", "p4.restore_alone", "p4.suspend_version", "p4.restore_version"]
+
+[[claims]]
+id = "T4-C05"
+class = "SUPPORTED"
+statement = "Central quotas and budgets are hard limits, enforced per call and per run."
+observed = "call 3 `{{p5.call_3}}`; next run `{{p5.run_after_budget}}`"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R5"]
+checks = ["T4-R5-C01", "T4-R5-C02", "T4-R5-C03"]
+article = ["evidence"]
+facts = ["p5.call_3", "p5.run_after_budget", "p5.max_tool_calls", "p5.spent_usd", "p5.quota_version", "p5.budget_version", "p5.refunds"]
+
+[[claims]]
+id = "T4-C06"
+class = "SUPPORTED"
+statement = "Disabling one MCP server centrally stops every agent that uses it, and no other."
+observed = "{{p6.observability_calls_after}} server calls after the revocation; {{p6.calls_denied_mcp_disabled}} calls denied; {{p6.agents_affected}} agents affected, {{p6.agents_unaffected}} unaffected"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R6"]
+checks = ["T4-R6-C01", "T4-R6-C02", "T4-R6-C03", "T4-R6-C04"]
+article = ["evidence"]
+facts = ["p6.observability_calls_after", "p6.observability_calls_before", "p6.calls_denied_mcp_disabled", "p6.agents_affected", "p6.agents_unaffected", "p6.revoke_version"]
+
+[[claims]]
+id = "T4-C07"
+class = "SUPPORTED"
+statement = "Agents name no model; the default moves centrally, and confidential data fails closed rather than falling back to an uncleared model."
+observed = "`{{p7.v1_incident_model}}` → `{{p7.v2_incident_model}}`; confidential under v3: `{{p7.v3_support_model}}`; {{p7.model_names_in_agent_code}} model names in agent code"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R7"]
+checks = ["T4-R7-C01", "T4-R7-C02", "T4-R7-C03", "T4-R7-C04"]
+article = ["evidence"]
+facts = ["p7.v1_incident_model", "p7.v2_incident_model", "p7.v3_support_model", "p7.model_names_in_agent_code", "p7.confidential_calls"]
+
+[[claims]]
+id = "T4-C08"
+class = "SUPPORTED"
+statement = "A governance change can be canaried, rolled back and promoted without touching agents."
+observed = "canary {{p8.canary_runs_on_new}}/{{p8.canary_runs}} runs on the new version; after rollback {{p8.rollback_runs_on_new}}; after promotion {{p8.promoted_runs_on_new}}"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R8"]
+checks = ["T4-R8-C01", "T4-R8-C02", "T4-R8-C03", "T4-R8-C04"]
+article = ["evidence"]
+facts = ["p8.canary_runs_on_new", "p8.canary_runs", "p8.rollback_runs_on_new", "p8.promoted_runs_on_new", "p8.canary_percent"]
+
+[[claims]]
+id = "T4-C09"
+class = "QUALIFIED"
+statement = "Without its control plane, the runtime serves reads from last-known-good within a staleness bound and fails mutations closed; a suspension cannot reach a partitioned runtime, so exposure is bounded, not removed."
+observed = "reads on `{{p9.outage.lkg_version}}`; mutation `{{p9.outage.mutation_during_outage}}`; past the bound `{{p9.outage.stale_run}}`; bound: {{p9.outage.calls_executed_after_suspension_published}} calls ran after the suspension was published"
+qualification = "held within the stated bound: read and model calls kept running on last-known-good after the suspension was published, until the staleness bound"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R9"]
+checks = ["T4-R9-C01", "T4-R9-C02", "T4-R9-C03", "T4-R9-C04"]
+bound_checks = ["T4-R9-C08"]
+article = ["evidence"]
+facts = ["p9.outage.lkg_version", "p9.outage.mutation_during_outage", "p9.outage.calls_executed_after_suspension_published", "p9.outage.stale_run",
+         "p9.outage.recovered_run", "p9.outage.max_staleness_ticks", "p9.outage.reads_on_lkg"]
+
+[[claims]]
+id = "T4-C10"
+class = "SUPPORTED"
+statement = "A bundle altered in transit is rejected and never applied; with the credential broker down, no call is made, even one policy would allow."
+observed = "{{p9.tamper.rejected_events}} rejections, applied `{{p9.tamper.applied_version}}`; broker down: {{p9.broker.tool_calls_denied}} calls denied"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R9"]
+checks = ["T4-R9-C05", "T4-R9-C06", "T4-R9-C07"]
+article = ["evidence"]
+facts = ["p9.tamper.rejected_events", "p9.tamper.applied_version", "p9.tamper.restart_decision", "p9.broker.tool_calls_denied"]
+
+[[claims]]
+id = "T4-C11"
+class = "QUALIFIED"
+statement = "A silently stale runtime enforces the old rules; comparing desired and observed state detects it and the action it took. Detected, not prevented."
+observed = "rt-b observed `{{p10.observed_rt_b}}` while `{{p10.desired}}` was desired; {{p10.drift_findings}} findings; {{p10.executed_under_superseded}} action under a superseded version; {{p10.stale_after_reconcile}} stale after reconcile"
+qualification = "detected, not prevented: the stale runtime executed an action under the superseded version before reconcile"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R10"]
+checks = ["T4-R10-C01", "T4-R10-C02", "T4-R10-C03", "T4-R10-C04"]
+bound_checks = ["T4-R10-C05"]
+article = ["evidence"]
+facts = ["p10.desired", "p10.observed_rt_a", "p10.observed_rt_b", "p10.drift_findings", "p10.executed_under_superseded", "p10.stale_after_reconcile"]
+
+[[claims]]
+id = "T4-C12"
+class = "NEGATIVE CONTROL"
+statement = "With governance embedded in each agent, a change is a code edit that a running process does not see until it is redeployed: the property P2 shows breaks, by design."
+observed = "{{p11.embedded.files_edited}} file edits, {{p11.embedded.redeploys}} redeploys; the running process after the edit: `{{p11.embedded.restart_before_redeploy}}`; {{p11.embedded.static_credential_literals}} static credentials in agent code"
+type = "control"
+verdict = "control"
+experiments = ["T4-R11"]
+checks = ["T4-R11-C04", "T4-R11-C05", "T4-R11-C06", "T4-R11-C07", "T4-R11-C08"]
+article = ["evidence"]
+facts = ["p11.embedded.files_edited", "p11.embedded.redeploys", "p11.embedded.lines_changed", "p11.embedded.restart_before_redeploy",
+         "p11.embedded.restart_after_redeploy", "p11.embedded.static_credential_literals",
+         "p11.embedded.restart-requires-approval.files", "p11.embedded.revoke-observability-mcp.files", "p11.embedded.suspend-incident-agent.files",
+         "p11.embedded.migrate-default-model.files"]
+
+[[claims]]
+id = "T4-C13"
+class = "SUPPORTED"
+statement = "The same four changes through the control plane needed no agent edit and no redeploy."
+observed = "{{p11.cp.bundle_versions}} versions; {{p11.cp.files_edited}} edits; {{p11.cp.redeploys}} redeploys"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R11"]
+checks = ["T4-R11-C01", "T4-R11-C02", "T4-R11-C03"]
+article = ["evidence"]
+facts = ["p11.cp.bundle_versions", "p11.cp.files_edited", "p11.cp.redeploys", "p11.cp.static_credential_literals"]
+
+[[claims]]
+id = "T4-C14"
+class = "SUPPORTED"
+statement = "Agents cannot change the control plane; a team admin may restrict its own scope alone; widening needs a second person; break-glass only restricts; a plaintext credential never becomes a version; every attempt is on a tamper-evident local log under POC assumptions."
+observed = "{{p12.attempts}} attempts: {{p12.accepted}} accepted (own-scope restriction `{{p12.own_scope_restriction}}`), {{p12.rejected}} rejected (plaintext credential `{{p12.plaintext_credential}}`); {{p12.changelog_rows}} rows verifying; one edited row verifies: `{{p12.tampered_changelog_verifies}}`"
+type = "measured"
+verdict = "supported"
+experiments = ["T4-R12"]
+checks = ["T4-R12-C01", "T4-R12-C02", "T4-R12-C03", "T4-R12-C04", "T4-R12-C05", "T4-R12-C06", "T4-R12-C07", "T4-R12-C08", "T4-R12-C09", "T4-R12-C10", "T4-R12-C11"]
+article = ["evidence"]
+facts = ["p12.attempts", "p12.accepted", "p12.rejected", "p12.changelog_rows", "p12.versions", "p12.own_scope_restriction", "p12.plaintext_credential",
+         "p12.tampered_changelog_verifies"]
+
+[[claims]]
+id = "T4-C15"
+class = "SUPPORTED"
+statement = "The evidence holds together: every hash chain and bundle signature verifies, no bundle holds a plaintext credential, no runtime restarted, one agent source hash throughout, and a rerun from source is identical except for masked process ids."
+observed = "{{raw.audit_chains}} audit and {{raw.changelogs}} change-log chains verify; {{raw.bundles}} bundle signatures verify; {{raw.runtime_restarts}} runtime restarts; rerun {{replay.level}}: {{replay.not_equivalent}} files differ"
+type = "implementation"
+verdict = "implementation"
+experiments = ["T4-R13"]
+checks = ["T4-R13-C01", "T4-R13-C02", "T4-R13-C03", "T4-R13-C05", "T4-R13-C06", "T4-R13-C07", "T4-R13-C08"]
+article = ["evidence"]
+facts = ["raw.audit_chains", "raw.changelogs", "raw.bundles", "raw.runtime_processes", "raw.runtime_restarts", "run.agent_code_sha256",
+         "replay.level", "replay.deterministic_equivalent", "replay.nondeterministic", "replay.not_equivalent", "run.audit_events"]
+
+[[claims]]
+id = "T4-C16"
+class = "NOT SUPPORTED"
+statement = "A central kill switch stops every runtime instantly."
+observed = "{{p9.outage.calls_executed_after_suspension_published}} calls executed on a partitioned runtime after the suspension was published"
+type = "measured"
+verdict = "contradicted"
+experiments = ["T4-R9"]
+checks = ["T4-R9-C08"]
+article = ["evidence"]
+facts = ["p9.outage.calls_executed_after_suspension_published"]
+
+[[claims]]
+id = "T4-C17"
+class = "NOT SUPPORTED"
+statement = "Comparing desired and observed state prevents a stale runtime from acting."
+observed = "{{p10.executed_under_superseded}} action executed under a superseded version before drift was reconciled"
+type = "measured"
+verdict = "contradicted"
+experiments = ["T4-R10"]
+checks = ["T4-R10-C05"]
+article = ["evidence"]
+facts = ["p10.executed_under_superseded"]
+
+[[claims]]
+id = "T4-C18"
+class = "ARGUED"
+statement = "At 50 or 500 agents, embedded governance costs grow with every agent that embeds a rule, while a control plane change stays one version."
+observed = "measured at three agents only"
+type = "limitation"
+verdict = "limitation"
+rests_on = "an extrapolation from P11, which measured three agents only"
+article = ["evidence"]
+
+[[claims]]
+id = "T4-C19"
+class = "ARGUED"
+statement = "The control plane need not be in the path of every call; most decisions can be local against a cached, signed bundle."
+observed = "not measured: no latency or availability figures"
+type = "limitation"
+verdict = "limitation"
+rests_on = "the design: the POC decides locally against a cached bundle, but no latency or availability was measured"
+article = ["evidence"]
+
+[[claims]]
+id = "T4-C20"
+class = "NOT TESTED"
+statement = "Real MCP protocol interoperability."
+observed = "no MCP protocol traffic"
+type = "limitation"
+verdict = "limitation"
+rests_on = "the MCP servers are simulated in-process boundaries; no MCP protocol traffic was exchanged"
+article = ["evidence"]
+
+[[claims]]
+id = "T4-C21"
+class = "NOT TESTED"
+statement = "Environment and tenant isolation, admin MFA, HA, backup and real key management of the control plane."
+observed = "not exercised"
+type = "limitation"
+verdict = "limitation"
+rests_on = "not exercised: one machine, a POC signing key file, simulated principals"
+article = ["evidence"]

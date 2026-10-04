@@ -1,0 +1,51 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-broker-down"
+  },
+  {
+   "check": "no system received a call without a credential",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-broker-down"
+  },
+  {
+   "check": "deploy system: 0 restarts",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-broker-down"
+  }
+ ],
+ "expected": "no credential, no call",
+ "experiment": "P9",
+ "id": "P9-C-broker-down",
+ "input": {
+  "agent": "incident-agent",
+  "failure": "credential broker unavailable"
+ },
+ "measures": [
+  [
+   "tool_calls_denied",
+   2
+  ]
+ ],
+ "observed": "all tool calls denied CREDENTIAL_UNAVAILABLE",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P9c — CREDENTIAL BROKER DOWN                                                   │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Policy             v1 · query_logs, query_metrics ALLOW                        │\n│ Broker             unavailable                                                 │\n│ Result             every tool call → DENY · CREDENTIAL_UNAVAILABLE             │\n│ Systems            0 calls received · 0 restarts                               │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ every tool call denied CREDENTIAL_UNAVAILABLE (policy allowed them)\n  ✓ no system received a call without a credential\n  ✓ deploy system: 0 restarts\n\n  PROOF P9c: PASS\n  Test assertions: 3/3 passed",
+ "question": "What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?",
+ "steps": [
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:denied(CREDENTIAL_UNAVAILABLE), query_metrics:denied(CREDENTIAL_UNAVAILABLE), fast-model:executed",
+   "tick": 10,
+   "what": "run with the broker down"
+  }
+ ],
+ "use_case": "the control plane is reachable but the credential broker is not",
+ "variant": "C",
+ "where": null
+}

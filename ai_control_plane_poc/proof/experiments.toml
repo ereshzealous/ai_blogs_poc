@@ -1,0 +1,726 @@
+# T4 · AI Control Plane · proof experiments (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# One experiment per proof (T4-R1 = P1 … T4-R12 = P12) and one for the evidence itself (T4-R13). Every check compares
+# facts that tools/proof_facts.py read from the recorded run; the observed value is always the fact's value, never typed
+# here. `role` places the experiment in the proof hierarchy: baseline, core, capability, boundary, negative-control,
+# governor. A measurement check that declares finding = "LIMITATION OBSERVED" states the ideal and records, as a result,
+# that the run did not meet it: those FAILs are the qualifications the articles print, not broken proofs.
+# Scenario assertions (scenario.json → checks) are counted separately from these proof checks, and unit tests apart
+# from both.
+
+[[experiments]]
+id = "T4-R1"
+role = "baseline"
+title = "P1 · Baseline: the control plane allows"
+question = "Under v1, does the incident agent's production restart run, and is it attributed to v1?"
+claim = "Before any change, the governed path allows the action, executes it once and attributes it to the version and rule that allowed it."
+hypothesis = "Under v1 the restart is allowed by a named rule, executed once, and the deploy system of record shows one restart."
+setup = "Bootstrap v1; the incident agent runs its fixed plan in a long-lived runtime process."
+variable = "none (baseline)"
+invariant = "Every executed action names the config version and rule that allowed it."
+limitations = ["One agent, one action: the baseline the other proofs change."]
+tests = ["control_plane_poc/tests/test_proofs.py", "control_plane_poc/tests/test_invariants.py"]
+  [[experiments.checks]]
+  id = "T4-R1-C01"
+  description = "Every P1 scenario assertion held"
+  kind = "invariant"
+  fact = "p1.assertions_passed"
+  op = "=="
+  ref = "p1.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R1-C02"
+  description = "The restart was decided ALLOW by the decision function"
+  kind = "implementation"
+  fact = "p1.decision"
+  op = "=="
+  value = "ALLOW"
+  [[experiments.checks]]
+  id = "T4-R1-C03"
+  description = "The decision names config version v1"
+  kind = "invariant"
+  fact = "p1.config_version"
+  op = "=="
+  value = "v1"
+  [[experiments.checks]]
+  id = "T4-R1-C04"
+  description = "The deploy system of record shows exactly one restart"
+  kind = "invariant"
+  fact = "p1.restarts"
+  op = "=="
+  value = 1
+
+[[experiments]]
+id = "T4-R2"
+role = "core"
+title = "P2 · One central change, same agent"
+question = "Change only the control plane. Does the same process, with the same code and request, now stop for approval?"
+claim = "Governed behaviour changes centrally while agent code, runtime process and request are held fixed."
+hypothesis = "The same request to the same process with the same agent code is ALLOW under v1 and APPROVAL_REQUIRED under v2, with no new side effect."
+setup = "Run the restart under v1; publish restart-requires-approval (v2) centrally; send the identical request to the same process."
+variable = "The control plane version (v1 → v2); nothing else."
+invariant = "Agent sha256, runtime process and request hash are equal before and after; agent edits 0; redeploys 0."
+limitations = ["P2 fails by design if code, process or request changes (control_plane_poc/tests/test_cheating.py)."]
+tests = ["control_plane_poc/tests/test_cheating.py"]
+  [[experiments.checks]]
+  id = "T4-R2-C01"
+  description = "Every P2 scenario assertion held"
+  kind = "invariant"
+  fact = "p2.assertions_passed"
+  op = "=="
+  ref = "p2.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R2-C02"
+  description = "Same agent code: sha256 before equals sha256 after"
+  kind = "invariant"
+  fact = "p2.agent_sha_after"
+  op = "=="
+  ref = "p2.agent_sha_before"
+  [[experiments.checks]]
+  id = "T4-R2-C03"
+  description = "Same runtime process answered both requests"
+  kind = "invariant"
+  fact = "p2.runtime_pid_after"
+  op = "=="
+  ref = "p2.runtime_pid_before"
+  [[experiments.checks]]
+  id = "T4-R2-C04"
+  description = "Same request: request hash before equals request hash after"
+  kind = "invariant"
+  fact = "p2.request_hash_after"
+  op = "=="
+  ref = "p2.request_hash_before"
+  [[experiments.checks]]
+  id = "T4-R2-C05"
+  description = "Agent edits: 0"
+  kind = "invariant"
+  fact = "p2.agent_edits"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R2-C06"
+  description = "Redeploys: 0"
+  kind = "invariant"
+  fact = "p2.redeploys"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R2-C07"
+  description = "The control plane version changed between the two requests"
+  kind = "invariant"
+  fact = "p2.after_version"
+  op = "!="
+  ref = "p2.before_version"
+  [[experiments.checks]]
+  id = "T4-R2-C08"
+  description = "Before: ALLOW"
+  kind = "invariant"
+  fact = "p2.before_decision"
+  op = "=="
+  value = "ALLOW"
+  [[experiments.checks]]
+  id = "T4-R2-C09"
+  description = "After: APPROVAL_REQUIRED"
+  kind = "invariant"
+  fact = "p2.after_decision"
+  op = "=="
+  value = "APPROVAL_REQUIRED"
+  [[experiments.checks]]
+  id = "T4-R2-C10"
+  description = "No new side effect in the deploy system of record after the change"
+  kind = "invariant"
+  fact = "p2.side_effect_delta"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "T4-R3"
+role = "capability"
+title = "P3 · Approval, then exactly one execution"
+question = "Does the held action stay unexecuted until an eligible human approves, and then run exactly once?"
+claim = "A held action waits for an eligible approver, executes once, and a duplicate resume is refused."
+hypothesis = "0 restarts before approval, 1 after; ineligible approvers (the agent among them) refused; a second resume refused."
+setup = "v2 holds production restarts for approval; the agent, an ineligible principal and an eligible approver act on the approval."
+variable = "Who approves, and how often the action is resumed."
+invariant = "Exactly one execution, after an eligible approval."
+limitations = ["Approvals are simulated principals, not a real identity provider."]
+  [[experiments.checks]]
+  id = "T4-R3-C01"
+  description = "Every P3 scenario assertion held"
+  kind = "invariant"
+  fact = "p3.assertions_passed"
+  op = "=="
+  ref = "p3.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R3-C02"
+  description = "No restart before approval"
+  kind = "invariant"
+  fact = "p3.restarts_before_approval"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R3-C03"
+  description = "Exactly one restart after approval"
+  kind = "invariant"
+  fact = "p3.restarts_after"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "T4-R3-C04"
+  description = "A duplicate resume is refused"
+  kind = "invariant"
+  fact = "p3.duplicate_resume"
+  op = "=="
+  value = "ALREADY_EXECUTED"
+  [[experiments.checks]]
+  id = "T4-R3-C05"
+  description = "Ineligible approvers, the agent among them, were refused"
+  kind = "invariant"
+  fact = "p3.refused_approvers"
+  op = ">="
+  value = 1
+
+[[experiments]]
+id = "T4-R4"
+role = "capability"
+title = "P4 · Suspend: the kill switch"
+question = "Does a central suspension stop new runs and a run already in flight, and only that agent?"
+claim = "A central suspension takes effect at the next enforcement point of a run in flight, denies new runs, and leaves other agents alone."
+hypothesis = "0 in-flight calls execute after the suspension; a new run is denied AGENT_SUSPENDED; the other agent keeps executing."
+setup = "Pause a run after two tool calls, publish a break-glass suspension, let the run continue; start a new run; run another agent."
+variable = "Suspension published mid-run."
+invariant = "No call of the suspended agent executes after the suspension reaches its runtime."
+limitations = ["Takes effect at the next enforcement point, not mid-call; a partitioned runtime is P9a."]
+  [[experiments.checks]]
+  id = "T4-R4-C01"
+  description = "Every P4 scenario assertion held"
+  kind = "invariant"
+  fact = "p4.assertions_passed"
+  op = "=="
+  ref = "p4.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R4-C02"
+  description = "No in-flight call executed after the suspension"
+  kind = "invariant"
+  fact = "p4.inflight_executed_after_suspension"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R4-C03"
+  description = "A new run is denied"
+  kind = "invariant"
+  fact = "p4.new_run"
+  op = "=="
+  value = "denied AGENT_SUSPENDED"
+  [[experiments.checks]]
+  id = "T4-R4-C04"
+  description = "Another agent's calls kept executing"
+  kind = "invariant"
+  fact = "p4.other_agent_calls_executed"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R4-C05"
+  description = "Restoring alone is rejected (widening needs a second person)"
+  kind = "invariant"
+  fact = "p4.restore_alone"
+  op = "=="
+  value = "rejected"
+
+[[experiments]]
+id = "T4-R5"
+role = "capability"
+title = "P5 · Budgets and quotas"
+question = "Does a central quota stop the third tool call, and an exhausted budget stop the next run?"
+claim = "Quotas and budgets set centrally are enforced per call and per run."
+hypothesis = "Call 3 is denied TOOL_CALL_BUDGET_EXCEEDED; the run after the budget is spent is denied DAILY_BUDGET_EXHAUSTED."
+setup = "Publish max_tool_calls 2, then a daily budget below the spend so far."
+variable = "The quota and the budget."
+invariant = "No call beyond the quota; no run beyond the budget."
+limitations = ["Spend is metered from simulated token counts and prices."]
+  [[experiments.checks]]
+  id = "T4-R5-C01"
+  description = "Every P5 scenario assertion held"
+  kind = "invariant"
+  fact = "p5.assertions_passed"
+  op = "=="
+  ref = "p5.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R5-C02"
+  description = "The call beyond the quota is denied"
+  kind = "invariant"
+  fact = "p5.call_3"
+  op = "=="
+  value = "denied TOOL_CALL_BUDGET_EXCEEDED"
+  [[experiments.checks]]
+  id = "T4-R5-C03"
+  description = "The run after the budget is exhausted is denied"
+  kind = "invariant"
+  fact = "p5.run_after_budget"
+  op = "=="
+  value = "denied DAILY_BUDGET_EXHAUSTED"
+
+[[experiments]]
+id = "T4-R6"
+role = "capability"
+title = "P6 · Revoke one MCP server for every agent"
+question = "Does disabling one server centrally stop every agent that uses it, and no other?"
+claim = "One central revocation stops every agent that uses the server, and only those."
+hypothesis = "0 calls reach the server after the revocation; the agents that use it are denied; the agent that does not is unaffected."
+setup = "Two agents use the observability server, one does not; publish the server as disabled."
+variable = "The server's status."
+invariant = "No call reaches a disabled server."
+limitations = ["The MCP servers are simulated boundaries: this is central revocation, not MCP protocol interoperability."]
+  [[experiments.checks]]
+  id = "T4-R6-C01"
+  description = "Every P6 scenario assertion held"
+  kind = "invariant"
+  fact = "p6.assertions_passed"
+  op = "=="
+  ref = "p6.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R6-C02"
+  description = "No call reached the server after revocation"
+  kind = "invariant"
+  fact = "p6.observability_calls_after"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R6-C03"
+  description = "Calls to the revoked server were denied"
+  kind = "invariant"
+  fact = "p6.calls_denied_mcp_disabled"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R6-C04"
+  description = "An agent that does not use the server was unaffected"
+  kind = "invariant"
+  fact = "p6.agents_unaffected"
+  op = ">="
+  value = 1
+
+[[experiments]]
+id = "T4-R7"
+role = "capability"
+title = "P7 · Model governance"
+question = "Can the control plane move the default model and withdraw a model without an agent naming one?"
+claim = "Agents name no model; the control plane chooses it by profile and data class, and fails closed when no model is cleared."
+hypothesis = "The default moves centrally; confidential data with no cleared model is denied rather than falling back."
+setup = "Publish a new default model (v2), then withdraw the only model cleared for confidential data (v3)."
+variable = "The model catalog and profiles."
+invariant = "No agent source names a model; no confidential call reaches an uncleared model."
+limitations = ["Model endpoints are simulated."]
+  [[experiments.checks]]
+  id = "T4-R7-C01"
+  description = "Every P7 scenario assertion held"
+  kind = "invariant"
+  fact = "p7.assertions_passed"
+  op = "=="
+  ref = "p7.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R7-C02"
+  description = "No model name in agent code"
+  kind = "invariant"
+  fact = "p7.model_names_in_agent_code"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R7-C03"
+  description = "The default model moved centrally"
+  kind = "invariant"
+  fact = "p7.v2_incident_model"
+  op = "!="
+  ref = "p7.v1_incident_model"
+  [[experiments.checks]]
+  id = "T4-R7-C04"
+  description = "Confidential data with no cleared model fails closed"
+  kind = "invariant"
+  fact = "p7.v3_support_model"
+  op = "=="
+  value = "DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS"
+
+[[experiments]]
+id = "T4-R8"
+role = "capability"
+title = "P8 · Staged rollout and rollback"
+question = "Does a canary reach only its bucket of runs, and does rollback return every run to the stable version?"
+claim = "A governance change can be canaried, rolled back and promoted without touching agents."
+hypothesis = "Only part of the runs take the canary; after rollback none do; after promotion all do."
+setup = "Roll v2 out to a percentage bucket of run ids; roll back; promote."
+variable = "The rollout percentage."
+invariant = "Bucketing is deterministic by run id; rollback leaves no run on the canary."
+limitations = ["Buckets by run id hash; no real traffic shaping."]
+  [[experiments.checks]]
+  id = "T4-R8-C01"
+  description = "Every P8 scenario assertion held"
+  kind = "invariant"
+  fact = "p8.assertions_passed"
+  op = "=="
+  ref = "p8.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R8-C02"
+  description = "Some canary runs took the new version"
+  kind = "invariant"
+  fact = "p8.canary_runs_on_new"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R8-C03"
+  description = "Not every canary run took the new version"
+  kind = "invariant"
+  fact = "p8.canary_runs_on_new"
+  op = "<"
+  ref = "p8.canary_runs"
+  [[experiments.checks]]
+  id = "T4-R8-C04"
+  description = "After rollback no run took the new version"
+  kind = "invariant"
+  fact = "p8.rollback_runs_on_new"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "T4-R9"
+role = "boundary"
+title = "P9 · When the control plane is unreachable"
+question = "What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?"
+claim = "Without its control plane the runtime serves reads from last-known-good within a staleness bound, fails mutations closed, never applies a tampered bundle and makes no call without a credential."
+hypothesis = "Mutation denied CONTROL_PLANE_UNREACHABLE; everything denied past the bound; tampered bundle rejected; broker down denies calls."
+setup = "Three scenarios: partition a runtime and publish a suspension it cannot see (P9a); alter a bundle in transit (P9b); stop the credential broker (P9c)."
+variable = "The injected failure."
+invariant = "No mutation without a fresh, verified policy and a credential."
+limitations = ["A suspension cannot reach a partitioned runtime: exposure is bounded by the staleness bound and fail-closed mutations, not removed."]
+  [[experiments.checks]]
+  id = "T4-R9-C01"
+  description = "Every P9a scenario assertion held"
+  kind = "invariant"
+  fact = "p9.outage.assertions_passed"
+  op = "=="
+  ref = "p9.outage.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R9-C02"
+  description = "A mutation during the outage fails closed"
+  kind = "invariant"
+  fact = "p9.outage.mutation_during_outage"
+  op = "=="
+  value = "CONTROL_PLANE_UNREACHABLE"
+  [[experiments.checks]]
+  id = "T4-R9-C03"
+  description = "Past the staleness bound everything is denied"
+  kind = "invariant"
+  fact = "p9.outage.stale_run"
+  op = "=="
+  value = "POLICY_STALE"
+  [[experiments.checks]]
+  id = "T4-R9-C04"
+  description = "Once the partition heals, the suspension applies"
+  kind = "invariant"
+  fact = "p9.outage.recovered_run"
+  op = "=="
+  value = "AGENT_SUSPENDED"
+  [[experiments.checks]]
+  id = "T4-R9-C05"
+  description = "The tampered bundle was rejected; the runtime stayed on v1"
+  kind = "invariant"
+  fact = "p9.tamper.applied_version"
+  op = "=="
+  value = "v1"
+  [[experiments.checks]]
+  id = "T4-R9-C06"
+  description = "Every P9b and P9c scenario assertion held"
+  kind = "invariant"
+  fact = "p9.tamper.assertions_passed"
+  op = "=="
+  ref = "p9.tamper.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R9-C07"
+  description = "With the broker down, calls policy would allow were denied"
+  kind = "invariant"
+  fact = "p9.broker.tool_calls_denied"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R9-C08"
+  description = "Ideal kill switch: no call executes after a suspension is published"
+  kind = "measurement"
+  finding = "LIMITATION OBSERVED"
+  fact = "p9.outage.calls_executed_after_suspension_published"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "T4-R10"
+role = "boundary"
+title = "P10 · Desired vs observed state"
+question = "Can the control plane see a runtime that is quietly running an old version, and what it did meanwhile?"
+claim = "Comparing desired and observed state detects a silently stale runtime and the action it took under a superseded version."
+hypothesis = "rt-b reports v1 while v2 is desired; drift findings name it and its action; after reconcile no instance is stale."
+setup = "A lagging replica serves rt-b the old pointer without error while v2 is published."
+variable = "Distribution lag."
+invariant = "Every instance reports its observed version; a mismatch is a finding."
+limitations = ["Detection, not prevention: the stale runtime acted before it was detected."]
+  [[experiments.checks]]
+  id = "T4-R10-C01"
+  description = "Every P10 scenario assertion held"
+  kind = "invariant"
+  fact = "p10.assertions_passed"
+  op = "=="
+  ref = "p10.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R10-C02"
+  description = "rt-b observed a version other than the desired one"
+  kind = "invariant"
+  fact = "p10.observed_rt_b"
+  op = "!="
+  ref = "p10.desired"
+  [[experiments.checks]]
+  id = "T4-R10-C03"
+  description = "Drift was detected"
+  kind = "invariant"
+  fact = "p10.drift_findings"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R10-C04"
+  description = "No instance stale after reconcile"
+  kind = "invariant"
+  fact = "p10.stale_after_reconcile"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R10-C05"
+  description = "Ideal: no action executes under a superseded version"
+  kind = "measurement"
+  finding = "LIMITATION OBSERVED"
+  fact = "p10.executed_under_superseded"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "T4-R11"
+role = "negative-control"
+title = "P11 · Negative control: governance inside every agent"
+question = "Without a control plane, what does the same set of governance changes cost, and when do they take effect?"
+claim = "Remove the control plane (embed governance in each agent) and the property P2 shows breaks: a change becomes a code edit that a running process does not see until it is redeployed."
+hypothesis = "Governed: 0 edits, 0 redeploys. Embedded: edits and redeploys, and the running process still restarts after the edit."
+setup = "The same four changes, applied once through the control plane (P11b) and once as edits to agents that embed governance (P11a)."
+variable = "Where governance lives."
+invariant = "A governance change needs no agent edit and no redeploy, and applies at the next enforcement point."
+limitations = ["Three agents; the edit and redeploy counts are for that estate."]
+  [[experiments.checks]]
+  id = "T4-R11-C01"
+  description = "Governed: every P11b scenario assertion held"
+  kind = "invariant"
+  fact = "p11.cp.assertions_passed"
+  op = "=="
+  ref = "p11.cp.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R11-C02"
+  description = "Governed: no agent file edited"
+  kind = "invariant"
+  fact = "p11.cp.files_edited"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R11-C03"
+  description = "Governed: no redeploy"
+  kind = "invariant"
+  fact = "p11.cp.redeploys"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R11-C04"
+  description = "The negative control completed and observed what it was built to observe"
+  kind = "implementation"
+  fact = "p11.embedded.assertions_passed"
+  op = "=="
+  ref = "p11.embedded.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R11-C05"
+  description = "Safeguard removed: a governance change needs no agent edit"
+  kind = "control"
+  expect = "fail"
+  fact = "p11.embedded.files_edited"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R11-C06"
+  description = "Safeguard removed: a governance change needs no redeploy"
+  kind = "control"
+  expect = "fail"
+  fact = "p11.embedded.redeploys"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R11-C07"
+  description = "Safeguard removed: the running process applies the change at its next decision"
+  kind = "control"
+  expect = "fail"
+  fact = "p11.embedded.restart_before_redeploy"
+  op = "=="
+  value = "pending_approval"
+  [[experiments.checks]]
+  id = "T4-R11-C08"
+  description = "Safeguard removed: agent code holds no static credential"
+  kind = "control"
+  expect = "fail"
+  fact = "p11.embedded.static_credential_literals"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "T4-R12"
+role = "governor"
+title = "P12 · Governing the control plane itself"
+question = "Who may change the control plane, and is every change, accepted or rejected, on the record?"
+claim = "Changes to the control plane are authorized by scope, need a second person to widen, may only restrict under break-glass, are validated, and are all on a tamper-evident local log under POC assumptions."
+hypothesis = "An agent and an out-of-scope lead are rejected; an in-scope lead restricting its own agent is accepted; widening alone, self-approval, break-glass widening and a plaintext credential are rejected; the chain verifies and breaks when one row is edited."
+setup = "Ten attempts by agents, team leads, the platform admin and on-call, against config/admins.yaml."
+variable = "Who changes what, how."
+invariant = "Every attempt is on the change log; only authorized, valid changes become signed versions."
+limitations = ["Tamper-evident on one machine under the POC's assumptions; not an external immutable audit store. No MFA or real identity provider."]
+  [[experiments.checks]]
+  id = "T4-R12-C01"
+  description = "Every P12 scenario assertion held"
+  kind = "invariant"
+  fact = "p12.assertions_passed"
+  op = "=="
+  ref = "p12.assertions_total"
+  [[experiments.checks]]
+  id = "T4-R12-C02"
+  description = "An agent cannot change the control plane"
+  kind = "invariant"
+  fact = "p12.agent_self_grant"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C03"
+  description = "A team lead cannot change another team's agent"
+  kind = "invariant"
+  fact = "p12.cross_team_change"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C04"
+  description = "An authorized team admin restricting its own scope is allowed"
+  kind = "invariant"
+  fact = "p12.own_scope_restriction"
+  op = "=="
+  value = "accepted"
+  [[experiments.checks]]
+  id = "T4-R12-C05"
+  description = "A widening change by one person is rejected"
+  kind = "invariant"
+  fact = "p12.widening_alone"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C06"
+  description = "Self-approval is rejected"
+  kind = "invariant"
+  fact = "p12.self_approval"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C07"
+  description = "Break-glass may not widen"
+  kind = "invariant"
+  fact = "p12.break_glass_widening"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C08"
+  description = "Validation: a plaintext credential never becomes a version"
+  kind = "invariant"
+  fact = "p12.plaintext_credential"
+  op = "=="
+  value = "rejected"
+  [[experiments.checks]]
+  id = "T4-R12-C09"
+  description = "Every attempt, accepted or rejected, is a change-log row"
+  kind = "invariant"
+  fact = "p12.changelog_rows"
+  op = ">"
+  ref = "p12.attempts"
+  [[experiments.checks]]
+  id = "T4-R12-C10"
+  description = "The change log verifies"
+  kind = "invariant"
+  fact = "p12.changelog_verifies"
+  op = "=="
+  value = "yes"
+  [[experiments.checks]]
+  id = "T4-R12-C11"
+  description = "Editing one change-log row breaks the chain"
+  kind = "invariant"
+  fact = "p12.tampered_changelog_verifies"
+  op = "=="
+  value = "no"
+
+[[experiments]]
+id = "T4-R13"
+role = "evidence"
+title = "Evidence integrity and replay"
+question = "Does the recorded evidence hold together: chains, signatures, credentials, processes, code and request hashes, and a rerun from source?"
+claim = "The evidence is internally consistent, recomputable from the raw state, and reproduced exactly by a rerun."
+hypothesis = "Every chain and signature verifies; no plaintext credential; no runtime restarted; one agent source hash; every request hash recomputes; the rerun differs only in masked process ids."
+setup = "Recompute from the raw state the scenarios left behind (tools/proof_facts.py); rerun every proof from source into a scratch copy (tools/verify_run.py --record)."
+variable = "none"
+invariant = "The evidence recomputes; the rerun is equivalent."
+limitations = ["SHA256SUMS is a checksum list, not a signature. The signing key is a POC file, not a KMS."]
+  [[experiments.checks]]
+  id = "T4-R13-C01"
+  description = "Every runtime audit log's hash chain verifies"
+  kind = "implementation"
+  fact = "raw.audit_chains_verified"
+  op = "=="
+  ref = "raw.audit_chains"
+  [[experiments.checks]]
+  id = "T4-R13-C02"
+  description = "Every control-plane change log's hash chain verifies"
+  kind = "implementation"
+  fact = "raw.changelogs_verified"
+  op = "=="
+  ref = "raw.changelogs"
+  [[experiments.checks]]
+  id = "T4-R13-C03"
+  description = "Every bundle's signature verifies"
+  kind = "implementation"
+  fact = "raw.bundles_signature_valid"
+  op = "=="
+  ref = "raw.bundles"
+  [[experiments.checks]]
+  id = "T4-R13-C04"
+  description = "No bundle contains a plaintext credential"
+  kind = "invariant"
+  fact = "raw.plaintext_credentials_in_bundles"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R13-C05"
+  description = "No runtime process was restarted in any scenario"
+  kind = "implementation"
+  fact = "raw.runtime_restarts"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R13-C06"
+  description = "One agent source hash across every scenario"
+  kind = "implementation"
+  fact = "raw.agent_code_hashes"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "T4-R13-C07"
+  description = "Rerun from source: no file differs beyond masked process ids"
+  kind = "replay"
+  fact = "replay.not_equivalent"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "T4-R13-C08"
+  description = "Every recorded request hash recomputes from its request"
+  kind = "implementation"
+  fact = "raw.request_hashes_recomputed"
+  op = "=="
+  ref = "raw.run_requests"

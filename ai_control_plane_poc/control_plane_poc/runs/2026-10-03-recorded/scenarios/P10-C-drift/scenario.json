@@ -1,0 +1,130 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "rt-a applied v2 and held the restart for approval",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "rt-b, behind the lagging replica, executed the restart under v1",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "drift detected: rt-b observed v1 while desired is v2",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "drift detected: a mutation executed under a superseded version",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "re-evaluated under the desired version, that action required approval",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "after reconcile: no instance on a stale version",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  },
+  {
+   "check": "agent code unchanged; both runtime processes never restarted",
+   "experiment": "P10",
+   "passed": true,
+   "scenario": "P10-C-drift"
+  }
+ ],
+ "expected": "the control plane detects rt-b's stale version and the action it executed under it",
+ "experiment": "P10",
+ "id": "P10-C-drift",
+ "input": {
+  "change": "restart-requires-approval",
+  "fault": "lagging replica serves v1",
+  "instances": [
+   "rt-a",
+   "rt-b"
+  ]
+ },
+ "measures": [
+  [
+   "desired",
+   "v2"
+  ],
+  [
+   "observed_rt_a",
+   "v2"
+  ],
+  [
+   "observed_rt_b",
+   "v1"
+  ],
+  [
+   "drift_findings",
+   2
+  ],
+  [
+   "executed_under_superseded",
+   1
+  ],
+  [
+   "stale_after_reconcile",
+   0
+  ]
+ ],
+ "observed": "2 drift findings; 1 mutation under a superseded version",
+ "outcome": "qualified",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P10 — DESIRED VS OBSERVED STATE                                                │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Desired            v2 (restart requires approval)                              │\n│ rt-a observed      v2 → restart held for approval                              │\n│ rt-b observed      v1 → restart EXECUTED (lagging replica, no error)           │\n│ Drift              2 findings · stale_config rt-b ·                            │\n│                    executed_under_superseded_config                            │\n│ Under desired      that restart → APPROVAL_REQUIRED                            │\n│ Reconcile          replica fixed · stale instances 0                           │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ rt-a applied v2 and held the restart for approval\n  ✓ rt-b, behind the lagging replica, executed the restart under v1\n  ✓ drift detected: rt-b observed v1 while desired is v2\n  ✓ drift detected: a mutation executed under a superseded version\n  ✓ re-evaluated under the desired version, that action required approval\n  ✓ after reconcile: no instance on a stale version\n  ✓ agent code unchanged; both runtime processes never restarted\n\n  PROOF P10: QUALIFIED · drift detected, not prevented\n  Test assertions: 7/7 passed",
+ "question": "Can the control plane see a runtime that is quietly running an old version, and what it did meanwhile?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v2 (restricting)",
+   "tick": 20,
+   "version": "v2",
+   "what": "publish restart-requires-approval"
+  },
+  {
+   "actor": "network",
+   "result": "silent staleness",
+   "tick": 20,
+   "what": "rt-b's replica lags: still serves pointer v1, without error"
+  },
+  {
+   "actor": "incident-agent@rt-a",
+   "result": "pending_approval under v2",
+   "tick": 30,
+   "what": "restart production"
+  },
+  {
+   "actor": "incident-agent@rt-b",
+   "result": "executed under v1",
+   "tick": 32,
+   "what": "restart production"
+  },
+  {
+   "actor": "control plane",
+   "result": "2 drift findings: executed_under_superseded_config, stale_config",
+   "tick": 40,
+   "what": "compare desired vs observed"
+  },
+  {
+   "actor": "control plane",
+   "result": "stale instances: 0",
+   "tick": 55,
+   "what": "reconcile: replica fixed, rt-b re-syncs"
+  }
+ ],
+ "use_case": "two runtime instances; one sits behind a lagging replica that still serves v1",
+ "variant": "C",
+ "where": "distribution: a lagging replica served v1 without error; policy did not prevent the restart, observation caught it"
+}

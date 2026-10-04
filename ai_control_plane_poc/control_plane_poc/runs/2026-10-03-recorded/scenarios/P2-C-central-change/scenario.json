@@ -1,0 +1,188 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "same request: request hash cb0531217710 before and after",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "same runtime process: rt-a/pid-1 answered both requests, never restarted",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "same agent code: sha256 677bca2acd66 before, at import and after",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "files changed under acp/ by the policy change: 0",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "control plane store changed (new bundle, signature, pointer, changelog)",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "before: v1 ALLOW, executed",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "after: v2 APPROVAL_REQUIRED, not executed",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "deploy system still shows 1 restart (the side effect did not happen)",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  },
+  {
+   "check": "approval request emitted and pending",
+   "experiment": "P2",
+   "passed": true,
+   "scenario": "P2-C-central-change"
+  }
+ ],
+ "expected": "same process, same code, same request: v1 executes, v2 holds for approval",
+ "experiment": "P2",
+ "id": "P2-C-central-change",
+ "input": {
+  "agent": "incident-agent",
+  "change": "restart-requires-approval",
+  "task": {
+   "environment": "production",
+   "service": "payment-service"
+  }
+ },
+ "measures": [
+  [
+   "before_version",
+   "v1"
+  ],
+  [
+   "before_decision",
+   "ALLOW"
+  ],
+  [
+   "before_executed",
+   "yes"
+  ],
+  [
+   "after_version",
+   "v2"
+  ],
+  [
+   "after_decision",
+   "APPROVAL_REQUIRED"
+  ],
+  [
+   "after_executed",
+   "no"
+  ],
+  [
+   "approval_id",
+   "approval-001"
+  ],
+  [
+   "acp_files_changed",
+   0
+  ],
+  [
+   "control_plane_files_changed",
+   4
+  ],
+  [
+   "restarts",
+   1
+  ],
+  [
+   "agent_code_sha256",
+   "677bca2acd66"
+  ],
+  [
+   "agent_sha_before",
+   "677bca2acd66"
+  ],
+  [
+   "agent_sha_after",
+   "677bca2acd66"
+  ],
+  [
+   "runtime_pid_before",
+   "rt-a/pid-1"
+  ],
+  [
+   "runtime_pid_after",
+   "rt-a/pid-1"
+  ],
+  [
+   "request_hash_before",
+   "cb0531217710"
+  ],
+  [
+   "request_hash_after",
+   "cb0531217710"
+  ],
+  [
+   "restarts_after_v1",
+   1
+  ],
+  [
+   "restarts_after_v2",
+   1
+  ],
+  [
+   "side_effect_delta",
+   0
+  ],
+  [
+   "agent_edits",
+   0
+  ],
+  [
+   "redeploys",
+   0
+  ]
+ ],
+ "observed": "v1 executed → v2 pending_approval; restarts=1",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P2 — CENTRAL POLICY CHANGE                                                     │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agent              incident-agent                                              │\n│ Agent code         sha256 677bca2acd66…  UNCHANGED                             │\n│ Runtime process    started once · SAME process for both requests               │\n│ Request            restart_service payment-service production (identical)      │\n│ Before             v1 → ALLOW → executed                                       │\n│ Central change     v2 · restart-requires-approval · platform.admin             │\n│ After              v2 → APPROVAL_REQUIRED → NOT executed                       │\n│ Approval           approval-001 (pending)                                      │\n│ Files changed      acp/: 0 · control plane store: 4                            │\n│ BEFORE → AFTER                                                                 │\n│   agent SHA        677bca2acd66 → 677bca2acd66  (same)                         │\n│   runtime PID      rt-a/pid-1 → rt-a/pid-1  (same process)                     │\n│   request hash     cb0531217710 → cb0531217710  (same)                         │\n│   control plane    v1 → v2                                                     │\n│   decision         ALLOW → APPROVAL_REQUIRED                                   │\n│   restarts         1 → 1  (no new side effect)                                 │\n│   agent edits      0 · redeploys 0                                             │\n│ Audit              action.executed (v1) → approval.requested (v2)              │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ same request: request hash cb0531217710 before and after\n  ✓ same runtime process: rt-a/pid-1 answered both requests, never restarted\n  ✓ same agent code: sha256 677bca2acd66 before, at import and after\n  ✓ files changed under acp/ by the policy change: 0\n  ✓ control plane store changed (new bundle, signature, pointer, changelog)\n  ✓ before: v1 ALLOW, executed\n  ✓ after: v2 APPROVAL_REQUIRED, not executed\n  ✓ deploy system still shows 1 restart (the side effect did not happen)\n  ✓ approval request emitted and pending\n\n  PROOF P2: PASS\n  Test assertions: 9/9 passed",
+ "question": "Change only the control plane. Does the same process, with the same code and request, now stop for approval?",
+ "steps": [
+  {
+   "actor": "incident-agent",
+   "result": "executed under v1",
+   "tick": 10,
+   "what": "restart_service payment-service production"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "v2 (restricting)",
+   "tick": 20,
+   "version": "v2",
+   "what": "publish restart-requires-approval"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "pending_approval under v2 (approval-001)",
+   "tick": 30,
+   "what": "restart_service payment-service production (same request)"
+  }
+ ],
+ "use_case": "the same restart request, before and after one central policy change",
+ "variant": "C",
+ "where": null
+}

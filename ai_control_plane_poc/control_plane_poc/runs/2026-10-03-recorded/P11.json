@@ -1,0 +1,37 @@
+{
+ "checks_passed": 9,
+ "checks_total": 9,
+ "expected_failures": [],
+ "experiment": "P11",
+ "measures": {
+  "P11-C-control-plane": {
+   "bundle_versions": 4,
+   "files_edited": 0,
+   "lines_changed": 0,
+   "redeploys": 0,
+   "static_credential_literals": 0
+  },
+  "P11-E-embedded": {
+   "files_edited": 7,
+   "lines_changed": 17,
+   "migrate-default-model.files": 3,
+   "redeploys": 7,
+   "restart-requires-approval.files": 1,
+   "restart_after_redeploy": "pending_approval",
+   "restart_before_redeploy": "executed",
+   "revoke-observability-mcp.files": 2,
+   "static_credential_literals": 8,
+   "suspend-incident-agent.files": 1
+  }
+ },
+ "outcomes": {
+  "P11-C-control-plane": "held",
+  "P11-E-embedded": "broken"
+ },
+ "question": "Without a control plane, what does the same set of governance changes cost, and when do they take effect?",
+ "scenarios": [
+  "P11-E-embedded",
+  "P11-C-control-plane"
+ ],
+ "title": "Baseline: governance inside every agent"
+}

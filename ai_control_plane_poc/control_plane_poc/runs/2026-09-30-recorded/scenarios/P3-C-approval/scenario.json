@@ -1,0 +1,154 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "held action not executed before approval (resume refused, 0 restarts)",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "the agent cannot approve its own action",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "an ineligible principal cannot approve",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "the eligible incident commander's approval is accepted",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "resume after approval executes under the current policy",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "a second resume does not execute again (ALREADY_EXECUTED)",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "deploy system shows exactly 1 restart",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "the executed event carries the approval id",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  },
+  {
+   "check": "agent code unchanged, one runtime process",
+   "experiment": "P3",
+   "passed": true,
+   "scenario": "P3-C-approval"
+  }
+ ],
+ "expected": "0 restarts until ic.dev approves; then exactly 1",
+ "experiment": "P3",
+ "id": "P3-C-approval",
+ "input": {
+  "agent": "incident-agent",
+  "config": "v2",
+  "task": {
+   "environment": "production",
+   "service": "payment-service"
+  }
+ },
+ "measures": [
+  [
+   "approval_id",
+   "approval-001"
+  ],
+  [
+   "restarts_before_approval",
+   0
+  ],
+  [
+   "refused_approvers",
+   2
+  ],
+  [
+   "approved_by",
+   "ic.dev"
+  ],
+  [
+   "restarts_after",
+   1
+  ],
+  [
+   "duplicate_resume",
+   "ALREADY_EXECUTED"
+  ]
+ ],
+ "observed": "before approval 0; after 1; duplicate resume ALREADY_EXECUTED",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P3 — APPROVAL, THEN EXACTLY ONE EXECUTION                                      │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agent              incident-agent                                              │\n│ Policy version     v2 (restart requires approval)                              │\n│ Held action        approval-001 · restart_service payment-service production   │\n│ Before approval    resume → APPROVAL_PENDING · restarts 0                      │\n│ incident-agent     approve → an agent cannot approve its own action            │\n│ support.lead       approve → support.lead is not an eligible approver for      │\n│                    restart_service                                             │\n│ ic.dev             approve → approved                                          │\n│ Resume             APPROVED_AND_EXECUTED · restarts 1                          │\n│ Resume again       ALREADY_EXECUTED · restarts still 1                         │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ held action not executed before approval (resume refused, 0 restarts)\n  ✓ the agent cannot approve its own action\n  ✓ an ineligible principal cannot approve\n  ✓ the eligible incident commander's approval is accepted\n  ✓ resume after approval executes under the current policy\n  ✓ a second resume does not execute again (ALREADY_EXECUTED)\n  ✓ deploy system shows exactly 1 restart\n  ✓ the executed event carries the approval id\n  ✓ agent code unchanged, one runtime process\n\n  PROOF P3: PASS  (9/9 checks)",
+ "question": "Does the held action stay unexecuted until an eligible human approves, and then run exactly once?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v2 (restricting)",
+   "tick": 5,
+   "version": "v2",
+   "what": "publish restart-requires-approval"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "pending_approval approval-001",
+   "tick": 14,
+   "what": "restart_service payment-service production"
+  },
+  {
+   "actor": "runtime",
+   "result": "APPROVAL_PENDING",
+   "tick": 16,
+   "what": "resume before any decision"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "an agent cannot approve its own action",
+   "tick": 18,
+   "what": "approve approval-001"
+  },
+  {
+   "actor": "support.lead",
+   "result": "support.lead is not an eligible approver for restart_service",
+   "tick": 19,
+   "what": "approve approval-001"
+  },
+  {
+   "actor": "ic.dev",
+   "result": "approved",
+   "tick": 20,
+   "what": "approve approval-001"
+  },
+  {
+   "actor": "runtime",
+   "result": "APPROVED_AND_EXECUTED",
+   "tick": 22,
+   "what": "resume after approval"
+  },
+  {
+   "actor": "runtime",
+   "result": "ALREADY_EXECUTED",
+   "tick": 24,
+   "what": "resume again (duplicate delivery)"
+  }
+ ],
+ "use_case": "an approval-required restart: refused approvers, one approval, one execution",
+ "variant": "C",
+ "where": null
+}

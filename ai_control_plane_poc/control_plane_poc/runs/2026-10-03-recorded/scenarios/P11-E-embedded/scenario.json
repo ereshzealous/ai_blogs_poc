@@ -1,0 +1,134 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "before the edit the embedded agent restarts production",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-E-embedded"
+  },
+  {
+   "check": "BROKEN: after the edit, the running process still restarts production (no central change is possible)",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-E-embedded"
+  },
+  {
+   "check": "only a redeployed process (new code hash) holds the restart",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-E-embedded"
+  },
+  {
+   "check": "the embedded agents hold long-lived static credentials in code",
+   "experiment": "P11",
+   "passed": true,
+   "scenario": "P11-E-embedded"
+  }
+ ],
+ "expected": "a governance change is a code edit that takes effect only after a redeploy",
+ "experiment": "P11",
+ "id": "P11-E-embedded",
+ "input": {
+  "agents": "acp/embedded/*.py",
+  "changes": [
+   "restart-requires-approval",
+   "revoke-observability-mcp",
+   "suspend-incident-agent",
+   "migrate-default-model"
+  ]
+ },
+ "measures": [
+  [
+   "files_edited",
+   7
+  ],
+  [
+   "lines_changed",
+   17
+  ],
+  [
+   "redeploys",
+   7
+  ],
+  [
+   "static_credential_literals",
+   8
+  ],
+  [
+   "restart_before_redeploy",
+   "executed"
+  ],
+  [
+   "restart_after_redeploy",
+   "pending_approval"
+  ],
+  [
+   "restart-requires-approval.files",
+   1
+  ],
+  [
+   "revoke-observability-mcp.files",
+   2
+  ],
+  [
+   "suspend-incident-agent.files",
+   1
+  ],
+  [
+   "migrate-default-model.files",
+   3
+  ]
+ ],
+ "observed": "7 edits, 7 redeploys; old process still restarted",
+ "outcome": "broken",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P11a — NEGATIVE CONTROL: GOVERNANCE INSIDE EVERY AGENT                         │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Change             production restarts need approval                           │\n│ Edit               incident_agent.py · sha256 aae655907550… → 3a424afcaad3…    │\n│ Running process    after the edit → restart EXECUTED  ← policy not in effect   │\n│ Redeployed process restart → PENDING_APPROVAL                                  │\n│ All four changes   7 file edits · 17 lines · 7 agent redeploys                 │\n│ Credentials        8 static credential literals in agent code                  │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ before the edit the embedded agent restarts production\n  ✓ BROKEN: after the edit, the running process still restarts production (no\n    central change is possible)\n  ✓ only a redeployed process (new code hash) holds the restart\n  ✓ the embedded agents hold long-lived static credentials in code\n\n  PROOF P11a: NEGATIVE CONTROL · property broken by design\n  Test assertions: 4/4 passed",
+ "question": "Without a control plane, what does the same set of governance changes cost, and when do they take effect?",
+ "steps": [
+  {
+   "actor": "incident-agent (embedded)",
+   "result": "executed",
+   "tick": 10,
+   "what": "restart production"
+  },
+  {
+   "actor": "platform team",
+   "result": "1 files · 2 lines · 1 redeploys",
+   "tick": 20,
+   "what": "edit agents for restart-requires-approval"
+  },
+  {
+   "actor": "incident-agent (old process)",
+   "result": "executed",
+   "tick": 30,
+   "what": "restart production after the edit, before redeploy"
+  },
+  {
+   "actor": "incident-agent (redeployed)",
+   "result": "pending_approval",
+   "tick": 40,
+   "what": "restart production"
+  },
+  {
+   "actor": "platform team",
+   "result": "2 files · 4 lines · 2 redeploys",
+   "tick": 20,
+   "what": "edit agents for revoke-observability-mcp"
+  },
+  {
+   "actor": "platform team",
+   "result": "1 files · 5 lines · 1 redeploys",
+   "tick": 20,
+   "what": "edit agents for suspend-incident-agent"
+  },
+  {
+   "actor": "platform team",
+   "result": "3 files · 6 lines · 3 redeploys",
+   "tick": 20,
+   "what": "edit agents for migrate-default-model"
+  }
+ ],
+ "use_case": "the same four governance changes, when governance lives inside each agent",
+ "variant": "E",
+ "where": "agent code: the running process kept its embedded rule until redeployed"
+}

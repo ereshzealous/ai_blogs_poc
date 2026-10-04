@@ -1,0 +1,137 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "reads during the outage ran on the last-known-good bundle (v1)",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  },
+  {
+   "check": "production mutation during the outage failed closed (CONTROL_PLANE_UNREACHABLE)",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  },
+  {
+   "check": "deploy system: only the warm run's restart (1)",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  },
+  {
+   "check": "QUALIFIED: the suspension could not reach a partitioned runtime; reads continued under v1",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  },
+  {
+   "check": "beyond max_staleness every run is denied (POLICY_STALE)",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  },
+  {
+   "check": "after recovery the suspension lands at the next enforcement point",
+   "experiment": "P9",
+   "passed": true,
+   "scenario": "P9-C-outage"
+  }
+ ],
+ "expected": "reads on last-known-good, mutations fail closed, everything denied past the staleness bound",
+ "experiment": "P9",
+ "id": "P9-C-outage",
+ "input": {
+  "agent": "incident-agent",
+  "failure": "control plane unreachable",
+  "max_staleness_ticks": 30
+ },
+ "measures": [
+  [
+   "lkg_version",
+   "v1"
+  ],
+  [
+   "reads_on_lkg",
+   4
+  ],
+  [
+   "mutation_during_outage",
+   "CONTROL_PLANE_UNREACHABLE"
+  ],
+  [
+   "calls_executed_after_suspension_published",
+   3
+  ],
+  [
+   "max_staleness_ticks",
+   30
+  ],
+  [
+   "stale_run",
+   "POLICY_STALE"
+  ],
+  [
+   "recovered_run",
+   "AGENT_SUSPENDED"
+  ]
+ ],
+ "observed": "mutation CONTROL_PLANE_UNREACHABLE; 3 calls ran after the suspension was published",
+ "outcome": "qualified",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P9a — CONTROL PLANE UNREACHABLE                                                │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Runtime            rt-a · last-known-good v1 cached                            │\n│ Read (query_logs)  ALLOW from last-known-good v1                               │\n│ Mutation (restart) DENY · CONTROL_PLANE_UNREACHABLE (fail closed)              │\n│ Suspension         v2 published during the partition                           │\n│ …after it          3 read/model calls still executed on v1  ← QUALIFIED        │\n│ Past staleness     DENY · POLICY_STALE for everything                          │\n│ Partition heals    next run → DENY · AGENT_SUSPENDED                           │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ reads during the outage ran on the last-known-good bundle (v1)\n  ✓ production mutation during the outage failed closed\n    (CONTROL_PLANE_UNREACHABLE)\n  ✓ deploy system: only the warm run's restart (1)\n  ✓ QUALIFIED: the suspension could not reach a partitioned runtime; reads\n    continued under v1\n  ✓ beyond max_staleness every run is denied (POLICY_STALE)\n  ✓ after recovery the suspension lands at the next enforcement point\n\n  PROOF P9a: PASS  (6/6 checks)",
+ "question": "What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?",
+ "steps": [
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:executed, query_metrics:executed, fast-model:executed, restart_service:executed",
+   "tick": 10,
+   "what": "warm run (control plane reachable)"
+  },
+  {
+   "actor": "network",
+   "result": "partition",
+   "tick": 20,
+   "what": "control plane unreachable from rt-a"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:executed, query_metrics:executed, fast-model:executed, restart_service:denied(CONTROL_PLANE_UNREACHABLE)",
+   "tick": 20,
+   "what": "run during outage"
+  },
+  {
+   "actor": "oncall.ic",
+   "result": "v2 (restricting)",
+   "tick": 25,
+   "version": "v2",
+   "what": "publish suspend-incident-agent"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "query_logs:executed, query_metrics:executed, fast-model:executed, restart_service:denied(CONTROL_PLANE_UNREACHABLE)",
+   "tick": 30,
+   "what": "run after v2 (suspension) was published, still partitioned"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "denied POLICY_STALE",
+   "tick": 60,
+   "what": "run beyond max_staleness (30 ticks)"
+  },
+  {
+   "actor": "network",
+   "result": "reachable",
+   "tick": 70,
+   "what": "partition heals"
+  },
+  {
+   "actor": "incident-agent",
+   "result": "denied AGENT_SUSPENDED",
+   "tick": 70,
+   "what": "run after recovery"
+  }
+ ],
+ "use_case": "the control plane becomes unreachable from the runtime, and a suspension is published during the outage",
+ "variant": "C",
+ "where": "config.unreachable: a suspension cannot reach a partitioned runtime; exposure bounded by max_staleness and fail-closed mutations"
+}

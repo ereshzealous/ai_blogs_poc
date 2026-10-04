@@ -1,0 +1,132 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "before the quota: 3 tool calls executed, 1 refund",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "call 1 ALLOW, call 2 ALLOW",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "call 3 DENY TOOL_CALL_BUDGET_EXCEEDED",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "billing system shows 1 refund (the capped run refunded nothing)",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "exhausted daily budget: next run denied at start",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "the budget is metered centrally (shared spend meter), not per process",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  },
+  {
+   "check": "agent code unchanged, one runtime process",
+   "experiment": "P5",
+   "passed": true,
+   "scenario": "P5-C-budgets"
+  }
+ ],
+ "expected": "call 3 denied with TOOL_CALL_BUDGET_EXCEEDED; next run denied with DAILY_BUDGET_EXHAUSTED",
+ "experiment": "P5",
+ "id": "P5-C-budgets",
+ "input": {
+  "agent": "support-agent",
+  "changes": [
+   "support-tool-call-budget",
+   "support-daily-budget-exhausted"
+  ],
+  "task": {
+   "case_id": "CASE-2231",
+   "refund": true
+  }
+ },
+ "measures": [
+  [
+   "quota_version",
+   "v2"
+  ],
+  [
+   "max_tool_calls",
+   2
+  ],
+  [
+   "call_3",
+   "denied TOOL_CALL_BUDGET_EXCEEDED"
+  ],
+  [
+   "refunds",
+   1
+  ],
+  [
+   "budget_version",
+   "v3"
+  ],
+  [
+   "spent_usd",
+   0.7104
+  ],
+  [
+   "run_after_budget",
+   "denied DAILY_BUDGET_EXHAUSTED"
+  ]
+ ],
+ "observed": "call 3 TOOL_CALL_BUDGET_EXCEEDED; run-003 DAILY_BUDGET_EXHAUSTED",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P5 — BUDGETS AND QUOTAS                                                        │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agent              support-agent                                               │\n│ Central change     v2 · max_tool_calls = 2 · support.lead                      │\n│ CALL 1             read_case → EXECUTED                                        │\n│ CALL 2             query_logs → EXECUTED                                       │\n│ CALL 3             refund_customer → DENY · TOOL_CALL_BUDGET_EXCEEDED          │\n│ Refunds            1 (from run-001, before the quota)                          │\n│ Central change     v3 · daily budget below today's spend ($0.7104)             │\n│ Next run           run-003 → DENIED DAILY_BUDGET_EXHAUSTED                     │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ before the quota: 3 tool calls executed, 1 refund\n  ✓ call 1 ALLOW, call 2 ALLOW\n  ✓ call 3 DENY TOOL_CALL_BUDGET_EXCEEDED\n  ✓ billing system shows 1 refund (the capped run refunded nothing)\n  ✓ exhausted daily budget: next run denied at start\n  ✓ the budget is metered centrally (shared spend meter), not per process\n  ✓ agent code unchanged, one runtime process\n\n  PROOF P5: PASS  (7/7 checks)",
+ "question": "Does a central quota stop the third tool call, and an exhausted budget stop the next run?",
+ "steps": [
+  {
+   "actor": "support-agent",
+   "result": "read_case:executed, query_logs:executed, private-model:executed, refund_customer:executed",
+   "tick": 10,
+   "what": "run-001 under v1"
+  },
+  {
+   "actor": "support.lead",
+   "result": "v2 (restricting)",
+   "tick": 20,
+   "version": "v2",
+   "what": "publish support-tool-call-budget"
+  },
+  {
+   "actor": "support-agent",
+   "result": "read_case:executed, query_logs:executed, refund_customer:denied(TOOL_CALL_BUDGET_EXCEEDED)",
+   "tick": 30,
+   "what": "run-002 under v2"
+  },
+  {
+   "actor": "support.lead",
+   "result": "v3 (restricting)",
+   "tick": 40,
+   "version": "v3",
+   "what": "publish support-daily-budget-exhausted"
+  },
+  {
+   "actor": "support-agent",
+   "result": "denied DAILY_BUDGET_EXHAUSTED",
+   "tick": 50,
+   "what": "run-003 under v3"
+  }
+ ],
+ "use_case": "a central tool-call quota and an exhausted daily budget for support-agent",
+ "variant": "C",
+ "where": null
+}

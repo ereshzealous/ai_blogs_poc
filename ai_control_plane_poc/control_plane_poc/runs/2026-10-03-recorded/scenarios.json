@@ -1,0 +1,173 @@
+[
+ {
+  "experiment": "P1",
+  "property": "under v1 the protected action is allowed, executed once and attributed to v1",
+  "role": "baseline",
+  "scenarios": [
+   {
+    "checks": "6/6",
+    "id": "P1-C-baseline",
+    "outcome": "held"
+   }
+  ],
+  "title": "Baseline: the control plane allows"
+ },
+ {
+  "experiment": "P2",
+  "property": "behaviour changes centrally with agent code, runtime process and request held fixed",
+  "role": "core",
+  "scenarios": [
+   {
+    "checks": "9/9",
+    "id": "P2-C-central-change",
+    "outcome": "held"
+   }
+  ],
+  "title": "One central change, same agent"
+ },
+ {
+  "experiment": "P3",
+  "property": "a held action stays unexecuted until an eligible approver approves, then runs exactly once",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "9/9",
+    "id": "P3-C-approval",
+    "outcome": "held"
+   }
+  ],
+  "title": "Approval, then exactly one execution"
+ },
+ {
+  "experiment": "P4",
+  "property": "a central suspension stops new and in-flight runs of one agent, and only that agent",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "8/8",
+    "id": "P4-C-suspend",
+    "outcome": "held"
+   }
+  ],
+  "title": "Suspend: the kill switch"
+ },
+ {
+  "experiment": "P5",
+  "property": "a central quota and budget stop the run at the configured limit",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "7/7",
+    "id": "P5-C-budgets",
+    "outcome": "held"
+   }
+  ],
+  "title": "Budgets and quotas"
+ },
+ {
+  "experiment": "P6",
+  "property": "disabling one MCP server centrally stops every agent that uses it, and no other",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "7/7",
+    "id": "P6-C-revoke-mcp",
+    "outcome": "held"
+   }
+  ],
+  "title": "Revoke one MCP server for every agent"
+ },
+ {
+  "experiment": "P7",
+  "property": "the model is chosen by the control plane, by data class, never named by the agent",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "7/7",
+    "id": "P7-C-models",
+    "outcome": "held"
+   }
+  ],
+  "title": "Model governance"
+ },
+ {
+  "experiment": "P8",
+  "property": "a canary reaches only its bucket; rollback returns every run to stable",
+  "role": "capability",
+  "scenarios": [
+   {
+    "checks": "6/6",
+    "id": "P8-C-canary",
+    "outcome": "held"
+   }
+  ],
+  "title": "Staged rollout and rollback"
+ },
+ {
+  "experiment": "P9",
+  "property": "without the control plane, reads continue within a staleness bound and mutations fail closed",
+  "role": "boundary",
+  "scenarios": [
+   {
+    "checks": "6/6",
+    "id": "P9-C-outage",
+    "outcome": "qualified"
+   },
+   {
+    "checks": "3/3",
+    "id": "P9-C-tampered-bundle",
+    "outcome": "held"
+   },
+   {
+    "checks": "3/3",
+    "id": "P9-C-broker-down",
+    "outcome": "held"
+   }
+  ],
+  "title": "When the control plane is unreachable"
+ },
+ {
+  "experiment": "P10",
+  "property": "the control plane observes a runtime that has drifted from desired state, and what it did meanwhile",
+  "role": "boundary",
+  "scenarios": [
+   {
+    "checks": "7/7",
+    "id": "P10-C-drift",
+    "outcome": "qualified"
+   }
+  ],
+  "title": "Desired vs observed state"
+ },
+ {
+  "experiment": "P11",
+  "property": "governance embedded in agents: the property is broken by design",
+  "role": "negative-control",
+  "scenarios": [
+   {
+    "checks": "4/4",
+    "id": "P11-E-embedded",
+    "outcome": "broken"
+   },
+   {
+    "checks": "5/5",
+    "id": "P11-C-control-plane",
+    "outcome": "held"
+   }
+  ],
+  "title": "Baseline: governance inside every agent"
+ },
+ {
+  "experiment": "P12",
+  "property": "the control plane's own changes are authorized, validated and on a tamper-evident log",
+  "role": "governor",
+  "scenarios": [
+   {
+    "checks": "13/13",
+    "id": "P12-C-governing-the-control-plane",
+    "outcome": "held"
+   }
+  ],
+  "title": "Governing the control plane itself"
+ }
+]

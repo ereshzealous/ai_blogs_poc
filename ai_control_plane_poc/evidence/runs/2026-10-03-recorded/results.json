@@ -1,0 +1,2596 @@
+{
+ "article": "T4",
+ "check_counts": {
+  "checks": 79,
+  "expected_failure": 4,
+  "experiments": 13,
+  "fail": 2,
+  "pass": 73
+ },
+ "checks": [
+  "T4-R1-C01",
+  "T4-R1-C02",
+  "T4-R1-C03",
+  "T4-R1-C04",
+  "T4-R2-C01",
+  "T4-R2-C02",
+  "T4-R2-C03",
+  "T4-R2-C04",
+  "T4-R2-C05",
+  "T4-R2-C06",
+  "T4-R2-C07",
+  "T4-R2-C08",
+  "T4-R2-C09",
+  "T4-R2-C10",
+  "T4-R3-C01",
+  "T4-R3-C02",
+  "T4-R3-C03",
+  "T4-R3-C04",
+  "T4-R3-C05",
+  "T4-R4-C01",
+  "T4-R4-C02",
+  "T4-R4-C03",
+  "T4-R4-C04",
+  "T4-R4-C05",
+  "T4-R5-C01",
+  "T4-R5-C02",
+  "T4-R5-C03",
+  "T4-R6-C01",
+  "T4-R6-C02",
+  "T4-R6-C03",
+  "T4-R6-C04",
+  "T4-R7-C01",
+  "T4-R7-C02",
+  "T4-R7-C03",
+  "T4-R7-C04",
+  "T4-R8-C01",
+  "T4-R8-C02",
+  "T4-R8-C03",
+  "T4-R8-C04",
+  "T4-R9-C01",
+  "T4-R9-C02",
+  "T4-R9-C03",
+  "T4-R9-C04",
+  "T4-R9-C05",
+  "T4-R9-C06",
+  "T4-R9-C07",
+  "T4-R9-C08",
+  "T4-R10-C01",
+  "T4-R10-C02",
+  "T4-R10-C03",
+  "T4-R10-C04",
+  "T4-R10-C05",
+  "T4-R11-C01",
+  "T4-R11-C02",
+  "T4-R11-C03",
+  "T4-R11-C04",
+  "T4-R11-C05",
+  "T4-R11-C06",
+  "T4-R11-C07",
+  "T4-R11-C08",
+  "T4-R12-C01",
+  "T4-R12-C02",
+  "T4-R12-C03",
+  "T4-R12-C04",
+  "T4-R12-C05",
+  "T4-R12-C06",
+  "T4-R12-C07",
+  "T4-R12-C08",
+  "T4-R12-C09",
+  "T4-R12-C10",
+  "T4-R12-C11",
+  "T4-R13-C01",
+  "T4-R13-C02",
+  "T4-R13-C03",
+  "T4-R13-C04",
+  "T4-R13-C05",
+  "T4-R13-C06",
+  "T4-R13-C07",
+  "T4-R13-C08"
+ ],
+ "claims": [
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R2-C01",
+    "T4-R2-C02",
+    "T4-R2-C03",
+    "T4-R2-C04",
+    "T4-R2-C05",
+    "T4-R2-C06",
+    "T4-R2-C07",
+    "T4-R2-C08",
+    "T4-R2-C09",
+    "T4-R2-C10"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json"
+   ],
+   "experiments": [
+    "T4-R2"
+   ],
+   "facts": [
+    "p2.before_decision",
+    "p2.after_decision",
+    "p2.before_version",
+    "p2.after_version",
+    "p2.agent_sha_before",
+    "p2.agent_sha_after",
+    "p2.runtime_pid_before",
+    "p2.runtime_pid_after",
+    "p2.request_hash_before",
+    "p2.request_hash_after",
+    "p2.agent_edits",
+    "p2.redeploys",
+    "p2.restarts_after_v1",
+    "p2.restarts_after_v2",
+    "p2.side_effect_delta",
+    "p2.acp_files_changed",
+    "p2.approval_id",
+    "p2.agent_code_sha256",
+    "p2.control_plane_files_changed",
+    "p2.restarts"
+   ],
+   "id": "T4-C01",
+   "observed": "{{p2.before_decision}} under `{{p2.before_version}}` → {{p2.after_decision}} under `{{p2.after_version}}`; agent sha256 `{{p2.agent_sha_before}}` → `{{p2.agent_sha_after}}`; process `{{p2.runtime_pid_before}}` → `{{p2.runtime_pid_after}}`; request `{{p2.request_hash_before}}` → `{{p2.request_hash_after}}`; edits {{p2.agent_edits}}, redeploys {{p2.redeploys}}; restarts {{p2.restarts_after_v1}} → {{p2.restarts_after_v2}}",
+   "statement": "One central change altered an agent's governed behaviour with the same agent code, the same runtime process and the same request; no agent edit, no redeploy.",
+   "statuses": {
+    "T4-R2-C01": "PASS",
+    "T4-R2-C02": "PASS",
+    "T4-R2-C03": "PASS",
+    "T4-R2-C04": "PASS",
+    "T4-R2-C05": "PASS",
+    "T4-R2-C06": "PASS",
+    "T4-R2-C07": "PASS",
+    "T4-R2-C08": "PASS",
+    "T4-R2-C09": "PASS",
+    "T4-R2-C10": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R1-C01",
+    "T4-R1-C02",
+    "T4-R1-C03",
+    "T4-R1-C04"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json"
+   ],
+   "experiments": [
+    "T4-R1"
+   ],
+   "facts": [
+    "p1.decision",
+    "p1.config_version",
+    "p1.restarts",
+    "p1.rule"
+   ],
+   "id": "T4-C02",
+   "observed": "{{p1.decision}} under `{{p1.config_version}}` by `{{p1.rule}}`; {{p1.restarts}} restart in the deploy system",
+   "statement": "Before any change the governed path allows the action, executes it once and attributes it to the version and rule that allowed it.",
+   "statuses": {
+    "T4-R1-C01": "PASS",
+    "T4-R1-C02": "PASS",
+    "T4-R1-C03": "PASS",
+    "T4-R1-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R3-C01",
+    "T4-R3-C02",
+    "T4-R3-C03",
+    "T4-R3-C04",
+    "T4-R3-C05"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json"
+   ],
+   "experiments": [
+    "T4-R3"
+   ],
+   "facts": [
+    "p3.restarts_before_approval",
+    "p3.restarts_after",
+    "p3.duplicate_resume",
+    "p3.refused_approvers",
+    "p3.approved_by"
+   ],
+   "id": "T4-C03",
+   "observed": "{{p3.restarts_before_approval}} restarts before approval, {{p3.restarts_after}} after; duplicate resume `{{p3.duplicate_resume}}`; {{p3.refused_approvers}} approvers refused, the agent among them",
+   "statement": "A held action does not execute before an eligible human approves, executes exactly once after, and the agent cannot approve its own action.",
+   "statuses": {
+    "T4-R3-C01": "PASS",
+    "T4-R3-C02": "PASS",
+    "T4-R3-C03": "PASS",
+    "T4-R3-C04": "PASS",
+    "T4-R3-C05": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R4-C01",
+    "T4-R4-C02",
+    "T4-R4-C03",
+    "T4-R4-C04",
+    "T4-R4-C05"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json"
+   ],
+   "experiments": [
+    "T4-R4"
+   ],
+   "facts": [
+    "p4.inflight_executed_after_suspension",
+    "p4.inflight_calls_after_suspension",
+    "p4.new_run",
+    "p4.other_agent_calls_executed",
+    "p4.restore_alone",
+    "p4.suspend_version",
+    "p4.restore_version"
+   ],
+   "id": "T4-C04",
+   "observed": "{{p4.inflight_executed_after_suspension}} of {{p4.inflight_calls_after_suspension}} later calls executed; new run `{{p4.new_run}}`; {{p4.other_agent_calls_executed}} calls of another agent executed; restore alone `{{p4.restore_alone}}`",
+   "statement": "A central suspension stops a run in flight at its next enforcement point, stops new runs, leaves other agents alone, and restoring needs a second person.",
+   "statuses": {
+    "T4-R4-C01": "PASS",
+    "T4-R4-C02": "PASS",
+    "T4-R4-C03": "PASS",
+    "T4-R4-C04": "PASS",
+    "T4-R4-C05": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R5-C01",
+    "T4-R5-C02",
+    "T4-R5-C03"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json"
+   ],
+   "experiments": [
+    "T4-R5"
+   ],
+   "facts": [
+    "p5.call_3",
+    "p5.run_after_budget",
+    "p5.max_tool_calls",
+    "p5.spent_usd",
+    "p5.quota_version",
+    "p5.budget_version",
+    "p5.refunds"
+   ],
+   "id": "T4-C05",
+   "observed": "call 3 `{{p5.call_3}}`; next run `{{p5.run_after_budget}}`",
+   "statement": "Central quotas and budgets are hard limits, enforced per call and per run.",
+   "statuses": {
+    "T4-R5-C01": "PASS",
+    "T4-R5-C02": "PASS",
+    "T4-R5-C03": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R6-C01",
+    "T4-R6-C02",
+    "T4-R6-C03",
+    "T4-R6-C04"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json"
+   ],
+   "experiments": [
+    "T4-R6"
+   ],
+   "facts": [
+    "p6.observability_calls_after",
+    "p6.observability_calls_before",
+    "p6.calls_denied_mcp_disabled",
+    "p6.agents_affected",
+    "p6.agents_unaffected",
+    "p6.revoke_version"
+   ],
+   "id": "T4-C06",
+   "observed": "{{p6.observability_calls_after}} server calls after the revocation; {{p6.calls_denied_mcp_disabled}} calls denied; {{p6.agents_affected}} agents affected, {{p6.agents_unaffected}} unaffected",
+   "statement": "Disabling one MCP server centrally stops every agent that uses it, and no other.",
+   "statuses": {
+    "T4-R6-C01": "PASS",
+    "T4-R6-C02": "PASS",
+    "T4-R6-C03": "PASS",
+    "T4-R6-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R7-C01",
+    "T4-R7-C02",
+    "T4-R7-C03",
+    "T4-R7-C04"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json"
+   ],
+   "experiments": [
+    "T4-R7"
+   ],
+   "facts": [
+    "p7.v1_incident_model",
+    "p7.v2_incident_model",
+    "p7.v3_support_model",
+    "p7.model_names_in_agent_code",
+    "p7.confidential_calls"
+   ],
+   "id": "T4-C07",
+   "observed": "`{{p7.v1_incident_model}}` → `{{p7.v2_incident_model}}`; confidential under v3: `{{p7.v3_support_model}}`; {{p7.model_names_in_agent_code}} model names in agent code",
+   "statement": "Agents name no model; the default moves centrally, and confidential data fails closed rather than falling back to an uncleared model.",
+   "statuses": {
+    "T4-R7-C01": "PASS",
+    "T4-R7-C02": "PASS",
+    "T4-R7-C03": "PASS",
+    "T4-R7-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R8-C01",
+    "T4-R8-C02",
+    "T4-R8-C03",
+    "T4-R8-C04"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json"
+   ],
+   "experiments": [
+    "T4-R8"
+   ],
+   "facts": [
+    "p8.canary_runs_on_new",
+    "p8.canary_runs",
+    "p8.rollback_runs_on_new",
+    "p8.promoted_runs_on_new",
+    "p8.canary_percent"
+   ],
+   "id": "T4-C08",
+   "observed": "canary {{p8.canary_runs_on_new}}/{{p8.canary_runs}} runs on the new version; after rollback {{p8.rollback_runs_on_new}}; after promotion {{p8.promoted_runs_on_new}}",
+   "statement": "A governance change can be canaried, rolled back and promoted without touching agents.",
+   "statuses": {
+    "T4-R8-C01": "PASS",
+    "T4-R8-C02": "PASS",
+    "T4-R8-C03": "PASS",
+    "T4-R8-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "bound_checks": [
+    "T4-R9-C08"
+   ],
+   "checks": [
+    "T4-R9-C01",
+    "T4-R9-C02",
+    "T4-R9-C03",
+    "T4-R9-C04"
+   ],
+   "class": "QUALIFIED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json"
+   ],
+   "experiments": [
+    "T4-R9"
+   ],
+   "facts": [
+    "p9.outage.lkg_version",
+    "p9.outage.mutation_during_outage",
+    "p9.outage.calls_executed_after_suspension_published",
+    "p9.outage.stale_run",
+    "p9.outage.recovered_run",
+    "p9.outage.max_staleness_ticks",
+    "p9.outage.reads_on_lkg"
+   ],
+   "id": "T4-C09",
+   "observed": "reads on `{{p9.outage.lkg_version}}`; mutation `{{p9.outage.mutation_during_outage}}`; past the bound `{{p9.outage.stale_run}}`; bound: {{p9.outage.calls_executed_after_suspension_published}} calls ran after the suspension was published",
+   "qualification": "held within the stated bound: read and model calls kept running on last-known-good after the suspension was published, until the staleness bound",
+   "statement": "Without its control plane, the runtime serves reads from last-known-good within a staleness bound and fails mutations closed; a suspension cannot reach a partitioned runtime, so exposure is bounded, not removed.",
+   "statuses": {
+    "T4-R9-C01": "PASS",
+    "T4-R9-C02": "PASS",
+    "T4-R9-C03": "PASS",
+    "T4-R9-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R9-C05",
+    "T4-R9-C06",
+    "T4-R9-C07"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json"
+   ],
+   "experiments": [
+    "T4-R9"
+   ],
+   "facts": [
+    "p9.tamper.rejected_events",
+    "p9.tamper.applied_version",
+    "p9.tamper.restart_decision",
+    "p9.broker.tool_calls_denied"
+   ],
+   "id": "T4-C10",
+   "observed": "{{p9.tamper.rejected_events}} rejections, applied `{{p9.tamper.applied_version}}`; broker down: {{p9.broker.tool_calls_denied}} calls denied",
+   "statement": "A bundle altered in transit is rejected and never applied; with the credential broker down, no call is made, even one policy would allow.",
+   "statuses": {
+    "T4-R9-C05": "PASS",
+    "T4-R9-C06": "PASS",
+    "T4-R9-C07": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "bound_checks": [
+    "T4-R10-C05"
+   ],
+   "checks": [
+    "T4-R10-C01",
+    "T4-R10-C02",
+    "T4-R10-C03",
+    "T4-R10-C04"
+   ],
+   "class": "QUALIFIED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json"
+   ],
+   "experiments": [
+    "T4-R10"
+   ],
+   "facts": [
+    "p10.desired",
+    "p10.observed_rt_a",
+    "p10.observed_rt_b",
+    "p10.drift_findings",
+    "p10.executed_under_superseded",
+    "p10.stale_after_reconcile"
+   ],
+   "id": "T4-C11",
+   "observed": "rt-b observed `{{p10.observed_rt_b}}` while `{{p10.desired}}` was desired; {{p10.drift_findings}} findings; {{p10.executed_under_superseded}} action under a superseded version; {{p10.stale_after_reconcile}} stale after reconcile",
+   "qualification": "detected, not prevented: the stale runtime executed an action under the superseded version before reconcile",
+   "statement": "A silently stale runtime enforces the old rules; comparing desired and observed state detects it and the action it took. Detected, not prevented.",
+   "statuses": {
+    "T4-R10-C01": "PASS",
+    "T4-R10-C02": "PASS",
+    "T4-R10-C03": "PASS",
+    "T4-R10-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R11-C04",
+    "T4-R11-C05",
+    "T4-R11-C06",
+    "T4-R11-C07",
+    "T4-R11-C08"
+   ],
+   "class": "NEGATIVE CONTROL",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json"
+   ],
+   "experiments": [
+    "T4-R11"
+   ],
+   "facts": [
+    "p11.embedded.files_edited",
+    "p11.embedded.redeploys",
+    "p11.embedded.lines_changed",
+    "p11.embedded.restart_before_redeploy",
+    "p11.embedded.restart_after_redeploy",
+    "p11.embedded.static_credential_literals",
+    "p11.embedded.restart-requires-approval.files",
+    "p11.embedded.revoke-observability-mcp.files",
+    "p11.embedded.suspend-incident-agent.files",
+    "p11.embedded.migrate-default-model.files"
+   ],
+   "id": "T4-C12",
+   "observed": "{{p11.embedded.files_edited}} file edits, {{p11.embedded.redeploys}} redeploys; the running process after the edit: `{{p11.embedded.restart_before_redeploy}}`; {{p11.embedded.static_credential_literals}} static credentials in agent code",
+   "statement": "With governance embedded in each agent, a change is a code edit that a running process does not see until it is redeployed: the property P2 shows breaks, by design.",
+   "statuses": {
+    "T4-R11-C04": "PASS",
+    "T4-R11-C05": "EXPECTED_FAILURE",
+    "T4-R11-C06": "EXPECTED_FAILURE",
+    "T4-R11-C07": "EXPECTED_FAILURE",
+    "T4-R11-C08": "EXPECTED_FAILURE"
+   },
+   "type": "control",
+   "verdict": "control"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R11-C01",
+    "T4-R11-C02",
+    "T4-R11-C03"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json"
+   ],
+   "experiments": [
+    "T4-R11"
+   ],
+   "facts": [
+    "p11.cp.bundle_versions",
+    "p11.cp.files_edited",
+    "p11.cp.redeploys",
+    "p11.cp.static_credential_literals"
+   ],
+   "id": "T4-C13",
+   "observed": "{{p11.cp.bundle_versions}} versions; {{p11.cp.files_edited}} edits; {{p11.cp.redeploys}} redeploys",
+   "statement": "The same four changes through the control plane needed no agent edit and no redeploy.",
+   "statuses": {
+    "T4-R11-C01": "PASS",
+    "T4-R11-C02": "PASS",
+    "T4-R11-C03": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R12-C01",
+    "T4-R12-C02",
+    "T4-R12-C03",
+    "T4-R12-C04",
+    "T4-R12-C05",
+    "T4-R12-C06",
+    "T4-R12-C07",
+    "T4-R12-C08",
+    "T4-R12-C09",
+    "T4-R12-C10",
+    "T4-R12-C11"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json"
+   ],
+   "experiments": [
+    "T4-R12"
+   ],
+   "facts": [
+    "p12.attempts",
+    "p12.accepted",
+    "p12.rejected",
+    "p12.changelog_rows",
+    "p12.versions",
+    "p12.own_scope_restriction",
+    "p12.plaintext_credential",
+    "p12.tampered_changelog_verifies"
+   ],
+   "id": "T4-C14",
+   "observed": "{{p12.attempts}} attempts: {{p12.accepted}} accepted (own-scope restriction `{{p12.own_scope_restriction}}`), {{p12.rejected}} rejected (plaintext credential `{{p12.plaintext_credential}}`); {{p12.changelog_rows}} rows verifying; one edited row verifies: `{{p12.tampered_changelog_verifies}}`",
+   "statement": "Agents cannot change the control plane; a team admin may restrict its own scope alone; widening needs a second person; break-glass only restricts; a plaintext credential never becomes a version; every attempt is on a tamper-evident local log under POC assumptions.",
+   "statuses": {
+    "T4-R12-C01": "PASS",
+    "T4-R12-C02": "PASS",
+    "T4-R12-C03": "PASS",
+    "T4-R12-C04": "PASS",
+    "T4-R12-C05": "PASS",
+    "T4-R12-C06": "PASS",
+    "T4-R12-C07": "PASS",
+    "T4-R12-C08": "PASS",
+    "T4-R12-C09": "PASS",
+    "T4-R12-C10": "PASS",
+    "T4-R12-C11": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R13-C01",
+    "T4-R13-C02",
+    "T4-R13-C03",
+    "T4-R13-C05",
+    "T4-R13-C06",
+    "T4-R13-C07",
+    "T4-R13-C08"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/bundles/v*.json",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/changelog.jsonl",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/runtime/*/audit.jsonl",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/transcript.jsonl",
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/volatile.json",
+    "evidence/runs/2026-10-03-recorded/replay.json"
+   ],
+   "experiments": [
+    "T4-R13"
+   ],
+   "facts": [
+    "raw.audit_chains",
+    "raw.changelogs",
+    "raw.bundles",
+    "raw.runtime_processes",
+    "raw.runtime_restarts",
+    "run.agent_code_sha256",
+    "replay.level",
+    "replay.deterministic_equivalent",
+    "replay.nondeterministic",
+    "replay.not_equivalent",
+    "run.audit_events"
+   ],
+   "id": "T4-C15",
+   "observed": "{{raw.audit_chains}} audit and {{raw.changelogs}} change-log chains verify; {{raw.bundles}} bundle signatures verify; {{raw.runtime_restarts}} runtime restarts; rerun {{replay.level}}: {{replay.not_equivalent}} files differ",
+   "statement": "The evidence holds together: every hash chain and bundle signature verifies, no bundle holds a plaintext credential, no runtime restarted, one agent source hash throughout, and a rerun from source is identical except for masked process ids.",
+   "statuses": {
+    "T4-R13-C01": "PASS",
+    "T4-R13-C02": "PASS",
+    "T4-R13-C03": "PASS",
+    "T4-R13-C05": "PASS",
+    "T4-R13-C06": "PASS",
+    "T4-R13-C07": "PASS",
+    "T4-R13-C08": "PASS"
+   },
+   "type": "implementation",
+   "verdict": "implementation"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R9-C08"
+   ],
+   "class": "NOT SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json"
+   ],
+   "experiments": [
+    "T4-R9"
+   ],
+   "facts": [
+    "p9.outage.calls_executed_after_suspension_published"
+   ],
+   "id": "T4-C16",
+   "observed": "{{p9.outage.calls_executed_after_suspension_published}} calls executed on a partitioned runtime after the suspension was published",
+   "statement": "A central kill switch stops every runtime instantly.",
+   "statuses": {
+    "T4-R9-C08": "FAIL"
+   },
+   "type": "measured",
+   "verdict": "contradicted"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "checks": [
+    "T4-R10-C05"
+   ],
+   "class": "NOT SUPPORTED",
+   "evidence": [
+    "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json"
+   ],
+   "experiments": [
+    "T4-R10"
+   ],
+   "facts": [
+    "p10.executed_under_superseded"
+   ],
+   "id": "T4-C17",
+   "observed": "{{p10.executed_under_superseded}} action executed under a superseded version before drift was reconciled",
+   "statement": "Comparing desired and observed state prevents a stale runtime from acting.",
+   "statuses": {
+    "T4-R10-C05": "FAIL"
+   },
+   "type": "measured",
+   "verdict": "contradicted"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "class": "ARGUED",
+   "evidence": [],
+   "id": "T4-C18",
+   "observed": "measured at three agents only",
+   "rests_on": "an extrapolation from P11, which measured three agents only",
+   "statement": "At 50 or 500 agents, embedded governance costs grow with every agent that embeds a rule, while a control plane change stays one version.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "class": "ARGUED",
+   "evidence": [],
+   "id": "T4-C19",
+   "observed": "not measured: no latency or availability figures",
+   "rests_on": "the design: the POC decides locally against a cached bundle, but no latency or availability was measured",
+   "statement": "The control plane need not be in the path of every call; most decisions can be local against a cached, signed bundle.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "class": "NOT TESTED",
+   "evidence": [],
+   "id": "T4-C20",
+   "observed": "no MCP protocol traffic",
+   "rests_on": "the MCP servers are simulated in-process boundaries; no MCP protocol traffic was exchanged",
+   "statement": "Real MCP protocol interoperability.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  },
+  {
+   "article": [
+    "evidence"
+   ],
+   "class": "NOT TESTED",
+   "evidence": [],
+   "id": "T4-C21",
+   "observed": "not exercised",
+   "rests_on": "not exercised: one machine, a POC signing key file, simulated principals",
+   "statement": "Environment and tenant isolation, admin MFA, HA, backup and real key management of the control plane.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  }
+ ],
+ "contract": "Production AI Engineering Proof Contract v1",
+ "experiment_results": {
+  "expected_failure": 1,
+  "fail": 2,
+  "pass": 10
+ },
+ "experiments": [
+  {
+   "checks": [
+    "T4-R1-C01",
+    "T4-R1-C02",
+    "T4-R1-C03",
+    "T4-R1-C04"
+   ],
+   "claim": "Before any change, the governed path allows the action, executes it once and attributes it to the version and rule that allowed it.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "PASS",
+   "hypothesis": "Under v1 the restart is allowed by a named rule, executed once, and the deploy system of record shows one restart.",
+   "id": "T4-R1",
+   "invariant": "Every executed action names the config version and rule that allowed it.",
+   "limitations": [
+    "One agent, one action: the baseline the other proofs change."
+   ],
+   "question": "Under v1, does the incident agent's production restart run, and is it attributed to v1?",
+   "result": "PASS",
+   "role": "baseline",
+   "setup": "Bootstrap v1; the incident agent runs its fixed plan in a long-lived runtime process.",
+   "tests": [
+    "control_plane_poc/tests/test_proofs.py",
+    "control_plane_poc/tests/test_invariants.py"
+   ],
+   "title": "P1 · Baseline: the control plane allows",
+   "variable": "none (baseline)"
+  },
+  {
+   "checks": [
+    "T4-R2-C01",
+    "T4-R2-C02",
+    "T4-R2-C03",
+    "T4-R2-C04",
+    "T4-R2-C05",
+    "T4-R2-C06",
+    "T4-R2-C07",
+    "T4-R2-C08",
+    "T4-R2-C09",
+    "T4-R2-C10"
+   ],
+   "claim": "Governed behaviour changes centrally while agent code, runtime process and request are held fixed.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 10
+   },
+   "finding": "PASS",
+   "hypothesis": "The same request to the same process with the same agent code is ALLOW under v1 and APPROVAL_REQUIRED under v2, with no new side effect.",
+   "id": "T4-R2",
+   "invariant": "Agent sha256, runtime process and request hash are equal before and after; agent edits 0; redeploys 0.",
+   "limitations": [
+    "P2 fails by design if code, process or request changes (control_plane_poc/tests/test_cheating.py)."
+   ],
+   "question": "Change only the control plane. Does the same process, with the same code and request, now stop for approval?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "Run the restart under v1; publish restart-requires-approval (v2) centrally; send the identical request to the same process.",
+   "tests": [
+    "control_plane_poc/tests/test_cheating.py"
+   ],
+   "title": "P2 · One central change, same agent",
+   "variable": "The control plane version (v1 → v2); nothing else."
+  },
+  {
+   "checks": [
+    "T4-R3-C01",
+    "T4-R3-C02",
+    "T4-R3-C03",
+    "T4-R3-C04",
+    "T4-R3-C05"
+   ],
+   "claim": "A held action waits for an eligible approver, executes once, and a duplicate resume is refused.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 5
+   },
+   "finding": "PASS",
+   "hypothesis": "0 restarts before approval, 1 after; ineligible approvers (the agent among them) refused; a second resume refused.",
+   "id": "T4-R3",
+   "invariant": "Exactly one execution, after an eligible approval.",
+   "limitations": [
+    "Approvals are simulated principals, not a real identity provider."
+   ],
+   "question": "Does the held action stay unexecuted until an eligible human approves, and then run exactly once?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "v2 holds production restarts for approval; the agent, an ineligible principal and an eligible approver act on the approval.",
+   "title": "P3 · Approval, then exactly one execution",
+   "variable": "Who approves, and how often the action is resumed."
+  },
+  {
+   "checks": [
+    "T4-R4-C01",
+    "T4-R4-C02",
+    "T4-R4-C03",
+    "T4-R4-C04",
+    "T4-R4-C05"
+   ],
+   "claim": "A central suspension takes effect at the next enforcement point of a run in flight, denies new runs, and leaves other agents alone.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 5
+   },
+   "finding": "PASS",
+   "hypothesis": "0 in-flight calls execute after the suspension; a new run is denied AGENT_SUSPENDED; the other agent keeps executing.",
+   "id": "T4-R4",
+   "invariant": "No call of the suspended agent executes after the suspension reaches its runtime.",
+   "limitations": [
+    "Takes effect at the next enforcement point, not mid-call; a partitioned runtime is P9a."
+   ],
+   "question": "Does a central suspension stop new runs and a run already in flight, and only that agent?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "Pause a run after two tool calls, publish a break-glass suspension, let the run continue; start a new run; run another agent.",
+   "title": "P4 · Suspend: the kill switch",
+   "variable": "Suspension published mid-run."
+  },
+  {
+   "checks": [
+    "T4-R5-C01",
+    "T4-R5-C02",
+    "T4-R5-C03"
+   ],
+   "claim": "Quotas and budgets set centrally are enforced per call and per run.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 3
+   },
+   "finding": "PASS",
+   "hypothesis": "Call 3 is denied TOOL_CALL_BUDGET_EXCEEDED; the run after the budget is spent is denied DAILY_BUDGET_EXHAUSTED.",
+   "id": "T4-R5",
+   "invariant": "No call beyond the quota; no run beyond the budget.",
+   "limitations": [
+    "Spend is metered from simulated token counts and prices."
+   ],
+   "question": "Does a central quota stop the third tool call, and an exhausted budget stop the next run?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "Publish max_tool_calls 2, then a daily budget below the spend so far.",
+   "title": "P5 · Budgets and quotas",
+   "variable": "The quota and the budget."
+  },
+  {
+   "checks": [
+    "T4-R6-C01",
+    "T4-R6-C02",
+    "T4-R6-C03",
+    "T4-R6-C04"
+   ],
+   "claim": "One central revocation stops every agent that uses the server, and only those.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "PASS",
+   "hypothesis": "0 calls reach the server after the revocation; the agents that use it are denied; the agent that does not is unaffected.",
+   "id": "T4-R6",
+   "invariant": "No call reaches a disabled server.",
+   "limitations": [
+    "The MCP servers are simulated boundaries: this is central revocation, not MCP protocol interoperability."
+   ],
+   "question": "Does disabling one server centrally stop every agent that uses it, and no other?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "Two agents use the observability server, one does not; publish the server as disabled.",
+   "title": "P6 · Revoke one MCP server for every agent",
+   "variable": "The server's status."
+  },
+  {
+   "checks": [
+    "T4-R7-C01",
+    "T4-R7-C02",
+    "T4-R7-C03",
+    "T4-R7-C04"
+   ],
+   "claim": "Agents name no model; the control plane chooses it by profile and data class, and fails closed when no model is cleared.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "PASS",
+   "hypothesis": "The default moves centrally; confidential data with no cleared model is denied rather than falling back.",
+   "id": "T4-R7",
+   "invariant": "No agent source names a model; no confidential call reaches an uncleared model.",
+   "limitations": [
+    "Model endpoints are simulated."
+   ],
+   "question": "Can the control plane move the default model and withdraw a model without an agent naming one?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "Publish a new default model (v2), then withdraw the only model cleared for confidential data (v3).",
+   "title": "P7 · Model governance",
+   "variable": "The model catalog and profiles."
+  },
+  {
+   "checks": [
+    "T4-R8-C01",
+    "T4-R8-C02",
+    "T4-R8-C03",
+    "T4-R8-C04"
+   ],
+   "claim": "A governance change can be canaried, rolled back and promoted without touching agents.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "PASS",
+   "hypothesis": "Only part of the runs take the canary; after rollback none do; after promotion all do.",
+   "id": "T4-R8",
+   "invariant": "Bucketing is deterministic by run id; rollback leaves no run on the canary.",
+   "limitations": [
+    "Buckets by run id hash; no real traffic shaping."
+   ],
+   "question": "Does a canary reach only its bucket of runs, and does rollback return every run to the stable version?",
+   "result": "PASS",
+   "role": "capability",
+   "setup": "Roll v2 out to a percentage bucket of run ids; roll back; promote.",
+   "title": "P8 · Staged rollout and rollback",
+   "variable": "The rollout percentage."
+  },
+  {
+   "checks": [
+    "T4-R9-C01",
+    "T4-R9-C02",
+    "T4-R9-C03",
+    "T4-R9-C04",
+    "T4-R9-C05",
+    "T4-R9-C06",
+    "T4-R9-C07",
+    "T4-R9-C08"
+   ],
+   "claim": "Without its control plane the runtime serves reads from last-known-good within a staleness bound, fails mutations closed, never applies a tampered bundle and makes no call without a credential.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 1,
+    "PASS": 7
+   },
+   "finding": "LIMITATION OBSERVED",
+   "hypothesis": "Mutation denied CONTROL_PLANE_UNREACHABLE; everything denied past the bound; tampered bundle rejected; broker down denies calls.",
+   "id": "T4-R9",
+   "invariant": "No mutation without a fresh, verified policy and a credential.",
+   "limitations": [
+    "A suspension cannot reach a partitioned runtime: exposure is bounded by the staleness bound and fail-closed mutations, not removed."
+   ],
+   "question": "What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?",
+   "result": "FAIL",
+   "role": "boundary",
+   "setup": "Three scenarios: partition a runtime and publish a suspension it cannot see (P9a); alter a bundle in transit (P9b); stop the credential broker (P9c).",
+   "title": "P9 · When the control plane is unreachable",
+   "variable": "The injected failure."
+  },
+  {
+   "checks": [
+    "T4-R10-C01",
+    "T4-R10-C02",
+    "T4-R10-C03",
+    "T4-R10-C04",
+    "T4-R10-C05"
+   ],
+   "claim": "Comparing desired and observed state detects a silently stale runtime and the action it took under a superseded version.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 1,
+    "PASS": 4
+   },
+   "finding": "LIMITATION OBSERVED",
+   "hypothesis": "rt-b reports v1 while v2 is desired; drift findings name it and its action; after reconcile no instance is stale.",
+   "id": "T4-R10",
+   "invariant": "Every instance reports its observed version; a mismatch is a finding.",
+   "limitations": [
+    "Detection, not prevention: the stale runtime acted before it was detected."
+   ],
+   "question": "Can the control plane see a runtime that is quietly running an old version, and what it did meanwhile?",
+   "result": "FAIL",
+   "role": "boundary",
+   "setup": "A lagging replica serves rt-b the old pointer without error while v2 is published.",
+   "title": "P10 · Desired vs observed state",
+   "variable": "Distribution lag."
+  },
+  {
+   "checks": [
+    "T4-R11-C01",
+    "T4-R11-C02",
+    "T4-R11-C03",
+    "T4-R11-C04",
+    "T4-R11-C05",
+    "T4-R11-C06",
+    "T4-R11-C07",
+    "T4-R11-C08"
+   ],
+   "claim": "Remove the control plane (embed governance in each agent) and the property P2 shows breaks: a change becomes a code edit that a running process does not see until it is redeployed.",
+   "counts": {
+    "EXPECTED_FAILURE": 4,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "EXPECTED FAILURE",
+   "hypothesis": "Governed: 0 edits, 0 redeploys. Embedded: edits and redeploys, and the running process still restarts after the edit.",
+   "id": "T4-R11",
+   "invariant": "A governance change needs no agent edit and no redeploy, and applies at the next enforcement point.",
+   "limitations": [
+    "Three agents; the edit and redeploy counts are for that estate."
+   ],
+   "question": "Without a control plane, what does the same set of governance changes cost, and when do they take effect?",
+   "result": "EXPECTED_FAILURE",
+   "role": "negative-control",
+   "setup": "The same four changes, applied once through the control plane (P11b) and once as edits to agents that embed governance (P11a).",
+   "title": "P11 · Negative control: governance inside every agent",
+   "variable": "Where governance lives."
+  },
+  {
+   "checks": [
+    "T4-R12-C01",
+    "T4-R12-C02",
+    "T4-R12-C03",
+    "T4-R12-C04",
+    "T4-R12-C05",
+    "T4-R12-C06",
+    "T4-R12-C07",
+    "T4-R12-C08",
+    "T4-R12-C09",
+    "T4-R12-C10",
+    "T4-R12-C11"
+   ],
+   "claim": "Changes to the control plane are authorized by scope, need a second person to widen, may only restrict under break-glass, are validated, and are all on a tamper-evident local log under POC assumptions.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 11
+   },
+   "finding": "PASS",
+   "hypothesis": "An agent and an out-of-scope lead are rejected; an in-scope lead restricting its own agent is accepted; widening alone, self-approval, break-glass widening and a plaintext credential are rejected; the chain verifies and breaks when one row is edited.",
+   "id": "T4-R12",
+   "invariant": "Every attempt is on the change log; only authorized, valid changes become signed versions.",
+   "limitations": [
+    "Tamper-evident on one machine under the POC's assumptions; not an external immutable audit store. No MFA or real identity provider."
+   ],
+   "question": "Who may change the control plane, and is every change, accepted or rejected, on the record?",
+   "result": "PASS",
+   "role": "governor",
+   "setup": "Ten attempts by agents, team leads, the platform admin and on-call, against config/admins.yaml.",
+   "title": "P12 · Governing the control plane itself",
+   "variable": "Who changes what, how."
+  },
+  {
+   "checks": [
+    "T4-R13-C01",
+    "T4-R13-C02",
+    "T4-R13-C03",
+    "T4-R13-C04",
+    "T4-R13-C05",
+    "T4-R13-C06",
+    "T4-R13-C07",
+    "T4-R13-C08"
+   ],
+   "claim": "The evidence is internally consistent, recomputable from the raw state, and reproduced exactly by a rerun.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 8
+   },
+   "finding": "PASS",
+   "hypothesis": "Every chain and signature verifies; no plaintext credential; no runtime restarted; one agent source hash; every request hash recomputes; the rerun differs only in masked process ids.",
+   "id": "T4-R13",
+   "invariant": "The evidence recomputes; the rerun is equivalent.",
+   "limitations": [
+    "SHA256SUMS is a checksum list, not a signature. The signing key is a POC file, not a KMS."
+   ],
+   "question": "Does the recorded evidence hold together: chains, signatures, credentials, processes, code and request hashes, and a rerun from source?",
+   "result": "PASS",
+   "role": "evidence",
+   "setup": "Recompute from the raw state the scenarios left behind (tools/proof_facts.py); rerun every proof from source into a scratch copy (tools/verify_run.py --record).",
+   "title": "Evidence integrity and replay",
+   "variable": "none"
+  }
+ ],
+ "facts": {
+  "checks.passed": {
+   "display": "100",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/checks.json",
+   "value": 100
+  },
+  "checks.total": {
+   "display": "100",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/checks.json",
+   "value": 100
+  },
+  "outcome.broken": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → outcome",
+   "value": 1
+  },
+  "outcome.held": {
+   "display": "12",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → outcome",
+   "value": 12
+  },
+  "outcome.qualified": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → outcome",
+   "value": 2
+  },
+  "p1.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → checks",
+   "value": 6
+  },
+  "p1.assertions_total": {
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → checks",
+   "value": 6
+  },
+  "p1.checks": {
+   "display": "6/6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → checks",
+   "value": "6/6"
+  },
+  "p1.config_version": {
+   "display": "v1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → measures",
+   "value": "v1"
+  },
+  "p1.decision": {
+   "display": "ALLOW",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → measures",
+   "value": "ALLOW"
+  },
+  "p1.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p1.restarts": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → measures",
+   "value": 1
+  },
+  "p1.rule": {
+   "display": "agents.incident-agent.tools.restart_service[1]",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P1-C-baseline/scenario.json → measures",
+   "value": "agents.incident-agent.tools.restart_service[1]"
+  },
+  "p10.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → checks",
+   "value": 7
+  },
+  "p10.assertions_total": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → checks",
+   "value": 7
+  },
+  "p10.checks": {
+   "display": "7/7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → checks",
+   "value": "7/7"
+  },
+  "p10.desired": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": "v2"
+  },
+  "p10.drift_findings": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": 2
+  },
+  "p10.executed_under_superseded": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": 1
+  },
+  "p10.observed_rt_a": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": "v2"
+  },
+  "p10.observed_rt_b": {
+   "display": "v1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": "v1"
+  },
+  "p10.outcome": {
+   "display": "QUALIFIED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → outcome",
+   "value": "QUALIFIED"
+  },
+  "p10.stale_after_reconcile": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P10-C-drift/scenario.json → measures",
+   "value": 0
+  },
+  "p11.cp.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "5",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → checks",
+   "value": 5
+  },
+  "p11.cp.assertions_total": {
+   "display": "5",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → checks",
+   "value": 5
+  },
+  "p11.cp.bundle_versions": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → measures",
+   "value": 4
+  },
+  "p11.cp.checks": {
+   "display": "5/5",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → checks",
+   "value": "5/5"
+  },
+  "p11.cp.files_edited": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → measures",
+   "value": 0
+  },
+  "p11.cp.lines_changed": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → measures",
+   "value": 0
+  },
+  "p11.cp.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p11.cp.redeploys": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → measures",
+   "value": 0
+  },
+  "p11.cp.static_credential_literals": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-C-control-plane/scenario.json → measures",
+   "value": 0
+  },
+  "p11.embedded.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → checks",
+   "value": 4
+  },
+  "p11.embedded.assertions_total": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → checks",
+   "value": 4
+  },
+  "p11.embedded.checks": {
+   "display": "4/4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → checks",
+   "value": "4/4"
+  },
+  "p11.embedded.files_edited": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 7
+  },
+  "p11.embedded.lines_changed": {
+   "display": "17",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 17
+  },
+  "p11.embedded.migrate-default-model.files": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 3
+  },
+  "p11.embedded.outcome": {
+   "display": "BROKEN",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → outcome",
+   "value": "BROKEN"
+  },
+  "p11.embedded.redeploys": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 7
+  },
+  "p11.embedded.restart-requires-approval.files": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 1
+  },
+  "p11.embedded.restart_after_redeploy": {
+   "display": "pending_approval",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": "pending_approval"
+  },
+  "p11.embedded.restart_before_redeploy": {
+   "display": "executed",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": "executed"
+  },
+  "p11.embedded.revoke-observability-mcp.files": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 2
+  },
+  "p11.embedded.static_credential_literals": {
+   "display": "8",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 8
+  },
+  "p11.embedded.suspend-incident-agent.files": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P11-E-embedded/scenario.json → measures",
+   "value": 1
+  },
+  "p12.accepted": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": 3
+  },
+  "p12.agent_self_grant": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p12.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "13",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → checks",
+   "value": 13
+  },
+  "p12.assertions_total": {
+   "display": "13",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → checks",
+   "value": 13
+  },
+  "p12.attempts": {
+   "display": "10",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": 10
+  },
+  "p12.break_glass_suspension": {
+   "display": "accepted",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "accepted"
+  },
+  "p12.break_glass_widening": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p12.changelog_rows": {
+   "display": "11",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": 11
+  },
+  "p12.changelog_verifies": {
+   "display": "yes",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "yes"
+  },
+  "p12.checks": {
+   "display": "13/13",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → checks",
+   "value": "13/13"
+  },
+  "p12.cross_team_change": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p12.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p12.own_scope_restriction": {
+   "display": "accepted",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "accepted"
+  },
+  "p12.plaintext_credential": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p12.rejected": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": 7
+  },
+  "p12.restore_with_second_person": {
+   "display": "accepted",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "accepted"
+  },
+  "p12.self_approval": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p12.tampered_changelog_verifies": {
+   "display": "no",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "no"
+  },
+  "p12.versions": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": 4
+  },
+  "p12.widening_alone": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P12-C-governing-the-control-plane/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p2.acp_files_changed": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 0
+  },
+  "p2.after_decision": {
+   "display": "APPROVAL_REQUIRED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "APPROVAL_REQUIRED"
+  },
+  "p2.after_executed": {
+   "display": "no",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "no"
+  },
+  "p2.after_version": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "v2"
+  },
+  "p2.agent_code_sha256": {
+   "display": "677bca2acd66",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "677bca2acd66"
+  },
+  "p2.agent_edits": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 0
+  },
+  "p2.agent_sha_after": {
+   "display": "677bca2acd66",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "677bca2acd66"
+  },
+  "p2.agent_sha_before": {
+   "display": "677bca2acd66",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "677bca2acd66"
+  },
+  "p2.approval_id": {
+   "display": "approval-001",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "approval-001"
+  },
+  "p2.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → checks",
+   "value": 9
+  },
+  "p2.assertions_total": {
+   "display": "9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → checks",
+   "value": 9
+  },
+  "p2.before_decision": {
+   "display": "ALLOW",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "ALLOW"
+  },
+  "p2.before_executed": {
+   "display": "yes",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "yes"
+  },
+  "p2.before_version": {
+   "display": "v1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "v1"
+  },
+  "p2.checks": {
+   "display": "9/9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → checks",
+   "value": "9/9"
+  },
+  "p2.control_plane_files_changed": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 4
+  },
+  "p2.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p2.redeploys": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 0
+  },
+  "p2.request_hash_after": {
+   "display": "cb0531217710",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "cb0531217710"
+  },
+  "p2.request_hash_before": {
+   "display": "cb0531217710",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "cb0531217710"
+  },
+  "p2.restarts": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 1
+  },
+  "p2.restarts_after_v1": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 1
+  },
+  "p2.restarts_after_v2": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 1
+  },
+  "p2.runtime_pid_after": {
+   "display": "rt-a/pid-1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "rt-a/pid-1"
+  },
+  "p2.runtime_pid_before": {
+   "display": "rt-a/pid-1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": "rt-a/pid-1"
+  },
+  "p2.side_effect_delta": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P2-C-central-change/scenario.json → measures",
+   "value": 0
+  },
+  "p3.approval_id": {
+   "display": "approval-001",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": "approval-001"
+  },
+  "p3.approved_by": {
+   "display": "ic.dev",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": "ic.dev"
+  },
+  "p3.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → checks",
+   "value": 9
+  },
+  "p3.assertions_total": {
+   "display": "9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → checks",
+   "value": 9
+  },
+  "p3.checks": {
+   "display": "9/9",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → checks",
+   "value": "9/9"
+  },
+  "p3.duplicate_resume": {
+   "display": "ALREADY_EXECUTED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": "ALREADY_EXECUTED"
+  },
+  "p3.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p3.refused_approvers": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": 2
+  },
+  "p3.restarts_after": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": 1
+  },
+  "p3.restarts_before_approval": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P3-C-approval/scenario.json → measures",
+   "value": 0
+  },
+  "p4.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "8",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → checks",
+   "value": 8
+  },
+  "p4.assertions_total": {
+   "display": "8",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → checks",
+   "value": 8
+  },
+  "p4.checks": {
+   "display": "8/8",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → checks",
+   "value": "8/8"
+  },
+  "p4.inflight_calls_after_suspension": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": 2
+  },
+  "p4.inflight_executed_after_suspension": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": 0
+  },
+  "p4.new_run": {
+   "display": "denied AGENT_SUSPENDED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": "denied AGENT_SUSPENDED"
+  },
+  "p4.other_agent_calls_executed": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": 4
+  },
+  "p4.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p4.restore_alone": {
+   "display": "rejected",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": "rejected"
+  },
+  "p4.restore_version": {
+   "display": "v3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": "v3"
+  },
+  "p4.suspend_version": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P4-C-suspend/scenario.json → measures",
+   "value": "v2"
+  },
+  "p5.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → checks",
+   "value": 7
+  },
+  "p5.assertions_total": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → checks",
+   "value": 7
+  },
+  "p5.budget_version": {
+   "display": "v3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": "v3"
+  },
+  "p5.call_3": {
+   "display": "denied TOOL_CALL_BUDGET_EXCEEDED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": "denied TOOL_CALL_BUDGET_EXCEEDED"
+  },
+  "p5.checks": {
+   "display": "7/7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → checks",
+   "value": "7/7"
+  },
+  "p5.max_tool_calls": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": 2
+  },
+  "p5.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p5.quota_version": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": "v2"
+  },
+  "p5.refunds": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": 1
+  },
+  "p5.run_after_budget": {
+   "display": "denied DAILY_BUDGET_EXHAUSTED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": "denied DAILY_BUDGET_EXHAUSTED"
+  },
+  "p5.spent_usd": {
+   "display": "0.7104",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P5-C-budgets/scenario.json → measures",
+   "value": 0.7104
+  },
+  "p6.agents_affected": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": 2
+  },
+  "p6.agents_unaffected": {
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": 1
+  },
+  "p6.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → checks",
+   "value": 7
+  },
+  "p6.assertions_total": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → checks",
+   "value": 7
+  },
+  "p6.calls_denied_mcp_disabled": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": 3
+  },
+  "p6.checks": {
+   "display": "7/7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → checks",
+   "value": "7/7"
+  },
+  "p6.observability_calls_after": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": 0
+  },
+  "p6.observability_calls_before": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": 3
+  },
+  "p6.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p6.revoke_version": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P6-C-revoke-mcp/scenario.json → measures",
+   "value": "v2"
+  },
+  "p7.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → checks",
+   "value": 7
+  },
+  "p7.assertions_total": {
+   "display": "7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → checks",
+   "value": 7
+  },
+  "p7.checks": {
+   "display": "7/7",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → checks",
+   "value": "7/7"
+  },
+  "p7.confidential_calls": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → measures",
+   "value": 2
+  },
+  "p7.model_names_in_agent_code": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → measures",
+   "value": 0
+  },
+  "p7.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p7.v1_incident_model": {
+   "display": "fast-model",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → measures",
+   "value": "fast-model"
+  },
+  "p7.v2_incident_model": {
+   "display": "large-model",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → measures",
+   "value": "large-model"
+  },
+  "p7.v3_support_model": {
+   "display": "DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P7-C-models/scenario.json → measures",
+   "value": "DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS"
+  },
+  "p8.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → checks",
+   "value": 6
+  },
+  "p8.assertions_total": {
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → checks",
+   "value": 6
+  },
+  "p8.canary_percent": {
+   "display": "25",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": 25
+  },
+  "p8.canary_runs": {
+   "display": "20",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": 20
+  },
+  "p8.canary_runs_on_new": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": 4
+  },
+  "p8.canary_version": {
+   "display": "v2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": "v2"
+  },
+  "p8.checks": {
+   "display": "6/6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → checks",
+   "value": "6/6"
+  },
+  "p8.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p8.promoted_runs_on_new": {
+   "display": "10",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": 10
+  },
+  "p8.rollback_runs_on_new": {
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P8-C-canary/scenario.json → measures",
+   "value": 0
+  },
+  "p9.broker.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json → checks",
+   "value": 3
+  },
+  "p9.broker.assertions_total": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json → checks",
+   "value": 3
+  },
+  "p9.broker.checks": {
+   "display": "3/3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json → checks",
+   "value": "3/3"
+  },
+  "p9.broker.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p9.broker.tool_calls_denied": {
+   "display": "2",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-broker-down/scenario.json → measures",
+   "value": 2
+  },
+  "p9.outage.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → checks",
+   "value": 6
+  },
+  "p9.outage.assertions_total": {
+   "display": "6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → checks",
+   "value": 6
+  },
+  "p9.outage.calls_executed_after_suspension_published": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": 3
+  },
+  "p9.outage.checks": {
+   "display": "6/6",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → checks",
+   "value": "6/6"
+  },
+  "p9.outage.lkg_version": {
+   "display": "v1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": "v1"
+  },
+  "p9.outage.max_staleness_ticks": {
+   "display": "30",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": 30
+  },
+  "p9.outage.mutation_during_outage": {
+   "display": "CONTROL_PLANE_UNREACHABLE",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": "CONTROL_PLANE_UNREACHABLE"
+  },
+  "p9.outage.outcome": {
+   "display": "QUALIFIED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → outcome",
+   "value": "QUALIFIED"
+  },
+  "p9.outage.reads_on_lkg": {
+   "display": "4",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": 4
+  },
+  "p9.outage.recovered_run": {
+   "display": "AGENT_SUSPENDED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": "AGENT_SUSPENDED"
+  },
+  "p9.outage.stale_run": {
+   "display": "POLICY_STALE",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-outage/scenario.json → measures",
+   "value": "POLICY_STALE"
+  },
+  "p9.tamper.applied_version": {
+   "display": "v1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → measures",
+   "value": "v1"
+  },
+  "p9.tamper.assertions_passed": {
+   "derivation": "assertions that held",
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → checks",
+   "value": 3
+  },
+  "p9.tamper.assertions_total": {
+   "display": "3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → checks",
+   "value": 3
+  },
+  "p9.tamper.checks": {
+   "display": "3/3",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → checks",
+   "value": "3/3"
+  },
+  "p9.tamper.outcome": {
+   "display": "HELD",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → outcome",
+   "value": "HELD"
+  },
+  "p9.tamper.rejected_events": {
+   "display": "5",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → measures",
+   "value": 5
+  },
+  "p9.tamper.restart_decision": {
+   "display": "BUNDLE_REJECTED",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/P9-C-tampered-bundle/scenario.json → measures",
+   "value": "BUNDLE_REJECTED"
+  },
+  "raw.agent_code_hashes": {
+   "derivation": "distinct agent source hashes across every scenario",
+   "display": "1",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → agent_code_sha256",
+   "value": 1
+  },
+  "raw.audit_chains": {
+   "display": "14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/runtime/*/audit.jsonl",
+   "value": 14
+  },
+  "raw.audit_chains_verified": {
+   "derivation": "every row's prev and hash recomputed",
+   "display": "14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/runtime/*/audit.jsonl",
+   "value": 14
+  },
+  "raw.bundles": {
+   "display": "34",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/bundles/v*.json",
+   "value": 34
+  },
+  "raw.bundles_signature_valid": {
+   "derivation": "HMAC-SHA256 of each bundle's canonical body checked against its .sig",
+   "display": "34",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/bundles/v*.json",
+   "value": 34
+  },
+  "raw.changelogs": {
+   "display": "14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/changelog.jsonl",
+   "value": 14
+  },
+  "raw.changelogs_verified": {
+   "derivation": "every row's prev and hash recomputed",
+   "display": "14",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/changelog.jsonl",
+   "value": 14
+  },
+  "raw.plaintext_credentials_in_bundles": {
+   "derivation": "tools whose credential is not a secret:// reference",
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/bundles/v*.json",
+   "value": 0
+  },
+  "raw.request_hashes_recomputed": {
+   "derivation": "request_sha256 recomputed from each recorded run request (agent, task)",
+   "display": "93",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/transcript.jsonl",
+   "value": 93
+  },
+  "raw.run_requests": {
+   "display": "93",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/transcript.jsonl",
+   "value": 93
+  },
+  "raw.runtime_processes": {
+   "display": "16",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/volatile.json → runtime_pids (labels)",
+   "value": 16
+  },
+  "raw.runtime_restarts": {
+   "derivation": "labels pid-2 and later",
+   "display": "0",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/volatile.json → runtime_pids (labels)",
+   "value": 0
+  },
+  "replay.deterministic_equivalent": {
+   "display": "240",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json → classes",
+   "value": 240
+  },
+  "replay.files": {
+   "display": "255",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json",
+   "value": 255
+  },
+  "replay.fresh_model_calls": {
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json",
+   "value": 0
+  },
+  "replay.level": {
+   "display": "EXACT",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json",
+   "value": "EXACT"
+  },
+  "replay.nondeterministic": {
+   "derivation": "volatile.json: raw process ids only",
+   "display": "15",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json → classes",
+   "value": 15
+  },
+  "replay.not_equivalent": {
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-recorded/replay.json → classes",
+   "value": 0
+  },
+  "run.agent_code_sha256": {
+   "display": "677bca2acd66",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/manifest.json → agents_code_sha256",
+   "value": "677bca2acd66"
+  },
+  "run.audit_events": {
+   "display": "595",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/runtime/*/audit.jsonl",
+   "value": 595
+  },
+  "run.bundle_versions": {
+   "display": "34",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/state/controlplane/bundles/",
+   "value": 34
+  },
+  "run.experiments": {
+   "display": "12",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/P*.json",
+   "value": 12
+  },
+  "run.filed": {
+   "display": "2026-10-03",
+   "source": "the run id",
+   "value": "2026-10-03"
+  },
+  "run.id": {
+   "display": "2026-10-03-recorded",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/manifest.json",
+   "value": "2026-10-03-recorded"
+  },
+  "run.runtime_processes": {
+   "display": "16",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/transcript.jsonl (distinct runtime instances)",
+   "value": 16
+  },
+  "run.scenarios": {
+   "display": "15",
+   "source": "control_plane_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json",
+   "value": 15
+  }
+ },
+ "finding_counts": {
+  "LIMITATION OBSERVED": 2
+ },
+ "paths": {
+  "lab": "results/lab-console.html",
+  "ledger": "evidence/runs/2026-10-03-recorded/ledger.jsonl",
+  "negative_control": "evidence/runs/2026-10-03-recorded/negative-control/results.json",
+  "raw": "control_plane_poc/runs/2026-10-03-recorded",
+  "replay": "evidence/runs/2026-10-03-recorded/replay.json"
+ },
+ "profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "check": "T4-R13-C05",
+      "text": "Separate, long-lived runtime processes (subprocess, JSON lines); 16 across the run, 0 restarted"
+     },
+     {
+      "check": "T4-R13-C03",
+      "text": "Control-plane versioning: immutable bundles, HMAC-SHA256 signatures, a pointer, staged rollout and rollback"
+     },
+     {
+      "check": "T4-R13-C02",
+      "text": "Change authorization, validation and a hash-chained change log"
+     },
+     {
+      "check": "T4-R1-C02",
+      "text": "The decision function and the enforcement points every tool and model call passes through"
+     },
+     {
+      "check": "T4-R13-C01",
+      "text": "A hash-chained runtime audit, every decision naming its config version and rule"
+     },
+     {
+      "check": "T4-R13-C06",
+      "text": "Agent source hashing before, at import and after; request hashing"
+     }
+    ],
+    "meaning": "the actual mechanism was exercised"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "Enterprise systems of record (deploy, billing, support, observability) and the MCP servers in front of them: in-process, with an effects ledger"
+     },
+     {
+      "text": "Model endpoints: deterministic text and token counts behind a model gateway"
+     },
+     {
+      "text": "The credential broker: in-process minting of short-lived, audience-bound credentials"
+     },
+     {
+      "text": "Distribution: bundles and pointer read from shared files; network partition and lagging replica set by flags"
+     },
+     {
+      "text": "Time: logical ticks"
+     }
+    ],
+    "meaning": "a faithful local substitute for an enterprise or external system"
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "check": "T4-R9-C02",
+      "text": "Control plane unreachable from a runtime (P9a)"
+     },
+     {
+      "check": "T4-R9-C05",
+      "text": "A bundle altered in transit (P9b)"
+     },
+     {
+      "check": "T4-R9-C07",
+      "text": "Credential broker down (P9c)"
+     },
+     {
+      "check": "T4-R10-C02",
+      "text": "A lagging replica serving an old pointer without error (P10)"
+     },
+     {
+      "check": "T4-R11-C05",
+      "text": "The negative control: governance embedded in every agent instead of a control plane (P11a)"
+     }
+    ],
+    "meaning": "a failure or unsafe condition introduced on purpose"
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "Real network distribution, key management and HA of the control plane; tenant and environment isolation; admin MFA"
+     },
+     {
+      "text": "Real MCP protocol traffic and interoperability; real model behaviour (the optional live mode is illustrative only)"
+     },
+     {
+      "text": "Latency, throughput and availability"
+     }
+    ],
+    "meaning": "design this POC does not exercise"
+   }
+  ],
+  "groups": [
+   {
+    "group": "RUNTIME",
+    "rows": [
+     [
+      "Processes",
+      "16 runtime processes, one per instance per scenario; restarted: 0",
+      "T4-R13-C05"
+     ],
+     [
+      "Agents",
+      "three, fixed deterministic plans; agent source sha256 677bca2acd66 in every scenario",
+      "T4-R13-C06"
+     ]
+    ]
+   },
+   {
+    "group": "CONTROL PLANE",
+    "rows": [
+     [
+      "Bundles",
+      "34 signed versions across the run; 0 plaintext credentials",
+      "T4-R13-C03"
+     ],
+     [
+      "Change log",
+      "14 hash-chained logs, all verifying",
+      "T4-R13-C02"
+     ]
+    ]
+   },
+   {
+    "group": "OBSERVABILITY",
+    "rows": [
+     [
+      "Audit",
+      "595 runtime audit events on 14 hash-chained logs",
+      "T4-R13-C01"
+     ]
+    ]
+   },
+   {
+    "group": "REPLAY",
+    "rows": [
+     [
+      "Level",
+      "EXACT: 240 files byte-identical, 15 with raw process ids masked, 0 different",
+      "T4-R13-C07"
+     ]
+    ]
+   },
+   {
+    "group": "NEGATIVE CONTROL",
+    "rows": [
+     [
+      "Safeguard removed",
+      "the control plane: with governance embedded, 7 edits and 7 redeploys, and the running process kept the old rule",
+      "T4-R11-C05"
+     ]
+    ]
+   }
+  ]
+ },
+ "run_id": "2026-10-03-recorded",
+ "schema": "pae-proof/v1",
+ "status": "COMPLETE",
+ "tables": {
+  "roles": [
+   {
+    "experiment": "P1",
+    "property": "under v1 the protected action is allowed, executed once and attributed to v1",
+    "role": "baseline",
+    "scenarios": [
+     {
+      "checks": "6/6",
+      "id": "P1-C-baseline",
+      "outcome": "held"
+     }
+    ],
+    "title": "Baseline: the control plane allows"
+   },
+   {
+    "experiment": "P2",
+    "property": "behaviour changes centrally with agent code, runtime process and request held fixed",
+    "role": "core",
+    "scenarios": [
+     {
+      "checks": "9/9",
+      "id": "P2-C-central-change",
+      "outcome": "held"
+     }
+    ],
+    "title": "One central change, same agent"
+   },
+   {
+    "experiment": "P3",
+    "property": "a held action stays unexecuted until an eligible approver approves, then runs exactly once",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "9/9",
+      "id": "P3-C-approval",
+      "outcome": "held"
+     }
+    ],
+    "title": "Approval, then exactly one execution"
+   },
+   {
+    "experiment": "P4",
+    "property": "a central suspension stops new and in-flight runs of one agent, and only that agent",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "8/8",
+      "id": "P4-C-suspend",
+      "outcome": "held"
+     }
+    ],
+    "title": "Suspend: the kill switch"
+   },
+   {
+    "experiment": "P5",
+    "property": "a central quota and budget stop the run at the configured limit",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "7/7",
+      "id": "P5-C-budgets",
+      "outcome": "held"
+     }
+    ],
+    "title": "Budgets and quotas"
+   },
+   {
+    "experiment": "P6",
+    "property": "disabling one MCP server centrally stops every agent that uses it, and no other",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "7/7",
+      "id": "P6-C-revoke-mcp",
+      "outcome": "held"
+     }
+    ],
+    "title": "Revoke one MCP server for every agent"
+   },
+   {
+    "experiment": "P7",
+    "property": "the model is chosen by the control plane, by data class, never named by the agent",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "7/7",
+      "id": "P7-C-models",
+      "outcome": "held"
+     }
+    ],
+    "title": "Model governance"
+   },
+   {
+    "experiment": "P8",
+    "property": "a canary reaches only its bucket; rollback returns every run to stable",
+    "role": "capability",
+    "scenarios": [
+     {
+      "checks": "6/6",
+      "id": "P8-C-canary",
+      "outcome": "held"
+     }
+    ],
+    "title": "Staged rollout and rollback"
+   },
+   {
+    "experiment": "P9",
+    "property": "without the control plane, reads continue within a staleness bound and mutations fail closed",
+    "role": "boundary",
+    "scenarios": [
+     {
+      "checks": "6/6",
+      "id": "P9-C-outage",
+      "outcome": "qualified"
+     },
+     {
+      "checks": "3/3",
+      "id": "P9-C-tampered-bundle",
+      "outcome": "held"
+     },
+     {
+      "checks": "3/3",
+      "id": "P9-C-broker-down",
+      "outcome": "held"
+     }
+    ],
+    "title": "When the control plane is unreachable"
+   },
+   {
+    "experiment": "P10",
+    "property": "the control plane observes a runtime that has drifted from desired state, and what it did meanwhile",
+    "role": "boundary",
+    "scenarios": [
+     {
+      "checks": "7/7",
+      "id": "P10-C-drift",
+      "outcome": "qualified"
+     }
+    ],
+    "title": "Desired vs observed state"
+   },
+   {
+    "experiment": "P11",
+    "property": "governance embedded in agents: the property is broken by design",
+    "role": "negative-control",
+    "scenarios": [
+     {
+      "checks": "4/4",
+      "id": "P11-E-embedded",
+      "outcome": "broken"
+     },
+     {
+      "checks": "5/5",
+      "id": "P11-C-control-plane",
+      "outcome": "held"
+     }
+    ],
+    "title": "Baseline: governance inside every agent"
+   },
+   {
+    "experiment": "P12",
+    "property": "the control plane's own changes are authorized, validated and on a tamper-evident log",
+    "role": "governor",
+    "scenarios": [
+     {
+      "checks": "13/13",
+      "id": "P12-C-governing-the-control-plane",
+      "outcome": "held"
+     }
+    ],
+    "title": "Governing the control plane itself"
+   }
+  ]
+ }
+}

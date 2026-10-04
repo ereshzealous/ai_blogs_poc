@@ -1,0 +1,18 @@
+# What never ships. The publish script copies with `--filter=':- .gitignore'`, so this file decides what a published copy
+# of this POC contains (see PUBLISHING.md in the target repository).
+
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# scratch runs: `acp proof` and live runs (the one recorded live run the articles cite is kept)
+control_plane_poc/runs/_scratch/
+control_plane_poc/runs/live/*
+!control_plane_poc/runs/live/ollama-2026-09-30T100218Z/
+
+# macOS noise
+.DS_Store
+._*

@@ -1,0 +1,129 @@
+{
+ "agent_code_sha256": "677bca2acd667671b4677ac380745c7925a124e478e69a0e2af107b42323200c",
+ "checks": [
+  {
+   "check": "canary reached some but not all runs",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  },
+  {
+   "check": "canary membership = deterministic bucket < 25",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  },
+  {
+   "check": "every run used exactly one version, and its model matches it",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  },
+  {
+   "check": "after rollback: 0 runs on the canary version",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  },
+  {
+   "check": "after promote: every run on the new version",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  },
+  {
+   "check": "agent code unchanged, one runtime process",
+   "experiment": "P8",
+   "passed": true,
+   "scenario": "P8-C-canary"
+  }
+ ],
+ "expected": "a deterministic ~quarter of runs on the canary; none after rollback; all after promotion",
+ "experiment": "P8",
+ "id": "P8-C-canary",
+ "input": {
+  "agent": "finance-agent",
+  "rollout": {
+   "percent": 25,
+   "version": "v2"
+  }
+ },
+ "measures": [
+  [
+   "canary_version",
+   "v2"
+  ],
+  [
+   "canary_percent",
+   25
+  ],
+  [
+   "canary_runs",
+   20
+  ],
+  [
+   "canary_runs_on_new",
+   4
+  ],
+  [
+   "rollback_runs_on_new",
+   0
+  ],
+  [
+   "promoted_runs_on_new",
+   10
+  ]
+ ],
+ "observed": "canary 4/20; rollback 0/20; promoted 10/10",
+ "outcome": "held",
+ "proof": "╭────────────────────────────────────────────────────────────────────────────────╮\n│ P8 — STAGED ROLLOUT AND ROLLBACK                                               │\n├────────────────────────────────────────────────────────────────────────────────┤\n│ Agent              finance-agent (20 + 20 + 10 runs)                           │\n│ Change             v2 · default model → large-model, published inactive        │\n│ Canary 25%         4 of 20 runs on v2 (large-model) · rest on v1               │\n│ Rollback           0 of 20 runs on v2                                          │\n│ Promote            10 of 10 runs on v2                                         │\n│ Agent code         UNCHANGED · no redeploy at any step                         │\n╰────────────────────────────────────────────────────────────────────────────────╯\n  ✓ canary reached some but not all runs\n  ✓ canary membership = deterministic bucket < 25\n  ✓ every run used exactly one version, and its model matches it\n  ✓ after rollback: 0 runs on the canary version\n  ✓ after promote: every run on the new version\n  ✓ agent code unchanged, one runtime process\n\n  PROOF P8: PASS\n  Test assertions: 6/6 passed",
+ "question": "Does a canary reach only its bucket of runs, and does rollback return every run to the stable version?",
+ "steps": [
+  {
+   "actor": "platform.admin",
+   "result": "v2 (widening)",
+   "tick": 5,
+   "version": "v2",
+   "what": "publish migrate-default-model"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "canary",
+   "tick": 6,
+   "what": "rollout v2 to 25% of runs"
+  },
+  {
+   "actor": "finance-agent",
+   "result": "v1: 16, v2: 4",
+   "tick": 110,
+   "what": "20 runs (canary)"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "stable v1 only",
+   "tick": 110,
+   "what": "rollback"
+  },
+  {
+   "actor": "finance-agent",
+   "result": "v1: 20",
+   "tick": 210,
+   "what": "20 runs (rollback)"
+  },
+  {
+   "actor": "platform.admin",
+   "result": "stable v2",
+   "tick": 211,
+   "what": "promote v2"
+  },
+  {
+   "actor": "finance-agent",
+   "result": "v2: 10",
+   "tick": 260,
+   "what": "10 runs (promoted)"
+  }
+ ],
+ "use_case": "roll a new default model out to 25% of finance-agent runs, roll back, then promote",
+ "variant": "C",
+ "where": null
+}

@@ -1,0 +1,53 @@
+{
+ "after_reconcile": [
+  {
+   "agent": "incident-agent",
+   "config_version": "v2",
+   "instance": "rt-a"
+  },
+  {
+   "agent": "incident-agent",
+   "config_version": "v2",
+   "instance": "rt-b"
+  }
+ ],
+ "desired": {
+  "canary": null,
+  "stable": "v2"
+ },
+ "findings": [
+  {
+   "agent": "incident-agent",
+   "desired": [
+    "v2"
+   ],
+   "instance": "rt-b",
+   "kind": "stale_config",
+   "observed": "v1"
+  },
+  {
+   "action": "restart_service",
+   "agent": "incident-agent",
+   "config_version": "v1",
+   "instance": "rt-b",
+   "kind": "executed_under_superseded_config",
+   "superseded_by": "v2",
+   "tick": 36
+  }
+ ],
+ "observed": [
+  {
+   "agent": "incident-agent",
+   "config_version": "v2",
+   "instance": "rt-a"
+  },
+  {
+   "agent": "incident-agent",
+   "config_version": "v1",
+   "instance": "rt-b"
+  }
+ ],
+ "would_have_decided": [
+  "approval_required"
+ ]
+}

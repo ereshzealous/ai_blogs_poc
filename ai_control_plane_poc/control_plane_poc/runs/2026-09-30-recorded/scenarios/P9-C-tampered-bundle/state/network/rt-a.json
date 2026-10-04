@@ -1,0 +1,85 @@
+{
+ "tamper_in_transit": {
+  "overlay": {
+   "agents": {
+    "finance-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/finance-agent",
+     "limits": {
+      "daily_budget": 50.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "finance-eng",
+     "purpose": "Reconcile the ledger and flag anomalies",
+     "risk_level": "medium",
+     "status": "active",
+     "team": "finance",
+     "tools": {
+      "flag_transaction": "allow",
+      "read_ledger": "allow"
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    },
+    "incident-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/incident-agent",
+     "limits": {
+      "daily_budget": 100.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "sre-team",
+     "purpose": "Investigate production incidents and remediate them",
+     "risk_level": "high",
+     "status": "active",
+     "team": "sre",
+     "tools": {
+      "delete_resource": "allow",
+      "query_logs": "allow",
+      "query_metrics": "allow",
+      "restart_service": "allow"
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    },
+    "support-agent": {
+     "environment": "production",
+     "identity": "spiffe://acp.example/agent/support-agent",
+     "limits": {
+      "daily_budget": 50.0,
+      "max_cost_per_run": 5.0,
+      "max_tool_calls": 10
+     },
+     "model_profile": "standard",
+     "owner": "support-platform",
+     "purpose": "Resolve customer cases, including refunds",
+     "risk_level": "medium",
+     "status": "active",
+     "team": "support",
+     "tools": {
+      "query_logs": "allow",
+      "read_case": "allow",
+      "refund_customer": [
+       {
+        "effect": "allow",
+        "when": {
+         "amount_lte": 100
+        }
+       },
+       {
+        "effect": "approval_required",
+        "when": {
+         "amount_gt": 100
+        }
+       }
+      ]
+     },
+     "workload": "spiffe://acp.example/ns/agents/sa/agent-runtime"
+    }
+   }
+  },
+  "version": "v2"
+ }
+}

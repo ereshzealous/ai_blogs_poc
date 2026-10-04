@@ -1,0 +1,35 @@
+{
+ "checks": {
+  "T4-R11-C05": "EXPECTED_FAILURE",
+  "T4-R11-C06": "EXPECTED_FAILURE",
+  "T4-R11-C07": "EXPECTED_FAILURE",
+  "T4-R11-C08": "EXPECTED_FAILURE"
+ },
+ "expected": "the invariant breaks: edits and redeploys are needed, and the running process keeps the old rule until it is redeployed",
+ "experiment": "T4-R11",
+ "governed": {
+  "bundle_versions": 4,
+  "files_edited": 0,
+  "redeploys": 0,
+  "static_credential_literals": 0
+ },
+ "harness_completed": true,
+ "invariant": "a governance change needs no agent edit and no redeploy, and applies at the running process's next decision",
+ "mutated": {
+  "files_edited": 7,
+  "lines_changed": 17,
+  "redeploys": 7,
+  "restart_after_redeploy": "pending_approval",
+  "restart_before_redeploy": "executed",
+  "static_credential_literals": 8
+ },
+ "observed": "property broken by design: a governance change needs no agent edit → 7; a governance change needs no redeploy → 7; the running process applies the change at its next decision → executed; agent code holds no static credential → 8",
+ "result": "EXPECTED_FAILURE",
+ "safeguard_removed": "the control plane: each agent embeds its own governance (allowed tools, approval rule, model, credentials)",
+ "scenarios": {
+  "governed": "P11-C-control-plane",
+  "mutated": "P11-E-embedded"
+ },
+ "schema": "pae-proof/v1",
+ "test_assertions": "4/4 passed"
+}

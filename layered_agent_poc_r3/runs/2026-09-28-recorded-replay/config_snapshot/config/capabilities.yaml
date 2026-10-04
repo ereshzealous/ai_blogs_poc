@@ -1,0 +1,39 @@
+# Tools + Actions: the capability registry.  The platform (and every agent) names a capability; this file binds it to
+# an MCP server, a tool and an adapter.  A capability that is not listed here does not exist for the platform.
+servers: [itsm, observability, deploy]
+capabilities:
+  incident.get:      {server: itsm,          tool: get_incident,     kind: read,  adapter: passthrough, description: "Read an incident record"}
+  incident.update:   {server: itsm,          tool: update_incident,  kind: write, risk: low,  adapter: passthrough, key_param: idempotency_key}
+  telemetry.metrics: {server: observability, tool: query_metrics,    kind: read,  adapter: passthrough, contract: metrics}
+  telemetry.logs:    {server: observability, tool: search_logs,      kind: read,  adapter: passthrough, contract: logs}
+  deploy.history:    {server: deploy,        tool: list_deployments, kind: read,  adapter: passthrough, contract: history}
+  deploy.rollback:   {server: deploy,        tool: rollback_release, kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}
+  deploy.restart:    {server: deploy,        tool: restart_service,  kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}
+# The platform's own contracts for capabilities an agent can see.  The model is shown these, never a backend's schema,
+# so a backend that renames its arguments changes an adapter, not what the model sees.
+contracts:
+  metrics:
+    description: "Time series for one service metric, with latest value, max and SLO."
+    required: [service, environment, metric]
+    properties:
+      service: {type: string, description: "Service name, e.g. checkout-api"}
+      environment: {type: string, enum: [production, staging]}
+      metric: {type: string, enum: [latency_p95_ms, error_rate_pct, db_pool_wait_ms, cpu_pct]}
+      minutes: {type: integer, minimum: 1, maximum: 120, default: 30}
+  logs:
+    description: "Recent log lines for a service, filtered by words."
+    required: [service, environment]
+    properties:
+      service: {type: string, description: "Service name, e.g. checkout-api"}
+      environment: {type: string, enum: [production, staging]}
+      query: {type: string, description: "Words to match", default: ""}
+      minutes: {type: integer, minimum: 1, maximum: 120, default: 30}
+  history:
+    description: "Recent releases of a service in one environment, newest first, and which release is running."
+    required: [service, environment]
+    properties:
+      service: {type: string, description: "Service name, e.g. checkout-api"}
+      environment: {type: string, enum: [production, staging]}
+      limit: {type: integer, minimum: 1, maximum: 20, default: 5}
+timeouts: {read_s: ${F2_TOOL_TIMEOUT_S:-5}, write_s: ${F2_TOOL_TIMEOUT_S:-5}}
+retries: {read: 2, write_with_key: 2}

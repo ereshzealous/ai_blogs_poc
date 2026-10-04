@@ -1,0 +1,9 @@
+{"seq": 1, "tool": "get_incident", "args": {"incident_id": "INC-4917"}, "minute": 630, "wall": 1790619534.6513312, "pid": 51015}
+{"seq": 2, "tool": "list_deployments", "args": {"environment": "production", "limit": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790619535.914377, "pid": 51025}
+{"seq": 3, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 15, "service": "checkout-api"}, "minute": 630, "wall": 1790619537.545973, "pid": 51022}
+{"seq": 4, "tool": "query_metrics", "args": {"environment": "production", "metric": "error_rate_pct", "minutes": 15, "service": "checkout-api"}, "minute": 630, "wall": 1790619538.980643, "pid": 51022}
+{"seq": 5, "tool": "query_metrics", "args": {"environment": "production", "metric": "db_pool_wait_ms", "minutes": 15, "service": "checkout-api"}, "minute": 630, "wall": 1790619540.307457, "pid": 51022}
+{"seq": 6, "tool": "search_logs", "args": {"environment": "production", "minutes": 15, "query": "HikariPool", "service": "checkout-api"}, "minute": 630, "wall": 1790619541.5977778, "pid": 51022}
+{"seq": 7, "tool": "rollback_release", "args": {"environment": "production", "service": "checkout-api", "to_release": "rel-2030"}, "minute": 630, "wall": 1790619543.404341, "pid": 51025}
+{"seq": 8, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 3, "service": "checkout-api"}, "minute": 636, "wall": 1790619544.972846, "pid": 51022}
+{"seq": 9, "tool": "update_incident", "args": {"incident_id": "INC-4917", "note": "Root cause: release rel-2031 lowered DB pool max size causing connection exhaustion.\nAction: rolled back to rel-2030.\nVerification: p95 latency <400ms for last 3 minutes.", "status": "mitigated"}, "minute": 636, "wall": 1790619561.8155892, "pid": 51015}

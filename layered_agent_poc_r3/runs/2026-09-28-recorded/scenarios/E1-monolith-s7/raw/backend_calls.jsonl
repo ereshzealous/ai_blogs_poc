@@ -1,0 +1,10 @@
+{"seq": 1, "tool": "get_incident", "args": {"incident_id": "INC-4917"}, "minute": 630, "wall": 1790619498.993588, "pid": 50802}
+{"seq": 2, "tool": "list_deployments", "args": {"environment": "production", "limit": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790619500.1836522, "pid": 50806}
+{"seq": 3, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790619501.431604, "pid": 50804}
+{"seq": 4, "tool": "query_metrics", "args": {"environment": "production", "metric": "error_rate_pct", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790619502.446347, "pid": 50804}
+{"seq": 5, "tool": "query_metrics", "args": {"environment": "production", "metric": "db_pool_wait_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790619503.486589, "pid": 50804}
+{"seq": 6, "tool": "query_metrics", "args": {"environment": "production", "metric": "cpu_pct", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790619504.4824371, "pid": 50804}
+{"seq": 7, "tool": "search_logs", "args": {"environment": "production", "minutes": 60, "query": "HikariPool", "service": "checkout-api"}, "minute": 630, "wall": 1790619505.5380611, "pid": 50804}
+{"seq": 8, "tool": "rollback_release", "args": {"environment": "production", "service": "checkout-api", "to_release": "rel-2030"}, "minute": 630, "wall": 1790619507.263925, "pid": 50806}
+{"seq": 9, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 3, "service": "checkout-api"}, "minute": 636, "wall": 1790619508.754972, "pid": 50804}
+{"seq": 10, "tool": "update_incident", "args": {"incident_id": "INC-4917", "note": "Root cause: pool exhaustion due to reduced maximumPoolSize in rel-2031. Action: rolled back to rel-2010? wait correct release rel-2030. Verification: p95 latency <400ms for 3 min.", "status": "mitigated"}, "minute": 636, "wall": 1790619510.959392, "pid": 50802}

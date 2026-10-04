@@ -1,0 +1,40 @@
+{
+ "arch": "layered",
+ "files_changed": 1,
+ "lines_added": 6,
+ "lines_removed": 2,
+ "test_files_changed": 0,
+ "files": [
+  {
+   "path": "config/models.yaml",
+   "added": 6,
+   "removed": 2
+  }
+ ],
+ "concerns_touched": [
+  "model-services"
+ ],
+ "concerns_touched_n": 1,
+ "concerns_by_file": {
+  "config/models.yaml": [
+   "model-services"
+  ]
+ },
+ "home_concern": [
+  "model-services"
+ ],
+ "outside_expected": [],
+ "spill_over_n": 0,
+ "review_surface_concerns": [
+  "model-services"
+ ],
+ "review_surface_concerns_n": 1,
+ "review_surface_loc": 16,
+ "change": "E2_model_swap",
+ "patch": "experiments/changes/E2_model_swap/layered.patch",
+ "patch_sha256": "3f9af33004815b29285728e09e7359889f2d2f63f87f09d368af5d41ee4ebe2d",
+ "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+ "tests_returncode": 0,
+ "tests_wall_s": 15.2,
+ "diff": "diff --git a/config/models.yaml b/config/models.yaml\nindex d3eb61e..e2f000c 100644\n--- a/config/models.yaml\n+++ b/config/models.yaml\n@@ -5,12 +5,16 @@ provider:\n   url: ${OLLAMA_URL:-http://localhost:11434}\n   timeout_s: 300\n routes:\n-  reasoning: {profile: gpt-oss-20b}\n-  structured: {profile: gpt-oss-20b}\n+  reasoning: {profile: qwen3-8b}\n+  structured: {profile: qwen3-8b}\n profiles:\n   gpt-oss-20b:\n     model: gpt-oss:20b\n     think: low\n     options: {temperature: 0, seed: ${F2_SEED:-7}, num_ctx: 16384}\n+  qwen3-8b:\n+    model: qwen3:8b\n+    think: false\n+    options: {temperature: 0, seed: ${F2_SEED:-7}, num_ctx: 16384}\n budget:\n   tokens_per_workflow: 250000\n"
+}

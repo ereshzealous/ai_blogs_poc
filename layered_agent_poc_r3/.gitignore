@@ -1,0 +1,41 @@
+# What never ships. The publish script copies with `--filter=':- .gitignore'`, so this file is the single source of
+# truth for what a published copy of this POC contains (see ../../PUBLISHING.md in the target repository).
+
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# scratch state written by a local run: databases, traces and logs outside a recorded run
+var/
+var_*.log
+*.db-wal
+*.db-shm
+
+# macOS noise
+.DS_Store
+._*
+
+# the throwaway git worktrees the change experiments build; the patches themselves live in runs/<id>/diffs/
+runs/*/worktrees/
+
+# The replay run exists to show the recording reproduces. Its 934 scenario files and raw ledgers are byte-equal to
+# the recording's, so publishing them would duplicate 11 MB to prove equality that replay_comparison.json,
+# verification.json and the hashes already state. What ships of the replay: manifest.json, environment.json,
+# config_snapshot/, source_hashes.json, summary.json, facts.json, experiments/, tests.json, tests.junit.xml,
+# verification.json and replay_comparison.json — enough to understand it, check the equality and re-run it locally
+# with `make replay`. The full directory stays in the engineering tree.
+runs/*-replay/scenarios/
+runs/*-replay/raw/
+runs/*-replay/logs/
+
+# a zip of a run beside the run itself: 6.9 MB of duplicate. The published bundle is built by
+# tools/build_evidence_bundle.py into the bundle's dist/, not here.
+runs/*.zip
+
+# local runs a reader makes while following the README. The published runs are named explicitly below.
+runs/demo/
+runs/local/
+runs/scratch/

@@ -1,0 +1,203 @@
+{
+ "run_id": "2026-09-28-recorded",
+ "ok": true,
+ "passed": 36,
+ "failed": 0,
+ "not_applicable": 0,
+ "recomputed": 12,
+ "total": 36,
+ "checks": [
+  {
+   "check": "manifest exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "experiment plan hash matches the plan on disk",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "frozen inputs unchanged since the run (or changed only by a declared evidence revision)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "declared revisions still match their files",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "summary.json exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "every preregistered scenario ran",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "no replay tape misses",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "tests: zero failures",
+   "ok": true,
+   "detail": "67/71"
+  },
+  {
+   "check": "every scenario has score, process log, world ledger and model-call ledger",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/model_calls.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/tool_calls.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/workflow_events.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/policy_events.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/checkpoints.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/traces.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "raw/backend_executions.jsonl present and non-empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "E6 probe results present",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E2_model_swap-monolith",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E2_model_swap-layered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E3_tool_v2-monolith",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E3_tool_v2-layered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E9_dry_run-monolith",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "diff for E9_dry_run-layered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "summary.json rebuilds identically from the run's files",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "every scenario has an outcome class",
+   "ok": true,
+   "recomputed": true,
+   "detail": "32 scenario(s): ERROR 0, FAILURE 8, NOT_EXPOSED 1, SUCCESS 23"
+  },
+  {
+   "check": "E1 outcome checks recomputed from the world ledger",
+   "ok": true,
+   "recomputed": true,
+   "detail": "6 E1 scenario(s): every outcome check agrees with the world database and the tapes"
+  },
+  {
+   "check": "physical writes per operation id, from the backend ledger",
+   "ok": true,
+   "recomputed": true,
+   "detail": "E4 physical rollbacks per scenario: layered-s11 1 (keys 1, unkeyed 0, replays 1), layered-s13 1 (keys 1, unkeyed 0, replays 1), layered-s7 1 (keys 1, unkeyed 0, replays 1), monolith-s11 2 (keys 1, unkeyed 1, replays 0), monolith-s13 2 (keys 1, unkeyed 1, replays 0), monolith-s7 2 (keys 1, unkeyed 1, replays 0)"
+  },
+  {
+   "check": "no model call after the kill repeats work completed before it",
+   "ok": true,
+   "recomputed": true,
+   "detail": "7 exposed scenario(s): E5-layered-s11 0\u21920 calls; E5-layered-s13 0\u21920 calls; E5-monolith-s11 8\u219211 calls, 1 repeated; E5-monolith-s13 8\u219211 calls, 1 repeated; E5-monolith-s7 7\u219211 calls, 1 repeated; E7-layered-s7 10\u21920 calls; E7-monolith-s7 6\u21929 calls, 1 repeated"
+  },
+  {
+   "check": "every executed write had a policy allow and an approval",
+   "ok": true,
+   "recomputed": true,
+   "detail": "30 layered write(s), each with a policy decision; monolith writes with no authorization record at all: E9-monolith-s7/update_incident (no operation id)"
+  },
+  {
+   "check": "approval precedes every production write",
+   "ok": true,
+   "recomputed": true,
+   "detail": "29 scenario(s) with a production rollback, each approved first"
+  },
+  {
+   "check": "one workflow trace across the processes of a crash run",
+   "ok": true,
+   "recomputed": true,
+   "detail": "3 of 3 exposed layered crash run(s) kept one workflow trace across their processes"
+  },
+  {
+   "check": "change scope recomputed from the diffs and the concern map",
+   "ok": true,
+   "recomputed": true,
+   "detail": "E2 monolith 1 file(s) +2/-2; E2 layered 1 file(s) +6/-2; E3 monolith 2 file(s) +7/-6; E3 layered 3 file(s) +22/-5; E9 monolith 1 file(s) +15/-2; E9 layered 4 file(s) +17/-2"
+  },
+  {
+   "check": "the dry-run change crosses layers through the contract module",
+   "ok": true,
+   "recomputed": true,
+   "detail": "4 file(s): layered_platform/contracts.py, layered_platform/experience/cli.py, layered_platform/orchestration/incident_workflow.py, layered_platform/service.py \u2014 layers crossed: experience, orchestration, through layered_platform/contracts.py"
+  },
+  {
+   "check": "tests recounted from the JUnit file",
+   "ok": true,
+   "recomputed": true,
+   "detail": "67 passed, 0 failed, 4 skipped, 71 cases"
+  },
+  {
+   "check": "the replay's facts match the recorded run",
+   "ok": true,
+   "recomputed": true,
+   "detail": "477 measured fact(s) identical under replay; timings, ids, the replay's own test pass and post-run revisions excluded"
+  },
+  {
+   "check": "fault claims carry their exposure denominator",
+   "ok": true,
+   "recomputed": true,
+   "detail": "E5 layered: 2 of 3 planned reached the kill; E5 monolith: 3 of 3 planned reached the kill; E7 layered: 1 of 1 planned reached the kill; E7 monolith: 1 of 1 planned reached the kill \u2014 publish E5 layered against the exposed count, never the planned one"
+  }
+ ]
+}

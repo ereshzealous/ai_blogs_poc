@@ -1,0 +1,427 @@
+{
+ "itsm": {
+  "get_incident": {
+   "description": "Read an incident: service, environment, severity, status, timeline and notes.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "description": "Incident id, e.g. INC-4917",
+      "title": "Incident Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "incident_id"
+    ],
+    "title": "get_incidentArguments"
+   }
+  },
+  "update_incident": {
+   "description": "Append a work note to an incident and set its status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "incident_id": {
+      "title": "Incident Id",
+      "type": "string"
+     },
+     "status": {
+      "enum": [
+       "investigating",
+       "mitigated",
+       "resolved"
+      ],
+      "title": "Status",
+      "type": "string"
+     },
+     "note": {
+      "description": "Work note to append",
+      "title": "Note",
+      "type": "string"
+     },
+     "idempotency_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Optional idempotency key; a repeated key returns the first result instead of executing again",
+      "title": "Idempotency Key"
+     }
+    },
+    "required": [
+     "incident_id",
+     "status",
+     "note"
+    ],
+    "title": "update_incidentArguments"
+   }
+  }
+ },
+ "observability": {
+  "query_metrics": {
+   "description": "Time series for one service metric (latency_p95_ms, error_rate_pct, db_pool_wait_ms, cpu_pct), with latest value and SLO.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "metric": {
+      "description": "Metric name",
+      "enum": [
+       "latency_p95_ms",
+       "error_rate_pct",
+       "db_pool_wait_ms",
+       "cpu_pct"
+      ],
+      "title": "Metric",
+      "type": "string"
+     },
+     "minutes": {
+      "default": 30,
+      "description": "Look-back window in minutes",
+      "maximum": 120,
+      "minimum": 1,
+      "title": "Minutes",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "metric"
+    ],
+    "title": "query_metricsArguments"
+   }
+  },
+  "search_logs": {
+   "description": "Recent log lines for a service, filtered by words.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "query": {
+      "default": "",
+      "description": "Words to match",
+      "title": "Query",
+      "type": "string"
+     },
+     "minutes": {
+      "default": 30,
+      "description": "Look-back window in minutes",
+      "maximum": 120,
+      "minimum": 1,
+      "title": "Minutes",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "title": "search_logsArguments"
+   }
+  }
+ },
+ "deploy": {
+  "flush_sessions": {
+   "description": "Drop every active user session of a service (cache flush). Production change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "idempotency_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Optional idempotency key; a repeated key returns the first result instead of executing again",
+      "title": "Idempotency Key"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "title": "flush_sessionsArguments"
+   }
+  },
+  "list_deployments": {
+   "description": "Recent releases of a service in one environment, newest first, and which release is running.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "limit": {
+      "default": 5,
+      "maximum": 20,
+      "minimum": 1,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "title": "list_deploymentsArguments"
+   }
+  },
+  "rollback_release": {
+   "description": "Roll a service back to an earlier release. Production change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "to_release": {
+      "description": "Release id to roll back to, e.g. rel-1234",
+      "title": "To Release",
+      "type": "string"
+     },
+     "idempotency_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Optional idempotency key; a repeated key returns the first result instead of executing again",
+      "title": "Idempotency Key"
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "to_release"
+    ],
+    "title": "rollback_releaseArguments"
+   }
+  },
+  "restart_service": {
+   "description": "Restart every instance of a service. Production change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "idempotency_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Optional idempotency key; a repeated key returns the first result instead of executing again",
+      "title": "Idempotency Key"
+     }
+    },
+    "required": [
+     "service",
+     "environment"
+    ],
+    "title": "restart_serviceArguments"
+   }
+  },
+  "scale_service": {
+   "description": "Set the replica count of a service. Production change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service": {
+      "description": "Service name, e.g. checkout-api",
+      "title": "Service",
+      "type": "string"
+     },
+     "environment": {
+      "description": "Deployment environment",
+      "enum": [
+       "production",
+       "staging"
+      ],
+      "title": "Environment",
+      "type": "string"
+     },
+     "replicas": {
+      "maximum": 50,
+      "minimum": 0,
+      "title": "Replicas",
+      "type": "integer"
+     },
+     "idempotency_key": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Optional idempotency key; a repeated key returns the first result instead of executing again",
+      "title": "Idempotency Key"
+     }
+    },
+    "required": [
+     "service",
+     "environment",
+     "replicas"
+    ],
+    "title": "scale_serviceArguments"
+   }
+  }
+ },
+ "deploy_v2": {
+  "get_release_history": {
+   "description": "Release history for a service_ref, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service_ref": {
+      "description": "Service reference 'service/environment', e.g. checkout-api/production",
+      "title": "Service Ref",
+      "type": "string"
+     },
+     "limit": {
+      "default": 5,
+      "maximum": 20,
+      "minimum": 1,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "service_ref"
+    ],
+    "title": "get_release_historyArguments"
+   }
+  },
+  "rollback": {
+   "description": "Create a rollback operation to target_revision. Production change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "service_ref": {
+      "description": "Service reference 'service/environment', e.g. checkout-api/production",
+      "title": "Service Ref",
+      "type": "string"
+     },
+     "target_revision": {
+      "description": "Release id to return to",
+      "title": "Target Revision",
+      "type": "string"
+     },
+     "request_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Client request id; a repeated id is not executed twice",
+      "title": "Request Id"
+     }
+    },
+    "required": [
+     "service_ref",
+     "target_revision"
+    ],
+    "title": "rollbackArguments"
+   }
+  }
+ }
+}

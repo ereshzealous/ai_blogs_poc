@@ -1,0 +1,56 @@
+diff --git a/monolith/incident_agent.py b/monolith/incident_agent.py
+index 93dc782..039e21b 100644
+--- a/monolith/incident_agent.py
++++ b/monolith/incident_agent.py
+@@ -44,10 +44,10 @@ NUM_CTX = 16384
+ MAX_TURNS = 16
+ 
+ # ---- tools -----------------------------------------------------------------------------------------------------------
+-SERVERS = ["itsm", "observability", "deploy"]
++SERVERS = ["itsm", "observability", "deploy_v2"]
+ TOOL_TIMEOUT_S = float(os.environ.get("F2_TOOL_TIMEOUT_S", "5"))
+ READ_RETRIES = 2
+-NEEDS_APPROVAL = {"rollback_release", "restart_service", "scale_service"}   # production changes
++NEEDS_APPROVAL = {"rollback", "rollback_release", "restart_service", "scale_service"}   # production changes
+ 
+ SYSTEM_PROMPT = """You are the on-call SRE agent for an online store.  You investigate incidents with the tools you have
+ and remediate them safely.
+@@ -176,7 +176,8 @@ class IncidentAgent:
+     async def _execute_tool(self, name: str, args: dict[str, Any]) -> str:
+         if name not in self.tool_server:
+             return f"Error: unknown tool {name}"
+-        if name in NEEDS_APPROVAL and args.get("environment") == "production":
++        environment = args.get("environment") or str(args.get("service_ref", "")).rpartition("/")[2]
++        if name in NEEDS_APPROVAL and environment == "production":
+             crashpoints.hit("awaiting_approval")
+             approved = await self.approver(name, args)
+             self._log("approval", tool=name, args=args, approved=approved)
+diff --git a/tests/integration/test_monolith_choke_point.py b/tests/integration/test_monolith_choke_point.py
+index 393cace..6b57022 100644
+--- a/tests/integration/test_monolith_choke_point.py
++++ b/tests/integration/test_monolith_choke_point.py
+@@ -19,13 +19,13 @@ def test_monolith_gates_production_writes_in_code(world, tmp_path):
+         agent = IncidentAgent(session_id="t", approver=refuse, workdir=tmp_path, world_db=world.path)
+         async with AsyncExitStack() as stack:
+             await agent._connect(stack)
+-            out = await agent._execute_tool("rollback_release", {"service": "checkout-api", "environment": "production", "to_release": "rel-2030"})
++            out = await agent._execute_tool("rollback", {"service_ref": "checkout-api/production", "target_revision": "rel-2030"})
+             read = await agent._execute_tool("get_incident", {"incident_id": "INC-4917"})
+         await agent.aclose()
+         return out, read
+ 
+     out, read = asyncio.run(go())
+-    assert asked == ["rollback_release"] and "not approved" in out and world.executions() == []
++    assert asked == ["rollback"] and "not approved" in out and world.executions() == []
+     assert "INC-4917" in read
+ 
+ 
+@@ -41,7 +41,7 @@ def test_monolith_does_not_retry_a_timed_out_write(world, tmp_path):
+         m.TOOL_TIMEOUT_S = 1.0
+         async with AsyncExitStack() as stack:
+             await agent._connect(stack)
+-            out = await agent._execute_tool("rollback_release", {"service": "checkout-api", "environment": "production", "to_release": "rel-2030"})
++            out = await agent._execute_tool("rollback", {"service_ref": "checkout-api/production", "target_revision": "rel-2030"})
+         await agent.aclose()
+         m.TOOL_TIMEOUT_S = 5.0
+         return out

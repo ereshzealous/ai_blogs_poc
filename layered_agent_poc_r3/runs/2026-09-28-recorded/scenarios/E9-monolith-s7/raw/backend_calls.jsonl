@@ -1,0 +1,7 @@
+{"seq": 1, "tool": "get_incident", "args": {"incident_id": "INC-4917"}, "minute": 630, "wall": 1790620685.9284558, "pid": 55718}
+{"seq": 2, "tool": "list_deployments", "args": {"environment": "production", "limit": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620687.2109509, "pid": 55720}
+{"seq": 3, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620688.244529, "pid": 55719}
+{"seq": 4, "tool": "query_metrics", "args": {"environment": "production", "metric": "error_rate_pct", "minutes": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620689.1824598, "pid": 55719}
+{"seq": 5, "tool": "query_metrics", "args": {"environment": "production", "metric": "db_pool_wait_ms", "minutes": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620690.145185, "pid": 55719}
+{"seq": 6, "tool": "search_logs", "args": {"environment": "production", "minutes": 60, "query": "HikariPool", "service": "checkout-api"}, "minute": 630, "wall": 1790620691.091706, "pid": 55719}
+{"seq": 7, "tool": "update_incident", "args": {"incident_id": "INC-4917", "note": "DRY RUN plan: Roll back checkout-api from rel-2031 to rel-2030 to restore pool size and reduce latency.", "status": "investigating"}, "minute": 630, "wall": 1790620693.229864, "pid": 55718}

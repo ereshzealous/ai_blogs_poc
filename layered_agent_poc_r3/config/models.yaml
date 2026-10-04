@@ -1,0 +1,16 @@
+# Model Services configuration.  Routes are what the platform asks for; profiles are how a provider serves them.
+# Swapping a model is a change to this file only.
+provider:
+  kind: ollama
+  url: ${OLLAMA_URL:-http://localhost:11434}
+  timeout_s: 300
+routes:
+  reasoning: {profile: gpt-oss-20b}
+  structured: {profile: gpt-oss-20b}
+profiles:
+  gpt-oss-20b:
+    model: gpt-oss:20b
+    think: low
+    options: {temperature: 0, seed: ${F2_SEED:-7}, num_ctx: 16384}
+budget:
+  tokens_per_workflow: 250000

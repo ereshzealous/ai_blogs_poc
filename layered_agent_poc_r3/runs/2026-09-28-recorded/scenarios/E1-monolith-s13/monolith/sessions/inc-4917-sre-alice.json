@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "Investigate INC-4917 and remediate it safely."
+ },
+ {
+  "role": "assistant",
+  "content": "Root cause: release rel\u20112031 lowered the DB pool maximumPoolSize from 50 to 10, causing connection exhaustion and a 1800\u202fms HikariPool timeout.  \nAction: rolled back checkout\u2011api to the previous stable release rel\u20112030 (v2.13.4).  \nVerification: p95 latency dropped below the 400\u202fms SLO for the last 3 minutes (latest value 210\u202fms)."
+ }
+]

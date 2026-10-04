@@ -1,0 +1,11 @@
+{"seq": 1, "tool": "get_incident", "args": {"incident_id": "INC-4917"}, "minute": 630, "wall": 1790620034.420605, "pid": 53340}
+{"seq": 2, "tool": "list_deployments", "args": {"environment": "production", "limit": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620036.081878, "pid": 53346}
+{"seq": 3, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620037.9492748, "pid": 53342}
+{"seq": 4, "tool": "query_metrics", "args": {"environment": "production", "metric": "error_rate_pct", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620039.25027, "pid": 53342}
+{"seq": 5, "tool": "query_metrics", "args": {"environment": "production", "metric": "db_pool_wait_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620040.540996, "pid": 53342}
+{"seq": 6, "tool": "query_metrics", "args": {"environment": "production", "metric": "cpu_pct", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620041.906774, "pid": 53342}
+{"seq": 7, "tool": "search_logs", "args": {"environment": "production", "minutes": 60, "query": "HikariPool", "service": "checkout-api"}, "minute": 630, "wall": 1790620043.285192, "pid": 53342}
+{"seq": 8, "tool": "rollback_release", "args": {"environment": "production", "service": "checkout-api", "to_release": "rel-2030"}, "minute": 630, "wall": 1790620045.090366, "pid": 53346}
+{"seq": 9, "tool": "rollback_release", "args": {"environment": "production", "service": "checkout-api", "to_release": "rel-2030"}, "minute": 636, "wall": 1790620051.721474, "pid": 53346}
+{"seq": 10, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 5, "service": "checkout-api"}, "minute": 642, "wall": 1790620052.916628, "pid": 53342}
+{"seq": 11, "tool": "update_incident", "args": {"incident_id": "INC-4917", "note": "Root cause: DB pool size reduced in rel-2031 causing connection exhaustion.\nAction: Rolled back to rel-2030.\nVerification: p95 latency below 400 ms for last 3 minutes.", "status": "mitigated"}, "minute": 642, "wall": 1790620057.282654, "pid": 53340}

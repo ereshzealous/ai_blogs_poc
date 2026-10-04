@@ -1,0 +1,56 @@
+{
+ "arch": "monolith",
+ "files_changed": 1,
+ "lines_added": 15,
+ "lines_removed": 2,
+ "test_files_changed": 0,
+ "files": [
+  {
+   "path": "monolith/incident_agent.py",
+   "added": 15,
+   "removed": 2
+  }
+ ],
+ "concerns_touched": [
+  "approval-policy",
+  "orchestration-loop",
+  "state"
+ ],
+ "concerns_touched_n": 3,
+ "concerns_by_file": {
+  "monolith/incident_agent.py": [
+   "approval-policy",
+   "orchestration-loop",
+   "state"
+  ]
+ },
+ "home_concern": [
+  "orchestration-loop"
+ ],
+ "outside_expected": [
+  "approval-policy",
+  "state"
+ ],
+ "spill_over_n": 2,
+ "review_surface_concerns": [
+  "approval-policy",
+  "context-memory",
+  "experience",
+  "model-provider",
+  "module",
+  "orchestration-loop",
+  "prompt",
+  "state",
+  "telemetry",
+  "tool-execution"
+ ],
+ "review_surface_concerns_n": 10,
+ "review_surface_loc": 218,
+ "change": "E9_dry_run",
+ "patch": "experiments/changes/E9_dry_run/monolith.patch",
+ "patch_sha256": "933c89d038097054b187281af41e02b15fdc96f402b9b5d7c71d8316b58ad57a",
+ "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+ "tests_returncode": 0,
+ "tests_wall_s": 16.4,
+ "diff": "diff --git a/monolith/incident_agent.py b/monolith/incident_agent.py\nindex 93dc782..bf064c0 100644\n--- a/monolith/incident_agent.py\n+++ b/monolith/incident_agent.py\n@@ -71,6 +71,12 @@ What we remember from earlier incidents:\n \"\"\"\n \n \n+DRY_RUN_NOTE = \"\"\"\n+DRY RUN: production changes are simulated, not executed.  Do not verify recovery.  Set the incident to \"investigating\"\n+with a note that starts with \"DRY RUN plan:\" and gives the action you would take.  Report the plan.\n+\"\"\"\n+\n+\n def _load_runbook(service: str) -> str:\n     code = {\"checkout-api\": \"RB-CHK-007\", \"payment-gateway\": \"RB-PAY-002\"}.get(service, \"RB-CHK-007\")\n     return (DATA / \"runbooks\" / f\"{code}.md\").read_text()\n@@ -105,14 +111,18 @@ class IncidentAgent:\n         self.tool_server: dict[str, str] = {}\n         self.tools: list[dict[str, Any]] = []\n         self.usage = {\"model_calls\": 0, \"prompt_tokens\": 0, \"completion_tokens\": 0}\n+        self.dry_run = False\n \n     # ---- the one entry point -----------------------------------------------------------------------------------------\n-    async def run(self, user_message: str) -> str:\n-        self._log(\"run_start\", message=user_message)\n+    async def run(self, user_message: str, dry_run: bool = False) -> str:\n+        self.dry_run = dry_run\n+        self._log(\"run_start\", message=user_message, dry_run=dry_run)\n         async with AsyncExitStack() as stack:\n             await self._connect(stack)\n             history = self._load_session()\n             system = SYSTEM_PROMPT.format(runbook=_load_runbook(self.service), memory=_load_memory(self.service))\n+            if dry_run:\n+                system += DRY_RUN_NOTE\n             messages: list[dict[str, Any]] = [{\"role\": \"system\", \"content\": system}, *history, {\"role\": \"user\", \"content\": user_message}]\n             final = \"\"\n             for _turn in range(MAX_TURNS):\n@@ -182,6 +192,9 @@ class IncidentAgent:\n             self._log(\"approval\", tool=name, args=args, approved=approved)\n             if not approved:\n                 return f\"Error: {name} was not approved by the incident commander. Do not retry; report instead.\"\n+        if self.dry_run and name in NEEDS_APPROVAL:\n+            self._log(\"dry_run_skip\", tool=name, args=args)\n+            return json.dumps({\"dry_run\": True, \"would_call\": name, \"arguments\": args, \"executed\": False})\n         attempts = 1 if name in NEEDS_APPROVAL or name == \"update_incident\" else 1 + READ_RETRIES\n         for attempt in range(attempts):\n             t0 = time.perf_counter()\n"
+}

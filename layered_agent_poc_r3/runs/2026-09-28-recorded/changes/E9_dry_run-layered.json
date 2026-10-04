@@ -1,0 +1,74 @@
+{
+ "arch": "layered",
+ "files_changed": 4,
+ "lines_added": 17,
+ "lines_removed": 2,
+ "test_files_changed": 0,
+ "files": [
+  {
+   "path": "layered_platform/contracts.py",
+   "added": 1,
+   "removed": 0
+  },
+  {
+   "path": "layered_platform/experience/cli.py",
+   "added": 2,
+   "removed": 1
+  },
+  {
+   "path": "layered_platform/orchestration/incident_workflow.py",
+   "added": 13,
+   "removed": 0
+  },
+  {
+   "path": "layered_platform/service.py",
+   "added": 1,
+   "removed": 1
+  }
+ ],
+ "concerns_touched": [
+  "composition-root",
+  "contracts",
+  "experience",
+  "orchestration"
+ ],
+ "concerns_touched_n": 4,
+ "concerns_by_file": {
+  "layered_platform/contracts.py": [
+   "contracts"
+  ],
+  "layered_platform/experience/cli.py": [
+   "experience"
+  ],
+  "layered_platform/orchestration/incident_workflow.py": [
+   "orchestration"
+  ],
+  "layered_platform/service.py": [
+   "composition-root"
+  ]
+ },
+ "home_concern": [
+  "orchestration"
+ ],
+ "outside_expected": [
+  "composition-root",
+  "contracts",
+  "experience"
+ ],
+ "spill_over_n": 3,
+ "review_surface_concerns": [
+  "composition-root",
+  "contracts",
+  "experience",
+  "orchestration"
+ ],
+ "review_surface_concerns_n": 4,
+ "review_surface_loc": 430,
+ "change": "E9_dry_run",
+ "patch": "experiments/changes/E9_dry_run/layered.patch",
+ "patch_sha256": "fb30bee2038ca417cd770c94c836783c21076562b5af2669643d49e89cd6f7b1",
+ "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+ "tests_returncode": 0,
+ "tests_wall_s": 16.1,
+ "diff": "diff --git a/layered_platform/contracts.py b/layered_platform/contracts.py\nindex 0a7e397..50e3dcc 100644\n--- a/layered_platform/contracts.py\n+++ b/layered_platform/contracts.py\n@@ -18,6 +18,7 @@ class StartRequest(BaseModel):\n     channel: str = \"cli\"\n     request_id: str\n     instructions: str = \"Investigate the incident and remediate it safely.\"\n+    dry_run: bool = False\n \n \n class ApprovalDecision(BaseModel):\ndiff --git a/layered_platform/experience/cli.py b/layered_platform/experience/cli.py\nindex b79c66b..4250956 100644\n--- a/layered_platform/experience/cli.py\n+++ b/layered_platform/experience/cli.py\n@@ -22,7 +22,7 @@ async def _main(a: argparse.Namespace) -> None:\n     async with PlatformService.open(a.workdir) as svc:\n         if a.cmd == \"start\":\n             v = await svc.start(StartRequest(incident_id=a.target, requested_by=a.principal, channel=\"cli\",\n-                                             request_id=a.request_id or uuid.uuid4().hex, instructions=a.instructions))\n+                                             request_id=a.request_id or uuid.uuid4().hex, instructions=a.instructions, dry_run=a.dry_run))\n         elif a.cmd == \"approve\":\n             v = await svc.approve(ApprovalDecision(workflow_id=a.target, decided_by=a.principal, approve=not a.reject, reason=a.reason))\n         elif a.cmd == \"resume\":\n@@ -44,6 +44,7 @@ def main() -> None:\n     p.add_argument(\"--request-id\", default=\"\")\n     p.add_argument(\"--instructions\", default=\"Investigate the incident and remediate it safely.\")\n     p.add_argument(\"--reject\", action=\"store_true\")\n+    p.add_argument(\"--dry-run\", action=\"store_true\", help=\"plan and authorize the remediation, execute nothing\")\n     p.add_argument(\"--reason\", default=\"\")\n     p.add_argument(\"--format\", choices=[\"text\", \"chat\"], default=\"text\")\n     p.add_argument(\"--workdir\", default=os.environ.get(\"F2_WORKDIR\", \"var/platform\"))\ndiff --git a/layered_platform/orchestration/incident_workflow.py b/layered_platform/orchestration/incident_workflow.py\nindex 50232bb..d3ee4a2 100644\n--- a/layered_platform/orchestration/incident_workflow.py\n+++ b/layered_platform/orchestration/incident_workflow.py\n@@ -80,6 +80,8 @@ class IncidentWorkflow:\n         cap, args = self._action(s)\n         decision = self.gateway.authorize(cap, args, self._ctx(wf, \"authorize\", s))\n         policy = decision.model_dump()\n+        if s.get(\"dry_run\"):  # evaluate policy, then stop short of approval and execution\n+            return StepResult(\"record\", updates={\"policy\": policy, \"outcome\": \"dry_run\", \"planned_action\": {\"capability\": cap, \"args\": args}})\n         if decision.effect == \"DENY\":\n             return StepResult(\"record\", updates={\"policy\": policy, \"outcome\": \"escalated\"})\n         if decision.effect == \"REQUIRE_APPROVAL\":\n@@ -111,6 +113,12 @@ class IncidentWorkflow:\n         inc, dx = s[\"incident\"], s.get(\"diagnosis\") or {}\n         act, ver = s.get(\"action\") or {}, s.get(\"verification\") or {}\n         status = \"mitigated\" if s.get(\"outcome\") == \"mitigated\" else \"investigating\"\n+        if s.get(\"outcome\") == \"dry_run\":\n+            plan = s[\"planned_action\"]\n+            note = (f\"[{wf}] DRY RUN plan: {plan['capability']} {plan['args']} (policy {s['policy']['effect']} by {s['policy']['rule']}). \"\n+                    f\"Root cause: {dx.get('root_cause', 'unknown')} (suspect release {dx.get('suspect_release')}).\")\n+            await self.gateway.execute(\"incident.update\", {\"incident_id\": inc[\"id\"], \"status\": status, \"note\": note}, self._ctx(wf, \"record\", s))\n+            return StepResult(\"complete\", updates={\"recorded_status\": status})\n         note = (f\"[{wf}] Root cause: {dx.get('root_cause', 'unknown')} (suspect release {dx.get('suspect_release')}). \"\n                 f\"Action: {act.get('capability', 'none')} {act.get('args', {})} -> {('ok' if act.get('result') else act.get('error', 'not executed'))}. \"\n                 f\"Verification: {('p95 max ' + str(ver.get('max')) + ' ms vs SLO ' + str(ver.get('slo')) + ' ms') if ver else 'not run'}. \"\n@@ -120,6 +128,11 @@ class IncidentWorkflow:\n \n     async def complete(self, wf: str, s: dict[str, Any]) -> StepResult:\n         dx, act, ver = s.get(\"diagnosis\") or {}, s.get(\"action\") or {}, s.get(\"verification\") or {}\n+        if s.get(\"outcome\") == \"dry_run\":\n+            plan = s[\"planned_action\"]\n+            report = (f\"Root cause: {dx.get('root_cause', 'unknown')} (release {dx.get('suspect_release')})\\n\"\n+                      f\"DRY RUN plan: {plan['capability']} {plan['args']} - policy {s['policy']['effect']} ({s['policy']['rule']}); nothing executed\")\n+            return StepResult(\"done\", status=\"COMPLETED\", updates={\"report\": report})\n         report = \"\\n\".join([\n             f\"Root cause: {dx.get('root_cause', 'unknown')} (release {dx.get('suspect_release')})\",\n             f\"Action: {act.get('capability', 'none')} {act.get('args', {})} {'executed' if act.get('result') else '- ' + str(act.get('error', 'not executed'))}\",\ndiff --git a/layered_platform/service.py b/layered_platform/service.py\nindex 7119f52..dbadc89 100644\n--- a/layered_platform/service.py\n+++ b/layered_platform/service.py\n@@ -72,7 +72,7 @@ class PlatformService:\n             trace_id, span_id = tracing.current_ids()\n             self.store.create(wf, req.request_id, req.incident_id, req.requested_by, req.channel, FIRST_STEP,\n                               {\"incident_id\": req.incident_id, \"requested_by\": req.requested_by, \"instructions\": req.instructions,\n-                               \"request_id\": req.request_id}, trace_id, span_id)\n+                               \"request_id\": req.request_id, \"dry_run\": req.dry_run}, trace_id, span_id)\n         return await self._run(wf)\n \n     async def approve(self, d: ApprovalDecision) -> WorkflowView:\n"
+}

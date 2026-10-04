@@ -1,0 +1,48 @@
+diff --git a/monolith/incident_agent.py b/monolith/incident_agent.py
+index 93dc782..bf064c0 100644
+--- a/monolith/incident_agent.py
++++ b/monolith/incident_agent.py
+@@ -71,6 +71,12 @@ What we remember from earlier incidents:
+ """
+ 
+ 
++DRY_RUN_NOTE = """
++DRY RUN: production changes are simulated, not executed.  Do not verify recovery.  Set the incident to "investigating"
++with a note that starts with "DRY RUN plan:" and gives the action you would take.  Report the plan.
++"""
++
++
+ def _load_runbook(service: str) -> str:
+     code = {"checkout-api": "RB-CHK-007", "payment-gateway": "RB-PAY-002"}.get(service, "RB-CHK-007")
+     return (DATA / "runbooks" / f"{code}.md").read_text()
+@@ -105,14 +111,18 @@ class IncidentAgent:
+         self.tool_server: dict[str, str] = {}
+         self.tools: list[dict[str, Any]] = []
+         self.usage = {"model_calls": 0, "prompt_tokens": 0, "completion_tokens": 0}
++        self.dry_run = False
+ 
+     # ---- the one entry point -----------------------------------------------------------------------------------------
+-    async def run(self, user_message: str) -> str:
+-        self._log("run_start", message=user_message)
++    async def run(self, user_message: str, dry_run: bool = False) -> str:
++        self.dry_run = dry_run
++        self._log("run_start", message=user_message, dry_run=dry_run)
+         async with AsyncExitStack() as stack:
+             await self._connect(stack)
+             history = self._load_session()
+             system = SYSTEM_PROMPT.format(runbook=_load_runbook(self.service), memory=_load_memory(self.service))
++            if dry_run:
++                system += DRY_RUN_NOTE
+             messages: list[dict[str, Any]] = [{"role": "system", "content": system}, *history, {"role": "user", "content": user_message}]
+             final = ""
+             for _turn in range(MAX_TURNS):
+@@ -182,6 +192,9 @@ class IncidentAgent:
+             self._log("approval", tool=name, args=args, approved=approved)
+             if not approved:
+                 return f"Error: {name} was not approved by the incident commander. Do not retry; report instead."
++        if self.dry_run and name in NEEDS_APPROVAL:
++            self._log("dry_run_skip", tool=name, args=args)
++            return json.dumps({"dry_run": True, "would_call": name, "arguments": args, "executed": False})
+         attempts = 1 if name in NEEDS_APPROVAL or name == "update_incident" else 1 + READ_RETRIES
+         for attempt in range(attempts):
+             t0 = time.perf_counter()

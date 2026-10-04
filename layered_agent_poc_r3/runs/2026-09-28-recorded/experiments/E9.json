@@ -1,0 +1,128 @@
+{
+ "change": {
+  "monolith": {
+   "files_changed": 1,
+   "lines_added": 15,
+   "lines_removed": 2,
+   "test_files_changed": 0,
+   "concerns_touched": [
+    "approval-policy",
+    "orchestration-loop",
+    "state"
+   ],
+   "concerns_touched_n": 3,
+   "concerns_by_file": {
+    "monolith/incident_agent.py": [
+     "approval-policy",
+     "orchestration-loop",
+     "state"
+    ]
+   },
+   "home_concern": [
+    "orchestration-loop"
+   ],
+   "outside_expected": [
+    "approval-policy",
+    "state"
+   ],
+   "spill_over_n": 2,
+   "review_surface_concerns": [
+    "approval-policy",
+    "context-memory",
+    "experience",
+    "model-provider",
+    "module",
+    "orchestration-loop",
+    "prompt",
+    "state",
+    "telemetry",
+    "tool-execution"
+   ],
+   "review_surface_concerns_n": 10,
+   "review_surface_loc": 218,
+   "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+   "tests_returncode": 0,
+   "patch": "experiments/changes/E9_dry_run/monolith.patch",
+   "patch_sha256": "933c89d038097054b187281af41e02b15fdc96f402b9b5d7c71d8316b58ad57a",
+   "files": [
+    "monolith/incident_agent.py"
+   ]
+  },
+  "layered": {
+   "files_changed": 4,
+   "lines_added": 17,
+   "lines_removed": 2,
+   "test_files_changed": 0,
+   "concerns_touched": [
+    "composition-root",
+    "contracts",
+    "experience",
+    "orchestration"
+   ],
+   "concerns_touched_n": 4,
+   "concerns_by_file": {
+    "layered_platform/contracts.py": [
+     "contracts"
+    ],
+    "layered_platform/experience/cli.py": [
+     "experience"
+    ],
+    "layered_platform/orchestration/incident_workflow.py": [
+     "orchestration"
+    ],
+    "layered_platform/service.py": [
+     "composition-root"
+    ]
+   },
+   "home_concern": [
+    "orchestration"
+   ],
+   "outside_expected": [
+    "composition-root",
+    "contracts",
+    "experience"
+   ],
+   "spill_over_n": 3,
+   "review_surface_concerns": [
+    "composition-root",
+    "contracts",
+    "experience",
+    "orchestration"
+   ],
+   "review_surface_concerns_n": 4,
+   "review_surface_loc": 430,
+   "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+   "tests_returncode": 0,
+   "patch": "experiments/changes/E9_dry_run/layered.patch",
+   "patch_sha256": "fb30bee2038ca417cd770c94c836783c21076562b5af2669643d49e89cd6f7b1",
+   "files": [
+    "layered_platform/contracts.py",
+    "layered_platform/experience/cli.py",
+    "layered_platform/orchestration/incident_workflow.py",
+    "layered_platform/service.py"
+   ]
+  }
+ },
+ "monolith": {
+  "runs": 1,
+  "deploy_writes": 0,
+  "plan_names_rollback_to_rel_2030": 1,
+  "final_statuses": [
+   "COMPLETED"
+  ],
+  "reports": [
+   "INC report (session inc-4917-sre-alice)\n========================================\n**Root cause:**  \nThe recent production release `rel\u20112031` (10:02) reduced the checkout\u2011api database connection pool from 50 to **10** and upgraded the ORM. This caused HikariCP to exhaust its pool, leading to ~1800\u202fms wait times, a p95 latency of ~2.14\u202fs, and a 3.9\u202f% error rate.\n\n**Action:**  \nPlan to roll back `checkout\u2011api` from `rel\u20112031` to the previous release `rel\u20112030`. This restores the original pool size and resolves the latency/5xx issue without restarting or scaling the service.\n\n**Verification:**  \nAfter rollback, query `latency_p95_ms` for the last 3\u202fminutes; it must drop below the 400\u202fms SLO. Once verified, update the incident to \u201cmitigated\u201d with a note summarizing the root cause, action taken, and verification result.\n"
+  ]
+ },
+ "layered": {
+  "runs": 1,
+  "deploy_writes": 0,
+  "plan_names_rollback_to_rel_2030": 1,
+  "final_statuses": [
+   "COMPLETED"
+  ],
+  "reports": [
+   "Root cause: The recent release reduced HikariCP maximumPoolSize from 50 to 10, exhausting the pool under normal load. (release rel-2031)\nDRY RUN plan: deploy.rollback {'environment': 'production', 'service': 'checkout-api', 'to_release': 'rel-2030'} - policy REQUIRE_APPROVAL (P3-high-risk-production-write); nothing executed"
+  ]
+ }
+}

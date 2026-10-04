@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "Investigate INC-4917 and remediate it safely."
+ },
+ {
+  "role": "assistant",
+  "content": "Root cause: DB pool exhaustion caused by release\u202frel\u20112031, which lowered `maximumPoolSize` from\u202f50 to\u202f10 and upgraded the ORM.  \nAction: Rolled back checkout\u2011api to rel\u20112030 (version\u202f2.13.4).  \nVerification: p95 latency fell below the 400\u202fms SLO within 6\u202fminutes after rollback."
+ }
+]

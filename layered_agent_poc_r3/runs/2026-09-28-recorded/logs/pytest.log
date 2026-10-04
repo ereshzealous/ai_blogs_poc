@@ -1,0 +1,74 @@
+....................ssss...............................................  [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[experience]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[orchestration]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[runtime]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[context]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[memory]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[tools]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[models]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[policy]
+PASSED tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[whole-platform]
+PASSED tests/architecture/test_import_rules.py::test_only_the_mcp_client_speaks_mcp
+PASSED tests/architecture/test_import_rules.py::test_only_the_provider_adapter_speaks_http
+PASSED tests/architecture/test_import_rules.py::test_only_the_gateway_reaches_the_mcp_client
+PASSED tests/architecture/test_import_rules.py::test_no_provider_or_model_names_outside_config
+PASSED tests/architecture/test_import_rules.py::test_provider_options_stay_in_the_adapter
+PASSED tests/architecture/test_import_rules.py::test_checker_catches_a_violation
+PASSED tests/contract/test_agent_contracts.py::test_rollback_proposal_needs_a_target
+PASSED tests/contract/test_agent_contracts.py::test_proposal_action_is_a_closed_set
+PASSED tests/contract/test_agent_contracts.py::test_agent_loop_uses_tools_then_returns_a_validated_contract
+PASSED tests/contract/test_agent_contracts.py::test_invalid_structured_output_gets_one_repair
+PASSED tests/contract/test_agent_contracts.py::test_agent_fails_closed_when_output_never_validates
+PASSED tests/fault_injection/test_faults.py::test_lost_response_after_commit_executes_once
+PASSED tests/fault_injection/test_faults.py::test_sigkill_after_the_side_effect_resumes_without_repeating_it
+PASSED tests/fault_injection/test_faults.py::test_crash_between_approval_and_resume_is_recovered
+PASSED tests/integration/test_monolith_choke_point.py::test_monolith_gates_production_writes_in_code
+PASSED tests/integration/test_monolith_choke_point.py::test_monolith_does_not_retry_a_timed_out_write
+PASSED tests/integration/test_platform_over_mcp.py::test_gateway_reads_blocks_unapproved_writes_and_keys_approved_ones
+PASSED tests/integration/test_platform_over_mcp.py::test_unregistered_write_is_denied_before_any_mcp_call
+PASSED tests/integration/test_platform_over_mcp.py::test_agent_toolbox_is_read_only_and_hides_idempotency_keys
+PASSED tests/integration/test_platform_over_mcp.py::test_full_workflow_pauses_for_approval_then_completes
+PASSED tests/integration/test_platform_over_mcp.py::test_rejection_is_recorded_and_nothing_executes
+PASSED tests/model/test_live_models.py::test_layered_end_to_end_with_gpt_oss
+PASSED tests/model/test_live_models.py::test_monolith_end_to_end_with_gpt_oss
+PASSED tests/model/test_live_models.py::test_model_b_serves_a_structured_route
+PASSED tests/unit/test_approvals.py::test_request_is_idempotent_per_action
+PASSED tests/unit/test_approvals.py::test_grant_is_bound_to_the_exact_action
+PASSED tests/unit/test_approvals.py::test_role_and_separation_of_duties
+PASSED tests/unit/test_approvals.py::test_decision_is_final_and_rejection_is_not_a_grant
+PASSED tests/unit/test_change_scope.py::test_monolith_lines_map_to_frozen_concerns
+PASSED tests/unit/test_change_scope.py::test_layered_paths_map_to_layers
+PASSED tests/unit/test_change_scope.py::test_a_new_top_level_symbol_takes_the_concern_of_its_user
+PASSED tests/unit/test_context_memory_knowledge.py::test_knowledge_returns_sourced_runbook_sections
+PASSED tests/unit/test_context_memory_knowledge.py::test_memory_is_keyed_so_a_resume_does_not_duplicate_it
+PASSED tests/unit/test_context_memory_knowledge.py::test_context_labels_facts_knowledge_and_memory_separately
+PASSED tests/unit/test_idempotency_and_checkpoints.py::test_op_id_is_deterministic_and_argument_order_free
+PASSED tests/unit/test_idempotency_and_checkpoints.py::test_completed_operation_returns_stored_result
+PASSED tests/unit/test_idempotency_and_checkpoints.py::test_in_flight_operation_is_retried_with_the_same_id
+PASSED tests/unit/test_idempotency_and_checkpoints.py::test_checkpoint_is_atomic_and_append_only
+PASSED tests/unit/test_idempotency_and_checkpoints.py::test_lease_blocks_a_live_other_process_and_is_taken_from_a_dead_one
+PASSED tests/unit/test_policy.py::test_policy_table[incident.get-args0-ALLOW-P1-read]
+PASSED tests/unit/test_policy.py::test_policy_table[deploy.rollback-args1-REQUIRE_APPROVAL-P3-high-risk-production-write]
+PASSED tests/unit/test_policy.py::test_policy_table[deploy.restart-args2-REQUIRE_APPROVAL-P3-high-risk-production-write]
+PASSED tests/unit/test_policy.py::test_policy_table[deploy.rollback-args3-DENY-P2-cross-environment-write]
+PASSED tests/unit/test_policy.py::test_policy_table[deploy.flush_sessions-args4-DENY-P0-unregistered]
+PASSED tests/unit/test_policy.py::test_policy_table[incident.update-args5-ALLOW-P4-low-risk-write]
+PASSED tests/unit/test_policy.py::test_policy_is_deterministic
+PASSED tests/unit/test_policy.py::test_default_is_deny
+PASSED tests/unit/test_tape_and_scorers.py::test_record_then_replay_in_order_across_processes
+PASSED tests/unit/test_tape_and_scorers.py::test_replay_never_calls_a_model_for_an_unrecorded_request
+PASSED tests/unit/test_tape_and_scorers.py::test_eval_normalises_typography
+PASSED tests/unit/test_tape_and_scorers.py::test_evals_read_the_world_not_the_claim
+PASSED tests/unit/test_world.py::test_seeded_incident_and_running_release
+PASSED tests/unit/test_world.py::test_rollback_recovers_after_the_recovery_window
+PASSED tests/unit/test_world.py::test_same_key_same_args_is_replayed_not_executed
+PASSED tests/unit/test_world.py::test_same_key_different_args_is_refused
+PASSED tests/unit/test_world.py::test_no_key_executes_every_time
+PASSED tests/unit/test_world.py::test_rollback_target_must_be_a_release_of_that_service
+PASSED tests/unit/test_world.py::test_faults_fire_the_armed_number_of_times
+SKIPPED [1] tests/evidence/test_published_run.py:18: no published run yet
+SKIPPED [1] tests/evidence/test_published_run.py:24: no published run yet
+SKIPPED [1] tests/evidence/test_published_run.py:30: no published run yet
+SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet

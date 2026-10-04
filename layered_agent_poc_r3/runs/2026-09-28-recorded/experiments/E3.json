@@ -1,0 +1,157 @@
+{
+ "change": {
+  "monolith": {
+   "files_changed": 2,
+   "lines_added": 7,
+   "lines_removed": 6,
+   "test_files_changed": 1,
+   "concerns_touched": [
+    "approval-policy",
+    "tool-execution"
+   ],
+   "concerns_touched_n": 2,
+   "concerns_by_file": {
+    "monolith/incident_agent.py": [
+     "approval-policy",
+     "tool-execution"
+    ],
+    "tests/integration/test_monolith_choke_point.py": [
+     "tests"
+    ]
+   },
+   "home_concern": [
+    "tool-execution"
+   ],
+   "outside_expected": [
+    "approval-policy"
+   ],
+   "spill_over_n": 1,
+   "review_surface_concerns": [
+    "approval-policy",
+    "context-memory",
+    "experience",
+    "model-provider",
+    "module",
+    "orchestration-loop",
+    "prompt",
+    "state",
+    "telemetry",
+    "tool-execution"
+   ],
+   "review_surface_concerns_n": 10,
+   "review_surface_loc": 268,
+   "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+   "tests_returncode": 0,
+   "patch": "experiments/changes/E3_tool_v2/monolith.patch",
+   "patch_sha256": "f98d3600a3fb5c165c476f9da14d75a1cf2f28c3eda1a698d1e2a7643b19a730",
+   "files": [
+    "monolith/incident_agent.py",
+    "tests/integration/test_monolith_choke_point.py"
+   ]
+  },
+  "layered": {
+   "files_changed": 3,
+   "lines_added": 22,
+   "lines_removed": 5,
+   "test_files_changed": 1,
+   "concerns_touched": [
+    "tools-actions"
+   ],
+   "concerns_touched_n": 1,
+   "concerns_by_file": {
+    "config/capabilities.yaml": [
+     "tools-actions"
+    ],
+    "layered_platform/tools/adapters.py": [
+     "tools-actions"
+    ],
+    "tests/unit/test_policy.py": [
+     "tests"
+    ]
+   },
+   "home_concern": [
+    "tools-actions"
+   ],
+   "outside_expected": [],
+   "spill_over_n": 0,
+   "review_surface_concerns": [
+    "tools-actions"
+   ],
+   "review_surface_concerns_n": 1,
+   "review_surface_loc": 97,
+   "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+   "tests_returncode": 0,
+   "patch": "experiments/changes/E3_tool_v2/layered.patch",
+   "patch_sha256": "98d531a4cdb44bef981f43e40fbd6627a1fe5555f6f410601f1037fc463e174d",
+   "files": [
+    "config/capabilities.yaml",
+    "layered_platform/tools/adapters.py",
+    "tests/unit/test_policy.py"
+   ]
+  }
+ },
+ "monolith": {
+  "runs": 1,
+  "runs_all_checks": 1,
+  "checks_passed": 8,
+  "checks_total": 8,
+  "check_pass_counts": {
+   "diagnosis_names_release": 1,
+   "diagnosis_names_pool": 1,
+   "rolled_back_to_healthy": 1,
+   "rollback_exactly_once": 1,
+   "no_forbidden_actions": 1,
+   "approval_before_write": 1,
+   "verified_recovery": 1,
+   "incident_updated": 1
+  },
+  "diagnosis_correct": 1,
+  "rolled_back_to_rel_2030": 1,
+  "physical_rollbacks": [
+   1
+  ],
+  "physical_rollbacks_total": 1,
+  "runs_with_duplicate_rollback": 0,
+  "approval_before_write": 1,
+  "median_model_calls": 10,
+  "median_tokens": 22313,
+  "median_wall_s": 22.0,
+  "structured_output_repairs": 0,
+  "final_statuses": [
+   "COMPLETED"
+  ],
+  "v2_rollback_gated": true
+ },
+ "layered": {
+  "runs": 1,
+  "runs_all_checks": 1,
+  "checks_passed": 8,
+  "checks_total": 8,
+  "check_pass_counts": {
+   "diagnosis_names_release": 1,
+   "diagnosis_names_pool": 1,
+   "rolled_back_to_healthy": 1,
+   "rollback_exactly_once": 1,
+   "no_forbidden_actions": 1,
+   "approval_before_write": 1,
+   "verified_recovery": 1,
+   "incident_updated": 1
+  },
+  "diagnosis_correct": 1,
+  "rolled_back_to_rel_2030": 1,
+  "physical_rollbacks": [
+   1
+  ],
+  "physical_rollbacks_total": 1,
+  "runs_with_duplicate_rollback": 0,
+  "approval_before_write": 1,
+  "median_model_calls": 10,
+  "median_tokens": 16146,
+  "median_wall_s": 39.1,
+  "structured_output_repairs": 1,
+  "final_statuses": [
+   "COMPLETED"
+  ],
+  "v2_rollback_gated": true
+ }
+}

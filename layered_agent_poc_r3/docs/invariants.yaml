@@ -1,0 +1,128 @@
+# F2 architecture invariants, machine-readable.  Prose and rationale: docs/architecture-invariants.md.
+#
+# tests/architecture/test_invariant_coverage.py checks this file against the repository and the published run:
+# every invariant needs at least one enforcement; every test must exist; every facts path must exist in the
+# published run's facts.json; every named recomputed check must appear in that run's verification.json.
+#
+# enforcement kinds: static | test | experiment | recomputed
+schema: 1
+invariants:
+  L1:
+    statement: Functional capability is preserved — the layered platform solves the same incident as the monolith.
+    experiments: [E1]
+    tests: ["tests/integration/test_platform_over_mcp.py::test_full_workflow_pauses_for_approval_then_completes"]
+    recomputed: ["E1 outcome checks recomputed from the world ledger"]
+    facts: ["E1.monolith.runs_all_checks", "E1.layered.runs_all_checks"]
+    does_not_show: A second incident, or a reliability estimate from three runs.
+  L2:
+    statement: Experience does not own intelligence, durable state or action execution.
+    static: ["tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[experience]"]
+    facts: ["tests.by_category.architecture.passed"]
+    does_not_show: That a second channel adapter would stay as thin.
+  L3:
+    statement: Orchestration owns workflow progression, persisted rather than inferred from conversation text.
+    static: ["tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[orchestration]"]
+    tests: ["tests/unit/test_idempotency_and_checkpoints.py::test_checkpoint_is_atomic_and_append_only"]
+    experiments: [E7]
+    facts: ["E7.layered.completed_steps_survive", "E7.layered.steps_rerun"]
+    does_not_show: Progression under concurrent workers beyond the single lease takeover measured.
+  L4:
+    statement: Agent Runtime owns retry, checkpointing, resume and bounded structured-output repair.
+    static: ["tests/architecture/test_import_rules.py::test_layer_does_not_import_forbidden[runtime]"]
+    experiments: [E5]
+    facts: ["E1.layered.structured_output_repairs", "E5.layered.sigkills"]
+    does_not_show: Recovery from failures other than the injected ones.
+  L5:
+    statement: Authoritative execution state exists outside the model context.
+    experiments: [E5, E7]
+    recomputed: ["no model call after the kill repeats work completed before it"]
+    facts: ["E5.layered.median_tokens_after_crash", "E7.layered.approval_state_survives", "E7.monolith.approval_state_survives"]
+    exposure: E5 scenarios that reached the injected SIGKILL
+    does_not_show: Durability against disk loss or database corruption.
+  L6:
+    statement: Model provider details stay behind Model Services.
+    static: ["tests/architecture/test_import_rules.py::test_no_provider_or_model_names_outside_config",
+             "tests/architecture/test_import_rules.py::test_only_the_provider_adapter_speaks_http"]
+    experiments: [E2]
+    facts: ["E2.change.layered.concerns_touched_n", "E2.change.layered.review_surface_concerns_n",
+            "E2.change.monolith.review_surface_concerns_n"]
+    does_not_show: Provider independence — both models are local Ollama models behind one adapter.
+  L7:
+    statement: Tool implementation details stay behind Tools + Actions.
+    static: ["tests/architecture/test_import_rules.py::test_only_the_mcp_client_speaks_mcp",
+             "tests/architecture/test_import_rules.py::test_only_the_gateway_reaches_the_mcp_client"]
+    experiments: [E3]
+    facts: ["E3.change.layered.spill_over_n", "E3.change.monolith.spill_over_n"]
+    does_not_show: A contract-breaking tool change, which is a different experiment.
+  L8:
+    statement: Side effects carry stable operation identity, so an ambiguous retry does not duplicate a physical write.
+    tests: ["tests/unit/test_idempotency_and_checkpoints.py::test_completed_operation_returns_stored_result"]
+    experiments: [E4]
+    recomputed: ["physical writes per operation id, from the backend ledger"]
+    facts: ["headline.e4_duplicate_rollbacks.monolith", "headline.e4_duplicate_rollbacks.layered",
+            "E4.layered.backend_idempotent_replays", "E4.layered.client_rollback_attempts"]
+    does_not_show: Exactly-once networking. The claim is about the physical effect of one logical operation.
+  L9:
+    statement: Authorization is deterministic and outside model reasoning; model text cannot grant authority.
+    static: ["tests/architecture/test_authority_rules.py::test_no_authority_is_derived_from_model_text",
+             "tests/architecture/test_authority_rules.py::test_model_services_never_mutate_workflow_state",
+             "tests/architecture/test_authority_rules.py::test_tool_adapters_never_choose_the_next_step"]
+    tests: ["tests/unit/test_policy.py::test_policy_table"]
+    experiments: [E6]
+    recomputed: ["every executed write had a policy allow and an approval"]
+    facts: ["E6.monolith_probes_executed_writes", "E6.layered_probes_executed_writes"]
+    does_not_show: Resistance to a compromised approver or a forged identity; identities are simulated.
+  L10:
+    statement: Approval is durable workflow state and is re-checked at the time of use.
+    tests: ["tests/unit/test_approvals.py::test_grant_is_bound_to_the_exact_action",
+             "tests/unit/test_approvals.py::test_decision_is_final_and_rejection_is_not_a_grant",
+             "tests/unit/test_idempotency_and_checkpoints.py::test_lease_blocks_a_live_other_process_and_is_taken_from_a_dead_one"]
+    experiments: [E7]
+    recomputed: ["approval precedes every production write"]
+    facts: ["E7.layered.approval_state_survives", "E1.layered.check_pass_counts.approval_before_write"]
+    does_not_show: Approval expiry, revocation or delegation — none are implemented here.
+  L11:
+    statement: Trace correlation spans the whole workflow, across process restarts.
+    experiments: [E8]
+    recomputed: ["one workflow trace across the processes of a crash run"]
+    facts: ["E8.layered.median_score", "E8.monolith.median_score",
+            "E8.layered.crash_runs_single_trace_across_processes", "E8.layered.crash_runs"]
+    does_not_show: That a production collector preserves this; spans are written to JSONL by the POC.
+  L12:
+    statement: Dependency direction is enforceable on the source, not advisory.
+    static: ["tests/architecture/test_import_rules.py::test_checker_catches_a_violation"]
+    facts: ["tests.by_category.architecture.passed", "tests.by_category.architecture.failed"]
+    does_not_show: Runtime coupling through configuration or data, which imports cannot see.
+  L13:
+    statement: A logical layer is not a deployment boundary — six layers run in one process.
+    static: ["tests/architecture/test_single_process.py::test_the_platform_starts_no_service_of_its_own",
+             "tests/architecture/test_single_process.py::test_no_layer_has_its_own_address",
+             "tests/architecture/test_single_process.py::test_the_six_layers_are_one_package"]
+    tests: ["tests/architecture/test_single_process.py::test_every_layer_runs_inside_one_process",
+            "tests/architecture/test_single_process.py::test_processes_are_explained_by_harness_phases_not_by_layers[layered]"]
+    facts: ["E1.layered.runs"]
+    does_not_show: How these boundaries behave once split across services, which is a different design.
+  L14:
+    statement: Change locality is measured by responsibility, not by file count.
+    tests: ["tests/unit/test_change_scope.py::test_layered_paths_map_to_layers"]
+    experiments: [E2, E3, E9]
+    recomputed: ["change scope recomputed from the diffs and the concern map"]
+    facts: ["headline.review_surface.E2.monolith", "headline.review_surface.E2.layered",
+            "headline.spill_over.E9.monolith", "headline.spill_over.E9.layered"]
+    does_not_show: That these three changes represent the population of production changes.
+  L15:
+    statement: Cross-cutting requirements may legitimately cross layers; the architecture makes the crossing an explicit contract change.
+    experiments: [E9]
+    recomputed: ["the dry-run change crosses layers through the contract module"]
+    facts: ["E9.change.layered.files_changed", "E9.change.monolith.files_changed",
+            "E9.change.layered.spill_over_n", "E9.change.monolith.spill_over_n"]
+    does_not_show: That every cross-cutting requirement is this cheap; one requirement was measured.
+
+# Stated in prose only.  Listed so that no reader mistakes them for results.
+not_enforced:
+  N1: Layering reduces latency or token cost.
+  N2: Layering prevents model mistakes — contradicted by E5 layered seed 7.
+  N3: Six services are required — refuted by L13.
+  N4: Two models prove provider independence.
+  N5: These timings generalize to production.
+  N6: Cost, quota and multi-tenancy boundaries work; they are not implemented.

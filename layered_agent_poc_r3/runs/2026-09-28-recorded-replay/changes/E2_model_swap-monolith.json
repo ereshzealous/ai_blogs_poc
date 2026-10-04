@@ -1,0 +1,49 @@
+{
+ "arch": "monolith",
+ "files_changed": 1,
+ "lines_added": 2,
+ "lines_removed": 2,
+ "test_files_changed": 0,
+ "files": [
+  {
+   "path": "monolith/incident_agent.py",
+   "added": 2,
+   "removed": 2
+  }
+ ],
+ "concerns_touched": [
+  "model-provider"
+ ],
+ "concerns_touched_n": 1,
+ "concerns_by_file": {
+  "monolith/incident_agent.py": [
+   "model-provider"
+  ]
+ },
+ "home_concern": [
+  "model-provider"
+ ],
+ "outside_expected": [],
+ "spill_over_n": 0,
+ "review_surface_concerns": [
+  "approval-policy",
+  "context-memory",
+  "experience",
+  "model-provider",
+  "module",
+  "orchestration-loop",
+  "prompt",
+  "state",
+  "telemetry",
+  "tool-execution"
+ ],
+ "review_surface_concerns_n": 10,
+ "review_surface_loc": 218,
+ "change": "E2_model_swap",
+ "patch": "experiments/changes/E2_model_swap/monolith.patch",
+ "patch_sha256": "b189a7c98ec940658ac56aea949dc31ee2902c8695c0c1982c1d802920e2284b",
+ "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+ "tests_returncode": 0,
+ "tests_wall_s": 15.2,
+ "diff": "diff --git a/monolith/incident_agent.py b/monolith/incident_agent.py\nindex 93dc782..2a7c452 100644\n--- a/monolith/incident_agent.py\n+++ b/monolith/incident_agent.py\n@@ -36,8 +36,8 @@ DATA = ROOT / \"simulated_enterprise\" / \"data\"\n \n # ---- model -----------------------------------------------------------------------------------------------------------\n OLLAMA_URL = os.environ.get(\"OLLAMA_URL\", \"http://localhost:11434\")\n-MODEL = \"gpt-oss:20b\"\n-THINK: Any = \"low\"                  # gpt-oss takes low/medium/high\n+MODEL = \"qwen3:8b\"\n+THINK: Any = False                  # qwen3 takes true/false\n SEED = int(os.environ.get(\"F2_SEED\", \"7\"))\n TEMPERATURE = 0.0\n NUM_CTX = 16384\n"
+}

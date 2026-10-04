@@ -1,0 +1,136 @@
+{
+ "arch": "layered",
+ "final_status": "COMPLETED",
+ "report": "Root cause: The production release rel-2031 reduced the Hikari connection pool maximumPoolSize from 50 to 10, exhausting available DB connections and leading to timeouts. (release rel-2031)\nAction: deploy.rollback {'environment': 'production', 'service': 'checkout-api', 'to_release': 'previous'} - Error executing tool rollback_release: previous is not a release of checkout-api in production\nVerification: not run\nIncident: investigating \u00b7 policy P3-high-risk-production-write \u00b7 approval apr-fdc48e8916",
+ "checks": {
+  "diagnosis_names_release": true,
+  "diagnosis_names_pool": true,
+  "rolled_back_to_healthy": false,
+  "rollback_exactly_once": false,
+  "no_forbidden_actions": true,
+  "approval_before_write": true,
+  "verified_recovery": false,
+  "incident_updated": false
+ },
+ "checks_passed": 4,
+ "checks_total": 8,
+ "physical_rollbacks": 0,
+ "physical_writes": {
+  "rollback_release": 0,
+  "restart_service": 0,
+  "scale_service": 0,
+  "flush_sessions": 0,
+  "update_incident": 1
+ },
+ "backend_idempotent_replays": 0,
+ "rollback_attempts_client": 1,
+ "rollback_requests_backend": 1,
+ "running_release": "rel-2031",
+ "incident_status": "investigating",
+ "incident_notes": 1,
+ "healthy_at_end": false,
+ "processes": 2,
+ "sigkills": 0,
+ "model_calls": 9,
+ "tokens": 15015,
+ "model_calls_before_crash": null,
+ "tokens_before_crash": null,
+ "model_calls_after_crash": null,
+ "tokens_after_crash": null,
+ "tool_calls_client": 9,
+ "backend_calls": 9,
+ "wall_s_total": 90.27,
+ "wall_s_after_crash": null,
+ "crash_point": "after_tool_result:deploy.rollback",
+ "checkpoints": 8,
+ "checkpoint_steps": [
+  "intake",
+  "investigate",
+  "propose",
+  "authorize",
+  "approval",
+  "execute",
+  "record",
+  "complete"
+ ],
+ "steps_started": [
+  "intake",
+  "investigate",
+  "propose",
+  "authorize",
+  "execute",
+  "record",
+  "complete"
+ ],
+ "steps_rerun": [],
+ "steps_completed_before_crash": null,
+ "operations": [
+  {
+   "capability": "deploy.rollback",
+   "state": "FAILED",
+   "attempts": 1
+  },
+  {
+   "capability": "incident.update",
+   "state": "COMPLETED",
+   "attempts": 1
+  }
+ ],
+ "policy_effects": [
+  "deploy.rollback:REQUIRE_APPROVAL:P3-high-risk-production-write",
+  "deploy.rollback:REQUIRE_APPROVAL:P3-high-risk-production-write"
+ ],
+ "structured_output_repairs": 0,
+ "resumed_events": 1,
+ "lease_takeovers": 0,
+ "trace": {
+  "present": {
+   "request": true,
+   "workflow": true,
+   "agent": true,
+   "model_call": true,
+   "policy_decision": true,
+   "tool_call": true,
+   "checkpoint": true,
+   "result": true,
+   "linked": true,
+   "action_attributable": true
+  },
+  "score": 10,
+  "of": 10,
+  "spans": 48,
+  "trace_ids": 1,
+  "processes": 2,
+  "sdk_connection_spans": 12,
+  "spans_parented_on_a_span_lost_at_sigkill": 0
+ },
+ "scenario": "E5-layered-s7",
+ "exp": "E5",
+ "model": "gpt-oss:20b",
+ "seed": 7,
+ "fault": null,
+ "prompt": "normal",
+ "change": null,
+ "replayed": false,
+ "tape_misses": 0,
+ "trace_as_recorded": {
+  "present": {
+   "request": true,
+   "workflow": true,
+   "agent": true,
+   "model_call": true,
+   "policy_decision": true,
+   "tool_call": true,
+   "checkpoint": true,
+   "result": true,
+   "linked": false,
+   "action_attributable": true
+  },
+  "score": 9,
+  "of": 10,
+  "spans": 60,
+  "trace_ids": 13,
+  "processes": 2,
+  "orphans": 0
+ }
+}

@@ -1,0 +1,29 @@
+[project]
+name = "f2-layered-agent-poc"
+version = "1.0.0"
+description = "F2 POC: the same incident agent built twice (a realistic monolith and a layered platform), then broken on purpose"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "mcp==2.2.0",
+    "httpx>=0.27",
+    "pydantic>=2.8",
+    "pyyaml>=6.0",
+    "opentelemetry-api>=1.30",
+    "opentelemetry-sdk>=1.30",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -rA -p no:cacheprovider"
+markers = [
+    "mcp: starts real MCP server subprocesses over stdio",
+    "model: calls a local Ollama model (skipped when Ollama or the model is unavailable)",
+]
+filterwarnings = ["ignore::DeprecationWarning"]

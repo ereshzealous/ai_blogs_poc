@@ -1,0 +1,15 @@
+diff --git a/monolith/incident_agent.py b/monolith/incident_agent.py
+index 93dc782..2a7c452 100644
+--- a/monolith/incident_agent.py
++++ b/monolith/incident_agent.py
+@@ -36,8 +36,8 @@ DATA = ROOT / "simulated_enterprise" / "data"
+ 
+ # ---- model -----------------------------------------------------------------------------------------------------------
+ OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
+-MODEL = "gpt-oss:20b"
+-THINK: Any = "low"                  # gpt-oss takes low/medium/high
++MODEL = "qwen3:8b"
++THINK: Any = False                  # qwen3 takes true/false
+ SEED = int(os.environ.get("F2_SEED", "7"))
+ TEMPERATURE = 0.0
+ NUM_CTX = 16384

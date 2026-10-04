@@ -1,0 +1,56 @@
+{
+ "arch": "layered",
+ "files_changed": 3,
+ "lines_added": 22,
+ "lines_removed": 5,
+ "test_files_changed": 1,
+ "files": [
+  {
+   "path": "config/capabilities.yaml",
+   "added": 3,
+   "removed": 4
+  },
+  {
+   "path": "layered_platform/tools/adapters.py",
+   "added": 18,
+   "removed": 0
+  },
+  {
+   "path": "tests/unit/test_policy.py",
+   "added": 1,
+   "removed": 1
+  }
+ ],
+ "concerns_touched": [
+  "tools-actions"
+ ],
+ "concerns_touched_n": 1,
+ "concerns_by_file": {
+  "config/capabilities.yaml": [
+   "tools-actions"
+  ],
+  "layered_platform/tools/adapters.py": [
+   "tools-actions"
+  ],
+  "tests/unit/test_policy.py": [
+   "tests"
+  ]
+ },
+ "home_concern": [
+  "tools-actions"
+ ],
+ "outside_expected": [],
+ "spill_over_n": 0,
+ "review_surface_concerns": [
+  "tools-actions"
+ ],
+ "review_surface_concerns_n": 1,
+ "review_surface_loc": 97,
+ "change": "E3_tool_v2",
+ "patch": "experiments/changes/E3_tool_v2/layered.patch",
+ "patch_sha256": "98d531a4cdb44bef981f43e40fbd6627a1fe5555f6f410601f1037fc463e174d",
+ "tests_after_change": "SKIPPED [1] tests/evidence/test_published_run.py:36: no published run yet",
+ "tests_returncode": 0,
+ "tests_wall_s": 15.3,
+ "diff": "diff --git a/config/capabilities.yaml b/config/capabilities.yaml\nindex f5c8530..b07c069 100644\n--- a/config/capabilities.yaml\n+++ b/config/capabilities.yaml\n@@ -1,14 +1,13 @@\n # Tools + Actions: the capability registry.  The platform (and every agent) names a capability; this file binds it to\n # an MCP server, a tool and an adapter.  A capability that is not listed here does not exist for the platform.\n-servers: [itsm, observability, deploy]\n+servers: [itsm, observability, deploy_v2]\n capabilities:\n   incident.get:      {server: itsm,          tool: get_incident,     kind: read,  adapter: passthrough, description: \"Read an incident record\"}\n   incident.update:   {server: itsm,          tool: update_incident,  kind: write, risk: low,  adapter: passthrough, key_param: idempotency_key}\n   telemetry.metrics: {server: observability, tool: query_metrics,    kind: read,  adapter: passthrough, contract: metrics}\n   telemetry.logs:    {server: observability, tool: search_logs,      kind: read,  adapter: passthrough, contract: logs}\n-  deploy.history:    {server: deploy,        tool: list_deployments, kind: read,  adapter: passthrough, contract: history}\n-  deploy.rollback:   {server: deploy,        tool: rollback_release, kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}\n-  deploy.restart:    {server: deploy,        tool: restart_service,  kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}\n+  deploy.history:    {server: deploy_v2,     tool: get_release_history, kind: read, adapter: deploy_v2_history, contract: history}\n+  deploy.rollback:   {server: deploy_v2,     tool: rollback,         kind: write, risk: high, adapter: deploy_v2_rollback, key_param: request_id}\n # The platform's own contracts for capabilities an agent can see.  The model is shown these, never a backend's schema,\n # so a backend that renames its arguments changes an adapter, not what the model sees.\n contracts:\ndiff --git a/layered_platform/tools/adapters.py b/layered_platform/tools/adapters.py\nindex fc67097..1ff566b 100644\n--- a/layered_platform/tools/adapters.py\n+++ b/layered_platform/tools/adapters.py\n@@ -16,8 +16,26 @@ def _same(x: Any) -> Any:\n     return x\n \n \n+def _ref(a: dict[str, Any]) -> str:\n+    return f\"{a.pop('service')}/{a.pop('environment')}\"\n+\n+\n+def _v2_history_args(a: dict[str, Any]) -> dict[str, Any]:\n+    return {\"service_ref\": _ref(a), **a}\n+\n+\n+def _v2_rollback_args(a: dict[str, Any]) -> dict[str, Any]:\n+    return {\"service_ref\": _ref(a), \"target_revision\": a.pop(\"to_release\"), **a}\n+\n+\n+def _v2_rollback_result(r: Any) -> Any:\n+    return r[\"operation\"][\"detail\"] if isinstance(r, dict) and \"operation\" in r else r\n+\n+\n ADAPTERS: dict[str, Adapter] = {\n     \"passthrough\": (_same, _same),\n+    \"deploy_v2_history\": (_v2_history_args, _same),\n+    \"deploy_v2_rollback\": (_v2_rollback_args, _v2_rollback_result),\n }\n \n \ndiff --git a/tests/unit/test_policy.py b/tests/unit/test_policy.py\nindex 61ab4ad..c660183 100644\n--- a/tests/unit/test_policy.py\n+++ b/tests/unit/test_policy.py\n@@ -14,7 +14,7 @@ def decide(cap, args, env=\"production\"):\n @pytest.mark.parametrize(\"cap,args,effect,rule\", [\n     (\"incident.get\", {\"incident_id\": \"INC-4917\"}, \"ALLOW\", \"P1-read\"),\n     (\"deploy.rollback\", {\"service\": \"checkout-api\", \"environment\": \"production\", \"to_release\": \"rel-2030\"}, \"REQUIRE_APPROVAL\", \"P3-high-risk-production-write\"),\n-    (\"deploy.restart\", {\"service\": \"checkout-api\", \"environment\": \"production\"}, \"REQUIRE_APPROVAL\", \"P3-high-risk-production-write\"),\n+    (\"deploy.restart\", {\"service\": \"checkout-api\", \"environment\": \"production\"}, \"DENY\", \"P0-unregistered\"),   # v2 has no restart\n     (\"deploy.rollback\", {\"service\": \"checkout-api\", \"environment\": \"staging\", \"to_release\": \"rel-2032\"}, \"DENY\", \"P2-cross-environment-write\"),\n     (\"deploy.flush_sessions\", {\"service\": \"checkout-api\", \"environment\": \"production\"}, \"DENY\", \"P0-unregistered\"),\n     (\"incident.update\", {\"incident_id\": \"INC-4917\", \"status\": \"mitigated\", \"note\": \"x\"}, \"ALLOW\", \"P4-low-risk-write\"),\n"
+}

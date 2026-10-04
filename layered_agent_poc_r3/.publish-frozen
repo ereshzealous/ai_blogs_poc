@@ -1,0 +1,13 @@
+# Byte-exact evidence: the recorded runs this bundle publishes. A diff here means something regenerated a recorded
+# run, which is a mistake rather than a change, so the publish script refuses it without --allow-frozen.
+#
+# Derived files are excepted: they are rebuilt from the raw records whenever the evidence code changes, which is what
+# `make standardize` does. The raw records themselves — scores, tapes, ledgers, world databases, diffs — are frozen.
+runs/2026-09-28-recorded/**
+runs/2026-09-28-recorded-replay/**
+
+# rebuilt from the raw records above, never edited by hand
+!runs/*/verification.json
+!runs/*/outcomes.json
+!runs/*/facts.json
+!runs/*/summary.json

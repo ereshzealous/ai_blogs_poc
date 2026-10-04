@@ -1,0 +1,52 @@
+# Changes made AFTER the recorded run, each declared here with the files it touched and why.  verify_evidence.py
+# accepts a frozen-hash drift only for files listed under a revision, and only if they still match the listed hash.
+# The as-recorded values stay in the run (score.json keeps `trace_as_recorded`), so both can be compared.
+revisions:
+  - id: r2
+    date: "2026-09-29"
+    found_by: reviewing E8 results of run 2026-09-28-recorded
+    problem: >-
+      The E8 scorer required every span of a run to share one trace id. The MCP Python SDK emits its own OpenTelemetry
+      spans when a client connects (server/discover, tools/list), each as a separate root trace outside any request, so
+      "linked" was false in every layered run even though every workflow span shared one trace id.
+    change: >-
+      "linked" is judged on the workflow's spans (those carrying f2.* attributes). SDK connection spans and spans whose
+      parent was open when a process was SIGKILLed are counted and reported separately instead of silently dropped.
+    files: [experiments/scorers/traces.py]
+    affects: [E8]
+    rescore: scripts/rescore.py
+  - id: r3
+    date: "2026-10-04"
+    found_by: the F2 standardization pass (docs/standardization/f2-current-state-audit.md)
+    problem: >-
+      The run verifier checked that the run was complete, frozen and self-consistent: it rebuilt summary.json from
+      the score files that had produced it.  That cannot catch a scorer which was wrong the same way twice, and the
+      published numbers had never been recomputed from the raw records.  Separately, "failed" was used for four
+      different outcomes, and fault claims were reported against the number of scenarios planned rather than the
+      number that met the fault.
+    change: >-
+      Added scripts/recompute.py: twelve checks that recompute the published numbers from each scenario's world
+      database, approval and process logs, the model tapes, the run-wide ledgers, the traces, the diffs and the JUnit
+      file, and compare them with facts.json.  verify_evidence.py now runs them, so verification.json carries both
+      integrity and recomputation.  Added scripts/classify_outcomes.py, which writes runs/<id>/outcomes.json with one
+      of SUCCESS, FAILURE, ERROR or NOT_EXPOSED per scenario plus exposure counts per fault.  Added architecture
+      invariants L1-L15 with a coverage test, authority and single-process tests, a numbers linter for the
+      publication sources, and a four-way test accounting.
+    affects: []          # no recorded value changed: every score file, tape and ledger is byte-identical
+    files: [scripts/recompute.py, scripts/classify_outcomes.py, scripts/verify_evidence.py]
+    rescore: scripts/verify_evidence.py
+    note: >-
+      Derived files were regenerated (verification.json, outcomes.json); raw records were not touched.  The recorded
+      facts are unchanged, which the replay check confirms: every measured fact still matches the replay run.
+    tooling_defects_found_and_fixed:
+      - >-
+        verify_evidence.py ended with `sum(c['ok'] for c in checks)`, which raises TypeError once any check reports
+        None for "not applicable".  The verifier wrote its results and then crashed, so its exit code was 1 while its
+        own verification.json said ok.  tools/build_evidence_bundle.py reads that exit code, which is why the
+        published bundle recorded verified_after_extraction ok:false at 35/36 — the one non-pass being the replay
+        check, correctly not applicable inside a single-run bundle.  Fixed by counting passes only and reporting the
+        not-applicable count separately.  Kept here as evidence-tooling history rather than quietly corrected.
+      - >-
+        tools/diagram_manifest.py recorded f10's data sources as scenarios/E1-layered-s7/raw/*.jsonl only, while the
+        figure also reads that scenario's platform.db and score.json.  Found by tools/check_figures.py, which could
+        not trace two numbers the figure draws.  The manifest now names all three, and the figure is unchanged.

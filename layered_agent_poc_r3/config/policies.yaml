@@ -1,0 +1,27 @@
+# Policy: evaluated in code, top to bottom, first match wins.  The model never sees this file and cannot change it.
+rules:
+  - id: P0-unregistered
+    when: {registered: false}
+    effect: DENY
+    reason: "not a registered capability"
+  - id: P1-read
+    when: {kind: read}
+    effect: ALLOW
+    reason: "read-only capability"
+  - id: P2-cross-environment-write
+    when: {kind: write, environment_mismatch: true}
+    effect: DENY
+    reason: "a write must target the incident's own environment"
+  - id: P3-high-risk-production-write
+    when: {kind: write, risk: high, environment: production}
+    effect: REQUIRE_APPROVAL
+    required_role: incident-commander
+    reason: "high-risk production change needs the incident commander"
+  - id: P4-low-risk-write
+    when: {kind: write, risk: low}
+    effect: ALLOW
+    reason: "low-risk record keeping"
+  - id: P9-default
+    when: {}
+    effect: DENY
+    reason: "no rule allows it"

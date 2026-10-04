@@ -1,0 +1,10 @@
+{"seq": 1, "tool": "get_incident", "args": {"incident_id": "INC-4917"}, "minute": 630, "wall": 1790620546.656131, "pid": 55326}
+{"seq": 2, "tool": "list_deployments", "args": {"environment": "production", "limit": 5, "service": "checkout-api"}, "minute": 630, "wall": 1790620547.921824, "pid": 55334}
+{"seq": 3, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620549.20857, "pid": 55327}
+{"seq": 4, "tool": "query_metrics", "args": {"environment": "production", "metric": "error_rate_pct", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620550.459222, "pid": 55327}
+{"seq": 5, "tool": "query_metrics", "args": {"environment": "production", "metric": "db_pool_wait_ms", "minutes": 30, "service": "checkout-api"}, "minute": 630, "wall": 1790620551.6490939, "pid": 55327}
+{"seq": 6, "tool": "search_logs", "args": {"environment": "production", "minutes": 60, "query": "HikariPool", "service": "checkout-api"}, "minute": 630, "wall": 1790620552.79131, "pid": 55327}
+{"seq": 7, "tool": "rollback_release", "args": {"environment": "production", "service": "checkout-api", "to_release": "rel-2030"}, "minute": 630, "wall": 1790620555.128743, "pid": 55334}
+{"seq": 8, "tool": "restart_service", "args": {"environment": "production", "service": "checkout-api"}, "minute": 636, "wall": 1790620556.4523861, "pid": 55334}
+{"seq": 9, "tool": "query_metrics", "args": {"environment": "production", "metric": "latency_p95_ms", "minutes": 3, "service": "checkout-api"}, "minute": 638, "wall": 1790620558.0066078, "pid": 55327}
+{"seq": 10, "tool": "update_incident", "args": {"incident_id": "INC-4917", "note": "Root cause: rollback of rel-2031 which reduced DB pool size causing connection exhaustion.\nAction: rolled back to rel-2030 and restarted checkout-api.\nVerification: p95 latency 210ms <400ms for last 3 minutes.", "status": "mitigated"}, "minute": 638, "wall": 1790620561.0923688, "pid": 55326}

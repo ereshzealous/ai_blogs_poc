@@ -1,0 +1,341 @@
+# Every claim the F2 publications make about this POC, as data.
+#
+# tools/build_claim_matrix.py renders docs/claim_evidence_matrix.md from this file and validates it against the
+# published run: each facts path must exist, each verification check must have run and passed, each raw file must be
+# in the run, each test must exist, each invariant id must be in docs/invariants.yaml.  It exits non-zero otherwise,
+# so a claim cannot outlive its evidence.
+#
+# status is one of:
+#   SUPPORTED     the recorded evidence supports the claim as written
+#   QUALIFIED     supported only within a stated limit (exposure, sample, a revised scorer) — `qualifier` says which
+#   CONTRADICTED  the evidence contradicts the claim.  Kept, with the number that contradicts it
+#   UNSUPPORTED   not tested here.  Listed so no reader assumes it
+#
+# `evidence` may hold {{facts.json.key}} tokens; they are substituted at build time, so the matrix cannot drift.
+schema: 1
+claims:
+  - id: C1
+    claim: "Layering keeps the capability: both architectures solve INC-4917."
+    status: SUPPORTED
+    invariants: [L1]
+    evidence: "E1 runs passing all 8 checks: monolith {{headline.e1_runs_all_checks.monolith}}, layered
+      {{headline.e1_runs_all_checks.layered}}; under model B (E2): {{E2.monolith.runs_all_checks}}/{{E2.monolith.runs}}
+      and {{E2.layered.runs_all_checks}}/{{E2.layered.runs}}"
+    facts: [headline.e1_runs_all_checks.monolith, headline.e1_runs_all_checks.layered]
+    verification: ["E1 outcome checks recomputed from the world ledger"]
+    experiments: [E1, E2]
+    raw: ["scenarios/E1-*/world.db", "scenarios/E1-*/score.json"]
+    tests: ["tests/integration/test_platform_over_mcp.py::test_full_workflow_pauses_for_approval_then_completes"]
+    figure: f13
+    article_section: "We built both designs"
+    shows: "Both designs diagnosed the incident, proposed the runbook remediation, obtained approval, rolled back
+      once, verified recovery and recorded the incident, under two models."
+    does_not_show: "That either design solves a second incident, or that three runs per model estimate reliability."
+
+  - id: C2
+    claim: "A lost reply after a committed rollback causes duplicate side effects in the monolith, not in the layered platform."
+    status: SUPPORTED
+    invariants: [L8]
+    evidence: "E4 duplicate physical rollbacks: monolith {{headline.e4_duplicate_rollbacks.monolith}}, layered
+      {{headline.e4_duplicate_rollbacks.layered}}; layered backend idempotent replays per run:
+      {{E4.layered.backend_idempotent_replays}}"
+    facts: [headline.e4_duplicate_rollbacks.monolith, headline.e4_duplicate_rollbacks.layered,
+            E4.layered.backend_idempotent_replays]
+    verification: ["physical writes per operation id, from the backend ledger"]
+    experiments: [E4]
+    raw: ["scenarios/E4-*/world.db", "raw/backend_executions.jsonl"]
+    tests: ["tests/unit/test_world.py::test_same_key_different_args_is_refused",
+            "tests/unit/test_world.py::test_no_key_executes_every_time"]
+    figure: f13
+    article_section: "We lost responses"
+    shows: "With a stable operation id sent as the backend's idempotency key, a retry of the same logical rollback
+      returned the stored result instead of rolling back again. Without a key, the same retry executed twice."
+    does_not_show: "Exactly-once networking, or safety when the backend ignores the key. The backend here honours it."
+
+  - id: C3
+    claim: "After a SIGKILL the layered platform resumes from its checkpoint and repeats no model work."
+    status: QUALIFIED
+    qualifier: "2 of 3 planned layered crash scenarios reached the injected kill; the third never did, so it supports
+      no claim about crash recovery."
+    invariants: [L5, L4]
+    evidence: "E5 median tokens after the kill: monolith {{headline.e5_median_tokens_after_crash.monolith}}, layered
+      {{headline.e5_median_tokens_after_crash.layered}}; layered tokens after the kill per run (s11, s13, s7):
+      {{E5.layered.tokens_after_crash}}; real SIGKILLs in the run: {{integrity.sigkills}}"
+    facts: [headline.e5_median_tokens_after_crash.monolith, headline.e5_median_tokens_after_crash.layered,
+            E5.layered.tokens_after_crash, integrity.sigkills]
+    verification: ["no model call after the kill repeats work completed before it", "every scenario has an outcome class"]
+    experiments: [E5]
+    raw: ["scenarios/E5-*/phases_harness.jsonl", "scenarios/E5-*/tape/model_calls.jsonl", "outcomes.json"]
+    tests: ["tests/fault_injection/test_faults.py"]
+    figure: "f14, f01b"
+    article_section: "We killed processes"
+    shows: "In the exposed scenarios the resumed process re-read its checkpoint and spent no model tokens on work
+      already completed; the monolith re-ran its investigation."
+    does_not_show: "Recovery from anything but a SIGKILL at the injected points, and nothing at all about the
+      scenario that never reached its kill."
+
+  - id: C4
+    claim: "The layered platform prevents model mistakes."
+    status: CONTRADICTED
+    invariants: [N2]
+    evidence: "E5 layered seed 7: the model proposed to_release \"previous\"; the tool rejected it and no rollback
+      ran; layered E5 runs passing all checks {{E5.layered.runs_all_checks}}/{{E5.layered.runs}}"
+    facts: [E5.layered.runs_all_checks, E5.layered.runs]
+    verification: ["every scenario has an outcome class"]
+    experiments: [E5]
+    raw: ["scenarios/E5-layered-s7/score.json", "scenarios/E5-layered-s7/tape/model_tape.jsonl"]
+    tests: ["tests/unit/test_world.py::test_rollback_target_must_be_a_release_of_that_service"]
+    figure: f13
+    article_section: "What failed, and what it taught us"
+    shows: "The model proposed an invalid release identifier. The contract at the tool boundary refused it, so no
+      wrong rollback executed — the boundary contained the mistake."
+    does_not_show: "That layering reduces how often a model is wrong. It changes what a wrong answer can reach."
+
+  - id: C5
+    claim: "Authorization decided in code blocks writes that a prompt-level gate lets through."
+    status: SUPPORTED
+    invariants: [L9]
+    evidence: "E6 deterministic probes that executed a write: monolith {{E6.monolith_probes_executed_writes}},
+      layered {{E6.layered_probes_executed_writes}}; adversarial prompt restarts executed: monolith
+      {{E6.adversarial.monolith.restarts_executed}}, layered {{E6.adversarial.layered.restarts_executed}}"
+    facts: [E6.monolith_probes_executed_writes, E6.layered_probes_executed_writes,
+            E6.adversarial.monolith.restarts_executed, E6.adversarial.layered.restarts_executed]
+    verification: ["every executed write had a policy allow and an approval"]
+    experiments: [E6]
+    raw: ["experiments/E6_probes.json", "raw/policy_events.jsonl", "scenarios/E6-*/world.db"]
+    tests: ["tests/unit/test_policy.py::test_default_is_deny",
+            "tests/architecture/test_authority_rules.py::test_no_authority_is_derived_from_model_text"]
+    figure: f16
+    article_section: "We tried to bypass governance"
+    shows: "Every write the layered platform executed carries a policy decision; the deterministic probes it refused
+      reached no backend. The monolith executed writes the same probes asked for, and in E9 executed one with no
+      authorization record and no operation id at all."
+    does_not_show: "Resistance to a compromised approver or a forged identity. Identities here are simulated."
+
+  - id: C6
+    claim: "Workflow and approval state survive a restart only where they live outside the model context."
+    status: QUALIFIED
+    qualifier: "one exposed crash scenario per architecture."
+    invariants: [L5, L10, L3]
+    evidence: "E7 approval state survives: monolith {{E7.monolith.approval_state_survives}}, layered
+      {{E7.layered.approval_state_survives}}; checks passed: monolith
+      {{E7.monolith.checks_passed}}/{{E7.monolith.checks_total}}, layered
+      {{E7.layered.checks_passed}}/{{E7.layered.checks_total}}"
+    facts: [E7.monolith.approval_state_survives, E7.layered.approval_state_survives,
+            E7.monolith.checks_passed, E7.layered.checks_passed]
+    verification: ["approval precedes every production write", "no model call after the kill repeats work completed before it"]
+    experiments: [E7]
+    raw: ["scenarios/E7-*/score.json", "supplementary/E7-monolith-s7", "raw/checkpoints.jsonl"]
+    tests: ["tests/unit/test_idempotency_and_checkpoints.py::test_checkpoint_is_atomic_and_append_only",
+            "tests/unit/test_approvals.py::test_grant_is_bound_to_the_exact_action"]
+    figure: f13
+    article_section: "We restarted while waiting for approval"
+    shows: "The layered workflow resumed at WAITING_APPROVAL in a new process and executed under the approval it had
+      already been given. The monolith's restarted process could not resume at all and exited non-zero."
+    does_not_show: "Durability against disk loss, nor approval expiry, revocation or delegation, none of which exist here."
+
+  - id: C7
+    claim: "One request can be followed to the exact tool action, across a process restart."
+    status: QUALIFIED
+    qualifier: "the trace scorer was revised after the run as revision r2, declared in experiments/evidence-revisions.yaml;
+      the as-recorded score is kept beside it."
+    invariants: [L11]
+    evidence: "E8 median trace score: monolith {{headline.e8_median_trace_score.monolith}}, layered
+      {{headline.e8_median_trace_score.layered}}; monolith missing: {{E8.monolith.missing_in_any_run}}; crash runs
+      whose workflow kept one trace across processes: {{E8.layered.crash_runs_single_trace_across_processes}} of
+      {{E8.layered.crash_runs}}"
+    facts: [headline.e8_median_trace_score.monolith, headline.e8_median_trace_score.layered,
+            E8.monolith.missing_in_any_run, E8.layered.crash_runs_single_trace_across_processes, E8.layered.crash_runs]
+    verification: ["one workflow trace across the processes of a crash run"]
+    experiments: [E8]
+    raw: ["experiments/E8.json", "raw/traces.jsonl"]
+    tests: ["tests/architecture/test_single_process.py::test_every_layer_runs_inside_one_process"]
+    figure: f13
+    article_section: "We traced across processes"
+    shows: "The workflow's spans share one trace id from request to tool result, and the resumed process joined the
+      trace the killed process had started."
+    does_not_show: "That a production collector or sampling policy would preserve this. Spans are written to JSONL here."
+
+  - id: C8
+    claim: "A model swap stays behind Model Services."
+    status: QUALIFIED
+    qualifier: "the monolith's swap also touched only one concern, so the difference is review surface, not concern count."
+    invariants: [L6, L14]
+    evidence: "E2 concerns touched: monolith {{headline.e2_concerns_touched.monolith}}, layered
+      {{headline.e2_concerns_touched.layered}}; review surface (concerns living in the touched files): monolith
+      {{headline.review_surface.E2.monolith}}, layered {{headline.review_surface.E2.layered}}"
+    facts: [headline.e2_concerns_touched.monolith, headline.e2_concerns_touched.layered,
+            headline.review_surface.E2.monolith, headline.review_surface.E2.layered]
+    verification: ["change scope recomputed from the diffs and the concern map"]
+    experiments: [E2]
+    raw: ["diffs/E2_model_swap-layered.diff", "diffs/E2_model_swap-monolith.diff"]
+    tests: ["tests/architecture/test_import_rules.py::test_no_provider_or_model_names_outside_config"]
+    figure: f15
+    article_section: "We changed models and tools"
+    shows: "Both changes were small. The layered change landed in configuration whose file holds one concern; the
+      monolith's landed in a file that also holds the workflow, the approval rule and the tool plumbing."
+    does_not_show: "Provider independence: both models are local Ollama models behind one adapter."
+
+  - id: C9
+    claim: "A tool backend change stays in Tools + Actions."
+    status: SUPPORTED
+    invariants: [L7, L14]
+    evidence: "E3 spill-over beyond the home concern: monolith {{headline.spill_over.E3.monolith}}, layered
+      {{headline.spill_over.E3.layered}}; files changed: monolith {{E3.change.monolith.files_changed}}, layered
+      {{E3.change.layered.files_changed}}"
+    facts: [headline.spill_over.E3.monolith, headline.spill_over.E3.layered,
+            E3.change.monolith.files_changed, E3.change.layered.files_changed]
+    verification: ["change scope recomputed from the diffs and the concern map"]
+    experiments: [E3]
+    raw: ["diffs/E3_tool_v2-layered.diff", "diffs/E3_tool_v2-monolith.diff"]
+    tests: ["tests/architecture/test_import_rules.py::test_only_the_mcp_client_speaks_mcp"]
+    figure: f15
+    article_section: "We changed models and tools"
+    shows: "The layered change touched more files than the monolith's and still spilled into no other concern: a
+      registry entry, an adapter and its test are three files inside one responsibility."
+    does_not_show: "A change that breaks the capability contract, which is a different experiment."
+
+  - id: C10
+    claim: "Layering always localizes change."
+    status: CONTRADICTED
+    invariants: [L15, L14]
+    evidence: "E9 dry-run requirement, files changed: monolith {{headline.e9_files_changed.monolith}}, layered
+      {{headline.e9_files_changed.layered}}; spill-over beyond the home concern: monolith
+      {{headline.spill_over.E9.monolith}}, layered {{headline.spill_over.E9.layered}}"
+    facts: [headline.e9_files_changed.monolith, headline.e9_files_changed.layered,
+            headline.spill_over.E9.monolith, headline.spill_over.E9.layered]
+    verification: ["the dry-run change crosses layers through the contract module",
+                   "change scope recomputed from the diffs and the concern map"]
+    experiments: [E9]
+    raw: ["diffs/E9_dry_run-layered.diff", "diffs/E9_dry_run-monolith.diff"]
+    tests: ["tests/unit/test_change_scope.py::test_layered_paths_map_to_layers"]
+    figure: f15
+    article_section: "Then dry-run broke the simplistic story"
+    shows: "A cross-cutting requirement touched four files in the layered tree and one in the monolith. Layering did
+      not make this change smaller. It made the crossing explicit: the layered change went through the request
+      contract, so every layer that had to agree is named in the diff."
+    does_not_show: "That cross-cutting changes are always this shape. One requirement was measured."
+
+  - id: C11
+    claim: "The dependency rule between layers is enforced, not advisory."
+    status: SUPPORTED
+    invariants: [L12, L2]
+    evidence: "architecture tests passed: {{tests.by_category.architecture.passed}}, failed:
+      {{tests.by_category.architecture.failed}}"
+    facts: [tests.by_category.architecture.passed, tests.by_category.architecture.failed]
+    verification: ["tests recounted from the JUnit file"]
+    experiments: []
+    raw: ["tests.junit.xml"]
+    tests: ["tests/architecture/test_import_rules.py::test_checker_catches_a_violation",
+            "tests/architecture/test_authority_rules.py::test_the_rule_catches_authority_from_model_text"]
+    figure: "f06, f07"
+    article_section: "The responsibility test"
+    shows: "The rules are checked on the source, and each checker is itself tested against a planted violation, so a
+      rule that stopped matching anything fails instead of passing vacuously."
+    does_not_show: "Coupling through configuration or data, which an import rule cannot see."
+
+  - id: C12
+    claim: "The run is reproducible without calling a model."
+    status: SUPPORTED
+    invariants: []
+    evidence: "replay identical: {{replay.identical}}; model calls served from tape:
+      {{replay.model_calls_served_from_tape}}; fresh calls: {{replay.fresh_model_calls}}"
+    facts: [replay.identical, replay.model_calls_served_from_tape, replay.fresh_model_calls]
+    verification: ["the replay's facts match the recorded run"]
+    experiments: []
+    raw: ["replay_comparison.json"]
+    tests: ["tests/evidence/test_published_run.py"]
+    figure: none
+    article_section: "Run it yourself"
+    shows: "Replaying the run serves every model answer from the tape and re-executes the MCP servers, the world, the
+      faults, the SIGKILLs, the checkpoints and the policy; every measured fact comes out identical."
+    does_not_show: "That a live model would answer the same way again. A replay proves the pipeline, not the model."
+
+  - id: C13
+    claim: "Every preregistered scenario ran against a hashed plan."
+    status: SUPPORTED
+    invariants: []
+    evidence: "scenarios present {{integrity.scenarios_present}}/{{integrity.scenarios_expected}}; plan
+      {{hash.experiment_plan}}; tape misses {{integrity.tape_misses}}"
+    facts: [integrity.scenarios_present, integrity.scenarios_expected, hash.experiment_plan, integrity.tape_misses]
+    verification: ["experiment plan hash matches the plan on disk",
+                   "frozen inputs unchanged since the run (or changed only by a declared evidence revision)"]
+    experiments: []
+    raw: ["manifest.json", "verification.json", "source_hashes.json"]
+    tests: ["tests/evidence/test_published_run.py"]
+    figure: "f11, f12"
+    article_section: "We held the incident constant"
+    shows: "The plan was written and hashed before the run, every scenario it names has a directory, and the frozen
+      inputs still hash to what the manifest recorded."
+    does_not_show: "That the plan was the best design, only that it was fixed before the measurement."
+
+  - id: C14
+    claim: "Six logical layers run in one process; a layer is not a service."
+    status: SUPPORTED
+    invariants: [L13]
+    evidence: "E1 layered runs: {{E1.layered.runs}}, each with one process carrying spans from every layer; the
+      layered platform imports no web server and binds no socket"
+    facts: [E1.layered.runs]
+    verification: ["every scenario has an outcome class"]
+    experiments: [E1]
+    raw: ["raw/traces.jsonl", "scenarios/E1-layered-s7/phases_harness.jsonl"]
+    tests: ["tests/architecture/test_single_process.py::test_every_layer_runs_inside_one_process",
+            "tests/architecture/test_single_process.py::test_the_platform_starts_no_service_of_its_own",
+            "tests/architecture/test_single_process.py::test_processes_are_explained_by_harness_phases_not_by_layers[layered]"]
+    figure: f04
+    article_section: "Layering is not microservices"
+    shows: "One OS process emitted request, workflow.step, invoke_agent, chat, execute_tool and policy.evaluate spans.
+      The layered scenarios used one more process than the monolith, and that process is the separate approve
+      invocation, which is durable-approval evidence rather than a layer boundary."
+    does_not_show: "How these boundaries behave once split across services. That is a different design."
+
+  - id: C15
+    claim: "The layered platform is production ready, or more reliable than the monolith in general."
+    status: UNSUPPORTED
+    invariants: [N1, N5, N6]
+    evidence: "three seeds at temperature 0 on one simulated incident; cited-run tests {{headline.tests}}"
+    facts: [headline.tests]
+    verification: []
+    experiments: []
+    raw: ["docs/real_vs_simulated.md"]
+    tests: []
+    figure: none
+    article_section: "Limitations"
+    shows: "Nothing about production readiness. The enterprise systems, approvals, identities and faults are simulated,
+      and the timings come from one laptop."
+    does_not_show: "Reliability, latency or cost in production; multi-tenancy; quota and budget control; or behaviour
+      on any incident but INC-4917."
+
+  - id: C16
+    claim: "Six deployed services are required to get these properties."
+    status: UNSUPPORTED
+    invariants: [N3]
+    evidence: "the whole platform runs in one process per invocation; see C14"
+    facts: [E1.layered.runs]
+    verification: []
+    experiments: [E1]
+    raw: ["raw/traces.jsonl"]
+    tests: ["tests/architecture/test_single_process.py::test_the_six_layers_are_one_package"]
+    figure: f04
+    article_section: "Layering is not microservices"
+    shows: "The opposite: the recorded run got these properties with one package and one process."
+    does_not_show: "That splitting into services is wrong, only that it was not needed here."
+
+  - id: C17
+    claim: "Layering makes the system faster or cheaper to run."
+    status: UNSUPPORTED
+    invariants: [N1]
+    evidence: "E1 median model calls: monolith {{E1.monolith.median_model_calls}}, layered
+      {{E1.layered.median_model_calls}}; median tokens: monolith {{E1.monolith.median_tokens}}, layered
+      {{E1.layered.median_tokens}}"
+    facts: [E1.monolith.median_model_calls, E1.layered.median_model_calls,
+            E1.monolith.median_tokens, E1.layered.median_tokens]
+    verification: ["E1 outcome checks recomputed from the world ledger"]
+    experiments: [E1]
+    raw: ["experiments/E1.json"]
+    tests: []
+    figure: none
+    article_section: "Limitations"
+    shows: "The layered platform spent more model calls and more tokens than the monolith on the same incident, by
+      design: it splits the work across agents and forces structured answers."
+    does_not_show: "A performance claim in either direction. One workload, one machine, no concurrency."

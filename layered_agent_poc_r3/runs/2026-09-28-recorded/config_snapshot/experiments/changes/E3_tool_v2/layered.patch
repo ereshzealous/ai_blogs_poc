@@ -1,0 +1,66 @@
+diff --git a/config/capabilities.yaml b/config/capabilities.yaml
+index f5c8530..b07c069 100644
+--- a/config/capabilities.yaml
++++ b/config/capabilities.yaml
+@@ -1,14 +1,13 @@
+ # Tools + Actions: the capability registry.  The platform (and every agent) names a capability; this file binds it to
+ # an MCP server, a tool and an adapter.  A capability that is not listed here does not exist for the platform.
+-servers: [itsm, observability, deploy]
++servers: [itsm, observability, deploy_v2]
+ capabilities:
+   incident.get:      {server: itsm,          tool: get_incident,     kind: read,  adapter: passthrough, description: "Read an incident record"}
+   incident.update:   {server: itsm,          tool: update_incident,  kind: write, risk: low,  adapter: passthrough, key_param: idempotency_key}
+   telemetry.metrics: {server: observability, tool: query_metrics,    kind: read,  adapter: passthrough, contract: metrics}
+   telemetry.logs:    {server: observability, tool: search_logs,      kind: read,  adapter: passthrough, contract: logs}
+-  deploy.history:    {server: deploy,        tool: list_deployments, kind: read,  adapter: passthrough, contract: history}
+-  deploy.rollback:   {server: deploy,        tool: rollback_release, kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}
+-  deploy.restart:    {server: deploy,        tool: restart_service,  kind: write, risk: high, adapter: passthrough, key_param: idempotency_key}
++  deploy.history:    {server: deploy_v2,     tool: get_release_history, kind: read, adapter: deploy_v2_history, contract: history}
++  deploy.rollback:   {server: deploy_v2,     tool: rollback,         kind: write, risk: high, adapter: deploy_v2_rollback, key_param: request_id}
+ # The platform's own contracts for capabilities an agent can see.  The model is shown these, never a backend's schema,
+ # so a backend that renames its arguments changes an adapter, not what the model sees.
+ contracts:
+diff --git a/layered_platform/tools/adapters.py b/layered_platform/tools/adapters.py
+index fc67097..1ff566b 100644
+--- a/layered_platform/tools/adapters.py
++++ b/layered_platform/tools/adapters.py
+@@ -16,8 +16,26 @@ def _same(x: Any) -> Any:
+     return x
+ 
+ 
++def _ref(a: dict[str, Any]) -> str:
++    return f"{a.pop('service')}/{a.pop('environment')}"
++
++
++def _v2_history_args(a: dict[str, Any]) -> dict[str, Any]:
++    return {"service_ref": _ref(a), **a}
++
++
++def _v2_rollback_args(a: dict[str, Any]) -> dict[str, Any]:
++    return {"service_ref": _ref(a), "target_revision": a.pop("to_release"), **a}
++
++
++def _v2_rollback_result(r: Any) -> Any:
++    return r["operation"]["detail"] if isinstance(r, dict) and "operation" in r else r
++
++
+ ADAPTERS: dict[str, Adapter] = {
+     "passthrough": (_same, _same),
++    "deploy_v2_history": (_v2_history_args, _same),
++    "deploy_v2_rollback": (_v2_rollback_args, _v2_rollback_result),
+ }
+ 
+ 
+diff --git a/tests/unit/test_policy.py b/tests/unit/test_policy.py
+index 61ab4ad..c660183 100644
+--- a/tests/unit/test_policy.py
++++ b/tests/unit/test_policy.py
+@@ -14,7 +14,7 @@ def decide(cap, args, env="production"):
+ @pytest.mark.parametrize("cap,args,effect,rule", [
+     ("incident.get", {"incident_id": "INC-4917"}, "ALLOW", "P1-read"),
+     ("deploy.rollback", {"service": "checkout-api", "environment": "production", "to_release": "rel-2030"}, "REQUIRE_APPROVAL", "P3-high-risk-production-write"),
+-    ("deploy.restart", {"service": "checkout-api", "environment": "production"}, "REQUIRE_APPROVAL", "P3-high-risk-production-write"),
++    ("deploy.restart", {"service": "checkout-api", "environment": "production"}, "DENY", "P0-unregistered"),   # v2 has no restart
+     ("deploy.rollback", {"service": "checkout-api", "environment": "staging", "to_release": "rel-2032"}, "DENY", "P2-cross-environment-write"),
+     ("deploy.flush_sessions", {"service": "checkout-api", "environment": "production"}, "DENY", "P0-unregistered"),
+     ("incident.update", {"incident_id": "INC-4917", "status": "mitigated", "note": "x"}, "ALLOW", "P4-low-risk-write"),

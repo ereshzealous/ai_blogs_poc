@@ -62,7 +62,7 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 | BOUNDARIES | `P9-C-tampered-bundle` | HELD | 3/3 | 5 rejections; applied v1 |
 | BOUNDARIES | `P9-C-broker-down` | HELD | 3/3 | all tool calls denied CREDENTIAL_UNAVAILABLE |
 | BOUNDARIES | `P10-C-drift` | QUALIFIED | 7/7 | 2 drift findings; 1 mutation under a superseded version |
-| NEGATIVE CONTROL | `P11-E-embedded` | BROKEN | 4/4 | 7 edits, 7 redeploys; old process still restarted |
+| NEGATIVE CONTROL | `P11-E-embedded` | BROKEN — expected negative control | 4/4 | 7 edits, 7 redeploys; old process still restarted |
 | NEGATIVE CONTROL | `P11-C-control-plane` | HELD | 5/5 | 4 versions; 0 edits; 0 redeploys |
 | GOVERN THE GOVERNOR | `P12-C-governing-the-control-plane` | HELD | 13/13 | 3 accepted, 7 rejected, all 11 on a verifying chain |
 
@@ -1177,7 +1177,7 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Expected.** a governance change is a code edit that takes effect only after a redeploy\
 **Observed.** 7 edits, 7 redeploys; old process still restarted\
-**Outcome.** BROKEN · agent code: the running process kept its embedded rule until redeployed
+**Outcome.** BROKEN — expected negative control · agent code: the running process kept its embedded rule until redeployed
 
 **Step ledger** (12 rows)
 

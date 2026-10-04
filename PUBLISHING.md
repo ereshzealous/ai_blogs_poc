@@ -19,6 +19,10 @@ Three POCs live here, each written in its own workspace, often at the same time.
 
     Added files count too, not only modified ones, because a stray file written into a frozen folder by another run is the failure this catches. So the first publish of new evidence under a frozen glob needs `--allow-frozen` once. Deleting a frozen file is refused for the same reason.
 
+The script has its own regression tests, `scripts/test-publish-poc.sh`: the frozen-path listing at fewer than,
+exactly and more than twenty paths, a refusal without `--allow-frozen`, an unreadable `.publish-frozen`, and a failing
+`--checks` command. Run them after changing the script.
+
 ## The script
 
 `scripts/publish-poc.sh` enforces rules 1, 3, 4, 5, 6 and 11, and refuses to publish if something looks wrong.

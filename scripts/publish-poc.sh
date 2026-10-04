@@ -69,6 +69,11 @@ outside=$(git status --porcelain | grep -v -E "^.. ?\"?$folder/" || true)
 [ -z "$outside" ] || die "the copy wrote outside $folder (rule 7):
 $outside"
 
+# A .publish-frozen that exists but cannot be read as a regular file would silently disable rule 11, so say so
+# instead of skipping the guard.
+if [ -e "$folder/.publish-frozen" ] && { [ ! -f "$folder/.publish-frozen" ] || [ ! -r "$folder/.publish-frozen" ]; }; then
+  die "$folder/.publish-frozen exists but is not a readable file, so the frozen-evidence guard (rule 11) cannot run"
+fi
 frozen_list=$(
   if [ -f "$folder/.publish-frozen" ]; then
     git diff --cached --name-status | python3 -c '
@@ -93,10 +98,17 @@ if [ -n "$frozen_list" ]; then
   count=$(printf '%s\n' "$frozen_list" | wc -l | tr -d ' ')
   if [ "$allow_frozen" -eq 1 ]; then
     printf '   warning: %s frozen path(s) change in this commit (--allow-frozen):\n' "$count"
-    printf '%s\n' "$frozen_list" | sed 's/^/     /' | head -20
+    # sed -n '1,20p', not head -20: head closes the pipe after 20 lines, the writer takes SIGPIPE, and pipefail then
+    # fails the publish.  sed prints the same 20 lines and keeps reading, so a long list cannot abort the script.
+    printf '%s\n' "$frozen_list" | sed 's/^/     /' | sed -n '1,20p'
+    if [ "$count" -gt 20 ]; then printf '     … and %s more\n' "$((count - 20))"; fi
+
   else
+    more=""
+    if [ "$count" -gt 20 ]; then more="
+  … and $((count - 20)) more"; fi
     die "$count path(s) listed in $folder/.publish-frozen would change (rule 11):
-$(printf '%s\n' "$frozen_list" | sed 's/^/  /' | head -20)
+$(printf '%s\n' "$frozen_list" | sed 's/^/  /' | sed -n '1,20p')$more
 M or D means something regenerated or removed a byte-exact artefact: check before you publish.
 A means either evidence you are publishing for the first time, or a stray file another run wrote into a frozen
 folder. If it is new evidence, publish it with --allow-frozen and say so in the message."

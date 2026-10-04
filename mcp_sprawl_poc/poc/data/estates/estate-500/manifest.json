@@ -1,0 +1,945 @@
+{
+  "by_kind": {
+    "core": {
+      "label": "authoritative core",
+      "servers": 7,
+      "tools": 20
+    },
+    "env_copy": {
+      "label": "environment copy (staging)",
+      "servers": 2,
+      "tools": 3
+    },
+    "generated": {
+      "label": "other business units",
+      "servers": 25,
+      "tools": 448
+    },
+    "generated_env_copy": {
+      "label": "other business units — staging copy",
+      "servers": 1,
+      "tools": 8
+    },
+    "generated_legacy": {
+      "label": "other business units — retired copy",
+      "servers": 1,
+      "tools": 10
+    },
+    "legacy": {
+      "label": "legacy / retired",
+      "servers": 3,
+      "tools": 4
+    },
+    "regional": {
+      "label": "regional implementation",
+      "servers": 1,
+      "tools": 2
+    },
+    "shadow": {
+      "label": "shadow / unregistered",
+      "servers": 1,
+      "tools": 2
+    },
+    "vendor": {
+      "label": "vendor duplicate",
+      "servers": 2,
+      "tools": 3
+    }
+  },
+  "estate_size": 500,
+  "published_catalog_sha256": "73e34cc82250037c3386e5dfa4be31c2d5c437e255f7fb3ccbe9a29adb5f344d",
+  "registered_tool_count": 498,
+  "registry_sha256": "8c79f9cbe5dd9a6a0d7cd56d3604e2f1f9ef7860257fd17c6e72fd7e02a47033",
+  "server_count": 43,
+  "servers": [
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "orders",
+      "tools": [
+        "get_order",
+        "search_orders",
+        "cancel_order",
+        "update_shipping_address",
+        "create_replacement_order"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "payments",
+      "tools": [
+        "list_charges",
+        "get_charge"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "us",
+      "registered": true,
+      "server": "refunds",
+      "tools": [
+        "refund_order",
+        "get_refund_status"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "promotions",
+      "tools": [
+        "issue_store_credit",
+        "get_credit_balance"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "shipping",
+      "tools": [
+        "track_shipment",
+        "create_return_label"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "crm",
+      "tools": [
+        "get_customer",
+        "update_customer_email",
+        "update_default_address"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "helpdesk",
+      "tools": [
+        "get_ticket",
+        "add_internal_note",
+        "reply_to_customer",
+        "escalate_ticket"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "regional",
+      "region": "eu",
+      "registered": true,
+      "server": "refunds_eu",
+      "tools": [
+        "refund_order",
+        "get_refund_status"
+      ]
+    },
+    {
+      "environment": "staging",
+      "kind": "env_copy",
+      "region": "us",
+      "registered": true,
+      "server": "refunds_staging",
+      "tools": [
+        "refund_order"
+      ]
+    },
+    {
+      "environment": "staging",
+      "kind": "env_copy",
+      "region": "global",
+      "registered": true,
+      "server": "orders_staging",
+      "tools": [
+        "get_order",
+        "cancel_order"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "payments_legacy",
+      "tools": [
+        "refund_charge_v1",
+        "get_charge_v1"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "carrier_legacy",
+      "tools": [
+        "get_tracking_v1"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "helpdesk_legacy",
+      "tools": [
+        "add_ticket_comment"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "vendor",
+      "region": "global",
+      "registered": true,
+      "server": "paygate",
+      "tools": [
+        "refund_charge",
+        "get_charge_status"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "vendor",
+      "region": "global",
+      "registered": true,
+      "server": "shipfast",
+      "tools": [
+        "track_package"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "shadow",
+      "region": "global",
+      "registered": false,
+      "server": "marketing_ops",
+      "tools": [
+        "bulk_goodwill_refund",
+        "list_campaigns"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "subscriptions",
+      "tools": [
+        "refund_subscription_invoice",
+        "cancel_subscription",
+        "pause_subscription",
+        "resume_subscription",
+        "change_plan",
+        "get_subscription",
+        "list_subscriptions",
+        "list_invoices",
+        "get_invoice",
+        "retry_failed_payment",
+        "update_billing_email",
+        "update_payment_method",
+        "apply_subscription_discount",
+        "issue_subscription_credit",
+        "get_dunning_status",
+        "preview_proration"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "gift_cards",
+      "tools": [
+        "issue_gift_card",
+        "refund_gift_card_purchase",
+        "void_gift_card",
+        "get_gift_card_balance",
+        "reload_gift_card",
+        "transfer_gift_card_balance",
+        "list_gift_cards",
+        "resend_gift_card_email",
+        "extend_gift_card_expiry",
+        "lock_gift_card",
+        "get_gift_card_transactions",
+        "bulk_issue_gift_cards"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "loyalty",
+      "tools": [
+        "get_points_balance",
+        "adjust_points",
+        "reverse_points_for_order",
+        "award_bonus_points",
+        "get_member_tier",
+        "upgrade_member_tier",
+        "list_rewards",
+        "redeem_reward",
+        "expire_points",
+        "get_member_by_email",
+        "merge_members",
+        "get_points_history"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "inventory",
+      "tools": [
+        "get_stock_level",
+        "get_stock_transfer",
+        "get_reorder_rule",
+        "get_cycle_count",
+        "list_stock_levels",
+        "list_stock_transfers",
+        "list_reorder_rules",
+        "list_cycle_counts",
+        "create_stock_level",
+        "create_stock_transfer",
+        "create_reorder_rule",
+        "create_cycle_count",
+        "update_stock_level",
+        "update_stock_transfer"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "catalog",
+      "tools": [
+        "get_product",
+        "get_product_variant",
+        "get_category",
+        "get_product_image",
+        "list_products",
+        "list_product_variants",
+        "list_categorys",
+        "list_product_images",
+        "create_product",
+        "create_product_variant",
+        "create_category",
+        "create_product_image"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "warehouse",
+      "tools": [
+        "get_pick_list",
+        "get_packing_station",
+        "get_inbound_shipment",
+        "get_bin_location",
+        "list_pick_lists",
+        "list_packing_stations",
+        "list_inbound_shipments",
+        "list_bin_locations",
+        "create_pick_list",
+        "create_packing_station",
+        "create_inbound_shipment",
+        "create_bin_location",
+        "update_pick_list",
+        "update_packing_station"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "marketplace",
+      "tools": [
+        "refund_marketplace_order",
+        "cancel_marketplace_order",
+        "track_marketplace_shipment",
+        "refund_seller_fee",
+        "issue_seller_payout",
+        "hold_seller_payout",
+        "get_seller",
+        "list_seller_orders",
+        "get_marketplace_order",
+        "open_buyer_dispute",
+        "resolve_buyer_dispute",
+        "suspend_seller",
+        "update_seller_bank_account",
+        "list_open_disputes",
+        "get_seller_rating",
+        "approve_seller_listing",
+        "remove_seller_listing",
+        "get_seller_balance",
+        "export_seller_statement",
+        "send_seller_message",
+        "list_marketplace_returns",
+        "approve_marketplace_return",
+        "charge_seller_penalty",
+        "get_marketplace_fees"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "b2b_billing",
+      "tools": [
+        "issue_credit_note",
+        "refund_invoice_payment",
+        "create_invoice",
+        "void_invoice",
+        "get_business_account",
+        "update_billing_contact",
+        "list_open_invoices",
+        "record_wire_payment",
+        "set_payment_terms",
+        "send_payment_reminder",
+        "get_invoice_pdf",
+        "apply_account_credit",
+        "get_credit_limit",
+        "raise_credit_limit",
+        "export_ar_aging",
+        "write_off_invoice",
+        "list_credit_notes",
+        "create_quote",
+        "convert_quote_to_invoice",
+        "get_tax_exemption"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "warranty",
+      "tools": [
+        "create_warranty_claim",
+        "get_warranty_claim",
+        "approve_warranty_claim",
+        "reject_warranty_claim",
+        "check_warranty_status",
+        "register_product",
+        "list_claims_for_customer",
+        "ship_warranty_replacement",
+        "extend_warranty",
+        "get_repair_center",
+        "schedule_repair",
+        "close_warranty_claim"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "returns_3pl",
+      "tools": [
+        "schedule_return_pickup",
+        "get_rma_status",
+        "create_rma",
+        "inspect_return",
+        "restock_return",
+        "dispose_return",
+        "list_pending_returns",
+        "get_pickup_slots",
+        "cancel_return_pickup",
+        "print_packing_slip",
+        "get_return_policy",
+        "export_returns_report",
+        "update_return_reason",
+        "get_carrier_for_return"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "fraud",
+      "tools": [
+        "flag_order_for_review",
+        "get_risk_score",
+        "accept_chargeback",
+        "contest_chargeback",
+        "list_chargebacks",
+        "block_card",
+        "allowlist_customer",
+        "get_device_history",
+        "release_order_hold",
+        "cancel_fraudulent_order",
+        "get_velocity_stats",
+        "report_account_takeover",
+        "lock_customer_account",
+        "get_chargeback",
+        "list_review_queue",
+        "update_fraud_rule"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "pricing",
+      "tools": [
+        "get_price_rule",
+        "get_markdown",
+        "get_price_list",
+        "get_competitor_price",
+        "list_price_rules",
+        "list_markdowns",
+        "list_price_lists",
+        "list_competitor_prices",
+        "create_price_rule",
+        "create_markdown",
+        "create_price_list",
+        "create_competitor_price",
+        "update_price_rule",
+        "update_markdown",
+        "update_price_list",
+        "update_competitor_price",
+        "search_price_rules",
+        "search_markdowns",
+        "search_price_lists",
+        "search_competitor_prices"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "procurement",
+      "tools": [
+        "get_purchase_order",
+        "get_supplier",
+        "get_supplier_invoice",
+        "get_rfq",
+        "list_purchase_orders",
+        "list_suppliers",
+        "list_supplier_invoices",
+        "list_rfqs",
+        "create_purchase_order",
+        "create_supplier",
+        "create_supplier_invoice",
+        "create_rfq",
+        "update_purchase_order",
+        "update_supplier",
+        "update_supplier_invoice",
+        "update_rfq",
+        "search_purchase_orders",
+        "search_suppliers",
+        "search_supplier_invoices",
+        "search_rfqs",
+        "archive_purchase_order",
+        "archive_supplier",
+        "archive_supplier_invoice",
+        "archive_rfq"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "finance_gl",
+      "tools": [
+        "get_journal_entry",
+        "get_gl_account",
+        "get_cost_center",
+        "get_accrual",
+        "list_journal_entrys",
+        "list_gl_accounts",
+        "list_cost_centers",
+        "list_accruals",
+        "create_journal_entry",
+        "create_gl_account",
+        "create_cost_center",
+        "create_accrual",
+        "update_journal_entry",
+        "update_gl_account",
+        "update_cost_center",
+        "update_accrual",
+        "search_journal_entrys",
+        "search_gl_accounts",
+        "search_cost_centers",
+        "search_accruals",
+        "archive_journal_entry",
+        "archive_gl_account",
+        "archive_cost_center",
+        "archive_accrual",
+        "export_journal_entrys",
+        "export_gl_accounts"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "tax",
+      "tools": [
+        "get_tax_rate",
+        "get_tax_filing",
+        "get_nexus_registration",
+        "list_tax_rates",
+        "list_tax_filings",
+        "list_nexus_registrations",
+        "create_tax_rate",
+        "create_tax_filing",
+        "create_nexus_registration",
+        "update_tax_rate",
+        "update_tax_filing",
+        "update_nexus_registration",
+        "search_tax_rates",
+        "search_tax_filings",
+        "search_nexus_registrations",
+        "archive_tax_rate"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "hr",
+      "tools": [
+        "get_employee",
+        "get_leave_request",
+        "get_job_requisition",
+        "get_payroll_adjustment",
+        "list_employees",
+        "list_leave_requests",
+        "list_job_requisitions",
+        "list_payroll_adjustments",
+        "create_employee",
+        "create_leave_request",
+        "create_job_requisition",
+        "create_payroll_adjustment",
+        "update_employee",
+        "update_leave_request",
+        "update_job_requisition",
+        "update_payroll_adjustment",
+        "search_employees",
+        "search_leave_requests",
+        "search_job_requisitions",
+        "search_payroll_adjustments",
+        "archive_employee",
+        "archive_leave_request",
+        "archive_job_requisition",
+        "archive_payroll_adjustment",
+        "export_employees",
+        "export_leave_requests",
+        "export_job_requisitions",
+        "export_payroll_adjustments"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "it_service",
+      "tools": [
+        "get_it_ticket",
+        "get_laptop_request",
+        "get_access_request",
+        "get_software_license",
+        "list_it_tickets",
+        "list_laptop_requests",
+        "list_access_requests",
+        "list_software_licenses",
+        "create_it_ticket",
+        "create_laptop_request",
+        "create_access_request",
+        "create_software_license",
+        "update_it_ticket",
+        "update_laptop_request",
+        "update_access_request",
+        "update_software_license",
+        "search_it_tickets",
+        "search_laptop_requests",
+        "search_access_requests",
+        "search_software_licenses",
+        "archive_it_ticket",
+        "archive_laptop_request",
+        "archive_access_request",
+        "archive_software_license",
+        "export_it_tickets",
+        "export_laptop_requests",
+        "export_access_requests",
+        "export_software_licenses"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "analytics",
+      "tools": [
+        "get_dashboard",
+        "get_report",
+        "get_metric_definition",
+        "list_dashboards",
+        "list_reports",
+        "list_metric_definitions",
+        "create_dashboard",
+        "create_report",
+        "create_metric_definition",
+        "update_dashboard",
+        "update_report",
+        "update_metric_definition",
+        "search_dashboards",
+        "search_reports",
+        "search_metric_definitions",
+        "archive_dashboard",
+        "archive_report",
+        "archive_metric_definition",
+        "export_dashboards",
+        "export_reports",
+        "export_metric_definitions",
+        "approve_dashboard"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "marketing_email",
+      "tools": [
+        "get_email_campaign",
+        "get_audience_segment",
+        "get_email_template",
+        "list_email_campaigns",
+        "list_audience_segments",
+        "list_email_templates",
+        "create_email_campaign",
+        "create_audience_segment",
+        "create_email_template",
+        "update_email_campaign",
+        "update_audience_segment",
+        "update_email_template",
+        "search_email_campaigns",
+        "search_audience_segments",
+        "search_email_templates",
+        "archive_email_campaign",
+        "archive_audience_segment",
+        "archive_email_template",
+        "export_email_campaigns",
+        "export_audience_segments",
+        "export_email_templates",
+        "approve_email_campaign"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "reviews",
+      "tools": [
+        "get_review",
+        "get_review_response",
+        "list_reviews",
+        "list_review_responses",
+        "create_review",
+        "create_review_response",
+        "update_review",
+        "update_review_response",
+        "search_reviews",
+        "search_review_responses",
+        "archive_review",
+        "archive_review_response"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "compliance",
+      "tools": [
+        "get_policy_document",
+        "get_audit_finding",
+        "get_data_request",
+        "get_contract",
+        "list_policy_documents",
+        "list_audit_findings",
+        "list_data_requests",
+        "list_contracts",
+        "create_policy_document",
+        "create_audit_finding",
+        "create_data_request",
+        "create_contract",
+        "update_policy_document",
+        "update_audit_finding",
+        "update_data_request",
+        "update_contract",
+        "search_policy_documents",
+        "search_audit_findings",
+        "search_data_requests",
+        "search_contracts",
+        "archive_policy_document",
+        "archive_audit_finding",
+        "archive_data_request",
+        "archive_contract",
+        "export_policy_documents",
+        "export_audit_findings"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "store_ops",
+      "tools": [
+        "get_store_shift",
+        "get_store_incident",
+        "get_planogram",
+        "list_store_shifts",
+        "list_store_incidents",
+        "list_planograms",
+        "create_store_shift",
+        "create_store_incident",
+        "create_planogram",
+        "update_store_shift",
+        "update_store_incident",
+        "update_planogram",
+        "search_store_shifts",
+        "search_store_incidents",
+        "search_planograms",
+        "archive_store_shift",
+        "archive_store_incident",
+        "archive_planogram"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "facilities",
+      "tools": [
+        "get_work_order",
+        "get_meeting_room",
+        "get_visitor_badge",
+        "list_work_orders",
+        "list_meeting_rooms",
+        "list_visitor_badges",
+        "create_work_order",
+        "create_meeting_room",
+        "create_visitor_badge",
+        "update_work_order",
+        "update_meeting_room",
+        "update_visitor_badge",
+        "search_work_orders",
+        "search_meeting_rooms"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "data_platform",
+      "tools": [
+        "get_dataset",
+        "get_pipeline_run",
+        "get_data_quality_check",
+        "list_datasets",
+        "list_pipeline_runs",
+        "list_data_quality_checks",
+        "create_dataset",
+        "create_pipeline_run",
+        "create_data_quality_check",
+        "update_dataset",
+        "update_pipeline_run",
+        "update_data_quality_check",
+        "search_datasets",
+        "search_pipeline_runs"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "security_ops",
+      "tools": [
+        "get_security_alert",
+        "get_vulnerability",
+        "get_phishing_report",
+        "list_security_alerts",
+        "list_vulnerabilitys",
+        "list_phishing_reports",
+        "create_security_alert",
+        "create_vulnerability",
+        "create_phishing_report",
+        "update_security_alert",
+        "update_vulnerability",
+        "update_phishing_report"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated_legacy",
+      "region": "global",
+      "registered": true,
+      "server": "subscriptions_legacy",
+      "tools": [
+        "refund_subscription_invoice",
+        "cancel_subscription",
+        "pause_subscription",
+        "resume_subscription",
+        "change_plan",
+        "get_subscription",
+        "list_subscriptions",
+        "list_invoices",
+        "get_invoice",
+        "retry_failed_payment"
+      ]
+    },
+    {
+      "environment": "staging",
+      "kind": "generated_env_copy",
+      "region": "global",
+      "registered": true,
+      "server": "gift_cards_staging",
+      "tools": [
+        "issue_gift_card",
+        "refund_gift_card_purchase",
+        "void_gift_card",
+        "get_gift_card_balance",
+        "reload_gift_card",
+        "transfer_gift_card_balance",
+        "list_gift_cards",
+        "resend_gift_card_email"
+      ]
+    }
+  ],
+  "tool_count": 500,
+  "unregistered_tool_count": 2
+}

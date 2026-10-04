@@ -1,0 +1,1971 @@
+version: 2026-09-28.1
+notes:
+  owner: AI platform team (simulated)
+  mutation: changes via reviewed commit only; hash pinned in the frozen run manifest
+  source_of_truth_for: capability, authority, lifecycle, environment, region, side-effect, risk, scopes, approval
+  not_source_of_truth_for: tool input schemas (validated against the server-declared inputSchema)
+capabilities:
+  catalog.create_category:
+    description: Create a new category in the Product catalog system. Requires a name; optional details are stored as structured fields. Returns
+      the new category id.
+    owner: catalog-team
+    authoritative:
+      global: catalog.create_category
+    entity: null
+  catalog.create_product:
+    description: Create a new product in the Product catalog system. Requires a name; optional details are stored as structured fields. Returns
+      the new product id.
+    owner: catalog-team
+    authoritative:
+      global: catalog.create_product
+    entity: null
+  catalog.create_product_image:
+    description: Create a new product image in the Product catalog system. Requires a name; optional details are stored as structured fields.
+      Returns the new product image id.
+    owner: catalog-team
+    authoritative:
+      global: catalog.create_product_image
+    entity: null
+  catalog.create_product_variant:
+    description: Create a new product variant in the Product catalog system. Requires a name; optional details are stored as structured fields.
+      Returns the new product variant id.
+    owner: catalog-team
+    authoritative:
+      global: catalog.create_product_variant
+    entity: null
+  catalog.get_category:
+    description: Get a category by id from the Product catalog system. Returns the full category record, including status, owner, created and
+      updated timestamps and linked records.
+    owner: catalog-team
+    authoritative:
+      global: catalog.get_category
+    entity: null
+  catalog.get_product:
+    description: Get a product by id from the Product catalog system. Returns the full product record, including status, owner, created and updated
+      timestamps and linked records.
+    owner: catalog-team
+    authoritative:
+      global: catalog.get_product
+    entity: null
+  catalog.get_product_image:
+    description: Get a product image by id from the Product catalog system. Returns the full product image record, including status, owner, created
+      and updated timestamps and linked records.
+    owner: catalog-team
+    authoritative:
+      global: catalog.get_product_image
+    entity: null
+  catalog.get_product_variant:
+    description: Get a product variant by id from the Product catalog system. Returns the full product variant record, including status, owner,
+      created and updated timestamps and linked records.
+    owner: catalog-team
+    authoritative:
+      global: catalog.get_product_variant
+    entity: null
+  catalog.list_categorys:
+    description: List categorys in the Product catalog system, newest first. Returns summary rows (id, name, status, updated_at); use limit to
+      page.
+    owner: catalog-team
+    authoritative:
+      global: catalog.list_categorys
+    entity: null
+  catalog.list_product_images:
+    description: List product images in the Product catalog system, newest first. Returns summary rows (id, name, status, updated_at); use limit
+      to page.
+    owner: catalog-team
+    authoritative:
+      global: catalog.list_product_images
+    entity: null
+  catalog.list_product_variants:
+    description: List product variants in the Product catalog system, newest first. Returns summary rows (id, name, status, updated_at); use limit
+      to page.
+    owner: catalog-team
+    authoritative:
+      global: catalog.list_product_variants
+    entity: null
+  catalog.list_products:
+    description: List products in the Product catalog system, newest first. Returns summary rows (id, name, status, updated_at); use limit to
+      page.
+    owner: catalog-team
+    authoritative:
+      global: catalog.list_products
+    entity: null
+  customer.credit_balance:
+    description: Get a customer's store credit balance.
+    owner: customer-care
+    authoritative:
+      global: promotions.get_credit_balance
+    entity: customer
+  customer.lookup:
+    description: Look up a customer profile.
+    owner: customer-data
+    authoritative:
+      global: crm.get_customer
+    entity: customer
+  customer.store_credit:
+    description: Give a customer store credit (spent on future orders, not returned to the card).
+    owner: customer-care
+    authoritative:
+      global: promotions.issue_store_credit
+    entity: customer
+    user_owned:
+    - amount
+  customer.update_default_address:
+    description: Change the default address saved on a customer profile (not existing orders).
+    owner: customer-data
+    authoritative:
+      global: crm.update_default_address
+    entity: customer
+    user_owned:
+    - address
+  customer.update_email:
+    description: Change the email address on a customer profile.
+    owner: customer-data
+    authoritative:
+      global: crm.update_customer_email
+    entity: customer
+    user_owned:
+    - email
+  gift_cards.bulk_issue_gift_cards:
+    description: Issue gift cards in bulk for a corporate order.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.bulk_issue_gift_cards
+    entity: null
+  gift_cards.extend_gift_card_expiry:
+    description: Extend a gift card's expiry date.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.extend_gift_card_expiry
+    entity: null
+  gift_cards.get_gift_card_balance:
+    description: Get the remaining balance on a gift card.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.get_gift_card_balance
+    entity: null
+  gift_cards.get_gift_card_transactions:
+    description: List transactions on a gift card.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.get_gift_card_transactions
+    entity: null
+  gift_cards.issue_gift_card:
+    description: Issue a new gift card to a recipient email.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.issue_gift_card
+    entity: null
+  gift_cards.list_gift_cards:
+    description: List gift cards bought by a customer.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.list_gift_cards
+    entity: null
+  gift_cards.lock_gift_card:
+    description: Temporarily lock a gift card suspected of fraud.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.lock_gift_card
+    entity: null
+  gift_cards.refund_gift_card_purchase:
+    description: Refund the purchase of a gift card to the buyer's card and void the card.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.refund_gift_card_purchase
+    entity: null
+  gift_cards.reload_gift_card:
+    description: Add value to an existing gift card.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.reload_gift_card
+    entity: null
+  gift_cards.resend_gift_card_email:
+    description: Resend the gift card email to the recipient.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.resend_gift_card_email
+    entity: null
+  gift_cards.transfer_gift_card_balance:
+    description: Move balance from one gift card to another.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.transfer_gift_card_balance
+    entity: null
+  gift_cards.void_gift_card:
+    description: Void a gift card so it can no longer be used.
+    owner: gift_cards-team
+    authoritative:
+      global: gift_cards.void_gift_card
+    entity: null
+  inventory.create_cycle_count:
+    description: Create a new cycle count in the Inventory system. Requires a name; optional details are stored as structured fields. Returns
+      the new cycle count id.
+    owner: inventory-team
+    authoritative:
+      global: inventory.create_cycle_count
+    entity: null
+  inventory.create_reorder_rule:
+    description: Create a new reorder rule in the Inventory system. Requires a name; optional details are stored as structured fields. Returns
+      the new reorder rule id.
+    owner: inventory-team
+    authoritative:
+      global: inventory.create_reorder_rule
+    entity: null
+  inventory.create_stock_level:
+    description: Create a new stock level in the Inventory system. Requires a name; optional details are stored as structured fields. Returns
+      the new stock level id.
+    owner: inventory-team
+    authoritative:
+      global: inventory.create_stock_level
+    entity: null
+  inventory.create_stock_transfer:
+    description: Create a new stock transfer in the Inventory system. Requires a name; optional details are stored as structured fields. Returns
+      the new stock transfer id.
+    owner: inventory-team
+    authoritative:
+      global: inventory.create_stock_transfer
+    entity: null
+  inventory.get_cycle_count:
+    description: Get a cycle count by id from the Inventory system. Returns the full cycle count record, including status, owner, created and
+      updated timestamps and linked records.
+    owner: inventory-team
+    authoritative:
+      global: inventory.get_cycle_count
+    entity: null
+  inventory.get_reorder_rule:
+    description: Get a reorder rule by id from the Inventory system. Returns the full reorder rule record, including status, owner, created and
+      updated timestamps and linked records.
+    owner: inventory-team
+    authoritative:
+      global: inventory.get_reorder_rule
+    entity: null
+  inventory.get_stock_level:
+    description: Get a stock level by id from the Inventory system. Returns the full stock level record, including status, owner, created and
+      updated timestamps and linked records.
+    owner: inventory-team
+    authoritative:
+      global: inventory.get_stock_level
+    entity: null
+  inventory.get_stock_transfer:
+    description: Get a stock transfer by id from the Inventory system. Returns the full stock transfer record, including status, owner, created
+      and updated timestamps and linked records.
+    owner: inventory-team
+    authoritative:
+      global: inventory.get_stock_transfer
+    entity: null
+  inventory.list_cycle_counts:
+    description: List cycle counts in the Inventory system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.
+    owner: inventory-team
+    authoritative:
+      global: inventory.list_cycle_counts
+    entity: null
+  inventory.list_reorder_rules:
+    description: List reorder rules in the Inventory system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.
+    owner: inventory-team
+    authoritative:
+      global: inventory.list_reorder_rules
+    entity: null
+  inventory.list_stock_levels:
+    description: List stock levels in the Inventory system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.
+    owner: inventory-team
+    authoritative:
+      global: inventory.list_stock_levels
+    entity: null
+  inventory.list_stock_transfers:
+    description: List stock transfers in the Inventory system, newest first. Returns summary rows (id, name, status, updated_at); use limit to
+      page.
+    owner: inventory-team
+    authoritative:
+      global: inventory.list_stock_transfers
+    entity: null
+  inventory.update_stock_level:
+    description: Update fields on an existing stock level in the Inventory system. Only the fields provided are changed; returns the updated record.
+    owner: inventory-team
+    authoritative:
+      global: inventory.update_stock_level
+    entity: null
+  inventory.update_stock_transfer:
+    description: Update fields on an existing stock transfer in the Inventory system. Only the fields provided are changed; returns the updated
+      record.
+    owner: inventory-team
+    authoritative:
+      global: inventory.update_stock_transfer
+    entity: null
+  loyalty.adjust_points:
+    description: Add or remove loyalty points with a reason.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.adjust_points
+    entity: null
+  loyalty.award_bonus_points:
+    description: Award bonus points as a goodwill gesture.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.award_bonus_points
+    entity: null
+  loyalty.expire_points:
+    description: Expire a member's points past their expiry date.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.expire_points
+    entity: null
+  loyalty.get_member_by_email:
+    description: Find a loyalty member by email.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.get_member_by_email
+    entity: null
+  loyalty.get_member_tier:
+    description: Get a member's loyalty tier.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.get_member_tier
+    entity: null
+  loyalty.get_points_balance:
+    description: Get a loyalty member's points balance.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.get_points_balance
+    entity: null
+  loyalty.get_points_history:
+    description: Get a member's points history.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.get_points_history
+    entity: null
+  loyalty.list_rewards:
+    description: List rewards a member can redeem.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.list_rewards
+    entity: null
+  loyalty.merge_members:
+    description: Merge two duplicate loyalty memberships.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.merge_members
+    entity: null
+  loyalty.redeem_reward:
+    description: Redeem a reward for a member.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.redeem_reward
+    entity: null
+  loyalty.reverse_points_for_order:
+    description: Reverse the loyalty points earned on an order.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.reverse_points_for_order
+    entity: null
+  loyalty.upgrade_member_tier:
+    description: Upgrade a member to a higher loyalty tier.
+    owner: loyalty-team
+    authoritative:
+      global: loyalty.upgrade_member_tier
+    entity: null
+  order.cancel:
+    description: Cancel an order that has not shipped.
+    owner: order-management
+    authoritative:
+      global: orders.cancel_order
+    entity: order
+  order.lookup:
+    description: Look up an order's status, items, totals, customer and shipping address.
+    owner: order-management
+    authoritative:
+      global: orders.get_order
+    entity: order
+  order.refund:
+    description: Return money for an order to the original payment method, recorded against the order.
+    owner: payments-platform
+    authoritative:
+      us: refunds.refund_order
+      eu: refunds_eu.refund_order
+    entity: order
+    user_owned:
+    - amount
+  order.replacement:
+    description: Send a free replacement for an item on a delivered order.
+    owner: order-management
+    authoritative:
+      global: orders.create_replacement_order
+    entity: order
+    user_owned:
+    - sku
+  order.search:
+    description: Find a customer's orders.
+    owner: order-management
+    authoritative:
+      global: orders.search_orders
+    entity: customer
+  order.update_shipping_address:
+    description: Change the delivery address of an unshipped order.
+    owner: order-management
+    authoritative:
+      global: orders.update_shipping_address
+    entity: order
+    user_owned:
+    - address
+  payment.get_charge:
+    description: Get one charge by payment id.
+    owner: payments-platform
+    authoritative:
+      global: payments.get_charge
+    entity: payment
+  payment.list_charges:
+    description: List the charges captured on an order.
+    owner: payments-platform
+    authoritative:
+      global: payments.list_charges
+    entity: order
+  refund.status:
+    description: Check refunds already issued on an order.
+    owner: payments-platform
+    authoritative:
+      us: refunds.get_refund_status
+      eu: refunds_eu.get_refund_status
+    entity: order
+  return.create_label:
+    description: Create a prepaid return label for a delivered order.
+    owner: logistics
+    authoritative:
+      global: shipping.create_return_label
+    entity: order
+  shipment.track:
+    description: Get shipment status, carrier, tracking number and ETA for an order.
+    owner: logistics
+    authoritative:
+      global: shipping.track_shipment
+    entity: order
+  subscriptions.apply_subscription_discount:
+    description: Apply a discount code to a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.apply_subscription_discount
+    entity: null
+  subscriptions.cancel_subscription:
+    description: Cancel a customer's subscription at the end of the billing period.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.cancel_subscription
+    entity: null
+  subscriptions.change_plan:
+    description: Move a subscription to a different plan.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.change_plan
+    entity: null
+  subscriptions.get_dunning_status:
+    description: Get the dunning (failed payment recovery) status of a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_dunning_status
+    entity: null
+  subscriptions.get_invoice:
+    description: Get a subscription invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_invoice
+    entity: null
+  subscriptions.get_subscription:
+    description: Get a subscription by id.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_subscription
+    entity: null
+  subscriptions.issue_subscription_credit:
+    description: Credit a subscriber's next invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.issue_subscription_credit
+    entity: null
+  subscriptions.list_invoices:
+    description: List invoices for a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.list_invoices
+    entity: null
+  subscriptions.list_subscriptions:
+    description: List a customer's subscriptions.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.list_subscriptions
+    entity: null
+  subscriptions.pause_subscription:
+    description: Pause a subscription for up to 3 billing cycles.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.pause_subscription
+    entity: null
+  subscriptions.preview_proration:
+    description: Preview proration for a plan change.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.preview_proration
+    entity: null
+  subscriptions.refund_subscription_invoice:
+    description: Refund a paid subscription invoice to the subscriber's card.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.refund_subscription_invoice
+    entity: null
+  subscriptions.resume_subscription:
+    description: Resume a paused subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.resume_subscription
+    entity: null
+  subscriptions.retry_failed_payment:
+    description: Retry the card charge for a failed subscription invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.retry_failed_payment
+    entity: null
+  subscriptions.update_billing_email:
+    description: Change the billing email used for subscription invoices.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.update_billing_email
+    entity: null
+  subscriptions.update_payment_method:
+    description: Replace the card on file for a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.update_payment_method
+    entity: null
+  ticket.add_note:
+    description: Add an internal note to a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.add_internal_note
+    entity: ticket
+  ticket.escalate:
+    description: Escalate a support ticket to another team.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.escalate_ticket
+    entity: ticket
+  ticket.lookup:
+    description: Read a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.get_ticket
+    entity: ticket
+  ticket.reply:
+    description: Reply to the customer on a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.reply_to_customer
+    entity: ticket
+implementations:
+  carrier_legacy.get_tracking_v1:
+    capability: shipment.track
+    owner: logistics
+    lifecycle: retired
+    replaced_by: shipping.track_shipment
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.create_category:
+    capability: catalog.create_category
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - catalog:write
+    approval:
+      when: never
+    binding_profile: null
+  catalog.create_product:
+    capability: catalog.create_product
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - catalog:write
+    approval:
+      when: never
+    binding_profile: null
+  catalog.create_product_image:
+    capability: catalog.create_product_image
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - catalog:write
+    approval:
+      when: never
+    binding_profile: null
+  catalog.create_product_variant:
+    capability: catalog.create_product_variant
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - catalog:write
+    approval:
+      when: never
+    binding_profile: null
+  catalog.get_category:
+    capability: catalog.get_category
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.get_product:
+    capability: catalog.get_product
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.get_product_image:
+    capability: catalog.get_product_image
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.get_product_variant:
+    capability: catalog.get_product_variant
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.list_categorys:
+    capability: catalog.list_categorys
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.list_product_images:
+    capability: catalog.list_product_images
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.list_product_variants:
+    capability: catalog.list_product_variants
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  catalog.list_products:
+    capability: catalog.list_products
+    owner: catalog-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - catalog:read
+    approval:
+      when: never
+    binding_profile: null
+  crm.get_customer:
+    capability: customer.lookup
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - customers:read
+    approval:
+      when: never
+    binding_profile: null
+  crm.update_customer_email:
+    capability: customer.update_email
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - customers:write
+    approval:
+      when: never
+    binding_profile: customer_entity
+  crm.update_default_address:
+    capability: customer.update_default_address
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - customers:write
+    approval:
+      when: never
+    binding_profile: customer_entity
+  gift_cards.bulk_issue_gift_cards:
+    capability: gift_cards.bulk_issue_gift_cards
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.extend_gift_card_expiry:
+    capability: gift_cards.extend_gift_card_expiry
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.get_gift_card_balance:
+    capability: gift_cards.get_gift_card_balance
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - gift_cards:read
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.get_gift_card_transactions:
+    capability: gift_cards.get_gift_card_transactions
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - gift_cards:read
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.issue_gift_card:
+    capability: gift_cards.issue_gift_card
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.list_gift_cards:
+    capability: gift_cards.list_gift_cards
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - gift_cards:read
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.lock_gift_card:
+    capability: gift_cards.lock_gift_card
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.refund_gift_card_purchase:
+    capability: gift_cards.refund_gift_card_purchase
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.reload_gift_card:
+    capability: gift_cards.reload_gift_card
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.resend_gift_card_email:
+    capability: gift_cards.resend_gift_card_email
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.transfer_gift_card_balance:
+    capability: gift_cards.transfer_gift_card_balance
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  gift_cards.void_gift_card:
+    capability: gift_cards.void_gift_card
+    owner: gift_cards-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - gift_cards:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.add_internal_note:
+    capability: ticket.add_note
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.escalate_ticket:
+    capability: ticket.escalate
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.get_ticket:
+    capability: ticket.lookup
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - tickets:read
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.reply_to_customer:
+    capability: ticket.reply
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk_legacy.add_ticket_comment:
+    capability: ticket.add_note
+    owner: customer-care
+    lifecycle: retired
+    replaced_by: helpdesk.add_internal_note
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.create_cycle_count:
+    capability: inventory.create_cycle_count
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.create_reorder_rule:
+    capability: inventory.create_reorder_rule
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.create_stock_level:
+    capability: inventory.create_stock_level
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.create_stock_transfer:
+    capability: inventory.create_stock_transfer
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.get_cycle_count:
+    capability: inventory.get_cycle_count
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.get_reorder_rule:
+    capability: inventory.get_reorder_rule
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.get_stock_level:
+    capability: inventory.get_stock_level
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.get_stock_transfer:
+    capability: inventory.get_stock_transfer
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.list_cycle_counts:
+    capability: inventory.list_cycle_counts
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.list_reorder_rules:
+    capability: inventory.list_reorder_rules
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.list_stock_levels:
+    capability: inventory.list_stock_levels
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.list_stock_transfers:
+    capability: inventory.list_stock_transfers
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - inventory:read
+    approval:
+      when: never
+    binding_profile: null
+  inventory.update_stock_level:
+    capability: inventory.update_stock_level
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  inventory.update_stock_transfer:
+    capability: inventory.update_stock_transfer
+    owner: inventory-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - inventory:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.adjust_points:
+    capability: loyalty.adjust_points
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.award_bonus_points:
+    capability: loyalty.award_bonus_points
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.expire_points:
+    capability: loyalty.expire_points
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.get_member_by_email:
+    capability: loyalty.get_member_by_email
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - loyalty:read
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.get_member_tier:
+    capability: loyalty.get_member_tier
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - loyalty:read
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.get_points_balance:
+    capability: loyalty.get_points_balance
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - loyalty:read
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.get_points_history:
+    capability: loyalty.get_points_history
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - loyalty:read
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.list_rewards:
+    capability: loyalty.list_rewards
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - loyalty:read
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.merge_members:
+    capability: loyalty.merge_members
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.redeem_reward:
+    capability: loyalty.redeem_reward
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.reverse_points_for_order:
+    capability: loyalty.reverse_points_for_order
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  loyalty.upgrade_member_tier:
+    capability: loyalty.upgrade_member_tier
+    owner: loyalty-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - loyalty:write
+    approval:
+      when: never
+    binding_profile: null
+  orders.cancel_order:
+    capability: order.cancel
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders.create_replacement_order:
+    capability: order.replacement
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_replacement
+  orders.get_order:
+    capability: order.lookup
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  orders.search_orders:
+    capability: order.search
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  orders.update_shipping_address:
+    capability: order.update_shipping_address
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders_staging.cancel_order:
+    capability: order.cancel
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders_staging.get_order:
+    capability: order.lookup
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  paygate.get_charge_status:
+    capability: payment.get_charge
+    owner: vendor:paygate
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  paygate.refund_charge:
+    capability: order.refund
+    owner: vendor:paygate
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval:
+      when: never
+    binding_profile: null
+  payments.get_charge:
+    capability: payment.get_charge
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments.list_charges:
+    capability: payment.list_charges
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments_legacy.get_charge_v1:
+    capability: payment.get_charge
+    owner: payments-platform
+    lifecycle: retired
+    replaced_by: payments.get_charge
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments_legacy.refund_charge_v1:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: retired
+    replaced_by: refunds.refund_order
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval:
+      when: never
+    binding_profile: null
+  promotions.get_credit_balance:
+    capability: customer.credit_balance
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - customers:read
+    approval:
+      when: never
+    binding_profile: null
+  promotions.issue_store_credit:
+    capability: customer.store_credit
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: medium
+    required_scopes:
+    - credits:write
+    approval:
+      when: amount_gt
+      field: amount
+      threshold: 100
+    binding_profile: customer_credit
+  refunds.get_refund_status:
+    capability: refund.status
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: us
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  refunds.refund_order:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: us
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: &id001
+      when: amount_gt
+      field: amount
+      threshold: 250
+    binding_profile: order_refund
+  refunds_eu.get_refund_status:
+    capability: refund.status
+    owner: payments-platform-eu
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: eu
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  refunds_eu.refund_order:
+    capability: order.refund
+    owner: payments-platform-eu
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: eu
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: *id001
+    binding_profile: order_refund
+  refunds_staging.refund_order:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: us
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: *id001
+    binding_profile: order_refund
+  shipfast.track_package:
+    capability: shipment.track
+    owner: vendor:shipfast
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  shipping.create_return_label:
+    capability: return.create_label
+    owner: logistics
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - returns:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  shipping.track_shipment:
+    capability: shipment.track
+    owner: logistics
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.apply_subscription_discount:
+    capability: subscriptions.apply_subscription_discount
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.cancel_subscription:
+    capability: subscriptions.cancel_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.change_plan:
+    capability: subscriptions.change_plan
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_dunning_status:
+    capability: subscriptions.get_dunning_status
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_invoice:
+    capability: subscriptions.get_invoice
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_subscription:
+    capability: subscriptions.get_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.issue_subscription_credit:
+    capability: subscriptions.issue_subscription_credit
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.list_invoices:
+    capability: subscriptions.list_invoices
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.list_subscriptions:
+    capability: subscriptions.list_subscriptions
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.pause_subscription:
+    capability: subscriptions.pause_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.preview_proration:
+    capability: subscriptions.preview_proration
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.refund_subscription_invoice:
+    capability: subscriptions.refund_subscription_invoice
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.resume_subscription:
+    capability: subscriptions.resume_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.retry_failed_payment:
+    capability: subscriptions.retry_failed_payment
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.update_billing_email:
+    capability: subscriptions.update_billing_email
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.update_payment_method:
+    capability: subscriptions.update_payment_method
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+roles:
+  support_t1:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  support_t2:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  - customers:write
+agents:
+  support-assistant:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  - customers:write

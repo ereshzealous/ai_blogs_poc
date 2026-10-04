@@ -1,0 +1,656 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "finance_gl",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a journal entry by id from the Finance general ledger system. Returns the full journal entry record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "journal_entry_id": {
+            "description": "Identifier of the journal entry",
+            "type": "string"
+          }
+        },
+        "required": [
+          "journal_entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_journal_entry"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a gl account by id from the Finance general ledger system. Returns the full gl account record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gl_account_id": {
+            "description": "Identifier of the gl account",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gl_account_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_gl_account"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a cost center by id from the Finance general ledger system. Returns the full cost center record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cost_center_id": {
+            "description": "Identifier of the cost center",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cost_center_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_cost_center"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a accrual by id from the Finance general ledger system. Returns the full accrual record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "accrual_id": {
+            "description": "Identifier of the accrual",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accrual_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_accrual"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List journal entrys in the Finance general ledger system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_journal_entrys"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List gl accounts in the Finance general ledger system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_gl_accounts"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List cost centers in the Finance general ledger system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_cost_centers"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List accruals in the Finance general ledger system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_accruals"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new journal entry in the Finance general ledger system. Requires a name; optional details are stored as structured fields. Returns the new journal entry id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_journal_entry"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new gl account in the Finance general ledger system. Requires a name; optional details are stored as structured fields. Returns the new gl account id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_gl_account"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new cost center in the Finance general ledger system. Requires a name; optional details are stored as structured fields. Returns the new cost center id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_cost_center"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new accrual in the Finance general ledger system. Requires a name; optional details are stored as structured fields. Returns the new accrual id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_accrual"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing journal entry in the Finance general ledger system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "journal_entry_id": {
+            "description": "Identifier of the journal entry",
+            "type": "string"
+          }
+        },
+        "required": [
+          "journal_entry_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_journal_entry"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing gl account in the Finance general ledger system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "gl_account_id": {
+            "description": "Identifier of the gl account",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gl_account_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_gl_account"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing cost center in the Finance general ledger system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cost_center_id": {
+            "description": "Identifier of the cost center",
+            "type": "string"
+          },
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          }
+        },
+        "required": [
+          "cost_center_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_cost_center"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing accrual in the Finance general ledger system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "accrual_id": {
+            "description": "Identifier of the accrual",
+            "type": "string"
+          },
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          }
+        },
+        "required": [
+          "accrual_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_accrual"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search journal entrys in the Finance general ledger system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_journal_entrys"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search gl accounts in the Finance general ledger system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_gl_accounts"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search cost centers in the Finance general ledger system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_cost_centers"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search accruals in the Finance general ledger system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_accruals"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a journal entry in the Finance general ledger system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "journal_entry_id": {
+            "description": "Identifier of the journal entry",
+            "type": "string"
+          }
+        },
+        "required": [
+          "journal_entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_journal_entry"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a gl account in the Finance general ledger system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gl_account_id": {
+            "description": "Identifier of the gl account",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gl_account_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_gl_account"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a cost center in the Finance general ledger system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cost_center_id": {
+            "description": "Identifier of the cost center",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cost_center_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_cost_center"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a accrual in the Finance general ledger system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "accrual_id": {
+            "description": "Identifier of the accrual",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accrual_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_accrual"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export journal entrys from the Finance general ledger system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_journal_entrys"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export gl accounts from the Finance general ledger system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_gl_accounts"
+    }
+  ],
+  "version": "1.0.0"
+}

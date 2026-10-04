@@ -1,0 +1,64 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "payments_legacy",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund a card charge (v1). Returns money for the given payment id and amount.",
+      "handler": "payments_legacy.refund_charge_v1",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payment_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "refund_charge_v1"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a card charge by payment id (v1).",
+      "handler": "payments_legacy.get_charge_v1",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payment_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_charge_v1"
+    }
+  ],
+  "version": "1.0.0"
+}

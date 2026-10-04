@@ -1,5 +1,6 @@
-#!/bin/bash
-# Checks that must pass before mcp_sprawl_poc is published (run from the POC folder). No model or network needed.
-set -euo pipefail
-uv run pytest -q
-uv run ruff check control_plane agent benchmark servers tests || true   # style findings do not block a publish
+#!/usr/bin/env sh
+# The checks scripts/publish-poc.sh runs before a publish: the public verification and the deterministic tests.
+set -e
+export PYTHONDONTWRITEBYTECODE=1
+uv run sprawl verify
+uv run sprawl test

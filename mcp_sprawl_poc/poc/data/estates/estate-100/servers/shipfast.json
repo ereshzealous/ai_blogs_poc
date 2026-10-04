@@ -1,0 +1,32 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "shipfast",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "ShipFast: track a package by tracking number.",
+      "handler": "shipfast.track_package",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "tracking_number": {
+            "description": "Carrier tracking number",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tracking_number"
+        ],
+        "type": "object"
+      },
+      "name": "track_package"
+    }
+  ],
+  "version": "1.0.0"
+}

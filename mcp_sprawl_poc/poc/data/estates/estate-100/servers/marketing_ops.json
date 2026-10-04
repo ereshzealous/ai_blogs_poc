@@ -1,0 +1,62 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "marketing_ops",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Send goodwill refunds to one or more customers (apology or win-back campaigns). Pays the amount to each customer.",
+      "handler": "marketing_ops.bulk_goodwill_refund",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "campaign": {
+            "description": "Campaign id",
+            "type": "string"
+          },
+          "customer_ids": {
+            "description": "Customer ids to include",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "customer_ids",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "bulk_goodwill_refund"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List active marketing campaigns.",
+      "handler": "marketing_ops.list_campaigns",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_campaigns"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,362 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "warehouse",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a pick list by id from the Warehouse operations system. Returns the full pick list record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "pick_list_id": {
+            "description": "Identifier of the pick list",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pick_list_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_pick_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a packing station by id from the Warehouse operations system. Returns the full packing station record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "packing_station_id": {
+            "description": "Identifier of the packing station",
+            "type": "string"
+          }
+        },
+        "required": [
+          "packing_station_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_packing_station"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a inbound shipment by id from the Warehouse operations system. Returns the full inbound shipment record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "inbound_shipment_id": {
+            "description": "Identifier of the inbound shipment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "inbound_shipment_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_inbound_shipment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a bin location by id from the Warehouse operations system. Returns the full bin location record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "bin_location_id": {
+            "description": "Identifier of the bin location",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bin_location_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_bin_location"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List pick lists in the Warehouse operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_pick_lists"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List packing stations in the Warehouse operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_packing_stations"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List inbound shipments in the Warehouse operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_inbound_shipments"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List bin locations in the Warehouse operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_bin_locations"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new pick list in the Warehouse operations system. Requires a name; optional details are stored as structured fields. Returns the new pick list id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_pick_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new packing station in the Warehouse operations system. Requires a name; optional details are stored as structured fields. Returns the new packing station id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_packing_station"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new inbound shipment in the Warehouse operations system. Requires a name; optional details are stored as structured fields. Returns the new inbound shipment id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_inbound_shipment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new bin location in the Warehouse operations system. Requires a name; optional details are stored as structured fields. Returns the new bin location id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_bin_location"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing pick list in the Warehouse operations system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "pick_list_id": {
+            "description": "Identifier of the pick list",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pick_list_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_pick_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing packing station in the Warehouse operations system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "packing_station_id": {
+            "description": "Identifier of the packing station",
+            "type": "string"
+          }
+        },
+        "required": [
+          "packing_station_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_packing_station"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,461 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "store_ops",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a store shift by id from the Retail store operations system. Returns the full store shift record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "store_shift_id": {
+            "description": "Identifier of the store shift",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_shift_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_store_shift"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a store incident by id from the Retail store operations system. Returns the full store incident record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "store_incident_id": {
+            "description": "Identifier of the store incident",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_incident_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_store_incident"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a planogram by id from the Retail store operations system. Returns the full planogram record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "planogram_id": {
+            "description": "Identifier of the planogram",
+            "type": "string"
+          }
+        },
+        "required": [
+          "planogram_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_planogram"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List store shifts in the Retail store operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_store_shifts"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List store incidents in the Retail store operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_store_incidents"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List planograms in the Retail store operations system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_planograms"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new store shift in the Retail store operations system. Requires a name; optional details are stored as structured fields. Returns the new store shift id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_store_shift"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new store incident in the Retail store operations system. Requires a name; optional details are stored as structured fields. Returns the new store incident id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_store_incident"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new planogram in the Retail store operations system. Requires a name; optional details are stored as structured fields. Returns the new planogram id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_planogram"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing store shift in the Retail store operations system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "store_shift_id": {
+            "description": "Identifier of the store shift",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_shift_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_store_shift"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing store incident in the Retail store operations system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "store_incident_id": {
+            "description": "Identifier of the store incident",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_incident_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_store_incident"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing planogram in the Retail store operations system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "planogram_id": {
+            "description": "Identifier of the planogram",
+            "type": "string"
+          }
+        },
+        "required": [
+          "planogram_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_planogram"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search store shifts in the Retail store operations system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_store_shifts"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search store incidents in the Retail store operations system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_store_incidents"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search planograms in the Retail store operations system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_planograms"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a store shift in the Retail store operations system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "store_shift_id": {
+            "description": "Identifier of the store shift",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_shift_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_store_shift"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a store incident in the Retail store operations system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "store_incident_id": {
+            "description": "Identifier of the store incident",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_incident_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_store_incident"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a planogram in the Retail store operations system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "planogram_id": {
+            "description": "Identifier of the planogram",
+            "type": "string"
+          }
+        },
+        "required": [
+          "planogram_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_planogram"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,430 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "subscriptions",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund a paid subscription invoice to the subscriber's card.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "invoice_id": {
+            "description": "Identifier of the invoice",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoice_id"
+        ],
+        "type": "object"
+      },
+      "name": "refund_subscription_invoice"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Cancel a customer's subscription at the end of the billing period.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "cancel_subscription"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Pause a subscription for up to 3 billing cycles.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cycles": {
+            "description": "Cycles",
+            "type": "integer"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "pause_subscription"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Resume a paused subscription.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "resume_subscription"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Move a subscription to a different plan.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_id": {
+            "description": "Identifier of the plan",
+            "type": "string"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "plan_id"
+        ],
+        "type": "object"
+      },
+      "name": "change_plan"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a subscription by id.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_subscription"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List a customer's subscriptions.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "description": "Identifier of the customer",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "type": "object"
+      },
+      "name": "list_subscriptions"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List invoices for a subscription.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "list_invoices"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a subscription invoice.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "invoice_id": {
+            "description": "Identifier of the invoice",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoice_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_invoice"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Retry the card charge for a failed subscription invoice.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "invoice_id": {
+            "description": "Identifier of the invoice",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoice_id"
+        ],
+        "type": "object"
+      },
+      "name": "retry_failed_payment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Change the billing email used for subscription invoices.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "description": "Email address",
+            "type": "string"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "email"
+        ],
+        "type": "object"
+      },
+      "name": "update_billing_email"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Replace the card on file for a subscription.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payment_method_token": {
+            "description": "Payment method token",
+            "type": "string"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "payment_method_token"
+        ],
+        "type": "object"
+      },
+      "name": "update_payment_method"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Apply a discount code to a subscription.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "description": "Code",
+            "type": "string"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "code"
+        ],
+        "type": "object"
+      },
+      "name": "apply_subscription_discount"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Credit a subscriber's next invoice.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "issue_subscription_credit"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the dunning (failed payment recovery) status of a subscription.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_dunning_status"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Preview proration for a plan change.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_id": {
+            "description": "Identifier of the plan",
+            "type": "string"
+          },
+          "subscription_id": {
+            "description": "Identifier of the subscription",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "plan_id"
+        ],
+        "type": "object"
+      },
+      "name": "preview_proration"
+    }
+  ],
+  "version": "1.0.0"
+}

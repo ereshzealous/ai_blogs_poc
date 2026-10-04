@@ -1,0 +1,516 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "pricing",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a price rule by id from the Pricing system. Returns the full price rule record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "price_rule_id": {
+            "description": "Identifier of the price rule",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price_rule_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_price_rule"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a markdown by id from the Pricing system. Returns the full markdown record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "markdown_id": {
+            "description": "Identifier of the markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "markdown_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_markdown"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a price list by id from the Pricing system. Returns the full price list record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "price_list_id": {
+            "description": "Identifier of the price list",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price_list_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_price_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a competitor price by id from the Pricing system. Returns the full competitor price record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "competitor_price_id": {
+            "description": "Identifier of the competitor price",
+            "type": "string"
+          }
+        },
+        "required": [
+          "competitor_price_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_competitor_price"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List price rules in the Pricing system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_price_rules"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List markdowns in the Pricing system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_markdowns"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List price lists in the Pricing system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_price_lists"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List competitor prices in the Pricing system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_competitor_prices"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new price rule in the Pricing system. Requires a name; optional details are stored as structured fields. Returns the new price rule id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_price_rule"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new markdown in the Pricing system. Requires a name; optional details are stored as structured fields. Returns the new markdown id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_markdown"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new price list in the Pricing system. Requires a name; optional details are stored as structured fields. Returns the new price list id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_price_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new competitor price in the Pricing system. Requires a name; optional details are stored as structured fields. Returns the new competitor price id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_competitor_price"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing price rule in the Pricing system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "price_rule_id": {
+            "description": "Identifier of the price rule",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price_rule_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_price_rule"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing markdown in the Pricing system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "markdown_id": {
+            "description": "Identifier of the markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "markdown_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_markdown"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing price list in the Pricing system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "price_list_id": {
+            "description": "Identifier of the price list",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price_list_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_price_list"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing competitor price in the Pricing system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "competitor_price_id": {
+            "description": "Identifier of the competitor price",
+            "type": "string"
+          },
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          }
+        },
+        "required": [
+          "competitor_price_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_competitor_price"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search price rules in the Pricing system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_price_rules"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search markdowns in the Pricing system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_markdowns"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search price lists in the Pricing system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_price_lists"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search competitor prices in the Pricing system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_competitor_prices"
+    }
+  ],
+  "version": "1.0.0"
+}

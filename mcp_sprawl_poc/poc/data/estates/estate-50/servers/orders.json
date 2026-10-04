@@ -1,0 +1,153 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "orders",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get an order: status, items, totals, currency, customer and shipping address.",
+      "handler": "orders.get_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Find a customer's orders by customer id or customer email.",
+      "handler": "orders.search_orders",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_email": {
+            "description": "Customer's email address",
+            "type": "string"
+          },
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "search_orders"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Cancel an order that has not shipped yet.",
+      "handler": "orders.cancel_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "cancel_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Change the delivery address on an order before it ships.",
+      "handler": "orders.update_shipping_address",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "description": "Full new delivery address",
+            "type": "string"
+          },
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "address"
+        ],
+        "type": "object"
+      },
+      "name": "update_shipping_address"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a free replacement shipment for one item on a delivered order (e.g. arrived damaged or defective).",
+      "handler": "orders.create_replacement_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Product SKU exactly as it appears on the order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "sku"
+        ],
+        "type": "object"
+      },
+      "name": "create_replacement_order"
+    }
+  ],
+  "version": "1.0.0"
+}

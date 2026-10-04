@@ -1,0 +1,38 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "helpdesk_legacy",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Add a comment to a support ticket.",
+      "handler": "helpdesk_legacy.add_ticket_comment",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "description": "Comment text",
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Support ticket id (format TCK-<digits>)",
+            "pattern": "^TCK-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "comment"
+        ],
+        "type": "object"
+      },
+      "name": "add_ticket_comment"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,251 @@
+{
+  "by_kind": {
+    "core": {
+      "label": "authoritative core",
+      "servers": 7,
+      "tools": 20
+    },
+    "env_copy": {
+      "label": "environment copy (staging)",
+      "servers": 2,
+      "tools": 3
+    },
+    "generated": {
+      "label": "other business units",
+      "servers": 1,
+      "tools": 16
+    },
+    "legacy": {
+      "label": "legacy / retired",
+      "servers": 3,
+      "tools": 4
+    },
+    "regional": {
+      "label": "regional implementation",
+      "servers": 1,
+      "tools": 2
+    },
+    "shadow": {
+      "label": "shadow / unregistered",
+      "servers": 1,
+      "tools": 2
+    },
+    "vendor": {
+      "label": "vendor duplicate",
+      "servers": 2,
+      "tools": 3
+    }
+  },
+  "estate_size": 50,
+  "published_catalog_sha256": "d87066b3290d07c563789f2a8fb71d803ee7967f8d8ef1e7a19b6c2663e7f05e",
+  "registered_tool_count": 48,
+  "registry_sha256": "95cac15df48e3830113e0158fe986a9aab4860d6fd2ca1aa364859ff929f882a",
+  "server_count": 17,
+  "servers": [
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "orders",
+      "tools": [
+        "get_order",
+        "search_orders",
+        "cancel_order",
+        "update_shipping_address",
+        "create_replacement_order"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "payments",
+      "tools": [
+        "list_charges",
+        "get_charge"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "us",
+      "registered": true,
+      "server": "refunds",
+      "tools": [
+        "refund_order",
+        "get_refund_status"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "promotions",
+      "tools": [
+        "issue_store_credit",
+        "get_credit_balance"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "shipping",
+      "tools": [
+        "track_shipment",
+        "create_return_label"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "crm",
+      "tools": [
+        "get_customer",
+        "update_customer_email",
+        "update_default_address"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "core",
+      "region": "global",
+      "registered": true,
+      "server": "helpdesk",
+      "tools": [
+        "get_ticket",
+        "add_internal_note",
+        "reply_to_customer",
+        "escalate_ticket"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "regional",
+      "region": "eu",
+      "registered": true,
+      "server": "refunds_eu",
+      "tools": [
+        "refund_order",
+        "get_refund_status"
+      ]
+    },
+    {
+      "environment": "staging",
+      "kind": "env_copy",
+      "region": "us",
+      "registered": true,
+      "server": "refunds_staging",
+      "tools": [
+        "refund_order"
+      ]
+    },
+    {
+      "environment": "staging",
+      "kind": "env_copy",
+      "region": "global",
+      "registered": true,
+      "server": "orders_staging",
+      "tools": [
+        "get_order",
+        "cancel_order"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "payments_legacy",
+      "tools": [
+        "refund_charge_v1",
+        "get_charge_v1"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "carrier_legacy",
+      "tools": [
+        "get_tracking_v1"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "legacy",
+      "region": "global",
+      "registered": true,
+      "server": "helpdesk_legacy",
+      "tools": [
+        "add_ticket_comment"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "vendor",
+      "region": "global",
+      "registered": true,
+      "server": "paygate",
+      "tools": [
+        "refund_charge",
+        "get_charge_status"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "vendor",
+      "region": "global",
+      "registered": true,
+      "server": "shipfast",
+      "tools": [
+        "track_package"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "shadow",
+      "region": "global",
+      "registered": false,
+      "server": "marketing_ops",
+      "tools": [
+        "bulk_goodwill_refund",
+        "list_campaigns"
+      ]
+    },
+    {
+      "environment": "prod",
+      "kind": "generated",
+      "region": "global",
+      "registered": true,
+      "server": "subscriptions",
+      "tools": [
+        "refund_subscription_invoice",
+        "cancel_subscription",
+        "pause_subscription",
+        "resume_subscription",
+        "change_plan",
+        "get_subscription",
+        "list_subscriptions",
+        "list_invoices",
+        "get_invoice",
+        "retry_failed_payment",
+        "update_billing_email",
+        "update_payment_method",
+        "apply_subscription_discount",
+        "issue_subscription_credit",
+        "get_dunning_status",
+        "preview_proration"
+      ]
+    }
+  ],
+  "tool_count": 50,
+  "unregistered_tool_count": 2
+}

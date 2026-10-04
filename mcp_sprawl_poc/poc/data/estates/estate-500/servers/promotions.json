@@ -1,0 +1,69 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "promotions",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Issue store credit to a customer account. Credit is spent on future orders; it is not returned to the card.",
+      "handler": "promotions.issue_store_credit",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id",
+          "amount",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "name": "issue_store_credit"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a customer's store credit balance.",
+      "handler": "promotions.get_credit_balance",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_credit_balance"
+    }
+  ],
+  "version": "1.0.0"
+}

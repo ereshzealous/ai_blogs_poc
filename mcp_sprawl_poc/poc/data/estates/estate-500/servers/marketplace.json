@@ -1,0 +1,620 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "marketplace",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund a marketplace (third-party seller) order to the buyer.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "refund_marketplace_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Cancel a marketplace order before the seller ships it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id"
+        ],
+        "type": "object"
+      },
+      "name": "cancel_marketplace_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Track a shipment sent by a marketplace seller.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id"
+        ],
+        "type": "object"
+      },
+      "name": "track_marketplace_shipment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund a fee charged to a marketplace seller.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "refund_seller_fee"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Pay out a seller's available balance.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "issue_seller_payout"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Put a hold on a seller's payouts.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "hold_seller_payout"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a marketplace seller profile.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_seller"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List a seller's marketplace orders.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "list_seller_orders"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a marketplace order.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_marketplace_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Open a dispute between a buyer and a seller.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id"
+        ],
+        "type": "object"
+      },
+      "name": "open_buyer_dispute"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Resolve a marketplace dispute in favour of buyer or seller.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "dispute_id": {
+            "description": "Identifier of the dispute",
+            "type": "string"
+          },
+          "outcome": {
+            "description": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dispute_id",
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "name": "resolve_buyer_dispute"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Suspend a marketplace seller.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "suspend_seller"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update a seller's payout bank account.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "iban": {
+            "description": "Iban",
+            "type": "string"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id",
+          "iban"
+        ],
+        "type": "object"
+      },
+      "name": "update_seller_bank_account"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List open marketplace disputes.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_open_disputes"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a seller's rating.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_seller_rating"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Approve a seller's product listing.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "listing_id": {
+            "description": "Identifier of the listing",
+            "type": "string"
+          }
+        },
+        "required": [
+          "listing_id"
+        ],
+        "type": "object"
+      },
+      "name": "approve_seller_listing"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Remove a seller's product listing.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "listing_id": {
+            "description": "Identifier of the listing",
+            "type": "string"
+          }
+        },
+        "required": [
+          "listing_id"
+        ],
+        "type": "object"
+      },
+      "name": "remove_seller_listing"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a seller's pending and available balance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_seller_balance"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export a seller's monthly statement.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "month": {
+            "description": "Month, YYYY-MM",
+            "type": "string"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id",
+          "month"
+        ],
+        "type": "object"
+      },
+      "name": "export_seller_statement"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Send a message to a seller.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "description": "Message text",
+            "type": "string"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id",
+          "message"
+        ],
+        "type": "object"
+      },
+      "name": "send_seller_message"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List return requests for marketplace orders.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_marketplace_returns"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Approve a return on a marketplace order.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "marketplace_order_id": {
+            "description": "Identifier of the marketplace order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketplace_order_id"
+        ],
+        "type": "object"
+      },
+      "name": "approve_marketplace_return"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Charge a seller a policy penalty.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "seller_id": {
+            "description": "Identifier of the seller",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seller_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "charge_seller_penalty"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the current marketplace fee schedule.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "get_marketplace_fees"
+    }
+  ],
+  "version": "1.0.0"
+}

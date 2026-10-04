@@ -1,0 +1,32 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "carrier_legacy",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Tracking status lookup by tracking number (carrier feed).",
+      "handler": "carrier_legacy.get_tracking_v1",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "tracking_number": {
+            "description": "Carrier tracking number",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tracking_number"
+        ],
+        "type": "object"
+      },
+      "name": "get_tracking_v1"
+    }
+  ],
+  "version": "1.0.0"
+}

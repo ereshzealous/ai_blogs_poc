@@ -1,0 +1,62 @@
+{
+  "environment": "staging",
+  "region": "global",
+  "server": "orders_staging",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get an order: status, items, totals, currency, customer and shipping address.",
+      "handler": "orders.get_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Cancel an order that has not shipped yet.",
+      "handler": "orders.cancel_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "cancel_order"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,44 +1,43 @@
-# Containerised runs. Nothing here needs a cloud account or API key.
+# Learning 01 POC in Docker, on any platform.
 #
-#   docker compose run --rm tests                        # full test suite, no model needed
-#   docker compose --profile model up -d ollama          # local model server
-#   docker compose --profile model run --rm pull-models  # once: gpt-oss:20b + nomic-embed-text
-#   docker compose --profile model run --rm benchmark    # selection benchmark, results in ./benchmark/runs
+#   docker compose build
+#   docker compose run --rm poc                                    # evidence mode (no model), about 4 minutes
+#   docker compose run --rm poc doctor                             # what the container can reach
+#   docker compose run --rm poc run --preset quick                 # live: 12 rows against the host's Ollama
+#   docker compose run --rm poc all --live --preset full --run-id rerun-1
+#   docker compose run --rm poc report                             # rebuild evidence/lab-console.html
 #
-# Performance note: containers on macOS have no GPU access, so a model inside Docker is much slower
-# than Ollama on the host. To use a host Ollama instead, skip the `ollama` service and set
-# OLLAMA_URL=http://host.docker.internal:11434 for the benchmark service.
-
+# The repository is mounted at /work, so new runs (experiment/runs/) and the Lab Console land in this checkout,
+# and the git commit is recorded with each run.  On Linux, add  --user "$(id -u):$(id -g)"  to keep file ownership.
+#
+# The model runs outside the image.  On a Mac, run Ollama natively (Metal GPU) and keep the default endpoint.
+# On a Linux host with an NVIDIA GPU you can run Ollama as a service instead:
+#   docker compose --profile ollama up -d ollama
+#   docker compose exec ollama ollama pull gpt-oss:20b && docker compose exec ollama ollama pull nomic-embed-text
+#   SPRAWL_OLLAMA_HOST=http://ollama:11434 docker compose run --rm poc run --preset quick
 services:
-  tests:
+  poc:
     build: .
-    command: ["uv", "run", "pytest"]
+    image: sprawl-poc:learning01
+    volumes:
+      - .:/work
+    environment:
+      SPRAWL_OLLAMA_HOST: ${SPRAWL_OLLAMA_HOST:-http://host.docker.internal:11434}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   ollama:
-    image: ollama/ollama:0.30.11
-    profiles: ["model"]
+    image: ollama/ollama
+    profiles: ["ollama"]
     volumes:
-      - ollama-models:/root/.ollama
-
-  pull-models:
-    image: ollama/ollama:0.30.11
-    profiles: ["model"]
-    depends_on: [ollama]
-    environment:
-      OLLAMA_HOST: http://ollama:11434
-    entrypoint: ["sh", "-c", "ollama pull gpt-oss:20b && ollama pull nomic-embed-text"]
-
-  benchmark:
-    build: .
-    profiles: ["model"]
-    depends_on: [ollama]
-    environment:
-      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
-      RUN_ID: ${RUN_ID:-docker-run}
-    volumes:
-      - ./benchmark/runs:/app/benchmark/runs
-      - ./benchmark/reports:/app/benchmark/reports
-    command: ["sh", "-c", "uv run python -m benchmark.runner retrieval --run-id $$RUN_ID && uv run python -m benchmark.runner selection --run-id $$RUN_ID && uv run python -m benchmark.reports.build_report --run-id $$RUN_ID"]
+      - ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 volumes:
-  ollama-models:
+  ollama: {}

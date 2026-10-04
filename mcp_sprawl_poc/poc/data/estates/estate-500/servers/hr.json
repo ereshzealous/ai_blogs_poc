@@ -1,0 +1,700 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "hr",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a employee by id from the HR system. Returns the full employee record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "employee_id": {
+            "description": "Identifier of the employee",
+            "type": "string"
+          }
+        },
+        "required": [
+          "employee_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_employee"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a leave request by id from the HR system. Returns the full leave request record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "leave_request_id": {
+            "description": "Identifier of the leave request",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leave_request_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_leave_request"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a job requisition by id from the HR system. Returns the full job requisition record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "job_requisition_id": {
+            "description": "Identifier of the job requisition",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_requisition_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_job_requisition"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a payroll adjustment by id from the HR system. Returns the full payroll adjustment record, including status, owner, created and updated timestamps and linked records.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payroll_adjustment_id": {
+            "description": "Identifier of the payroll adjustment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payroll_adjustment_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_payroll_adjustment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List employees in the HR system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_employees"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List leave requests in the HR system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_leave_requests"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List job requisitions in the HR system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_job_requisitions"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List payroll adjustments in the HR system, newest first. Returns summary rows (id, name, status, updated_at); use limit to page.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_payroll_adjustments"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new employee in the HR system. Requires a name; optional details are stored as structured fields. Returns the new employee id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_employee"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new leave request in the HR system. Requires a name; optional details are stored as structured fields. Returns the new leave request id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_leave_request"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new job requisition in the HR system. Requires a name; optional details are stored as structured fields. Returns the new job requisition id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_job_requisition"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new payroll adjustment in the HR system. Requires a name; optional details are stored as structured fields. Returns the new payroll adjustment id.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Additional structured fields",
+            "type": "object"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "name": "create_payroll_adjustment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing employee in the HR system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "employee_id": {
+            "description": "Identifier of the employee",
+            "type": "string"
+          },
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          }
+        },
+        "required": [
+          "employee_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_employee"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing leave request in the HR system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "leave_request_id": {
+            "description": "Identifier of the leave request",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leave_request_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_leave_request"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing job requisition in the HR system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "job_requisition_id": {
+            "description": "Identifier of the job requisition",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_requisition_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_job_requisition"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update fields on an existing payroll adjustment in the HR system. Only the fields provided are changed; returns the updated record.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "description": "Fields to change, as a JSON object",
+            "type": "object"
+          },
+          "payroll_adjustment_id": {
+            "description": "Identifier of the payroll adjustment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payroll_adjustment_id",
+          "fields"
+        ],
+        "type": "object"
+      },
+      "name": "update_payroll_adjustment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search employees in the HR system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_employees"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search leave requests in the HR system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_leave_requests"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search job requisitions in the HR system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_job_requisitions"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Search payroll adjustments in the HR system by keyword across names, descriptions and tags. Returns up to 20 matches ranked by relevance.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Keyword or phrase to search for",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "search_payroll_adjustments"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a employee in the HR system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "employee_id": {
+            "description": "Identifier of the employee",
+            "type": "string"
+          }
+        },
+        "required": [
+          "employee_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_employee"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a leave request in the HR system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "leave_request_id": {
+            "description": "Identifier of the leave request",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leave_request_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_leave_request"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a job requisition in the HR system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "job_requisition_id": {
+            "description": "Identifier of the job requisition",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_requisition_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_job_requisition"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Archive a payroll adjustment in the HR system so it no longer appears in active lists. An administrator can restore it.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payroll_adjustment_id": {
+            "description": "Identifier of the payroll adjustment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payroll_adjustment_id"
+        ],
+        "type": "object"
+      },
+      "name": "archive_payroll_adjustment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export employees from the HR system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_employees"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export leave requests from the HR system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_leave_requests"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export job requisitions from the HR system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_job_requisitions"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export payroll adjustments from the HR system to CSV for reporting. Returns a download link valid for 24 hours.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum rows to return (default 50)",
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "export_payroll_adjustments"
+    }
+  ],
+  "version": "1.0.0"
+}

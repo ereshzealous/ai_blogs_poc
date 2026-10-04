@@ -1,0 +1,41 @@
+{
+ "revision": "r2",
+ "source_commit": "1e916d7",
+ "rows": 728,
+ "reproduced": 728,
+ "request_hash_mismatch_rows": 19,
+ "request_hash_mismatches": 38,
+ "mismatch_cause": "key order only: row files are written with sorted keys (sprawl_poc.util.write_json), so recorded tool-call arguments replay in sorted order, and the arguments the gateway echoes back in a tool result differ from the live run in key order; the values are identical",
+ "control_r1": {
+  "source_commit": "59dafca",
+  "rows": 12,
+  "reproduced": 12,
+  "same_mismatches": true
+ },
+ "runs": {
+  "blind-main": 504,
+  "blind-repeat-C": 168,
+  "blind-repeat-B500": 56
+ },
+ "mismatch_rows": [
+  "blind-main:BL-C02-4__C__50",
+  "blind-main:BL-C04-3__C__50",
+  "blind-main:BL-C11-3__C__50",
+  "blind-main:BL-C02-4__C__100",
+  "blind-main:BL-C04-3__C__100",
+  "blind-main:BL-C08-1__C__100",
+  "blind-main:BL-C11-3__C__100",
+  "blind-main:BL-C02-4__C__500",
+  "blind-main:BL-C04-3__C__500",
+  "blind-main:BL-C11-3__C__500",
+  "blind-repeat-C:BL-C02-4__C__50",
+  "blind-repeat-C:BL-C04-3__C__50",
+  "blind-repeat-C:BL-C11-3__C__50",
+  "blind-repeat-C:BL-C02-4__C__100",
+  "blind-repeat-C:BL-C04-3__C__100",
+  "blind-repeat-C:BL-C11-3__C__100",
+  "blind-repeat-C:BL-C02-4__C__500",
+  "blind-repeat-C:BL-C04-3__C__500",
+  "blind-repeat-C:BL-C11-3__C__500"
+ ]
+}

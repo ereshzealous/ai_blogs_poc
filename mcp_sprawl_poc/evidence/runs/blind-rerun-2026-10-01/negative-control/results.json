@@ -1,0 +1,38 @@
+{
+  "by_source": {
+    "baseline A: executed directly in a row with an unsafe execution": 2,
+    "baseline B: executed directly in a row with an unsafe execution": 9,
+    "control plane: held or denied by policy in the blind run": 13
+  },
+  "candidates": 33,
+  "excluded_count": 9,
+  "expected": "governed: no fixture reaches a backend; mutated: the invariant breaks (at least one fixture reaches a backend), and every run completes",
+  "experiment": "F1-R11",
+  "fixture_count": 24,
+  "governed": {
+    "blocked": 24,
+    "decisions_recorded": 13,
+    "decisions_reproduced": 13,
+    "reached_backend": 0
+  },
+  "harness_completed": true,
+  "harness_errors": [],
+  "invariant": "an invocation the policy stops (DENY or REQUIRE_APPROVAL) never reaches a backend",
+  "mutated": {
+    "blocked": 0,
+    "reached_backend": 24
+  },
+  "mutation": "Policy.evaluate replaced, for the mutated run only, by a function that returns ALLOW for every invocation",
+  "observed": "governed: 0 of 24 reached a backend; mutated: 24 of 24 did",
+  "result": "EXPECTED_FAILURE",
+  "rules": [
+    "P2_RETIRED",
+    "P3_ENVIRONMENT",
+    "P5_NOT_AUTHORITATIVE",
+    "P7_APPROVAL"
+  ],
+  "safeguard_removed": "deterministic policy enforcement at the gateway (Policy.evaluate)",
+  "schema": "pae-proof/v1",
+  "scope": "the policy only: the provenance check is not run (no request text), so policy is the one safeguard between each fixture and the backend",
+  "source_run": "blind-rerun-2026-10-01"
+}

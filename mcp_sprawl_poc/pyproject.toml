@@ -1,40 +1,20 @@
+# The Learning 01 runner: `uv run sprawl <command>` from the repository root (macOS, Linux, Windows, CI).
+# Standard library only. The POC itself is the separate, frozen project in poc/ (its pyproject.toml and lock file are
+# hash-pinned); every step the runner starts runs in that project's own locked environment.
 [project]
-name = "mcp-capability-control-plane"
-version = "0.1.0"
-description = "POC and benchmark: capability-aware discovery and deterministic governance for large MCP tool ecosystems"
-readme = "README.md"
+name = "sprawl-runner"
+version = "1.0.0"
+description = "One command for the Learning 01 POC: doctor, verify, test, build, run, replay, analyze, report, all"
 requires-python = ">=3.12"
-license = { text = "MIT" }
-dependencies = [
-    "mcp==2.2.0",
-    "httpx>=0.27",
-    "jsonschema>=4.20",
-    "pyyaml>=6.0",
-    "numpy>=2.0",
-    "opentelemetry-api>=1.30",
-    "opentelemetry-sdk>=1.30",
-]
-
-[project.optional-dependencies]
-reports = ["matplotlib>=3.9"]
-
-[dependency-groups]
-dev = ["pytest>=8.3", "matplotlib>=3.9"]
+dependencies = []
 
 [project.scripts]
-mcpcp = "control_plane.cli:main"
+sprawl = "sprawl_cli.cli:main"
 
 [build-system]
-requires = ["hatchling>=1.25"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.11.7,<0.12.0"]
+build-backend = "uv_build"
 
-[tool.hatch.build.targets.wheel]
-packages = ["agent", "benchmark", "control_plane", "servers"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"
-markers = [
-    "mcp: starts real MCP server subprocesses over stdio",
-    "ollama: needs a local Ollama server (skipped when unavailable)",
-]
+[tool.uv.build-backend]
+module-root = "runner"
+module-name = ["sprawl_cli", "experiment_runner"]  # experiment_runner: pinned copy of the shared experiment-runner

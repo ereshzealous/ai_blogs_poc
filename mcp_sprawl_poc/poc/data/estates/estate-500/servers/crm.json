@@ -1,0 +1,95 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "crm",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Look up a customer profile by customer id or email.",
+      "handler": "crm.get_customer",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "get_customer"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Change the email address on a customer profile.",
+      "handler": "crm.update_customer_email",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id",
+          "email"
+        ],
+        "type": "object"
+      },
+      "name": "update_customer_email"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update the default address saved on a customer profile. Does not change existing orders.",
+      "handler": "crm.update_default_address",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "description": "Full postal address",
+            "type": "string"
+          },
+          "customer_id": {
+            "description": "Customer id (format CUS-<digits>)",
+            "pattern": "^CUS-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id",
+          "address"
+        ],
+        "type": "object"
+      },
+      "name": "update_default_address"
+    }
+  ],
+  "version": "1.0.0"
+}

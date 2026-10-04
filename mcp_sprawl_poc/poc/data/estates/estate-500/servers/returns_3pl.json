@@ -1,0 +1,355 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "returns_3pl",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Schedule a courier pickup for a customer return (3PL partner).",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id",
+          "date"
+        ],
+        "type": "object"
+      },
+      "name": "schedule_return_pickup"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the processing status of a return (RMA) at the 3PL warehouse.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_rma_status"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a return merchandise authorisation at the 3PL partner.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reference": {
+            "description": "Reference",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Product SKU exactly as it appears on the order",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "sku"
+        ],
+        "type": "object"
+      },
+      "name": "create_rma"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Record the inspection result of a returned item.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "grade": {
+            "description": "Grade",
+            "type": "string"
+          },
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id",
+          "grade"
+        ],
+        "type": "object"
+      },
+      "name": "inspect_return"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Restock an inspected return into sellable inventory.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "restock_return"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Dispose of a returned item that cannot be resold.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "dispose_return"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List returns awaiting inspection.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "warehouse": {
+            "description": "Warehouse",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "list_pending_returns"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get available courier pickup slots.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "postcode": {
+            "description": "Postcode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "postcode"
+        ],
+        "type": "object"
+      },
+      "name": "get_pickup_slots"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Cancel a scheduled return pickup.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "cancel_return_pickup"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Generate a packing slip for a return.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "print_packing_slip"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the 3PL partner's return handling policy.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "get_return_policy"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Export the weekly returns report.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "week": {
+            "description": "Week",
+            "type": "string"
+          }
+        },
+        "required": [
+          "week"
+        ],
+        "type": "object"
+      },
+      "name": "export_returns_report"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Update the reason code on a return.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reason_code": {
+            "description": "Reason code",
+            "type": "string"
+          },
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id",
+          "reason_code"
+        ],
+        "type": "object"
+      },
+      "name": "update_return_reason"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the courier assigned to a return.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rma_id": {
+            "description": "Identifier of the rma",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rma_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_carrier_for_return"
+    }
+  ],
+  "version": "1.0.0"
+}

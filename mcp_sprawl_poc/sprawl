@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Unix shortcut for the portable command `uv run sprawl` (Windows: sprawl.cmd, sprawl.ps1). No logic lives here.
+command -v uv >/dev/null 2>&1 || { echo "uv is not installed (https://docs.astral.sh/uv/). Or run it in Docker: docker compose run --rm poc $*" >&2; exit 127; }
+exec uv run --quiet --project "$(dirname "$0")" sprawl "$@"

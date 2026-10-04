@@ -1,0 +1,39 @@
+{
+ "_": "Evidence revisions. r1 is the blind-run freeze; every recorded row was produced by it. A later change to frozen inputs is a new revision: it declares what changed from r1 and how the recorded evidence was re-verified. The recorded rows are never re-generated or edited.",
+ "current": "r2",
+ "revisions": [
+  {
+   "id": "r1",
+   "label": "blind-run freeze",
+   "freeze": "experiment/frozen-hashes.json",
+   "freeze_commit": "2bfe2f7",
+   "run_commit": "b29f386",
+   "note": "Every recorded row (blind-main, blind-repeat and the replay check) was produced by this code."
+  },
+  {
+   "id": "r2",
+   "label": "proposal-boundary fix",
+   "date": "2026-09-28",
+   "freeze": "experiment/frozen-hashes-r2.json",
+   "source_commit": "1e916d7",
+   "changed_from_r1": [
+    "poc/src/**/*.py",
+    "poc/src/sprawl_poc/control_plane/gateway.py"
+   ],
+   "reason": "An external review of the source found that the control-plane gateway also accepted an exact implementation name from the model and sent it through a path with no authoritative value binding. The model-facing gateway now accepts only capability tools surfaced to the model; an implementation name is stopped at the proposal stage.",
+   "exercised_by_recorded_rows": false,
+   "exercised_note": "No recorded control-plane proposal used the closed path: all 469 named a surfaced capability.",
+   "verification": {
+    "method": "deterministic replay of every recorded row through the r2 code, with the recorded model responses (no model)",
+    "report": "experiment/recorded-run/replay-r2/summary.json",
+    "rows": 728,
+    "reproduced": 728,
+    "request_hash_mismatches": 38,
+    "request_hash_mismatch_rows": 19,
+    "mismatch_cause": "key order only: row files are written with sorted keys (sprawl_poc.util.write_json), so recorded tool-call arguments replay in sorted order, and the arguments the gateway echoes back in a tool result differ from the live run in key order; the values are identical",
+    "control": "the same mismatches appear, row for row, when the affected rows are replayed with the r1 code"
+   },
+   "tests": "poc/tests/test_proposal_boundary.py"
+  }
+ ]
+}

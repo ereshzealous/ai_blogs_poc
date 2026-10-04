@@ -1,0 +1,215 @@
+{
+  "environment": "staging",
+  "region": "global",
+  "server": "gift_cards_staging",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Issue a new gift card to a recipient email.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "recipient_email": {
+            "description": "Recipient email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient_email",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "issue_gift_card"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund the purchase of a gift card to the buyer's card and void the card.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gift_card_id": {
+            "description": "Identifier of the gift card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gift_card_id"
+        ],
+        "type": "object"
+      },
+      "name": "refund_gift_card_purchase"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Void a gift card so it can no longer be used.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gift_card_id": {
+            "description": "Identifier of the gift card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gift_card_id"
+        ],
+        "type": "object"
+      },
+      "name": "void_gift_card"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the remaining balance on a gift card.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gift_card_id": {
+            "description": "Identifier of the gift card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gift_card_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_gift_card_balance"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Add value to an existing gift card.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the account currency",
+            "type": "number"
+          },
+          "gift_card_id": {
+            "description": "Identifier of the gift card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gift_card_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "reload_gift_card"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Move balance from one gift card to another.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "from_card": {
+            "description": "From card",
+            "type": "string"
+          },
+          "to_card": {
+            "description": "To card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from_card",
+          "to_card"
+        ],
+        "type": "object"
+      },
+      "name": "transfer_gift_card_balance"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List gift cards bought by a customer.",
+      "handler": "generic.read",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "description": "Identifier of the customer",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "type": "object"
+      },
+      "name": "list_gift_cards"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Resend the gift card email to the recipient.",
+      "handler": "generic.write",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "gift_card_id": {
+            "description": "Identifier of the gift card",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gift_card_id"
+        ],
+        "type": "object"
+      },
+      "name": "resend_gift_card_email"
+    }
+  ],
+  "version": "1.0.0"
+}

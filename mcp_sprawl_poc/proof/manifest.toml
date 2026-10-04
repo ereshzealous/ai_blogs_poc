@@ -1,0 +1,147 @@
+# F1 · MCP Tool Sprawl · proof manifest (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# What a reader needs to know about the proof that is not a number: the article, the execution profile and the
+# REAL / GENERATED / SIMULATED / RECORDED / INJECTED / ARCHITECTURE declaration (every REAL item names the check that shows it
+# ran), and the entry points. Numbers are {{facts}}. The run manifest (evidence/runs/<run>/manifest.json) is built from
+# this file and the run's own recorded run-meta.json by poc/scripts/proof_pack.py.
+
+schema = "pae-proof/v1"
+
+[article]
+id = "F1"
+series = "Production AI Engineering"
+learning = "Learning 01"
+title = "MCP Tool Sprawl"
+headline = "Your AI agent has {{estate.500.tools}} MCP tools. Now what?"
+question = "Which capability should the agent see, and may this exact invocation execute?"
+thesis = ["Discovery may be probabilistic.", "Authorization must be deterministic."]
+poc = "mcp-tool-sprawl"
+scenario = "Meridian Commerce support requests, scored from a simulated effects ledger; featured: ORD-4917, a duplicate charge"
+one_line = "This POC tests what happens when an agent operates across a growing, overlapping MCP capability estate, and whether capability discovery and deterministic execution governance solve different parts of the problem."
+
+[run]
+runtime_mode = "live local model, recorded: the published numbers are read from the recorded rows; replay re-executes everything downstream of the model"
+replay_level = "SEMANTIC"
+replay_contract = "identifiers, timestamps, wall time and request-hash key order may differ; every measured value, outcome and invariant must be equal"
+companions = [{ run_id = "blind-repeat", role = "the preregistered repeat pass (noise floor)", path = "experiment/raw/blind-repeat" }]
+
+[entrypoints]
+verify = "uv run sprawl verify"
+test = "uv run sprawl test"
+proof = "uv run sprawl proof"
+replay = "uv run sprawl replay"
+negative_control = "uv run sprawl negative-control"
+lab = "uv run sprawl lab"
+package = "uv run sprawl package"
+live = "uv run sprawl run --preset full --run-id <new-run>"
+make = "make verify · make test · make proof · make replay · make negative-control · make lab · make package · make proof-live"
+
+[paths]
+published = "evidence/published.json"
+lab = "evidence/lab-console.html"
+medium = "medium/mcp-tool-sprawl-medium.html"
+technical = "technical/mcp-tool-sprawl-technical.html"
+readme = "README.md"
+negative_control = "evidence/negative-control/results.json"
+comparison = "evidence/verification/run-comparison.json"
+verification = "evidence/verification/verification.json"
+contract = "vendor/evidence_kit/proof_contract/PROOF_STANDARD.md"
+
+[lint]
+allow = ['\bBM25\b', '\bF1-[RC]\d+(?:-C\d{2})?\b', '\b[A-Z]{2}-C\d{2}-\d+__[ABC]__\d+\b', '\bserver__tool\b', '§\d+', '\bP\d+\b', '\bH\d\b', '\bC\d{2}\b', '\b503s?\b', '\br\d\b', '\bF2\b']
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised"
+items = [
+  { text = "MCP over stdio with the official Python SDK, `mcp` {{protocol.sdk_version}}: one OS process per server, {{estate.500.servers}} at the largest estate", check = "F1-R1-C01" },
+  { text = "`tools/list` and `tools/call` on every connection, protocol revision {{protocol.revisions}}", check = "F1-R1-C03" },
+  { text = "The local model `{{model.name}}` on Ollama {{model.ollama_version}}, live in the recorded run", check = "F1-R1-C08" },
+  { text = "Registry, binding, provenance, ordered policy, invocation-bound approval, HMAC-signed gateway and hash-chained audit", check = "F1-R1-C06" },
+  { text = "Hybrid retrieval: BM25 plus `{{embed.name}}` embeddings, reciprocal-rank fusion", check = "F1-R3-C01" },
+]
+
+[[reality]]
+class = "GENERATED"
+meaning = "synthetic content that creates scale and collision pressure, run through the real mechanisms"
+items = [
+  { text = "{{estate.kind.other.tools}} generated tools of other business units around a hand-written core of {{estate.kind.core.tools}}" },
+  { text = "Look-alikes: vendor duplicates, staging copies, retired tools that still run, an unregistered shadow server" },
+  { text = "The benchmark: {{cases.blind}} blind and {{cases.dev}} development cases, labelled before the run" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a faithful local substitute for an enterprise system"
+items = [
+  { text = "Meridian Commerce's systems of record: a deterministic SQLite world with an effects ledger, reset before every row" },
+  { text = "Requesters' answers, a supervisor's approvals and outages, scripted in the frozen benchmark" },
+]
+
+[[reality]]
+class = "RECORDED"
+meaning = "captured model traffic, reused for deterministic replay"
+items = [
+  { text = "Every model request hash and raw response of the published run ({{model.calls.main}} model calls), replayed in order without the model", check = "F1-R10-C06" },
+]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure or unsafe condition introduced on purpose"
+items = [
+  { text = "Transient and persistent 503s on the authoritative implementation only (category C14)", check = "F1-R9-C03" },
+  { text = "The negative control: policy enforcement removed, for the mutated run only", check = "F1-R11-C03" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "design this POC does not exercise"
+items = [
+  { text = "Durable execution and classified retries (F2), identity and delegation, security against hostile servers" },
+]
+
+[[profile]]
+group = "PROTOCOL"
+rows = [
+  ["Actual MCP", "yes: the official Python SDK, `mcp` {{protocol.sdk_version}}", "F1-R1-C02"],
+  ["Transport", "{{protocol.transport}}", "F1-R1-C01"],
+  ["Server processes", "{{estate.50.servers}}, {{estate.100.servers}} and {{estate.500.servers}} at {{estate.50.tools}}, {{estate.100.tools}} and {{estate.500.tools}} tools", "F1-R1-C04"],
+  ["Tools listed", "{{protocol.tools.50}}, {{protocol.tools.100}} and {{protocol.tools.500}} over `tools/list`", "F1-R1-C03"],
+  ["Protocol revision", "{{protocol.revisions}}, the same on every server", "F1-R1-C05"],
+]
+
+[[profile]]
+group = "MODEL"
+rows = [
+  ["Live local", "yes, in the recorded run: `{{model.name}}` ({{model.digest}}) on Ollama {{model.ollama_version}}, temperature {{model.temperature}}, seed {{model.seed_raw}}, think {{model.think}}", "F1-R1-C08"],
+  ["Recorded", "every request hash and raw response, {{model.calls.main}} model calls in the published run", "F1-R10-C06"],
+  ["Remote", "no; a remote Ollama is supported by the runner and was not used"],
+]
+
+[[profile]]
+group = "STATE"
+rows = [["Systems of record", "simulated: a deterministic SQLite world with an effects ledger, reset before every row; the ledger is what is scored"]]
+
+[[profile]]
+group = "CATALOG"
+rows = [
+  ["Hand-written", "the core: {{estate.kind.core.tools}} tools on {{estate.kind.core.servers}} servers"],
+  ["Generated", "{{estate.kind.other.tools}} tools of other business units, with vendor, staging, legacy and shadow look-alikes"],
+  ["Search", "BM25 plus `{{embed.name}}`, reciprocal-rank fusion, a top-{{harness.shortlist_k}} shortlist", "F1-R4-C01"],
+]
+
+[[profile]]
+group = "POLICY"
+rows = [["Executable", "yes: ordered rules P1 to P9 over the bound invocation, enforced at the gateway; approval bound to the invocation digest", "F1-R11-C01"]]
+
+[[profile]]
+group = "OBSERVABILITY"
+rows = [["Evidence per row", "the full exchange, the gateway's stages, the effects ledger and, in the control plane, a hash-chained audit", "F1-R8-C08"]]
+
+[[profile]]
+group = "REPLAY"
+rows = [["Level", "{{comparison.level}}: {{comparison.rows}} recorded rows replayed through the real stack with the recorded model responses, no regression", "F1-R10-C03"]]
+
+[[profile]]
+group = "NEGATIVE CONTROL"
+rows = [["Safeguard removed", "the deterministic policy: {{negctl.governed.reached_backend}} of {{negctl.fixtures}} fixtures reached a backend with it, {{negctl.mutated.reached_backend}} without it", "F1-R11-C03"]]

@@ -1,0 +1,68 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "paygate",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true,
+        "readOnlyHint": false
+      },
+      "description": "PayGate: create a refund for a charge. Money is returned to the card used for the charge.",
+      "handler": "paygate.refund_charge",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "note": {
+            "description": "Note text",
+            "type": "string"
+          },
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payment_id",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "name": "refund_charge"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "PayGate: get the processor status of a charge.",
+      "handler": "paygate.get_charge_status",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payment_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_charge_status"
+    }
+  ],
+  "version": "1.0.0"
+}

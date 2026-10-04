@@ -1,0 +1,62 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "shipping",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get the current shipment status, carrier, tracking number and ETA for an order.",
+      "handler": "shipping.track_shipment",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "track_shipment"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a prepaid return shipping label for a delivered order.",
+      "handler": "shipping.create_return_label",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "create_return_label"
+    }
+  ],
+  "version": "1.0.0"
+}

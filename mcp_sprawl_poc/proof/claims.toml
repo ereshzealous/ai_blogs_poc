@@ -1,0 +1,257 @@
+# F1 · MCP Tool Sprawl · claims → experiments → checks (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# Every material measured claim the articles make, without its numbers (they are facts). `verdict` is tested against
+# the checks: supported needs every check PASS, contradicted and not_established need a FAIL, control needs an
+# EXPECTED_FAILURE, a limitation names what it rests on. `article` names where the Medium edition states it (section
+# headings and figures), `technical` the Technical edition's figures and charts that show it; `facts` lists every result
+# fact the article prints for it. tools/verify_publication.py fails
+# when a result fact in the article belongs to no claim, or a location does not exist.
+
+[[claims]]
+id = "F1-C01"
+statement = "The benchmark runs real MCP, not functions labelled MCP: the official SDK over stdio, one process per server, tools/list and tools/call, and a live local model."
+type = "implementation"
+verdict = "implementation"
+experiments = ["F1-R1"]
+checks = ["F1-R1-C01", "F1-R1-C02", "F1-R1-C03", "F1-R1-C04", "F1-R1-C05", "F1-R1-C08"]
+article = ["What actually ran", "ORD-4917, end to end", "fig:f09", "fig:f30", "fig:f31"]
+facts = ["protocol.revisions", "protocol.transport", "protocol.sdk_version", "model.temperature", "run.rows", "rows.per_variant", "harness.shortlist_k",
+         "model.name", "model.digest", "model.ollama_version", "protocol.servers.500", "protocol.tools.500", "embed.name", "published.run_id"]
+
+[[claims]]
+id = "F1-C02"
+statement = "Every control-plane side effect went through a signed gateway call; the baselines called their servers directly."
+type = "implementation"
+verdict = "implementation"
+experiments = ["F1-R1"]
+checks = ["F1-R1-C06", "F1-R1-C07"]
+article = ["What actually ran", "fig:f07"]
+facts = ["effects.C.gateway_verified", "effects.C.count"]
+
+[[claims]]
+id = "F1-C03"
+statement = "Deterministic governance contained unsafe proposals: the control plane's model proposed unsafe actions and none executed, and none of its misses executed anything unsafe."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R7"]
+checks = ["F1-R7-C01", "F1-R7-C02", "F1-R7-C03", "F1-R7-C08"]
+article = ["What the evidence said", "Search narrows the choice. The platform decides.", "Where this belongs", "What the failures changed", "fig:f21", "fig:f22", "fig:f26", "fig:f27", "fig:f20", "fig:f29"]
+technical = ["fig:chart:safety"]
+facts = ["C.all.unsafe_proposal.k", "C.all.unsafe_execution.k", "C.all.unsafe_proposal.kn", "C.all.unsafe_execution.kn", "C.all.incorrect.k", "rows.per_variant"]
+
+[[claims]]
+id = "F1-C04"
+statement = "Prompt policy was not an enforcement boundary: both baselines carried the operating policy in their prompts and still executed invented values, vendor refunds, approval-sized moves without approval and a write through a retired tool."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R7", "F1-R3"]
+checks = ["F1-R7-C04", "F1-R7-C05", "F1-R3-C03", "F1-R3-C04"]
+article = ["What the evidence said", "Tool sprawl is not just tokens", "Where this belongs", "fig:f04", "fig:f20", "fig:f26"]
+technical = ["fig:chart:safety"]
+facts = ["A.all.unsafe_proposal.k", "A.all.unsafe_execution.k", "B.all.unsafe_proposal.k", "B.all.unsafe_execution.k", "unsafe_kind.all.vendor",
+         "unsafe_kind.all.legacy", "unsafe_kind.all.invented", "unsafe_kind.all.no_approval"]
+
+[[claims]]
+id = "F1-C05"
+statement = "The fixed top-k search baseline drastically reduced catalog pressure."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R4"]
+checks = ["F1-R4-C01", "F1-R4-C04"]
+article = ["What the evidence said", "Search narrows the choice. The platform decides.", "Tool sprawl is not just tokens", "fig:f22", "fig:f26", "fig:f29", "fig:f21", "fig:f27", "fig:f04"]
+technical = ["fig:chart:tokens"]
+facts = ["A.500.median_tool_definition_tokens", "B.500.median_tool_definition_tokens", "C.500.median_tool_definition_tokens", "harness.shortlist_k"]
+
+[[claims]]
+id = "F1-C06"
+statement = "Search alone added no execution boundary: the search-only arm still executed unsafe actions and traps."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R7", "F1-R3"]
+checks = ["F1-R7-C05", "F1-R7-C06", "F1-R3-C04"]
+article = ["Search narrows the choice. The platform decides.", "fig:f22"]
+facts = ["B.all.unsafe_proposal.k", "B.all.unsafe_execution.k", "noise.B.500.repeat_unsafe_executions"]
+
+[[claims]]
+id = "F1-C07"
+statement = "All-tools correctness collapses as the estate grows (H1)."
+type = "measured"
+verdict = "contradicted"
+experiments = ["F1-R2"]
+checks = ["F1-R2-C01"]
+article = ["What the evidence said", "fig:f21", "fig:f26", "fig:f27", "fig:f29"]
+technical = ["fig:chart:correct"]
+facts = ["A.50.correct.pct", "A.100.correct.pct", "A.500.correct.pct", "A.50.correct.kn", "A.100.correct.kn", "A.500.correct.kn"]
+
+[[claims]]
+id = "F1-C08"
+statement = "The control plane is more correct than all tools at the largest estate."
+type = "measured"
+verdict = "not_established"
+experiments = ["F1-R2"]
+checks = ["F1-R2-C04"]
+article = ["What the evidence said", "fig:f21", "fig:f26", "fig:f27", "fig:f29"]
+technical = ["fig:chart:correct"]
+facts = ["C.500.correct.kn", "A.500.correct.kn", "conf.C_vs_A_500.p_holm", "conf.C_vs_A_500.c_only", "conf.C_vs_A_500.other_only"]
+
+[[claims]]
+id = "F1-C09"
+statement = "The control plane is more correct than search only at the largest estate, in the preregistered confirmatory test."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R2"]
+checks = ["F1-R2-C03"]
+article = ["What the evidence said"]
+facts = ["B.500.correct.pct", "conf.C_vs_B_500.c_only", "conf.C_vs_B_500.other_only", "conf.C_vs_B_500.p_holm_eq", "C.500.correct.kn"]
+
+[[claims]]
+id = "F1-C10"
+statement = "The control plane met its preregistered engineering target at the largest estate (H7)."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R2"]
+checks = ["F1-R2-C02"]
+article = ["What the evidence said"]
+technical = ["fig:chart:correct"]
+facts = ["C.500.correct.kn"]
+
+[[claims]]
+id = "F1-C11"
+statement = "The control plane's surface stayed bounded as the catalog grew: a handful of capabilities, not the catalog (H4)."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R4"]
+checks = ["F1-R4-C02", "F1-R4-C03"]
+article = ["What actually ran", "ORD-4917, end to end", "fig:f24"]
+facts = ["surface.C.max_capabilities", "C.500.median_tool_definition_tokens"]
+
+[[claims]]
+id = "F1-C12"
+statement = "A correct capability is not a correct outcome: the right tool can still carry a wrong argument, skip a clarification or write what should not be written."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R5"]
+checks = ["F1-R5-C01", "F1-R5-C02", "F1-R5-C03", "F1-R5-C04"]
+article = ["Search narrows the choice. The platform decides.", "What the evidence said", "Where this belongs", "fig:f20"]
+facts = ["owned_fact.B.all", "sel.A.500.capability_ok_incorrect", "sel.B.500.capability_ok_incorrect", "A.500.capability_correct.kn", "A.500.correct.kn",
+         "B.500.capability_correct.kn", "B.500.correct.kn"]
+
+[[claims]]
+id = "F1-C13"
+statement = "Relevance is not authority: search ranked trap refund tools above the authoritative one, and the registry kept implementations and traps out of the control plane's choice."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R3", "F1-R6"]
+checks = ["F1-R3-C01", "F1-R3-C02", "F1-R6-C01", "F1-R6-C02", "F1-R6-C03", "F1-R6-C04", "F1-R6-C05"]
+article = ["Four tools can refund this order. One should.", "Tool sprawl is not just tokens", "The model proposes. The platform governs.", "fig:f01", "fig:f04", "fig:f21", "fig:f27", "fig:f20"]
+facts = ["rank.paygate.refund_charge", "rank.payments_legacy.refund_charge_v1", "rank.refunds_staging.refund_order", "rank.refunds.refund_order",
+         "rank.loyalty.merge_members", "rank.payments.list_charges", "rank.marketplace.charge_seller_penalty"]
+
+[[claims]]
+id = "F1-C14"
+statement = "System-owned values can be bound from the record: in the ORD-4917 row the platform, not the model, chose the duplicate capture and bound the amount."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R8"]
+checks = ["F1-R8-C01", "F1-R8-C02", "F1-R8-C03", "F1-R8-C04", "F1-R8-C05", "F1-R8-C06", "F1-R8-C07", "F1-R8-C08", "F1-R8-C09"]
+article = ["ORD-4917, end to end", "fig:f24", "fig:f29"]
+technical = ["fig:f10"]
+facts = ["featured.audit_records", "surface.C.max_capabilities"]
+
+[[claims]]
+id = "F1-C15"
+statement = "Under follow-ups and outages the control plane executed nothing through a non-authoritative implementation and nothing duplicated or unapproved (H8), and its recorded failures executed nothing unsafe."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R9"]
+checks = ["F1-R9-C01", "F1-R9-C03", "F1-R9-C05"]
+article = ["What the failures changed", "fig:f28"]
+technical = ["fig:f13"]
+facts = ["C.all.incorrect.k"]
+
+[[claims]]
+id = "F1-C16"
+statement = "Without entity resolution, nonexistent targets stay hard: better discovery alone did not fix them (H5)."
+type = "measured"
+verdict = "contradicted"
+experiments = ["F1-R9"]
+checks = ["F1-R9-C02"]
+article = ["What actually ran", "What this proves, and what it doesn't", "fig:f29"]
+facts = ["hyp.H5.A", "hyp.H5.B"]
+
+[[claims]]
+id = "F1-C17"
+statement = "A complete reliability architecture: after a transient outage the control plane reported instead of retrying."
+type = "measured"
+verdict = "not_established"
+experiments = ["F1-R9"]
+checks = ["F1-R9-C06"]
+article = ["What the failures changed", "fig:f28", "fig:f29"]
+technical = ["fig:f13"]
+facts = ["outage.A.transient_completed", "outage.B.transient_completed", "outage.C.transient_completed"]
+
+[[claims]]
+id = "F1-C18"
+statement = "The model's answers varied between runs; the platform's guarantee did not."
+type = "measured"
+verdict = "supported"
+experiments = ["F1-R7"]
+checks = ["F1-R7-C08", "F1-R7-C09"]
+article = ["What the evidence said"]
+facts = ["noise.C.50.agreement", "noise.C.100.agreement", "noise.C.500.agreement", "noise.B.500.repeat_unsafe_executions", "B.500.unsafe_execution.k"]
+
+[[claims]]
+id = "F1-C19"
+statement = "The recorded results replay through the real stack without the model and reproduce their effects, outcomes and verdicts."
+type = "implementation"
+verdict = "implementation"
+experiments = ["F1-R10"]
+checks = ["F1-R10-C01", "F1-R10-C02", "F1-R10-C03", "F1-R10-C04", "F1-R10-C05", "F1-R10-C06"]
+article = ["The model proposes. The platform governs.", "ORD-4917, end to end", "What actually ran", "fig:f30", "fig:f31", "fig:f32"]
+facts = ["replay_r2.rows", "replay_r2.reproduced", "comparison.rows", "comparison.level", "replay.check.reproduced", "replay.check.rows",
+         "replay.record.rows", "replay.record.reproduced", "comparison.regression", "model.calls.main", "proof.checks"]
+
+[[claims]]
+id = "F1-C20"
+statement = "The proof notices when the policy is removed: the invariant it protects breaks, cleanly."
+type = "control"
+verdict = "control"
+experiments = ["F1-R11"]
+checks = ["F1-R11-C01", "F1-R11-C02", "F1-R11-C03", "F1-R11-C04", "F1-R11-C05"]
+article = ["What actually ran"]
+facts = ["negctl.fixtures", "negctl.governed.reached_backend", "negctl.mutated.reached_backend", "negctl.result"]
+
+[[claims]]
+id = "F1-C21"
+statement = "Security against hostile MCP servers is not tested: prompt injection, compromised servers, credentials and tenancy."
+type = "limitation"
+verdict = "limitation"
+article = ["What this proves, and what it doesn't", "fig:f29"]
+rests_on = "experiment/preregistration.md §9: not claimed"
+
+[[claims]]
+id = "F1-C22"
+statement = "Other models, real users, real approvers and internet scale are not tested."
+type = "limitation"
+verdict = "limitation"
+article = ["What this proves, and what it doesn't", "fig:f29"]
+rests_on = "experiment/preregistration.md §9: not claimed; one local model"
+
+[[claims]]
+id = "F1-C23"
+statement = "The enterprise behind the protocol is simulated, and the catalog's scale and collisions are generated."
+type = "limitation"
+verdict = "limitation"
+article = ["What actually ran", "What this proves, and what it doesn't"]
+rests_on = "poc/DESIGN.md §1: what is real and what is simulated"
+
+[[claims]]
+id = "F1-C24"
+statement = "In a persistent outage of the authoritative refund service, the baselines fell back to a non-authoritative implementation."
+type = "measured"
+verdict = "not_established"
+experiments = ["F1-R9"]
+checks = ["F1-R9-C04"]
+article = ["What the failures changed"]
+technical = ["fig:f13"]
+facts = ["outage.A.persistent_fallback_exec", "outage.B.persistent_fallback_exec"]

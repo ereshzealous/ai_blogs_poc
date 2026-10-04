@@ -1,0 +1,68 @@
+# F1 · the recorded runs of the frozen blind benchmark (pae-proof/v1). evidence/published.json names the one the
+# articles cite; every script looks the published run up here instead of naming a directory. A run's files are recorded
+# evidence and are never edited; its analysis, proof pack, replay comparison and negative control are derived.
+#
+#   noise_floor   the other live run of the same blind cases the noise floor compares against
+#   replay        the replay of every recorded row, with the recorded model responses ({sub = run} for a split record)
+#   pack          where its standardized proof pack lives; negative_control and comparison are the files of that pack
+#   failures      the recorded failures the articles show for it, in order (proof/learning.toml → failures, by id);
+#                 success_claim_row is the row of the success-claim failure
+
+[[runs]]
+id = "blind-rerun-2026-10-01"
+label = "Fresh blind pass"
+kind = "blind"
+date = "2026-10-01"
+note = "The frozen blind benchmark run again, live: {cases} cases × {variants} variants × {sizes} catalog sizes, scored from the effects ledger; the published run since 2026-10-01."
+raw = "experiment/raw/blind-rerun-2026-10-01"
+analysis = "experiment/analysis/blind-rerun-2026-10-01"
+noise_floor = "experiment/raw/blind-main"
+noise_label = "the original blind pass"
+replay = { "replay-blind-rerun-2026-10-01" = "blind-rerun-2026-10-01" }
+pack = "evidence/runs/blind-rerun-2026-10-01"
+negative_control = "evidence/runs/blind-rerun-2026-10-01/negative-control"
+comparison = "evidence/runs/blind-rerun-2026-10-01/replay-comparison.json"
+failures = ["success-claim", "outage"]
+success_claim_row = "BL-C08-1__C__100"
+
+[[runs]]
+id = "replay-blind-rerun-2026-10-01"
+label = "Replay of the fresh pass"
+kind = "replay"
+date = "2026-10-01"
+note = "Every row of the fresh pass, its recorded model responses fed back in order; everything downstream of the model executed again."
+raw = "experiment/recorded-run/replay-blind-rerun-2026-10-01"
+
+[[runs]]
+id = "blind-main"
+label = "Original blind pass"
+kind = "blind"
+date = "2026-09-28"
+note = "The preregistered blind run: {cases} cases × {variants} variants × {sizes} catalog sizes, run once and scored from the effects ledger; the published run until 2026-10-01."
+raw = "experiment/raw/blind-main"
+analysis = "experiment/analysis"
+noise_floor = "experiment/raw/blind-repeat"
+noise_label = "the preregistered repeat pass"
+replay = { "replay-r2/blind-main" = "blind-main", "replay-r2/blind-repeat-C" = "blind-repeat", "replay-r2/blind-repeat-B500" = "blind-repeat" }
+pack = "evidence/runs/blind-main"
+negative_control = "evidence/negative-control"
+comparison = "evidence/verification/run-comparison.json"
+failures = ["success-claim", "rejected-approval", "outage"]
+success_claim_row = "BL-C08-4__C__500"
+
+[[runs]]
+id = "blind-repeat"
+label = "Repeat pass"
+kind = "repeat"
+date = "2026-09-28"
+note = "The preregistered second pass of the original blind run, the noise floor: {cells}."
+raw = "experiment/raw/blind-repeat"
+repeat_of = "blind-main"
+
+[[runs]]
+id = "replay-check"
+label = "Replay check"
+kind = "replay"
+date = "2026-09-28"
+note = "Recorded model responses fed back in order; everything downstream of the model executed again."
+raw = "experiment/recorded-run/replay-check"

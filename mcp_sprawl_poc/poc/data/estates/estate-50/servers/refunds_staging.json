@@ -1,0 +1,57 @@
+{
+  "environment": "staging",
+  "region": "us",
+  "server": "refunds_staging",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund an order to the customer's original payment method. Creates a refund against a captured payment on the order and records it in the order's refund ledger.",
+      "handler": "refunds.refund_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "enum": [
+              "duplicate_charge",
+              "item_not_received",
+              "damaged_item",
+              "customer_request",
+              "other"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "payment_id",
+          "amount",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "name": "refund_order"
+    }
+  ],
+  "version": "1.0.0"
+}

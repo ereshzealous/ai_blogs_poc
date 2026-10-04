@@ -1,0 +1,132 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "helpdesk",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get a support ticket and its history.",
+      "handler": "helpdesk.get_ticket",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ticket_id": {
+            "description": "Support ticket id (format TCK-<digits>)",
+            "pattern": "^TCK-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_ticket"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Add an internal (agent-only) note to a support ticket.",
+      "handler": "helpdesk.add_internal_note",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "description": "Note text",
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Support ticket id (format TCK-<digits>)",
+            "pattern": "^TCK-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "note"
+        ],
+        "type": "object"
+      },
+      "name": "add_internal_note"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Send a reply to the customer on a support ticket.",
+      "handler": "helpdesk.reply_to_customer",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "description": "Message text",
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Support ticket id (format TCK-<digits>)",
+            "pattern": "^TCK-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "message"
+        ],
+        "type": "object"
+      },
+      "name": "reply_to_customer"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Escalate a support ticket to another team (tier2, payments, logistics).",
+      "handler": "helpdesk.escalate_ticket",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "type": "string"
+          },
+          "team": {
+            "description": "Team to route to",
+            "enum": [
+              "tier2",
+              "payments",
+              "logistics"
+            ],
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Support ticket id (format TCK-<digits>)",
+            "pattern": "^TCK-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "team"
+        ],
+        "type": "object"
+      },
+      "name": "escalate_ticket"
+    }
+  ],
+  "version": "1.0.0"
+}

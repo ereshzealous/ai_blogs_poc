@@ -1,0 +1,58 @@
+{
+  "environment": "prod",
+  "region": "global",
+  "server": "payments",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List the captured charges (payments) on an order with payment ids, amounts, card last 4 and refund status.",
+      "handler": "payments.list_charges",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "list_charges"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get one charge by payment id.",
+      "handler": "payments.get_charge",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "payment_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_charge"
+    }
+  ],
+  "version": "1.0.0"
+}

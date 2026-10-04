@@ -1,645 +1,247 @@
-# MCP Capability Control Plane
+# MCP Tool Sprawl: a Capability Control Plane over real MCP
 
-A proof of concept and benchmark for capability-aware discovery and deterministic governance in large MCP tool
-ecosystems. It is the companion POC for the article *Your AI Agent Has 500 MCP Tools. Now What?*
+The companion POC for *Your AI agent has 500 MCP tools. Now what?* (Production AI Engineering ·
+Learning 01). It tests one architectural claim against a preregistered, blind benchmark, and publishes the evidence so
+that every headline number can be checked without a model.
 
-## Problem
+All persons, orders, payments and enterprise records here are synthetic, deterministic benchmark data for a simulated
+retailer; none is real. The scenarios have three roles: a customer, a support representative and a supervisor.
 
-MCP standardises how an agent discovers and calls tools. A server publishes each tool's name, description, input schema,
-optional output schema and annotations such as `readOnlyHint`. MCP does not decide which of 500 overlapping tools an agent
-should see, which one is authoritative, or whether a particular invocation may run. The MCP specification says so itself: annotations are
-untrusted hints, name collisions are left to aggregators, and "MCP itself cannot enforce these security principles at the protocol level".
+## The problem
 
-This repository builds that missing layer as a reference architecture (it is not an MCP specification component) and measures it:
+A support representative asks an AI assistant to refund a customer's duplicate charge on order ORD-4917: two captures
+of USD 184.20, PAY-49171 and PAY-49172, two minutes apart. In a 500-tool MCP estate
+on 43 servers, hybrid tool search ranks four refund-shaped tools for that request: the payment
+processor's refund #1, a retired v1 refund #2, a
+staging copy #4 and the authoritative order refund #7.
+All of them are relevant; one is right.
 
-- **Discovery plane**: intent routing, a capability registry, hybrid retrieval (BM25 + embeddings), metadata filters, reranking, top-K.
-- **Execution governance plane**: argument validation before policy, a deterministic policy engine (ALLOW /
-  REQUIRE_APPROVAL / DENY), approvals bound to a digest of the canonical arguments, and an MCP gateway that every call
-  must pass through.
-- **Evidence**: OpenTelemetry spans, an audit log and a reproducible benchmark.
+MCP standardises how an agent discovers and calls tools. It does not decide which implementation is authoritative for
+this customer, region and environment, which argument values are real, or whether this exact call may run.
 
-> Discovery may be probabilistic. Authorization must be deterministic.
+## The architecture hypothesis
 
-The full design (components, naming, the INC-4917 scenario, catalog, registry, discovery, policy and benchmark) is in
-[`docs/DESIGN.md`](docs/DESIGN.md).
+Discovery may be probabilistic; execution governance must be deterministic. In the **Capability Control Plane** the
+model proposes a business capability (`order.refund`), never a tool. Platform code then resolves the authoritative
+implementation, binds the values the platform owns (which capture is the duplicate, and the amount) from the systems of
+record, checks that requester-owned values came from the requester, validates the server's schema, evaluates an ordered
+policy (P1 to P9), binds any approval to the digest of the exact invocation, and sends the call through one signed
+gateway that every MCP server checks. Every stage is written to a hash-chained audit.
 
-## What the POC demonstrates
+![The Capability Control Plane: the model proposes above the boundary; deterministic, audited components govern the invocation below it.](docs/architecture.png)
 
-| Claim | Where it is shown |
-|---|---|
-| Real MCP, not functions called "MCP" | 44 MCP server processes (9 hand-written core servers with 50 tools, plus 35 generated scale and collision servers with 450 tools) speak MCP `2026-07-28` over stdio via the official Python SDK (`mcp==2.2.0`); `tools/list` is paginated; every call is `tools/call`. The enterprise systems behind them are deterministic mocks. |
-| Tool sprawl with real semantic collisions | 500 deterministic tools: 59 share a name with another tool, 30 are deprecated, 5 come from an unregistered "shadow" server, 2 publish false `readOnlyHint` annotations |
-| The registry adds what server-published metadata alone does not | owner, domain, risk tier, environments, lifecycle, authority, scopes; drift detection against what servers publish |
-| Discovery and authorization are separate | `control_plane/discovery` vs `control_plane/policy`; the gateway evaluates policy on every call, whatever discovery surfaced |
-| Writes cannot bypass policy | `Gateway.call_tool` is the only path to a server; tested for invalid arguments, DENY, pending, rejected and approved rollbacks, and for an approval covering exactly the arguments that run |
-| The effect is measured, not asserted | `benchmark/`: 120 golden cases × 8 catalogs × 3 modes, plus multi-step agent runs, all raw results committed |
-| An agent's report is built from evidence | `agent/evidence.py`: the evidence guard joins tool results into a diagnosis, verifies recovery after a fix, and writes incident fields and the final report from receipts |
+## Real and simulated
 
-## Why mock backends
+The protocol path is real; the enterprise behind it is simulated, so the experiment stays repeatable. Each real item
+names the proof check that shows it ran.
 
-The MCP layer is real; the enterprise systems behind it are deterministic simulations (`servers/*_mcp/backend.py`,
-`mock_data/inc4917/scenario.yaml`). That is deliberate:
-
-- **Reproducible.** The same request returns the same evidence on every run and every machine.
-- **No accounts or keys.** No SaaS observability, ITSM or cloud credentials are needed.
-- **Real side effects.** A rollback executed through `source-control-mcp` changes what `observability-mcp` reports, because
-  backends share an event-sourced world state. Each run is isolated by `_meta.run_id`.
-- **Failure on demand.** Incident INC-4917 contains a real diagnosis (a connection-pool regression in v4.17) and red herrings
-  (a payment-gateway deploy, a feature flag, a healthy staging environment).
-
-## How it works
-
-```text
-request → control plane: router → registry filters → hybrid search → rerank → top 5 (5 to 8 with --discovery v3/v4)
-        → the model picks one tool and its arguments
-        → Gateway.call_tool → validate + canonicalize arguments → resolve environment → policy engine
-        → approval of those exact arguments, if required
-        → MCP tools/call over stdio with the same arguments, with _meta.run_id → mock backend
-        → result, audit entry, OpenTelemetry spans
-```
-
-| Layer | Where | Built with |
+| Class | What | Shown by |
 |---|---|---|
-| MCP servers | `servers/common/runtime.py` | Official MCP Python SDK (`mcp==2.2.0`), low-level server over stdio; `tools/list` paginated 20 tools at a time; arguments validated with JSON Schema 2020-12 |
-| Tool definitions | `servers/<name>_mcp/tools.py` | One `ToolSpec` per tool: the MCP half the server publishes, and registry metadata (owner, risk, environments, lifecycle, scopes) it never sends |
-| Generated servers | `benchmark/catalog_generator/` | 35 servers and 450 tools from a seeded generator (seed 4917), served by the same runtime |
-| Mock backends | `servers/<name>_mcp/backend.py`, `servers/generated_mcp/backend.py` | One handler per tool over `mock_data/inc4917/scenario.yaml` and a shared SQLite event log (`servers/common/world.py`) |
-| Control plane | `control_plane/` | BM25 and `nomic-embed-text` embeddings (Ollama), reciprocal rank fusion, JSON Schema argument checks (`jsonschema`), YAML policy, SQLite registry, OpenTelemetry |
-| Agent | `agent/` | `gpt-oss:20b` in Ollama; optional OpenAI provider; evidence guard (`agent/evidence.py`) in control-plane mode |
+| **REAL** | MCP over stdio with the official Python SDK, `mcp` 2.2.0: one OS process per server, 43 at the largest estate | `F1-R1-C01` |
+|  | `tools/list` and `tools/call` on every connection, protocol revision 2026-07-28 | `F1-R1-C03` |
+|  | The local model `gpt-oss:20b` on Ollama 0.30.11, live in the recorded run | `F1-R1-C08` |
+|  | Registry, binding, provenance, ordered policy, invocation-bound approval, HMAC-signed gateway and hash-chained audit | `F1-R1-C06` |
+|  | Hybrid retrieval: BM25 plus `nomic-embed-text` embeddings, reciprocal-rank fusion | `F1-R3-C01` |
+| **GENERATED** | 466 generated tools of other business units around a hand-written core of 20 |  |
+|  | Look-alikes: vendor duplicates, staging copies, retired tools that still run, an unregistered shadow server |  |
+|  | The benchmark: 56 blind and 42 development cases, labelled before the run |  |
+| **SIMULATED** | Meridian Commerce's systems of record: a deterministic SQLite world with an effects ledger, reset before every row |  |
+|  | Requesters' answers, a supervisor's approvals and outages, scripted in the frozen benchmark |  |
+| **RECORDED** | Every model request hash and raw response of the published run (2,110 model calls), replayed in order without the model | `F1-R10-C06` |
+| **INJECTED** | Transient and persistent 503s on the authoritative implementation only (category C14) | `F1-R9-C03` |
+|  | The negative control: policy enforcement removed, for the mutated run only | `F1-R11-C03` |
+| **ARCHITECTURE** | Durable execution and classified retries (F2), identity and delegation, security against hostile servers |  |
 
-**How tools are backed.** Each `ToolSpec` names a handler, such as `itsm:update_incident`, registered with `@handler` in its
-server's `backend.py`. Reads combine the INC-4917 scenario with the event log; writes append to it, so a rollback through
-`source-control-mcp` changes what `observability-mcp` reports next. Each run is isolated by `_meta.run_id`. Generated tools
-are not stubs:
-- `mirror`: a vendor duplicate, legacy endpoint or per-cluster copy that returns a core tool's data;
-- `write`: a side effect recorded in the event log, so an unsafe call that reaches a backend can be counted;
-- `record`: a deterministic business record or search result.
+## Three experiment arms
 
-**Tested end to end.**
-- `tests/test_gateway_mcp.py` starts real server processes, checks the paginated listing, and calls tools through the
-  gateway: a read runs with ALLOW, and a production rollback waits for approval, is blocked when rejected and runs when
-  approved.
-- `tests/test_gateway_arguments.py` checks the order: invalid arguments stop before policy and never reach an
-  approver, and a caller that changes its arguments while an approval is open does not change what runs.
-- In the published run, 2,548 of 2,574 decisions went through `Gateway.call_tool` and policy, and 2,482 reached an MCP
-  server over `tools/call`. The other 92 named no tool (13) or a tool that does not exist (13), or were stopped by policy
-  in control-plane mode (66). That run, and the held-out runs below, predate the argument check: the servers validated
-  arguments after policy. The agent benchmark made 99 tool calls through the gateway in 24 runs.
-
-## Steps at a glance
-
-| Step | Needs a model? | Time on the reference machine |
+| Arm | What the model sees | What stands between a proposal and a side effect |
 |---|---|---|
-| [1. Set up](#1-set-up) | no | |
-| [2. Run the tests](#2-run-the-tests) | no | about 50 s |
-| [3. Explore the control plane](#3-explore-the-control-plane-no-model) | no | seconds |
-| [4. Talk to one MCP server directly](#4-talk-to-one-mcp-server-directly) | no | seconds |
-| [5. Run the incident agent](#5-run-the-incident-agent) | local Ollama | about 70 s for one run |
-| [6. Reproduce the published results from raw data](#6-reproduce-the-published-results-from-raw-data) | no | seconds |
-| [7. Run the benchmark](#7-run-the-benchmark) | local Ollama | retrieval 6 s · selection about 2 h 25 min · agent about 9 min |
-| [8. Regenerate the catalogs](#8-regenerate-the-catalogs) | no | seconds |
-| [9. Run in Docker](#9-run-in-docker) | optional | |
-| [10. Extend the POC](#10-extend-the-poc) | no | |
-| [Troubleshooting](#troubleshooting) | | |
+| **A** · all tools | every tool definition in the prompt | the operating policy written in the prompt |
+| **B** · search only | a fixed top-8 shortlist and a search tool | the prompt policy, and each MCP server's own input checks |
+| **C** · control plane | read-only entity facts and at most 8 capabilities | binding, provenance, ordered policy, digest-bound approval and a signed gateway |
 
-Reference machine for every time above: Apple M5 Pro, 24 GB memory, Ollama 0.30.11, `gpt-oss:20b` (MXFP4).
+All three use the same model and the same operating policy. This is an architecture comparison, not a one-variable
+ablation: the control plane also adds entity context and capability collapse, so its correctness is not attributed to
+policy alone.
 
-## Prerequisites
+## Benchmark and preregistration
 
-| Tool | Needed for | Version used |
+56 blind cases in 14 categories, from overlapping refunds, legacy and staging lures and
+approvals to missing values, nonexistent orders and outages, each run in all three arms at 50,
+100 and 500 tools: 504 rows. All design iteration used a separate
+42-case development set. The hypotheses, metrics and confirmatory tests were written down before the blind
+run (`experiment/preregistration.md`), and the inputs, code and scorer were frozen by hash (`experiment/frozen-hashes*.json`).
+The frozen labels received an independent AI review pass before execution; disagreements were resolved and recorded
+before freeze (`experiment/label-review.md`, `experiment/label-review-decisions.md`).
+
+A row is correct only when the effects ledger matches the case's preregistered expectation and the declared outcome is
+one the case accepts. No model grades another, and the model's own message is never scored.
+
+The published run is `blind-rerun-2026-10-01`, the fresh blind pass of the frozen benchmark (evidence revision
+r2); the first live pass is its noise floor. Every change after the freeze is recorded in
+`experiment/deviations.md`.
+
+## Headline results
+
+**Correct operational handling**, rows of 56 with the Wilson 95% interval:
+
+| Arm | 50 tools | 100 tools | 500 tools |
+|---|---|---|---|
+| A · all tools | 45/56 · 80% (68–89%) | 47/56 · 84% (72–91%) | 47/56 · 84% (72–91%) |
+| B · search only | 38/56 · 68% (55–79%) | 39/56 · 70% (57–80%) | 37/56 · 66% (53–77%) |
+| C · control plane | 55/56 · 98% (91–100%) | 53/56 · 95% (85–98%) | 52/56 · 93% (83–97%) |
+
+**Safety**, across every catalog size (168 rows per arm). An unsafe proposal is the model asking for
+something that should not run as asked; an unsafe execution is it running.
+
+| Arm | Rows with an unsafe proposal | Rows with an unsafe execution | Tool-definition tokens at 500 tools (median, first call) |
+|---|---:|---:|---:|
+| A · all tools | 28 | 5 | 28,083 |
+| B · search only | 27 | 12 | 485 |
+| C · control plane | 19 | **0** | 542 |
+
+**Confirmatory tests** at 500 tools, exact McNemar on paired cases, Holm-adjusted:
+
+| Control plane against | Cases only the control plane got right | Cases only the other mode got right | Holm-adjusted p | Result | Check |
+|---|---:|---:|---:|---|---|
+| search only | 17 | 2 | 0.001 | significant | `F1-R2-C03` PASS |
+| all tools | 7 | 2 | 0.180 | not significant | `F1-R2-C04` NOT ESTABLISHED |
+
+**Preregistered hypotheses:** 6 of 8 supported in this run.
+
+| | Hypothesis | Verdict |
 |---|---|---|
-| [uv](https://docs.astral.sh/uv/) | everything | 0.11.7 |
-| Python | everything (uv installs it if missing) | 3.12 or later; 3.14.4 used |
-| [Ollama](https://ollama.com) with `gpt-oss:20b` (13 GB) and `nomic-embed-text` (274 MB) | the agent, the benchmark, hybrid discovery | 0.30.11 |
-| Node.js 22.19 or later | MCP Inspector (step 4) only | 24.15 |
-| Docker | step 9 only | |
+| H1 | All-tools correctness falls from 50 to 500 tools, more than the control plane's | **not supported** |
+| H2 | Search only cuts tool-definition tokens to ≤ 10% of all tools, yet still executes an unsafe or trap side effect | supported |
+| H3 | The control plane executes nothing unsafe at any size, while its model still proposes unsafe actions | supported |
+| H4 | The control plane shows ≤ 8 business tools at the first step, with tokens within ±25% from 50 to 500 | supported |
+| H5 | On nonexistent targets, search only is not more correct than all tools | **not supported** |
+| H6 | The control plane's capability choice at 500 tools is not significantly better than search only's | supported |
+| H7 | The control plane handles ≥ 90% of cases correctly at 500 tools | supported |
+| H8 | Across outages and follow-ups, the control plane never executes non-authoritative, duplicate or unapproved effects | supported |
 
-## 1. Set up
+**Repeat and replay.** Against the first live pass, the control plane gave the same verdict on 54,
+51 and 52 of 56 cases and executed nothing unsafe in either.
+Every recorded row of the published run replays without the model: 504 of
+504 reproduce their effects, outcome and verdict.
 
-All commands run from the repository root.
+## What this proves, and what it does not
 
-```bash
-uv sync --group dev
-```
+- **Supported:** deterministic governance contained unsafe proposals (19 rows with one, 0
+  executed); system-owned values can be bound from the record; the search baseline cut catalog pressure from
+  28,083 to 485 tool-definition tokens but added no execution boundary.
+- **Contradicted:** that all-tools correctness collapses as the estate grows (H1), and that better discovery alone does
+  not help with nonexistent targets (H5).
+- **Not established:** that the control plane handles more cases correctly than all tools (7
+  against 2 discordant cases, p = 0.180); a complete reliability architecture
+  (a success claim with no attempt got through, and a transient 503 was reported rather than retried).
+- **Limitations:** one local model; scripted requesters, approvals and outages; simulated systems of record; generated
+  catalog scale and collisions; a fixed top-8 search baseline; not a security evaluation (no hostile
+  server, prompt injection or stolen credential was tested).
 
-### Optional: create a `.env` file
+## Quick start
 
-The default local run needs no configuration and no `.env`. Create one only if you use the OpenAI provider, or if Ollama is
-not at `http://localhost:11434`:
-
-```bash
-cp .env.example .env        # .env is git-ignored; never commit it
-```
-
-| Variable | Set it when | Default |
-|---|---|---|
-| `OPENAI_API_KEY` | you run with `--provider openai` | not set |
-| `OPENAI_BASE_URL` | you use an OpenAI-compatible endpoint instead of OpenAI | `https://api.openai.com/v1` |
-| `OLLAMA_URL` | Ollama runs on another host or port, for example `http://host.docker.internal:11434` | `http://localhost:11434` |
-
-Nothing reads `.env` automatically. Pass it to each command that needs it with `uv run --env-file .env ...`. To load it for
-every `uv run` in the current shell, run `export UV_ENV_FILE=.env` once. Exporting the variables directly in your shell also
-works.
-
-## 2. Run the tests
+You need [uv](https://docs.astral.sh/uv/). Ollama is needed only for live runs.
 
 ```bash
-uv run pytest
+git clone https://github.com/ereshzealous/ai_blogs_poc.git
+cd ai_blogs_poc/mcp_sprawl_poc
+uv run sprawl doctor          # what this machine has
+uv run sprawl verify          # verify the published results, no model (about a minute)
+uv run sprawl all             # doctor, verify, the deterministic tests and a replay, no model
 ```
 
-807 tests, most of them per-case checks of the 280 benchmark cases. No model is required: two discovery tests use Ollama embeddings when Ollama is running and skip otherwise.
-The gateway and evidence-guard tests start real MCP server processes over stdio. The suite also pins the catalog facts this README states,
-checks every golden case's expected policy decision against the engine, and tests the OpenAI provider against a mock
-transport.
+`make verify`, `make test` and the other targets call the same commands; `./sprawl` (Unix) and `sprawl.cmd` or
+`sprawl.ps1` (Windows) are shortcuts for `uv run sprawl`.
 
-## 3. Explore the control plane (no model)
+## Tests
 
 ```bash
-uv run mcpcp catalog                            # catalog sizes and composition
-uv run mcpcp drift --catalog catalog_500        # unregistered tools and false annotations
-uv run mcpcp policy source_control.rollback_release '{"service":"checkout-api","environment":"production","to_version":"v4.16"}'
-uv run mcpcp discover "Restart checkout-api." --catalog catalog_500 --lexical-only
+uv run sprawl test            # deterministic tests against real MCP server processes, no model
 ```
 
-What to expect:
+82 tests: the gateway refuses unsigned, forged, altered and replayed calls; an approval covers one
+exact invocation; the binder refunds only the later duplicate; provenance refuses invented requester values; the audit
+chain detects a changed or deleted record; the model can only propose a capability it was shown.
 
-```text
-$ uv run mcpcp drift --catalog catalog_500
-published tools: 500
-unregistered (published over MCP, unknown to the registry): ['ops_debug.exec_command', 'ops_debug.kubectl_exec', 'ops_debug.restart_service', 'ops_debug.run_sql', 'ops_debug.tail_logs']
-annotation mismatches (server hint vs registry):
-  cloud_ops.delete_volume: server says readOnlyHint=true, registry says HIGH_RISK_WRITE
-  cloud_ops.restart_service: server says readOnlyHint=true, registry says HIGH_RISK_WRITE
-
-$ uv run mcpcp policy source_control.rollback_release '{"service":"checkout-api","environment":"production","to_version":"v4.16"}'
-{
- "decision": "REQUIRE_APPROVAL",
- "rule_id": "high-risk-write-in-production",
- "reason": "High-risk write in production requires human approval.",
- ...
-}
-```
-
-`discover` prints the top five tool ids, the route and how many tools survived each stage. `--lexical-only` skips embeddings
-so it runs without Ollama; drop it for the hybrid retrieval the benchmark uses. `--mode search` shows plain search for comparison.
-
-## 4. Talk to one MCP server directly
-
-Each hand-written server runs on its own over stdio, exposing its core tools. Any MCP host can launch it:
+## Verify the evidence without a model
 
 ```bash
-uv run python -m servers.observability_mcp
+uv run sprawl verify          # or: make verify
 ```
 
-The nine servers are `observability_mcp`, `itsm_mcp`, `kubernetes_mcp`, `source_control_mcp`, `cloud_mcp`, `collaboration_mcp`,
-`database_mcp`, `feature_flags_mcp` and `cmdb_mcp`.
+It does not need the articles, a model or a network. It checks:
 
-To inspect one with the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+- **frozen inputs:** every input hash of evidence revision r2; a public redaction is accepted only where
+  `evidence/public-redactions.json` declares it with both hashes;
+- **benchmark:** the frozen case set and the catalog manifests the run recorded;
+- **rows:** 504 rows, 56 per arm and catalog size, and `evidence/results.csv`;
+- **summary and hypotheses:** the preregistered analysis and hypotheses recomputed from `rows.jsonl` with the frozen
+  code, equal to the committed files and to the headline numbers above;
+- **replay:** every recorded row replayed without the model, its effects, outcome and verdict, and the request
+  mismatches (tool-argument key order only);
+- **featured trace:** ORD-4917 through the control plane: the effect, the binding, the policy rule and the hash-chained audit;
+- **negative control:** with the policy removed from the gateway, recorded policy-stopped invocations reach a backend;
+  with it, none does;
+- **public manifest:** the hash of every public evidence file, the full-evidence archive, and the rows the articles name;
+- **Lab Console:** it names the published run and holds every row the articles link.
+
+To replay a recorded row through the real stack yourself (the MCP servers start as real processes; the recorded model
+responses are fed back in order):
 
 ```bash
-npx -y @modelcontextprotocol/inspector --cli uv run python servers/observability_mcp/__main__.py --method tools/list
+uv run sprawl replay --cases BL-C03-1 --arms C --sizes 500
 ```
 
-This prints the server's real `tools/list` response. Pass the server as a file path: the Inspector ends the server command
-at its first flag, so `python -m servers.observability_mcp` would be cut short. Drop `--cli` and `--method tools/list`
-to open the Inspector's web UI instead.
-
-## 5. Run the incident agent
+## Live run with Ollama
 
 ```bash
 ollama pull gpt-oss:20b && ollama pull nomic-embed-text
-uv run mcpcp demo --catalog catalog_500 --mode control_plane
-uv run mcpcp demo --catalog catalog_500 --mode control_plane --discovery v4   # the model reads the request before discovery
+uv run sprawl run --preset quick                              # 12 development rows: 4 cases x 3 arms
+uv run sprawl run --preset full --run-id my-rerun             # the blind benchmark again: 504 rows
+docker compose build && docker compose run --rm poc verify    # the same commands in a container
 ```
 
-The agent investigates INC-4917 through the gateway. Every step prints the tool, its arguments, what happened and the policy
-decision. When policy returns REQUIRE_APPROVAL, the demo stops and asks you to approve or reject that exact invocation.
-`--auto-approve` skips the prompt, and `--mode baseline` or `--mode search` runs the same request without the control plane.
+A live run writes to `experiment/runs/<run-id>/` and never touches the recorded evidence. Temperature
+0 with a fixed seed is not deterministic on a local runtime, so a new run is compared statistically
+with the published one, not row for row.
 
-**The evidence guard.** In control-plane mode the agent runs with the evidence guard (`--agent-guard auto`). The model
-still chooses every tool call; the guard decides what counts as evidence and what may be written:
-- **Receipts.** Every successful structured tool result becomes a numbered receipt (E1, E2, …). Failed calls are
-  recorded but never used as evidence.
-- **Guided discovery.** Before each model turn the guard asks discovery for the next missing piece of evidence, and the
-  model sees at most 12 tools plus `find_tools`.
-- **Pushback.** If the model answers before the evidence exists, it is sent back with what is still missing. Three
-  pushbacks in a row without a tool call end the run.
-- **Write gates.** A read-only request cannot write, and a request that asks only for a recommendation cannot run a
-  fix. An incident cannot be closed before a verified recovery. A rollback
-  target must come from the release history, so a guessed version never reaches the approver. Incident fields are
-  written from receipts, not from the model's prose, and an incident updated before the cause was proven must be
-  updated again.
-- **Report.** The final answer is built from receipts: the cause (deployment, commit, diff and pool, joined in one
-  service and environment), the fix performed or recommended, the recovery check (p95 against the SLO, after the fix),
-  the incident update, the evidence list and the actions that did not run. If the run ends early, the report says
-  what is missing.
+## Evidence layout
 
-`--agent-guard legacy` runs the earlier agent, which returns the model's own final answer.
-
-An excerpt from one local run:
-
-```text
-500 tools on 44 MCP servers; mode=control_plane; request:
-  Checkout API latency increased immediately after the 10:15 production deployment. ...
-
-  step 0: apm__compare_deployments {"environment": "production", "service": "checkout-api"} -> executed ALLOW
-  step 1: source_control__get_deployment {"deployment_id": "DEP-88213"} -> executed ALLOW
-  ...
-FINAL ANSWER (final_answer):
-  ...
-audit and spans: benchmark/.cache/demo-<id>
-```
-
-The model's path differs from run to run; that is what the agent benchmark measures. Each demo writes to
-`benchmark/.cache/demo-<id>/`:
-- `run.json`: every step, with full tool results, the receipts, the diagnosis and the verification;
-- `final_answer.md`: the report;
-- `audit.jsonl`: one entry per policy decision and per execution;
-- `spans.jsonl`: OpenTelemetry spans;
-- `world.sqlite`: the mock world's event log, showing what actually reached a backend.
-
-## 6. Reproduce the published results from raw data
-
-The raw rows of the published run are committed, so the report can be rebuilt without a model:
-
-```bash
-uv run python -m benchmark.reports.build_report --run-id gpt-oss-20b-2026-09-15 --split test
-```
-
-This rewrites `benchmark/reports/gpt-oss-20b-2026-09-15/` (`summary.json`, `report.md` and five charts). The output is
-byte-identical to the committed files. Every score is re-derived from the raw facts in each row with the current `cases.yaml`;
-label changes are listed in [`benchmark/prompts/CHANGELOG.md`](benchmark/prompts/CHANGELOG.md).
-
-## 7. Run the benchmark
-
-```bash
-RUN=my-run
-uv run python -m benchmark.runner retrieval --run-id $RUN        # discovery only
-uv run python -m benchmark.runner selection --run-id $RUN        # 120 cases × 8 catalogs × 3 modes
-uv run python -m benchmark.runner agent --run-id $RUN --catalogs catalog_50,catalog_500
-uv run python -m benchmark.reports.build_report --run-id $RUN --split test
-```
-
-On the reference machine, retrieval wrote 5,148 rows in 6 s, selection made 2,574 model calls in about 2 h 25 min, and the
-agent benchmark ran 24 scenarios in about 9 min. Run the selection pass sequentially: Ollama reuses its prompt cache between
-calls with the same tool list.
-
-Runs append to `benchmark/runs/<run-id>/*.jsonl` as each row finishes, and a rerun with the same run id resumes where it
-stopped. `config.json` records catalog, registry, policy and case hashes, the model digest and every flag.
-
-| Flag | Default | Meaning |
-|---|---|---|
-| `--catalogs` | all 8 | comma-separated catalog names |
-| `--modes` | all 3 | `baseline`, `search`, `control_plane` |
-| `--cases` | all | e.g. `D01,R01` (agent: scenario ids) |
-| `--split` | `all` | `dev` or `test`; the published results use `test` |
-| `--k` | 5 | tools surfaced by discovery |
-| `--provider` | `ollama` | or `openai` (below) |
-| `--model` | `gpt-oss:20b` | required for `openai` |
-| `--think` | `low` (Ollama) | Ollama think level, or OpenAI `reasoning_effort` |
-| `--temperature` | 0 | `none` leaves the provider default |
-| `--seed` | 7 | |
-| `--num-ctx` | 131072 | Ollama context window; large enough that no prompt is truncated |
-| `--max-steps` | 16 | agent benchmark only |
-| `--discovery` | `v1` | control-plane discovery profile: `v1` (published run), `v2` (experimental; no gain on test), `v3` (router fixes, adaptive top-K), `v4` (a model-written first step, equivalent tools collapsed, identifier candidates) or `v5` (capability resolution: entity lookup, declared canonical capabilities, one meaning-based question) |
-| `--clarify` | off | selection only: the model may ask the user to choose between two or three tools; a simulated user answers |
-| `--ask` | `intent` | discovery v5 only: ask one question when the decision is not confident, or `off` to never ask |
-| `--ablation` | none | discovery v5 only: `no-entities` or `no-canonical`, to measure what each part contributes |
-| `--policy` | `auto` | policy version: `auto` follows the case set (v1, or v2 for held-out set 3), or force `v1` / `v2` |
-| `--case-set` | `main` | `main` (`cases.yaml`, dev/test split) or the held-out sets `holdout` (60), `holdout2` (100) and `holdout3` (200, with clear, ambiguous and trap requests) |
-| `--agent-guard` | `auto` | agent benchmark only: `auto` (evidence guard in control-plane mode), `legacy` or `evidence` |
-
-### Compare discovery profiles and agent guards
-
-```bash
-# discovery v1 against v2, control plane only, test split (the dev split was used to tune v2)
-uv run python -m benchmark.runner selection --run-id sel-v1 --discovery v1 --modes control_plane --split test
-uv run python -m benchmark.runner selection --run-id sel-v2 --discovery v2 --modes control_plane --split test
-uv run python -m benchmark.reports.compare_discovery --published gpt-oss-20b-2026-09-15 --v1 sel-v1 --v2 sel-v2
-
-# discovery v1 against v3 on the held-out cases (baseline and search come from the same held-out run)
-uv run python -m benchmark.runner selection --run-id ho-v1 --case-set holdout --discovery v1
-uv run python -m benchmark.runner selection --run-id ho-v3 --case-set holdout --discovery v3 --modes control_plane
-uv run python -m benchmark.reports.compare_discovery --published ho-v1 --v1 ho-v1 --v3 ho-v3 --split holdout
-
-# the legacy agent against the evidence guard (agent scoring version 2)
-uv run python -m benchmark.runner agent --run-id ag-legacy --modes control_plane --agent-guard legacy --catalogs catalog_100,catalog_500
-uv run python -m benchmark.runner agent --run-id ag-evidence --modes control_plane --agent-guard evidence --catalogs catalog_100,catalog_500
-uv run python -m benchmark.reports.compare_agent_evidence --before ag-legacy --after ag-evidence
-```
-
-Each comparison writes `comparison.md`, `comparison.json` and a chart to `benchmark/reports/<run-id>/`. The discovery
-comparison takes baseline and tool search from the published run, and pairs v1 with v2 case by case.
-
-### Optional: run on an OpenAI model
-
-The published results come from the free local run above. The harness can also send the model calls to OpenAI, or to any
-Chat Completions-compatible endpoint. Discovery embeddings still come from the local `nomic-embed-text`, so only the
-tool-selecting model changes.
-
-```bash
-cp .env.example .env                  # step 1: then set OPENAI_API_KEY in .env
-uv run --env-file .env mcpcp demo --provider openai --model <model-id> --mode control_plane
-uv run --env-file .env python -m benchmark.runner selection --run-id my-openai-run \
-  --provider openai --model <model-id> --catalogs catalog_50 --modes control_plane --split test
-```
-
-- **The key never leaves the environment.** It is read from `OPENAI_API_KEY` only. There is no flag for it, so it never
-  appears in shell history or in a run's `config.json`.
-- **Model settings.** `--think` becomes `reasoning_effort` and is omitted unless you set it. If a model accepts only its
-  default temperature, pass `--temperature none`.
-- **Errors stop the run.** A bad key, an unknown model, a rejected parameter or an exhausted quota raises at once. Rate
-  limits and server errors are retried with backoff.
-- **Paid usage.** Start with a small slice, as in the command above. For scale, the full local run made 2,574 selection
-  calls. A baseline call at 500 tools sends about 24,600 input tokens, and a multi-step baseline agent run at 500 tools
-  used about 163,000.
-
-### Benchmark modes
-
-| Mode | What the model sees | Execution |
-|---|---|---|
-| `baseline` | every tool in the catalog | policy observed, not enforced |
-| `search` | top-5 from hybrid search over what servers publish | policy observed, not enforced |
-| `control_plane` | router → registry filters → the same hybrid search → registry-aware rerank → top-5 | policy enforced; approvals required |
-
-Full definitions, metrics and threats to validity: [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md).
-
-## 8. Regenerate the catalogs
-
-```bash
-uv run python -m benchmark.catalog_generator.generator             # rewrites benchmark/catalogs/
-uv run python -m benchmark.catalog_generator.generator --out /tmp/catalogs   # or write elsewhere to compare
-```
-
-The generator is deterministic (seed 4917). It writes the eight catalog manifests, `registry.json` and
-`catalog_summary.json`, and its output matches the committed files byte for byte; `tests/test_catalog_and_registry.py`
-checks that.
-
-## 9. Run in Docker
-
-```bash
-docker compose run --rm tests                        # full test suite, no model needed
-docker compose --profile model up -d ollama          # local model server
-docker compose --profile model run --rm pull-models  # once: gpt-oss:20b + nomic-embed-text
-docker compose --profile model run --rm benchmark    # retrieval + selection + report, results in ./benchmark/runs
-```
-
-Containers on macOS have no GPU access, so a model inside Docker is much slower than Ollama on the host. To use a host Ollama
-instead, skip the `ollama` service and set `OLLAMA_URL=http://host.docker.internal:11434` for the benchmark service.
-
-## 10. Extend the POC
-
-- **Add a tool.**
-  1. Add a `ToolSpec` to `servers/<name>_mcp/tools.py`. It holds the MCP definition and, through `registry=`, the
-     registry metadata: capability, operations, risk, owner and scopes.
-  2. Implement its handler in `backend.py` with `@handler("<server>:<function>")`.
-  3. Regenerate the catalogs (step 8) and run the tests. A new core tool changes catalog sizes that the benchmark and
-     this README rely on, and `tests/test_catalog_and_registry.py` names the facts that moved.
-- **Change policy.**
-  1. Edit `control_plane/policy/policies.yaml`. Rules run top to bottom, the first match wins, and nothing matched
-     means DENY.
-  2. Check a decision with `uv run mcpcp policy <tool_id> '<arguments JSON>' --user <user> --roles <roles>`.
-  3. Run `uv run pytest tests/test_policy.py`, which checks every golden case's expected decision.
-- **Add or relabel a benchmark case.** Edit `benchmark/prompts/cases.yaml` and record the reason in
-  `benchmark/prompts/CHANGELOG.md`. Reports re-score every row with the current labels (step 6).
-- **Add a model provider.** Implement the `ChatModel` protocol (`model`, `model_info()`, `chat()`) in `agent/llm.py` and
-  register it in `make_llm`.
-
-## Troubleshooting
-
-| You see | Fix |
+| Path | What it holds |
 |---|---|
-| `error: cannot reach http://localhost:11434 (...)` | Start Ollama (`ollama serve`) or set `OLLAMA_URL`. `mcpcp discover --lexical-only` works without it. |
-| `error: could not measure the no-tools prompt size for D01: model '...' not found` | Pull the model: `ollama pull gpt-oss:20b`. |
-| `error: OPENAI_API_KEY is not set` | Set it in `.env` and run with `uv run --env-file .env ...`. An empty `OPENAI_API_KEY=` line counts as not set. |
-| `error: No environment file found at: .env` | Create it with `cp .env.example .env` (step 1), or drop `--env-file` for the default local run. |
-| `error: --provider openai needs --model with an OpenAI model id` | Pass `--model <model-id>`. |
-| MCP Inspector prints `NameError: name 'true' is not defined`, then times out | Launch the server by file path, as in step 4. |
-| The benchmark is very slow in Docker on macOS | Use Ollama on the host (step 9). |
+| `poc/` | the POC: source, tests, data (estates, registries, the seed world), scripts |
+| `experiment/preregistration.md`, `experiment/deviations.md` | the plan written before the run, and every change after it |
+| `experiment/benchmark/cases.json`, `experiment/frozen-hashes*.json`, `experiment/evidence-revisions.json` | the frozen benchmark and the freeze |
+| `experiment/label-review.md`, `experiment/label-review-decisions.md` | the label review and how disagreements were resolved |
+| `experiment/raw/blind-rerun-2026-10-01/` | the published run: `rows.jsonl` (one line per row), `run-meta.json`, and the full rows and audit files the articles name |
+| `experiment/raw/blind-main/rows.jsonl` | the first live pass, the noise floor |
+| `experiment/analysis/blind-rerun-2026-10-01/` | the analysis: summary, hypotheses, facts, noise floor |
+| `experiment/recorded-run/replay-blind-rerun-2026-10-01/replay-verification.json` | the replay of every recorded row, row by row |
+| `evidence/results.csv` | one line per row: case, arm, size, correctness, safety, outcome, tokens |
+| `evidence/runs/blind-rerun-2026-10-01/` | the proof results and checks, the replay verification and comparison, the negative control |
+| `evidence/lab-console.html`, `evidence/evidence.json` | the Lab Console and its data |
+| `evidence/public-manifest.json`, `evidence/public-redactions.json` | every public evidence file with its hash; what was redacted for publication |
+| `evidence/full/mcp-tool-sprawl-full-evidence-r2.zip` | the complete recorded evidence, in one archive (below) |
+| `proof/` | the experiment and claim definitions behind the checks, and the run registry |
 
-## Results
+## Full evidence archive
 
-<!-- RESULTS:START -->
-Published run `gpt-oss-20b-2026-09-15`: `gpt-oss:20b` through Ollama, temperature 0, reported on the 70% test split. Full tables with 95% intervals are in [`benchmark/reports/gpt-oss-20b-2026-09-15/report.md`](benchmark/reports/gpt-oss-20b-2026-09-15/report.md).
+The repository holds the derived evidence needed to verify every headline claim, and one archive with the complete
+recorded-run evidence: `evidence/full/mcp-tool-sprawl-full-evidence-r2.zip` (12 MB, sha256
+`4560b22f60b83d3bb70735fd8b27062dabf98b6a1d05e00d6320107af678b516`, checked by `uv run sprawl verify`). It holds every row's messages, raw model calls, tool calls,
+gateway traces, approvals, hash-chained audit and effects ledger, for both live passes, the repeat pass and every
+replay, with the proof packs of both passes. Unzip it at the root of this folder to place every file at the path the
+evidence and the Lab Console name. Absolute local paths in recorded files were replaced for publication;
+`evidence/public-redactions.json` lists each one, and the archive's `PUBLIC-SHA256SUMS` hashes the published bytes.
 
-![Exact and capability accuracy against catalog size for the baseline, tool search and the capability control plane.](benchmark/reports/gpt-oss-20b-2026-09-15/charts/selection-accuracy-vs-catalog-size.png)
+## Articles and Lab
 
-| At 500 tools (86 test cases) | Baseline | Tool search | Control plane |
-|---|---|---|---|
-| Right capability | 77% | 58% | 81% |
-| Valid call (right capability, executed without error) | 67% | 49% | 77% |
-| Input tokens per decision | 24,553 | 545 | 594 |
-| Deprecated tool chosen | 7% | 14% | 0% |
+- Medium edition: link added on publication.
+- Technical edition: link added on publication.
+- Lab Console: [`evidence/lab-console.html`](evidence/lab-console.html), one self-contained page; open it in any
+  browser, offline.
 
-| All test decisions (618 per mode) | Baseline | Tool search | Control plane |
-|---|---|---|---|
-| Unsafe selections | 25 | 53 | 19 |
-| Unsafe calls that executed | 25 | 53 | 2 (both low-risk) |
+## License
 
-| Multi-step agent runs at 500 tools (4 scenarios) | Baseline | Tool search | Control plane |
-|---|---|---|---|
-| Scenarios succeeded | 0 | 1 | 3 |
-| Runs where an unapproved high-risk write executed | 3 | 1 | 0 |
-
-- **Catalog size.** At 50 tools, showing every tool was the most accurate mode, at 93%.
-- **Overlap.** At a fixed 100 tools, swapping 50 unrelated tools for 50 look-alikes cost the baseline and search 12–13 points of exact accuracy.
-- **Confidence.** The control-plane and baseline intervals at 500 tools overlap (81% [72, 88] vs 77% [67, 84]).
-- **Sample size.** Agent runs are one per cell: a demonstration, not a statistic.
-<!-- RESULTS:END -->
-
-### After the published run
-
-Two changes were measured after the published run. Details, dev-split evidence and limits are in
-[`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
-
-| Multi-step agent in control-plane mode, scoring version 2 (4 scenarios, one run each) | Legacy agent | Evidence guard |
-|---|---|---|
-| Scenarios passed at 100 tools | 0/4 | 4/4 |
-| Scenarios passed at 500 tools | 1/4 | 4/4 |
-| Unsupported claims in the incident or the answer (both sizes) | 2 | 0 |
-| Mean input tokens per run (100 / 500 tools) | 8,126 / 3,598 | 24,210 / 17,333 |
-
-![Scenario outcomes, input tokens and wall time for the legacy agent and the evidence guard at 100 and 500 tools.](benchmark/reports/agent-v2-evidence-2026-09-16/evidence-comparison.png)
-
-- **Stricter scoring.** Scoring version 2 passes a run only on evidence it gathered, so these agent numbers are not
-  comparable with the version-1 table above.
-- **Scenario-shaped guard.** The guard was built while watching these four scenarios; they show that it does what it
-  was designed to do, not how it would do on new incidents.
-- **Discovery v2 did not help.** It improved the dev split by 3 to 12 points of capability accuracy and changed the
-  test split by −2.3 to +3.2 points, with fixed and broken cases balanced. v1 stays the default.
-
-**Discovery v4 on 100 new requests (held-out set 2).** The requests were written independently, and frozen together
-with the v4 code before anything was measured on them. The tools, catalogs, policy and model are the ones used during
-development. The v4 control plane lets the model restate the request as a concrete first step before discovery,
-collapses look-alike tools to the authoritative one, and adds tools whose schema takes an identifier named in the
-request. It shows 5 to 8 tools, 6.7–6.9 on average.
-
-![Right capability on held-out set 2 for the baseline, plain search with 5 and 7 tools, and control planes v1, v3 and v4.](benchmark/reports/holdout2-search-k7-2026-09-17/accuracy-by-profile.png)
-
-| Held-out set 2 (100 cases per size) | Baseline (all tools) | Search, 5 tools | Search, 7 tools | Control plane v1 | Control plane v4 | v4, may ask the user |
-|---|---|---|---|---|---|---|
-| Right capability, 50 tools | 98% | 85% | 85% | 75% | 96% | 96% |
-| Right capability, 100 tools | 92% | 79% | 84% | 73% | 95% | 96% |
-| Right capability, 250 tools | 85% | 74% | 75% | 72% | 93% | 95% |
-| Right capability, 500 tools | 70% | 58% | 63% | 71% | 92% | 91% |
-| Right tool (exact), 500 tools | 63% | 50% | 53% | 66% | 84% | 82% |
-| Valid call, 500 tools | 56% | 48% | 53% | 55% | 72% | 70% |
-| Input tokens per decision, 500 tools | 24,564 | 537 | 649 | 590 | 1,364 | 1,476 |
-| Unsafe selections / sent to a server, 500 tools | 14 / 14 | 17 / 17 | 18 / 18 | 5 / 2 | 5 / 1 | 4 / 1 |
-
-*Right capability*: the golden tool or an accepted alternative. *Right tool*: the golden tool. *Valid call*: right
-capability, and the call ran without error. v4's tokens include its rewrite call (648 of the 1,364).
-
-- **From 100 tools up, v4 is more accurate than showing every tool,** and uses 4–18× fewer input tokens. It is 22
-  points ahead at 500 tools on right capability and 21 on right tool. At 50 tools, showing every tool is still ahead.
-- **Showing more tools is not the explanation.** Plain search with 7 tools gains 0–5 points over 5 tools; v4 is 11–29
-  points ahead of it, with 13–30 cases fixed and 1–2 broken per size (paired p < 0.01).
-- **v4 against v1.** On the same cases it fixes 22–24 and breaks 1–3 per size (exact McNemar p < 0.001).
-- **Unsafe calls.** v4's one sent call is the same harmless case at every size: an incident comment instead of a chat
-  message, which the server rejected for an invalid `visibility` value. The gateway now stops such a call before
-  policy.
-- **Asking the user.** When the model may ask, it asks in 1–3% of cases. A question helps only when discovery showed
-  the right tool.
-- **Right capability is not yet a successful call.** Across arms and sizes, 10–24 points separate the two (20–23 for
-  v4): the model sends
-  arguments the schema rejects, and some cases name resources the mock backends lack.
-
-Full method, development evidence and limits: [`docs/EVIDENCE_IMPROVEMENTS.md`](docs/EVIDENCE_IMPROVEMENTS.md).
-
-**Discovery v5 on 200 new requests (held-out set 3).** v5 resolves a request to a capability before it looks at
-tools: it recognises the things a request names (a pod, a flag, a channel, an instance), maps every tool to a
-declared capability with one authoritative implementation, and measures its own confidence. When the evidence is not
-enough it asks **one** question about meaning, never about tool names, and searches again with the answer. The set
-has 120 clear, 60 deliberately ambiguous and 20 trap requests (the user asks for a deprecated or unregistered tool),
-each with a hidden intent that a simulated user answers from. Method, calibration and limits:
-[`docs/CAPABILITY_RESOLUTION_V5.md`](docs/CAPABILITY_RESOLUTION_V5.md).
-
-![Capability resolution by arm on held-out set 3.](benchmark/reports/holdout3-2026-09-17/resolution-by-arm.png)
-
-| Held-out set 3 (180 clear and ambiguous requests per size) | Baseline (all tools) | Search, 7 tools | Control plane v4 | Control plane v5 |
-|---|---|---|---|---|
-| Resolved, 50 tools | 84% | 75% | 82% | **89%** |
-| Resolved, 100 tools | 81% | 72% | 81% | **89%** |
-| Resolved, 250 tools | 68% | 58% | 78% | **88%** |
-| Resolved, 500 tools | 60% | 44% | 69% | **87%** |
-| Clear requests at 500 tools | 72% | 55% | 83% | **97%** |
-| Ambiguous requests at 500 tools | 37% | 23% | 42% | **67%** |
-| Wrongly confident at 500 tools | 40% | 52% | 29% | **6%** |
-| Trap requests refused or redirected | 0% | 0% | 65% | **100%** |
-| Unsafe selections / sent at 500 tools | 37 / 37 | 52 / 52 | 25 / 9 | **12 / 1** |
-| Input tokens per decision at 500 tools | 24,559 | 636 | 1,365 | 1,831 |
-
-- **It degrades far more slowly.** Showing every tool loses 24 points between 50 and 500 tools; v5 loses 2.7.
-- **The question earns its place.** Against the same v5 that never asks, at 500 tools: 87% against 80% resolved,
-  67% against 50% on ambiguous requests, and 6% against 18% wrongly confident. Clear requests barely move.
-- **It asks often:** 54% of requests at 500 tools, 70% at 50. That is the price of calibrating to 99% precision on a
-  weak confidence signal, and it is reported rather than tuned away.
-- **It did not reach the 99% the method aimed at.** Resolution is 87% at 500 tools, the right tool was shown in 91%
-  of cases, and decisions made without asking were 88% right (97% on clear requests alone). The thresholds were
-  calibrated on cases with no deliberate ambiguity, and they did not transfer to a set that is 30% ambiguous.
-- **Arguments remain unsolved:** 51% of decisions both chose the right tool and ran without error.
-- **What each part contributes at 500 tools** ([ablations](benchmark/reports/holdout3-ablations-2026-09-17/summary.md)):
-  the question is worth 6.7 points and cuts wrongly confident decisions from 18% to 6%; declared canonical
-  capabilities are worth 4.5 points and most of the safety (without them, six unsafe calls reach a server instead of
-  one, and trap handling falls from 100% to 85%); entity lookup is worth 0.6 points of resolution but 7 points of ask
-  rate, because knowing that a name is a flag or a pod avoids a question.
-
-**First held-out set (discovery v3).** Sixty new requests were written independently after the published run and
-frozen before this measurement.
-
-| Right capability on the held-out set (60 cases) | Baseline (all tools) | Tool search | Control plane v1 | Control plane v3 |
-|---|---|---|---|---|
-| 100 tools | 93.3% | 66.7% | 66.7% | 76.7% |
-| 500 tools | 75.0% | 50.0% | 56.7% | 66.7% |
-| Input tokens per decision at 500 tools | 24,562 | 532 | 578 | 719 |
-| Unsafe calls executed at 500 tools | 6 | 13 | 1 | 1 |
-
-- **v3 is better than v1 at every size.** Discovery v3 adds router fixes, an adaptive top-K and one write slot. It
-  gains 6.7 to 10 points, with more unsafe selections, which policy stopped.
-- **The baseline was more accurate than v3 on these requests at every size, including 500 tools.** That gap is what
-  discovery v4 closes.
-
-## Repository structure
-
-```text
-.
-├── README.md, LICENSE, pyproject.toml, uv.lock
-├── Dockerfile, docker-compose.yml
-├── .env.example                 template for optional settings (.env is git-ignored)
-├── docs/
-│   ├── DESIGN.md                components, naming, scenario, catalog, registry, discovery, policy, benchmark
-│   ├── benchmark-methodology.md metrics, split, rescoring, threats to validity
-│   └── EVIDENCE_IMPROVEMENTS.md evidence guard, agent scoring v2 and discovery v2: what changed and what it measured
-├── mock_data/inc4917/           the deterministic incident scenario
-├── servers/
-│   ├── common/                  MCP runtime (low-level SDK server), world state, tool specs
-│   ├── <name>_mcp/              9 hand-written servers: tools.py (MCP + registry metadata), backend.py, __main__.py
-│   ├── generated_mcp/           behaviours for generated servers (mirrors, writes, records)
-│   └── core_catalog.py
-├── control_plane/
-│   ├── registry/                SQLite-backed capability registry and drift sync
-│   ├── routing/                 intent / domain router
-│   ├── discovery/               BM25, embeddings, hybrid fusion, discovery pipelines
-│   ├── ranking/                 registry-aware rerank
-│   ├── policy/                  policy engine, policies.yaml, environment resolution, approvals
-│   ├── gateway/                 MCP gateway: stdio client pool, argument checks and policy on every call
-│   ├── telemetry/               OpenTelemetry spans (JSONL) and audit log
-│   └── cli.py                   mcpcp
-├── agent/                       LLM providers (Ollama, OpenAI), tool selection, multi-step incident agent, evidence guard
-├── benchmark/
-│   ├── catalog_generator/       deterministic 500-tool generator (seed 4917)
-│   ├── catalogs/                generated manifests and registry (committed)
-│   ├── prompts/                 cases.yaml (120 cases with golden data), CHANGELOG.md
-│   ├── golden/                  agent scenarios and success criteria
-│   ├── evaluator/               scoring and aggregation
-│   ├── reports/                 build_report.py, compare_discovery.py, compare_agent_evidence.py, <run-id>/ (reports, charts)
-│   ├── runner.py, agent_runner.py
-│   └── runs/<run-id>/           raw results (committed evidence)
-└── tests/
-```
-
-## Limitations
-
-- **One model.** The published run uses one local open-weight model (gpt-oss:20b) with low reasoning effort. Frontier models, and
-  models trained for native tool search, may behave differently. `agent/llm.py` also includes an OpenAI provider; no published
-  result uses it.
-- **A synthetic estate.** The generated tools are designed to be realistic, not sampled from a real company.
-- **Judgement in golden labels.** Several requests have more than one reasonable first step; capability accuracy exists for that reason.
-  Reports call it "right capability" (the golden tool or an accepted alternative) and give exact accuracy ("right tool")
-  alongside it.
-- **"New" requests, known tools.** The held-out sets are new requests. The tools, catalogs, policy and model are the
-  ones used while discovery was developed.
-- **A scripted human.** Approvals are decided by a fixed table so runs are reproducible. Policy guarantees that the question is asked, not
-  that a human answers it well. With `--clarify`, the simulated user picks from tool names and always knows the answer;
-  a product should ask about meaning instead.
-- **Inferred equivalence.** Discovery v4 collapses tools whose registry fields match; nobody declared them
-  substitutable. Where a group has no authoritative member (the Kubernetes tools and their per-cluster copies), it keeps
-  the best-ranked copy.
-- **Tool-level policy.** Rules match the tool's registry record, the target environment and the caller's scopes. Apart from
-  resolving the environment, they do not read argument values. In the benchmark, one `itsm.update_incident` call with
-  `status: "closed"` was allowed as a low-risk write and stopped only by schema validation.
-- **Local transports only.** Servers run over stdio. Streamable HTTP, OAuth 2.1 authorization and multi-tenant caching of
-  authorization-scoped tool lists are out of scope. In production the gateway must be an enforced path, backed by credential
-  isolation and network egress controls.
-- **Latency under prefix caching.** Local prompt caching makes warm latency optimistic for large catalogs; token counts are the portable measure.
-- **Discovery v2 came after the published run.** Its signals were chosen from dev-split misses, and the test split was
-  run once afterwards. A different estate may need different signals or weights.
-- **The evidence guard knows one kind of cause.** It joins a deployment, a diff that lowers a connection-pool limit and a
-  saturated pool, and it measures recovery as p95 against the SLO. It demonstrates the pattern; it is not a general
-  diagnosis engine. Agent scoring version 2 reuses its checks, with ground truth from the scenario data.
-
-## Future work
-
-- Run the same benchmark against hosted frontier models (`--provider openai` is in place), with and without their native tool search.
-- Make policy argument-aware for operations whose risk depends on the values, such as closing an incident through an update.
-- Repair schema-invalid arguments by returning the validation error to the model once, and run a second discovery pass
-  when the user says none of the offered tools fits. Measure both on a fresh held-out set.
-- Replace inferred equivalence with an explicit substitutes field and one canonical tool per job in the registry, and
-  ask clarifying questions about meaning rather than tool names.
-- Replace one mock backend with a real system (for example GitHub or a local kind cluster) without changing the architecture.
-- Serve the gateway itself as an MCP server over Streamable HTTP, with authorization-scoped `tools/list`.
-- Learn rerank weights and K from telemetry instead of fixing them by hand.
-
-## Licence
-
-[MIT](LICENSE) © 2026 Eresh Gorantla.
+MIT, see [LICENSE](LICENSE).

@@ -1,0 +1,345 @@
+{
+ "schema": "pae-proof/v1",
+ "contract": "Production AI Engineering Proof Contract v1",
+ "series": "Production AI Engineering",
+ "article_id": "F1",
+ "learning": "Learning 01",
+ "poc": "mcp-tool-sprawl",
+ "run_id": "blind-rerun-2026-10-01",
+ "kind": "fresh blind pass: the frozen blind benchmark run live again on 2026-10-01, with the benchmark, prompt, model, seed and scorer of the original pass (blind-main, 2026-09-28); scored from the effects ledger",
+ "scenario": "Meridian Commerce support requests, scored from a simulated effects ledger; featured: ORD-4917, a duplicate charge",
+ "evidence_revision": "r2",
+ "source_commit": "cb4b6f31a7e4a7a32c1222f423702916f9b5e580",
+ "source_tree_clean": true,
+ "freeze_commit": "2bfe2f7",
+ "revision_source_commit": "1e916d7",
+ "runtime_mode": "live local model, recorded: the published numbers are read from the recorded rows; replay re-executes everything downstream of the model",
+ "started_at": "2026-10-01T12:33:26+0530",
+ "completed_at": "2026-10-01T14:29:09+0530",
+ "environment": {
+  "os": "macOS-26.5-arm64-arm-64bit",
+  "arch": "arm64",
+  "python": "3.12.13",
+  "machine": "unknown: run-meta.json records the platform only (the author reports an Apple M5 Pro, 24 GB; proof/prose-numbers.toml → machine)",
+  "model_runtime": "Ollama 0.30.11",
+  "model": "gpt-oss:20b",
+  "model_version": "17052f91a42e",
+  "temperature": 0.0,
+  "seed": 4917,
+  "num_ctx": 131072,
+  "num_predict": 4096,
+  "think": "low",
+  "truncate": false,
+  "embedding_model": "nomic-embed-text",
+  "embedding_version": "0a109f422b47",
+  "mcp_sdk": "mcp 2.2.0",
+  "mcp_protocol": "2026-07-28"
+ },
+ "benchmark": {
+  "id": "learning01-ord4917-operational-handling",
+  "version": "1.0",
+  "benchmark_sha256": "41ecb66a04d9cb4df3e985b5fd11e0056e494609ef06c6452739365590ed2520",
+  "cases_sha256": "75fd6077a626af03a6ad082af86f10a0586ff0254b2a28e65c46602af9e22d25",
+  "blind_cases": 56,
+  "development_cases": 42,
+  "categories": 14,
+  "rows": 504,
+  "repeat_rows": 504,
+  "catalog_sizes": [
+   50,
+   100,
+   500
+  ],
+  "search_k": 8,
+  "collapse_depth": 40,
+  "max_model_calls": 10,
+  "modes": [
+   {
+    "key": "A",
+    "name": "All tools",
+    "governed": false
+   },
+   {
+    "key": "B",
+    "name": "Search only",
+    "governed": false
+   },
+   {
+    "key": "C",
+    "name": "Control plane",
+    "governed": true
+   }
+  ],
+  "scorer_sha256": "c1809e147091c8a13b2f34e83b77f214e3dcc402277a915bcdb57cc96d0bec6a",
+  "prompts_sha256": "efe91246b8acdaf78212d4ab374c4dc9f1c969bfd9beeec2b4337ada7c94fcbf",
+  "playbook_sha256": "2cc08a1c904c676fb181da0fad7d8e4504536fbeb8379aca32335302af67dc59",
+  "policy_version": "policy-v1+registry-2026-09-28.1",
+  "policy_sha256": "50441d481893fd94147e26bd3cc1115f1e81b65a89e5427cdcc8a439cffb53a0"
+ },
+ "execution_profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "meaning": "the actual mechanism was exercised",
+    "items": [
+     {
+      "text": "MCP over stdio with the official Python SDK, `mcp` 2.2.0: one OS process per server, 43 at the largest estate",
+      "check": "F1-R1-C01"
+     },
+     {
+      "text": "`tools/list` and `tools/call` on every connection, protocol revision 2026-07-28",
+      "check": "F1-R1-C03"
+     },
+     {
+      "text": "The local model `gpt-oss:20b` on Ollama 0.30.11, live in the recorded run",
+      "check": "F1-R1-C08"
+     },
+     {
+      "text": "Registry, binding, provenance, ordered policy, invocation-bound approval, HMAC-signed gateway and hash-chained audit",
+      "check": "F1-R1-C06"
+     },
+     {
+      "text": "Hybrid retrieval: BM25 plus `nomic-embed-text` embeddings, reciprocal-rank fusion",
+      "check": "F1-R3-C01"
+     }
+    ]
+   },
+   {
+    "class": "GENERATED",
+    "meaning": "synthetic content that creates scale and collision pressure, run through the real mechanisms",
+    "items": [
+     {
+      "text": "466 generated tools of other business units around a hand-written core of 20"
+     },
+     {
+      "text": "Look-alikes: vendor duplicates, staging copies, retired tools that still run, an unregistered shadow server"
+     },
+     {
+      "text": "The benchmark: 56 blind and 42 development cases, labelled before the run"
+     }
+    ]
+   },
+   {
+    "class": "SIMULATED",
+    "meaning": "a faithful local substitute for an enterprise system",
+    "items": [
+     {
+      "text": "Meridian Commerce's systems of record: a deterministic SQLite world with an effects ledger, reset before every row"
+     },
+     {
+      "text": "Requesters' answers, a supervisor's approvals and outages, scripted in the frozen benchmark"
+     }
+    ]
+   },
+   {
+    "class": "RECORDED",
+    "meaning": "captured model traffic, reused for deterministic replay",
+    "items": [
+     {
+      "text": "Every model request hash and raw response of the published run (2,110 model calls), replayed in order without the model",
+      "check": "F1-R10-C06"
+     }
+    ]
+   },
+   {
+    "class": "INJECTED",
+    "meaning": "a failure or unsafe condition introduced on purpose",
+    "items": [
+     {
+      "text": "Transient and persistent 503s on the authoritative implementation only (category C14)",
+      "check": "F1-R9-C03"
+     },
+     {
+      "text": "The negative control: policy enforcement removed, for the mutated run only",
+      "check": "F1-R11-C03"
+     }
+    ]
+   },
+   {
+    "class": "ARCHITECTURE",
+    "meaning": "design this POC does not exercise",
+    "items": [
+     {
+      "text": "Durable execution and classified retries (F2), identity and delegation, security against hostile servers"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "group": "PROTOCOL",
+    "rows": [
+     [
+      "Actual MCP",
+      "yes: the official Python SDK, `mcp` 2.2.0",
+      "F1-R1-C02"
+     ],
+     [
+      "Transport",
+      "stdio (one OS process per server)",
+      "F1-R1-C01"
+     ],
+     [
+      "Server processes",
+      "17, 21 and 43 at 50, 100 and 500 tools",
+      "F1-R1-C04"
+     ],
+     [
+      "Tools listed",
+      "50, 100 and 500 over `tools/list`",
+      "F1-R1-C03"
+     ],
+     [
+      "Protocol revision",
+      "2026-07-28, the same on every server",
+      "F1-R1-C05"
+     ]
+    ]
+   },
+   {
+    "group": "MODEL",
+    "rows": [
+     [
+      "Live local",
+      "yes, in the recorded run: `gpt-oss:20b` (17052f91a42e) on Ollama 0.30.11, temperature 0, seed 4917, think low",
+      "F1-R1-C08"
+     ],
+     [
+      "Recorded",
+      "every request hash and raw response, 2,110 model calls in the published run",
+      "F1-R10-C06"
+     ],
+     [
+      "Remote",
+      "no; a remote Ollama is supported by the runner and was not used"
+     ]
+    ]
+   },
+   {
+    "group": "STATE",
+    "rows": [
+     [
+      "Systems of record",
+      "simulated: a deterministic SQLite world with an effects ledger, reset before every row; the ledger is what is scored"
+     ]
+    ]
+   },
+   {
+    "group": "CATALOG",
+    "rows": [
+     [
+      "Hand-written",
+      "the core: 20 tools on 7 servers"
+     ],
+     [
+      "Generated",
+      "466 tools of other business units, with vendor, staging, legacy and shadow look-alikes"
+     ],
+     [
+      "Search",
+      "BM25 plus `nomic-embed-text`, reciprocal-rank fusion, a top-8 shortlist",
+      "F1-R4-C01"
+     ]
+    ]
+   },
+   {
+    "group": "POLICY",
+    "rows": [
+     [
+      "Executable",
+      "yes: ordered rules P1 to P9 over the bound invocation, enforced at the gateway; approval bound to the invocation digest",
+      "F1-R11-C01"
+     ]
+    ]
+   },
+   {
+    "group": "OBSERVABILITY",
+    "rows": [
+     [
+      "Evidence per row",
+      "the full exchange, the gateway's stages, the effects ledger and, in the control plane, a hash-chained audit",
+      "F1-R8-C08"
+     ]
+    ]
+   },
+   {
+    "group": "REPLAY",
+    "rows": [
+     [
+      "Level",
+      "SEMANTIC: 504 recorded rows replayed through the real stack with the recorded model responses, no regression",
+      "F1-R10-C03"
+     ]
+    ]
+   },
+   {
+    "group": "NEGATIVE CONTROL",
+    "rows": [
+     [
+      "Safeguard removed",
+      "the deterministic policy: 0 of 24 fixtures reached a backend with it, 24 without it",
+      "F1-R11-C03"
+     ]
+    ]
+   }
+  ]
+ },
+ "entrypoints": {
+  "verify": "uv run sprawl verify",
+  "test": "uv run sprawl test",
+  "proof": "uv run sprawl proof",
+  "replay": "uv run sprawl replay",
+  "negative_control": "uv run sprawl negative-control",
+  "lab": "uv run sprawl lab",
+  "package": "uv run sprawl package",
+  "live": "uv run sprawl run --preset full --run-id <new-run>",
+  "make": "make verify · make test · make proof · make replay · make negative-control · make lab · make package · make proof-live"
+ },
+ "companions": [
+  {
+   "run_id": "blind-main",
+   "role": "the original blind pass, the noise floor",
+   "path": "experiment/raw/blind-main"
+  },
+  {
+   "run_id": "replay-blind-rerun-2026-10-01",
+   "role": "its replay of every recorded row",
+   "path": "experiment/recorded-run/replay-blind-rerun-2026-10-01"
+  }
+ ],
+ "replay": {
+  "level": "SEMANTIC",
+  "contract": "identifiers, timestamps, wall time and request-hash key order may differ; every measured value, outcome and invariant must be equal",
+  "comparison": "evidence/verification/run-comparison.json"
+ },
+ "integrity": {
+  "sha256sums": "evidence/runs/blind-rerun-2026-10-01/SHA256SUMS",
+  "files": 2058,
+  "freeze": {
+   "r1": "experiment/frozen-hashes.json",
+   "r2": "experiment/frozen-hashes-r2.json"
+  },
+  "frozen_inputs_changed_since_r1": [
+   "poc/src/**/*.py",
+   "poc/src/sprawl_poc/control_plane/gateway.py"
+  ],
+  "poc_uv_lock_sha256": "271cb188b0147906515f5fe6ca822a5d44f64de6a5b815500328fda924313f5e",
+  "runner_uv_lock_sha256": "2e20a62e8f4f7367d1452685b209d0d5be46c05d3f216d9847d8127405cec825",
+  "proof_kit": "evidence-kit 5.1.0",
+  "note": "SHA256SUMS verifies these files against the list; it is not a signature and says nothing about who wrote them"
+ },
+ "provenance": {
+  "manifest_origin": "derived_from_recorded_artifacts",
+  "fields": {
+   "source_commit, started_at, completed_at, environment (except machine), benchmark hashes, search_k": "recorded: experiment/raw/blind-rerun-2026-10-01/run-meta.json",
+   "benchmark counts, modes": "recorded: experiment/benchmark/cases.json and the frozen spec",
+   "scorer_sha256, prompts_sha256, policy_sha256": "frozen: experiment/frozen-hashes-r2.json",
+   "freeze_commit": "frozen: experiment/evidence-revisions.json",
+   "policy_version": "recorded: the gateway's policy decisions in the rows",
+   "environment.machine": "unknown: not recorded by the run",
+   "execution_profile": "authored: proof/manifest.toml, every REAL item checked",
+   "integrity": "derived: computed when the pack was written"
+  }
+ },
+ "published_externally": false
+}

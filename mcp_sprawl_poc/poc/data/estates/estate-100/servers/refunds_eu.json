@@ -1,0 +1,85 @@
+{
+  "environment": "prod",
+  "region": "eu",
+  "server": "refunds_eu",
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Refund an order to the customer's original payment method. Creates a refund against a captured payment on the order and records it in the order's refund ledger. EU storefront.",
+      "handler": "refunds.refund_order",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Amount in the order currency",
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "payment_id": {
+            "description": "Payment (charge) id (format PAY-<digits>)",
+            "pattern": "^PAY-[0-9]+$",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Short reason, recorded on the record",
+            "enum": [
+              "duplicate_charge",
+              "item_not_received",
+              "damaged_item",
+              "customer_request",
+              "other"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "payment_id",
+          "amount",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "name": "refund_order"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get refunds and their status for an order or refund id (EU storefront).",
+      "handler": "refunds.get_refund_status",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "description": "Order id (format ORD-<digits>)",
+            "pattern": "^ORD-[0-9]+$",
+            "type": "string"
+          },
+          "refund_id": {
+            "description": "Refund id (format RF-<digits>)",
+            "pattern": "^RF-[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "get_refund_status"
+    }
+  ],
+  "version": "1.0.0"
+}

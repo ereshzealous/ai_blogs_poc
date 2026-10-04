@@ -1,0 +1,949 @@
+version: 2026-09-28.1
+notes:
+  owner: AI platform team (simulated)
+  mutation: changes via reviewed commit only; hash pinned in the frozen run manifest
+  source_of_truth_for: capability, authority, lifecycle, environment, region, side-effect, risk, scopes, approval
+  not_source_of_truth_for: tool input schemas (validated against the server-declared inputSchema)
+capabilities:
+  customer.credit_balance:
+    description: Get a customer's store credit balance.
+    owner: customer-care
+    authoritative:
+      global: promotions.get_credit_balance
+    entity: customer
+  customer.lookup:
+    description: Look up a customer profile.
+    owner: customer-data
+    authoritative:
+      global: crm.get_customer
+    entity: customer
+  customer.store_credit:
+    description: Give a customer store credit (spent on future orders, not returned to the card).
+    owner: customer-care
+    authoritative:
+      global: promotions.issue_store_credit
+    entity: customer
+    user_owned:
+    - amount
+  customer.update_default_address:
+    description: Change the default address saved on a customer profile (not existing orders).
+    owner: customer-data
+    authoritative:
+      global: crm.update_default_address
+    entity: customer
+    user_owned:
+    - address
+  customer.update_email:
+    description: Change the email address on a customer profile.
+    owner: customer-data
+    authoritative:
+      global: crm.update_customer_email
+    entity: customer
+    user_owned:
+    - email
+  order.cancel:
+    description: Cancel an order that has not shipped.
+    owner: order-management
+    authoritative:
+      global: orders.cancel_order
+    entity: order
+  order.lookup:
+    description: Look up an order's status, items, totals, customer and shipping address.
+    owner: order-management
+    authoritative:
+      global: orders.get_order
+    entity: order
+  order.refund:
+    description: Return money for an order to the original payment method, recorded against the order.
+    owner: payments-platform
+    authoritative:
+      us: refunds.refund_order
+      eu: refunds_eu.refund_order
+    entity: order
+    user_owned:
+    - amount
+  order.replacement:
+    description: Send a free replacement for an item on a delivered order.
+    owner: order-management
+    authoritative:
+      global: orders.create_replacement_order
+    entity: order
+    user_owned:
+    - sku
+  order.search:
+    description: Find a customer's orders.
+    owner: order-management
+    authoritative:
+      global: orders.search_orders
+    entity: customer
+  order.update_shipping_address:
+    description: Change the delivery address of an unshipped order.
+    owner: order-management
+    authoritative:
+      global: orders.update_shipping_address
+    entity: order
+    user_owned:
+    - address
+  payment.get_charge:
+    description: Get one charge by payment id.
+    owner: payments-platform
+    authoritative:
+      global: payments.get_charge
+    entity: payment
+  payment.list_charges:
+    description: List the charges captured on an order.
+    owner: payments-platform
+    authoritative:
+      global: payments.list_charges
+    entity: order
+  refund.status:
+    description: Check refunds already issued on an order.
+    owner: payments-platform
+    authoritative:
+      us: refunds.get_refund_status
+      eu: refunds_eu.get_refund_status
+    entity: order
+  return.create_label:
+    description: Create a prepaid return label for a delivered order.
+    owner: logistics
+    authoritative:
+      global: shipping.create_return_label
+    entity: order
+  shipment.track:
+    description: Get shipment status, carrier, tracking number and ETA for an order.
+    owner: logistics
+    authoritative:
+      global: shipping.track_shipment
+    entity: order
+  subscriptions.apply_subscription_discount:
+    description: Apply a discount code to a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.apply_subscription_discount
+    entity: null
+  subscriptions.cancel_subscription:
+    description: Cancel a customer's subscription at the end of the billing period.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.cancel_subscription
+    entity: null
+  subscriptions.change_plan:
+    description: Move a subscription to a different plan.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.change_plan
+    entity: null
+  subscriptions.get_dunning_status:
+    description: Get the dunning (failed payment recovery) status of a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_dunning_status
+    entity: null
+  subscriptions.get_invoice:
+    description: Get a subscription invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_invoice
+    entity: null
+  subscriptions.get_subscription:
+    description: Get a subscription by id.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.get_subscription
+    entity: null
+  subscriptions.issue_subscription_credit:
+    description: Credit a subscriber's next invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.issue_subscription_credit
+    entity: null
+  subscriptions.list_invoices:
+    description: List invoices for a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.list_invoices
+    entity: null
+  subscriptions.list_subscriptions:
+    description: List a customer's subscriptions.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.list_subscriptions
+    entity: null
+  subscriptions.pause_subscription:
+    description: Pause a subscription for up to 3 billing cycles.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.pause_subscription
+    entity: null
+  subscriptions.preview_proration:
+    description: Preview proration for a plan change.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.preview_proration
+    entity: null
+  subscriptions.refund_subscription_invoice:
+    description: Refund a paid subscription invoice to the subscriber's card.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.refund_subscription_invoice
+    entity: null
+  subscriptions.resume_subscription:
+    description: Resume a paused subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.resume_subscription
+    entity: null
+  subscriptions.retry_failed_payment:
+    description: Retry the card charge for a failed subscription invoice.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.retry_failed_payment
+    entity: null
+  subscriptions.update_billing_email:
+    description: Change the billing email used for subscription invoices.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.update_billing_email
+    entity: null
+  subscriptions.update_payment_method:
+    description: Replace the card on file for a subscription.
+    owner: subscriptions-team
+    authoritative:
+      global: subscriptions.update_payment_method
+    entity: null
+  ticket.add_note:
+    description: Add an internal note to a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.add_internal_note
+    entity: ticket
+  ticket.escalate:
+    description: Escalate a support ticket to another team.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.escalate_ticket
+    entity: ticket
+  ticket.lookup:
+    description: Read a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.get_ticket
+    entity: ticket
+  ticket.reply:
+    description: Reply to the customer on a support ticket.
+    owner: customer-care
+    authoritative:
+      global: helpdesk.reply_to_customer
+    entity: ticket
+implementations:
+  carrier_legacy.get_tracking_v1:
+    capability: shipment.track
+    owner: logistics
+    lifecycle: retired
+    replaced_by: shipping.track_shipment
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  crm.get_customer:
+    capability: customer.lookup
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - customers:read
+    approval:
+      when: never
+    binding_profile: null
+  crm.update_customer_email:
+    capability: customer.update_email
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - customers:write
+    approval:
+      when: never
+    binding_profile: customer_entity
+  crm.update_default_address:
+    capability: customer.update_default_address
+    owner: customer-data
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - customers:write
+    approval:
+      when: never
+    binding_profile: customer_entity
+  helpdesk.add_internal_note:
+    capability: ticket.add_note
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.escalate_ticket:
+    capability: ticket.escalate
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.get_ticket:
+    capability: ticket.lookup
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - tickets:read
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk.reply_to_customer:
+    capability: ticket.reply
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  helpdesk_legacy.add_ticket_comment:
+    capability: ticket.add_note
+    owner: customer-care
+    lifecycle: retired
+    replaced_by: helpdesk.add_internal_note
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - tickets:write
+    approval:
+      when: never
+    binding_profile: null
+  orders.cancel_order:
+    capability: order.cancel
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders.create_replacement_order:
+    capability: order.replacement
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_replacement
+  orders.get_order:
+    capability: order.lookup
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  orders.search_orders:
+    capability: order.search
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  orders.update_shipping_address:
+    capability: order.update_shipping_address
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders_staging.cancel_order:
+    capability: order.cancel
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - orders:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  orders_staging.get_order:
+    capability: order.lookup
+    owner: order-management
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - orders:read
+    approval:
+      when: never
+    binding_profile: null
+  paygate.get_charge_status:
+    capability: payment.get_charge
+    owner: vendor:paygate
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  paygate.refund_charge:
+    capability: order.refund
+    owner: vendor:paygate
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval:
+      when: never
+    binding_profile: null
+  payments.get_charge:
+    capability: payment.get_charge
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments.list_charges:
+    capability: payment.list_charges
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments_legacy.get_charge_v1:
+    capability: payment.get_charge
+    owner: payments-platform
+    lifecycle: retired
+    replaced_by: payments.get_charge
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  payments_legacy.refund_charge_v1:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: retired
+    replaced_by: refunds.refund_order
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval:
+      when: never
+    binding_profile: null
+  promotions.get_credit_balance:
+    capability: customer.credit_balance
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - customers:read
+    approval:
+      when: never
+    binding_profile: null
+  promotions.issue_store_credit:
+    capability: customer.store_credit
+    owner: customer-care
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: financial_write
+    risk: medium
+    required_scopes:
+    - credits:write
+    approval:
+      when: amount_gt
+      field: amount
+      threshold: 100
+    binding_profile: customer_credit
+  refunds.get_refund_status:
+    capability: refund.status
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: us
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  refunds.refund_order:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: us
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: &id001
+      when: amount_gt
+      field: amount
+      threshold: 250
+    binding_profile: order_refund
+  refunds_eu.get_refund_status:
+    capability: refund.status
+    owner: payments-platform-eu
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: eu
+    side_effect: none
+    risk: low
+    required_scopes:
+    - payments:read
+    approval:
+      when: never
+    binding_profile: null
+  refunds_eu.refund_order:
+    capability: order.refund
+    owner: payments-platform-eu
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: eu
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: *id001
+    binding_profile: order_refund
+  refunds_staging.refund_order:
+    capability: order.refund
+    owner: payments-platform
+    lifecycle: active
+    replaced_by: null
+    environment: staging
+    region: us
+    side_effect: financial_write
+    risk: high
+    required_scopes:
+    - refunds:write
+    approval: *id001
+    binding_profile: order_refund
+  shipfast.track_package:
+    capability: shipment.track
+    owner: vendor:shipfast
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  shipping.create_return_label:
+    capability: return.create_label
+    owner: logistics
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: low
+    required_scopes:
+    - returns:write
+    approval:
+      when: never
+    binding_profile: order_entity
+  shipping.track_shipment:
+    capability: shipment.track
+    owner: logistics
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - shipping:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.apply_subscription_discount:
+    capability: subscriptions.apply_subscription_discount
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.cancel_subscription:
+    capability: subscriptions.cancel_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.change_plan:
+    capability: subscriptions.change_plan
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_dunning_status:
+    capability: subscriptions.get_dunning_status
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_invoice:
+    capability: subscriptions.get_invoice
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.get_subscription:
+    capability: subscriptions.get_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.issue_subscription_credit:
+    capability: subscriptions.issue_subscription_credit
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.list_invoices:
+    capability: subscriptions.list_invoices
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.list_subscriptions:
+    capability: subscriptions.list_subscriptions
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.pause_subscription:
+    capability: subscriptions.pause_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.preview_proration:
+    capability: subscriptions.preview_proration
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: none
+    risk: low
+    required_scopes:
+    - subscriptions:read
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.refund_subscription_invoice:
+    capability: subscriptions.refund_subscription_invoice
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.resume_subscription:
+    capability: subscriptions.resume_subscription
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.retry_failed_payment:
+    capability: subscriptions.retry_failed_payment
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.update_billing_email:
+    capability: subscriptions.update_billing_email
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+  subscriptions.update_payment_method:
+    capability: subscriptions.update_payment_method
+    owner: subscriptions-team
+    lifecycle: active
+    replaced_by: null
+    environment: prod
+    region: global
+    side_effect: write
+    risk: medium
+    required_scopes:
+    - subscriptions:write
+    approval:
+      when: never
+    binding_profile: null
+roles:
+  support_t1:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  support_t2:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  - customers:write
+agents:
+  support-assistant:
+  - orders:read
+  - orders:write
+  - payments:read
+  - refunds:write
+  - credits:write
+  - shipping:read
+  - returns:write
+  - customers:read
+  - tickets:read
+  - tickets:write
+  - customers:write

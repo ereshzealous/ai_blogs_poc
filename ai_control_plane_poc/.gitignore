@@ -8,10 +8,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# scratch runs: `acp proof` and live runs (the one recorded live run the articles cite is kept)
+# scratch runs written by `acp proof`. (No negated patterns here: the publish script's rsync does not read `!` the way
+# git does. tools/stage_public.py ships only the one recorded live run the articles cite.)
 control_plane_poc/runs/_scratch/
-control_plane_poc/runs/live/*
-!control_plane_poc/runs/live/ollama-2026-09-30T100218Z/
 
 # macOS noise
 .DS_Store

@@ -4,11 +4,11 @@ Three POCs live here, each written in its own workspace, often at the same time.
 
 ## The rules
 
-1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_agent_poc/`, `headless_ai_poc/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
+1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, and `layered_agent_poc/` while Part 3 still builds against it. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
 2. **Work in your own clone.** Do not share a working copy between sessions or people. A throwaway clone is fine.
 3. **Rebase, never force-push.** `git pull --rebase` before pushing. Because the folders are disjoint, a rebase never conflicts. Rewriting published history is a last resort, and only after telling everyone who publishes here.
 4. **Run your POC's checks before you push.** At minimum its fast tests and whatever boundary checks it has.
-5. **Write your folder in the subject line:** `layered_agent_poc: warn when another process is using Ollama`. The body says what changed and why.
+5. **Write your folder in the subject line:** `layered_architecture_poc: warn when another process is using Ollama`. The body says what changed and why.
 6. **No tool attribution in commit messages or pull requests.** No `Co-Authored-By` for an AI assistant, no "generated with" lines.
 7. **Write only inside your own folder at run time.** Point every path an experiment uses at your folder, absolutely. A relative path can resolve against another project's root: that is how a run once mirrored itself into `layered_agent_poc/runs/2026-09-17-recorded/h2/`. For Part 2's platform, that means `LAP_RUNS_DIR`, `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_KNOWLEDGE_INDEX` and `LAP_MODEL_TRAFFIC`.
 8. **Importing a neighbouring POC writes into it.** If your checks or experiments import another folder's package, Python leaves `__pycache__` there, and any state that project defaults to its own directory lands there too. Run your checks with `PYTHONDONTWRITEBYTECODE=1`, point every path setting at your own folder, and keep `__pycache__/` in both folders' `.gitignore`. For `layered_agent_poc` that means setting `LAP_KNOWLEDGE_INDEX` as well as the database and runs paths: unset, its runbook index is built inside that POC.
@@ -29,7 +29,7 @@ exactly and more than twenty paths, a refusal without `--allow-frozen`, an unrea
 
 ```bash
 # from anywhere, with a clone of this repo:
-scripts/publish-poc.sh layered_agent_poc \
+scripts/publish-poc.sh layered_architecture_poc \
   --from ~/work/layered-agent-platform \
   --message "layered_agent_poc: warn when another process is using Ollama" \
   --checks "uv run pytest -m 'not ollama' -q && uv run lint-imports"

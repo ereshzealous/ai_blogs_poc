@@ -1,0 +1,41 @@
+# Policy decision point: evaluated in code, top to bottom, first match wins, default deny.
+# The reasoner never sees this file and cannot change it. Invocation (who may START an execution) is decided at
+# ingress; this file decides whether one capability call may RUN.
+rules:
+  - id: P0-unregistered
+    when: {registered: false}
+    effect: DENY
+    reason: "not a registered capability (raw tools are not capabilities)"
+  - id: P1-destructive
+    when: {risk: destructive}
+    effect: DENY
+    reason: "destructive actions are prohibited for automated executions"
+  - id: P2-cross-environment-write
+    when: {kind: write, environment_mismatch: true}
+    effect: DENY
+    reason: "a write must target the execution's own environment"
+  - id: P3-high-risk-production-write
+    when: {kind: write, risk: high, environment: production}
+    effect: APPROVAL_REQUIRED
+    required_role: incident-commander
+    required_scope: deploy:rollback
+    reason: "high-risk production change needs an incident commander, bound to this exact call"
+  - id: P4-missing-scope
+    when: {scope_granted: false}
+    effect: DENY
+    reason: "the execution's delegated scopes do not include this capability"
+  - id: P5-read
+    when: {kind: read}
+    effect: ALLOW
+    reason: "read-only capability within delegated scope"
+  - id: P6-low-risk-write
+    when: {kind: write, risk: low}
+    effect: ALLOW
+    reason: "low-risk record keeping within delegated scope"
+  - id: P9-default
+    when: {}
+    effect: DENY
+    reason: "no rule allows it"
+
+approvals:
+  ttl_s: 1800                # an approval request not decided in 30 minutes expires; the execution escalates

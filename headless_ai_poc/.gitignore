@@ -1,0 +1,18 @@
+# What never ships. The publish script copies with `--filter=':- .gitignore'`, so this file is the single source of
+# truth for what a published copy of this POC contains (see PUBLISHING.md in the target repository).
+
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# scratch state: an experiment's working databases are deleted when it finishes; a crashed run can leave them behind
+runs/*/work/
+*.db-wal
+*.db-shm
+
+# macOS noise
+.DS_Store
+._*

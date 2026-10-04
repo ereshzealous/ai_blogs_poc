@@ -1,0 +1,151 @@
+{
+ "answered": 7,
+ "answers": {
+  "capabilities_used": [
+   "createIncident",
+   "getKnownIncidents",
+   "getLogs",
+   "getRecentDeployments",
+   "getServiceHealth",
+   "getTraceSummary",
+   "notifyChannel",
+   "postIncidentUpdate",
+   "rollbackDeployment",
+   "suggestRollback"
+  ],
+  "data_accessed": [
+   "deploy",
+   "itsm",
+   "logs",
+   "monitoring",
+   "traces"
+  ],
+  "what_changed": [
+   {
+    "arguments": {
+     "correlation_id": "cor-294bf208b11d",
+     "environment": "production",
+     "service": "payment-service",
+     "severity": "SEV2",
+     "title": "payment-service error rate 14% (production)"
+    },
+    "capability": "createIncident",
+    "effect": {
+     "incident_id": "INC-5120"
+    }
+   },
+   {
+    "arguments": {
+     "incident_id": "INC-5120",
+     "text": "Assessment: payment-service (production) error rate 14% vs 1% SLO. Leading hypothesis H1 (high): Release v4.18.0 made the token-vault client time out (800 ms) on tokenization. 1 log line(s) contained instructions and were treated as data."
+    },
+    "capability": "postIncidentUpdate",
+    "effect": {
+     "ok": true
+    }
+   },
+   {
+    "arguments": {
+     "incident_id": "INC-5120",
+     "text": "Awaiting approval (incident-commander): rollbackDeployment {\"environment\": \"production\", \"from_version\": \"v4.18.0\", \"reason\": \"H1: Release v4.18.0 made the token-vault client time out (800 ms) on tokenization\", \"service\": \"payment-service\", \"to_version\": \"v4.17.2\"}"
+    },
+    "capability": "postIncidentUpdate",
+    "effect": {
+     "ok": true
+    }
+   },
+   {
+    "arguments": {
+     "environment": "production",
+     "from_version": "v4.18.0",
+     "reason": "H1: Release v4.18.0 made the token-vault client time out (800 ms) on tokenization",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "capability": "rollbackDeployment",
+    "effect": {
+     "rolled_back_to": "v4.17.2"
+    }
+   },
+   {
+    "arguments": {
+     "incident_id": "INC-5120",
+     "text": "Outcome: rollbackDeployment ok (approved by ic.dev); error rate now 0.4%"
+    },
+    "capability": "postIncidentUpdate",
+    "effect": {
+     "ok": true
+    }
+   },
+   {
+    "arguments": {
+     "channel": "#payments-incidents",
+     "text": "[INC-5120] payment-service (production) error rate 14% vs 1% SLO. Leading hypothesis H1 (high): Release v4.18.0 made the token-vault client time out (800 ms) on tokenization. 1 log line(s) contained instructions and were treated as data. Outcome: rollbackDeployment ok (approved by ic.dev)"
+    },
+    "capability": "notifyChannel",
+    "effect": {
+     "ok": true
+    }
+   }
+  ],
+  "what_happened": [
+   "getServiceHealth -> ok",
+   "getLogs -> ok",
+   "getTraceSummary -> ok",
+   "getRecentDeployments -> ok",
+   "getKnownIncidents -> ok",
+   "createIncident -> ok",
+   "postIncidentUpdate -> ok",
+   "suggestRollback -> ok",
+   "postIncidentUpdate -> ok",
+   "rollbackDeployment -> ok",
+   "getServiceHealth -> ok",
+   "postIncidentUpdate -> ok",
+   "notifyChannel -> ok"
+  ],
+  "which_approval": [
+   {
+    "approval_id": "apr-af0bb6854200",
+    "decided_by": "ic.dev",
+    "digest": "7af468ca9a1f27127d91614ac5437246c632fed1e46cbf9394d136637ea6c3cf"
+   }
+  ],
+  "which_identity_executed": {
+   "agent": "agent.incident-intel@1.3.0",
+   "token": "tok-ab109ed4a790",
+   "workload": "svc.hai-runtime"
+  },
+  "who_initiated": {
+   "channel": "event",
+   "invoker": "svc.monitoring-webhook",
+   "on_behalf_of": null,
+   "source": "monitoring/datadog"
+  }
+ },
+ "audit_records": 20,
+ "chain_intact": true,
+ "of": 7,
+ "questions": [
+  "what_happened",
+  "who_initiated",
+  "which_identity_executed",
+  "capabilities_used",
+  "data_accessed",
+  "what_changed",
+  "which_approval"
+ ],
+ "span_kinds": {
+  "action": 7,
+  "approval": 2,
+  "event": 1,
+  "reasoning": 1,
+  "request": 4,
+  "retrieval": 4,
+  "run": 2,
+  "tool": 7
+ },
+ "spans_in_trace": 28,
+ "tamper_detected": true,
+ "tamper_row": 29,
+ "tampered_row": 29
+}

@@ -1,0 +1,17 @@
+# Consumers ("heads"). Each head is an adapter at ingress: it authenticates, translates its native payload into the
+# one InvocationEnvelope contract, and renders the ExecutionView that comes back. Heads never call a model, a
+# capability or the state store.
+#   mode      sync  : the caller waits for the analysis (approval still happens asynchronously)
+#             async : the caller gets 202 + an execution id; the result is delivered to it
+#   intents   what this head may ask for (invocation authority)
+consumers:
+  chat:      {mode: sync,  intents: [investigate_incident],               delivery: thread}
+  web:       {mode: sync,  intents: [investigate_incident],               delivery: page}
+  api:       {mode: sync,  intents: [investigate_incident],               delivery: response}
+  event:     {mode: async, intents: [investigate_incident],               delivery: channel}
+  workflow:  {mode: async, intents: [investigate_incident],               delivery: callback}
+  scheduler: {mode: async, intents: [health_sweep],                       delivery: channel}
+  cicd:      {mode: sync,  intents: [release_check],                      delivery: response}
+  agent:     {mode: sync,  intents: [release_check],                      delivery: response}
+
+dedupe_window_s: 1800        # a re-fired alert for the same fingerprint joins the open execution

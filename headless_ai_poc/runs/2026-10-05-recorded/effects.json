@@ -1,0 +1,44 @@
+[
+ {
+  "n": 1,
+  "system": "itsm",
+  "kind": "incident.create",
+  "key": "30a03e360c2ed265924b03ee84e6a722abea6651fa6919f014ff31ccf2d1e6df",
+  "detail": "{\"id\": \"INC-5120\", \"title\": \"payment-service error rate 14% (production)\"}"
+ },
+ {
+  "n": 2,
+  "system": "itsm",
+  "kind": "incident.update",
+  "key": "fa743b0ab46cbe7b28ffdb1496416fc835dc8ff4b6f5f34f3c8813a4f27bcd52",
+  "detail": "{\"incident_id\": \"INC-5120\"}"
+ },
+ {
+  "n": 3,
+  "system": "itsm",
+  "kind": "incident.update",
+  "key": "c53ab78fb857df04545c27f01dab7cc2fbe4d667ccde90356d3f268c90fa44a7",
+  "detail": "{\"incident_id\": \"INC-5120\"}"
+ },
+ {
+  "n": 4,
+  "system": "deploy",
+  "kind": "deploy.rollback",
+  "key": "7af468ca9a1f27127d91614ac5437246c632fed1e46cbf9394d136637ea6c3cf",
+  "detail": "{\"environment\": \"production\", \"from\": \"v4.18.0\", \"service\": \"payment-service\", \"to\": \"v4.17.2\"}"
+ },
+ {
+  "n": 5,
+  "system": "itsm",
+  "kind": "incident.update",
+  "key": "d9ca624c6a8eb404c4b67b5c9e9fae414c635b4e484ca87396e3f3c8165c07d1",
+  "detail": "{\"incident_id\": \"INC-5120\"}"
+ },
+ {
+  "n": 6,
+  "system": "chat",
+  "kind": "chat.post",
+  "key": "77b8ccb8ff4f78372163c56a749e3e78953277ddc0697587cc2a24438253c61f",
+  "detail": "{\"channel\": \"#payments-incidents\"}"
+ }
+]

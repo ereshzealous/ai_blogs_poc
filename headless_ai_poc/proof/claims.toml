@@ -1,0 +1,102 @@
+# Every claim the F3 articles make from this POC, the checks it rests on and the facts it prints.
+# `uv run hai verify` fails if a claim names a check that is missing or failed, or a fact the run did not record.
+# type: measured (the run's systems of record) · derived (arithmetic over config; no run measures it)
+
+[[claims]]
+id = "F3-C01"
+type = "measured"
+statement = "A monitoring event starts the investigation with no human and no chat; every head is served natively and recorded under its true invoker."
+checks = ["X1: headless serves every head natively", "X1: headless records the true invoker for every head"]
+facts = ["x1.heads", "x1.C.native", "x1.C.invoker_faithful"]
+does_not_show = "How a real event bus, webhook signer or alert router behaves; the event source is simulated."
+
+[[claims]]
+id = "F3-C02"
+type = "measured"
+statement = "The two baselines cannot do the same: a chat-centric assistant serves only chat, and a layered platform reached only through chat loses the alert's invoker."
+checks = ["X1: chat-centric serves only chat natively", "X1: layered-chat bridging loses the alert's invoker"]
+facts = ["x1.A.native", "x1.A.credentials_in_agent_process", "x1.B.native", "x1.B.bridged", "x1.B.invoker_faithful", "x1.alert_invoker_in_B"]
+does_not_show = "That every chat-first product behaves like these baselines; they are minimal implementations of the two patterns."
+
+[[claims]]
+id = "F3-C03"
+type = "measured"
+statement = "Many heads share one intelligence: the investigation heads join one execution and see one assessment, and one incident is opened for all eight heads."
+checks = ["X2: all investigation heads share one execution", "X2: all investigation heads see one assessment", "X2: one incident for eight heads"]
+facts = ["x2.investigation_heads", "x2.executions_for_investigation", "x2.distinct_assessments", "x2.incidents_created", "x2.joined", "x2.heads"]
+does_not_show = "Behaviour under concurrent load or many simultaneous incidents."
+
+[[claims]]
+id = "F3-C04"
+type = "measured"
+statement = "Machine consumers read the canonical structured result, not prose: the scheduler sweep reads the same leading hypothesis and cannot write, and the CI/CD gate and another agent block on the same finding."
+checks = ["X2: sweep reads the same leading hypothesis", "X2: sweep cannot write", "X2: CI and agent consumers block on the same finding"]
+facts = ["x2.sweep_write_rule"]
+does_not_show = "Integration with a real CI system or agent-to-agent protocol."
+
+[[claims]]
+id = "F3-C05"
+type = "measured"
+statement = "The headless flow stops at the approval boundary: the production rollback v4.18.0 → v4.17.2 waits for a valid human approval, and exactly one rollback happens after it."
+checks = ["X2: one rollback after one approval", "X4: no rollback before a valid approval"]
+facts = ["x2.rollbacks"]
+does_not_show = "How the approval itself is designed, authenticated and made safe; that is the Human-in-the-Loop chapter (T3)."
+
+[[claims]]
+id = "F3-C06"
+type = "measured"
+statement = "Duplicate and re-fired deliveries, replayed approvals and lost responses produce one execution, one incident and one physical rollback; poison messages are dead-lettered."
+checks = ["X3: duplicate deliveries flagged", "X3: re-fired alert joins the open execution", "X3: one execution, one incident, one rollback",
+          "X3: a replayed approval is refused", "X3: poison messages dead-lettered", "X6: lost response: one physical rollback"]
+facts = ["x3.deliveries_same_event", "x3.duplicates_flagged", "x3.executions", "x3.incidents_created", "x3.rollbacks", "x3.poison_sent",
+         "x3.dead_lettered", "x6.lost_response_rollbacks"]
+does_not_show = "Exactly-once delivery in a distributed broker; this is effectively-once business effects through idempotency keys."
+
+[[claims]]
+id = "F3-C07"
+type = "measured"
+statement = "Invocation is not authorization: the event execution holds no rollback scope, a viewer cannot invoke, and four invalid approvals are refused."
+checks = ["X4: event execution holds no rollback scope", "X4: viewer cannot invoke", "X4: four invalid approvals refused"]
+facts = ["x4.scopes", "x4.refused_attempts"]
+does_not_show = "A real identity provider or token exchange service; both are simulated."
+
+[[claims]]
+id = "F3-C08"
+type = "measured"
+statement = "A compromised reasoner that proposes raw tools, a destructive call, a cross-environment write and an injected target executes nothing."
+checks = ["X4: compromised reasoner executes nothing"]
+facts = ["x4.compromised.proposals", "x4.compromised.denied", "x4.compromised.awaiting_human", "x4.compromised.executed"]
+does_not_show = "How a real model behaves under prompt injection; the hostile proposals are scripted."
+
+[[claims]]
+id = "F3-C09"
+type = "measured"
+statement = "The audit chain names the invoker and the approver, answers all seven audit questions from the chain alone, and detects tampering."
+checks = ["X4: audit names the approver and the invoker", "X5: audit answers all seven questions", "X5: audit chain intact; tamper detected"]
+facts = ["x5.answered", "x5.spans", "x5.audit_records"]
+does_not_show = "Tamper resistance against an attacker who controls the audit store's signing material."
+
+[[claims]]
+id = "F3-C10"
+type = "measured"
+statement = "Execution state lives in the runtime, not in a chat history: reads are retried, a crash resumes without repeating a completed step, an approval timeout escalates and changes nothing, and expired or revoked credentials are handled at the boundary."
+checks = ["X6: read timeout retried", "X6: crash: no completed step repeated", "X6: approval timeout escalates, changes nothing",
+          "X6: expired token re-exchanged, not extended", "X6: revoked credential rejected at ingress"]
+facts = ["x6.read_attempts", "x6.repeated_steps", "x6.reads_before_crash", "x6.token_ttl_min"]
+does_not_show = "Recovery from a lost database or a multi-region failover."
+
+[[claims]]
+id = "F3-C11"
+type = "derived"
+statement = "Integration count: per-head assistants need one integration per head and system, agent-owned integrations one per agent and system, and a shared capability layer one per system."
+checks = []
+facts = ["x7.heads", "x7.agents", "x7.systems", "x7.per_head", "x7.agent_owned", "x7.capability_layer"]
+does_not_show = "Measured engineering effort; X7 is arithmetic over the configuration, not a measurement."
+
+[[claims]]
+id = "F3-C12"
+type = "measured"
+statement = "Every architecture check in the recorded run passed."
+checks = ["*"]                          # every check in checks.json
+facts = ["checks.passed", "checks.total"]
+does_not_show = "Reasoning quality: the reasoner is deterministic, so the checks evaluate the architecture, not a model."

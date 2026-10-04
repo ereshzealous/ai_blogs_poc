@@ -1,0 +1,147 @@
+{
+ "approval_accepted": true,
+ "chat_render": "*INC-5120* \u00b7 completed (you joined an investigation already running)\n> Release v4.18.0 made the token-vault client time out (800 ms) on tokenization \u2014 confidence *high*\n\u2022 v4.18.0 shipped 13 min before the alert: \"Switch card tokenization to the token-vault v2 client (timeout 800 ms)\"\n\u2022 5 of 5 error lines are token-vault timeouts\n\u2022 71% of failed requests spend over 800 ms in token-vault.tokenize (span p95 120 -> 930 ms)",
+ "distinct_assessments": 1,
+ "executions_for_investigation": 1,
+ "final_status": "COMPLETED",
+ "heads": 8,
+ "incidents_created": 1,
+ "investigation_heads": [
+  "event",
+  "chat",
+  "web",
+  "api",
+  "workflow"
+ ],
+ "joined": 4,
+ "main_execution": "exe-02fee9155f4d",
+ "per_head": {
+  "agent": {
+   "assessment_digest": null,
+   "execution": "exe-0b019e22a4b0",
+   "intent": "release_check",
+   "joined": false,
+   "leading": null,
+   "rendered_as": "dict",
+   "status": "COMPLETED",
+   "verdict": {
+    "based_on": "exe-02fee9155f4d",
+    "decision": "BLOCK",
+    "reason": "open investigation exe-02fee9155f4d: Release v4.18.0 made the token-vault client time out (800 ms) on tokenization",
+    "release": "v4.18.1"
+   }
+  },
+  "api": {
+   "assessment_digest": "6f07b250ebe011b41ad0c48216b32aaa0e2b85c04ef55d076bb18d0f7783d5e9",
+   "execution": "exe-02fee9155f4d",
+   "intent": "investigate_incident",
+   "joined": true,
+   "leading": "H1",
+   "rendered_as": "dict",
+   "status": "WAITING_APPROVAL",
+   "verdict": null
+  },
+  "chat": {
+   "assessment_digest": "6f07b250ebe011b41ad0c48216b32aaa0e2b85c04ef55d076bb18d0f7783d5e9",
+   "execution": "exe-02fee9155f4d",
+   "intent": "investigate_incident",
+   "joined": true,
+   "leading": "H1",
+   "rendered_as": "str",
+   "status": "WAITING_APPROVAL",
+   "verdict": null
+  },
+  "cicd": {
+   "assessment_digest": null,
+   "execution": "exe-07a53811f52e",
+   "intent": "release_check",
+   "joined": false,
+   "leading": null,
+   "rendered_as": "dict",
+   "status": "COMPLETED",
+   "verdict": {
+    "based_on": "exe-02fee9155f4d",
+    "decision": "BLOCK",
+    "reason": "open investigation exe-02fee9155f4d: Release v4.18.0 made the token-vault client time out (800 ms) on tokenization",
+    "release": "v4.18.1"
+   }
+  },
+  "event": {
+   "assessment_digest": "6f07b250ebe011b41ad0c48216b32aaa0e2b85c04ef55d076bb18d0f7783d5e9",
+   "execution": "exe-02fee9155f4d",
+   "intent": "investigate_incident",
+   "joined": false,
+   "leading": "H1",
+   "rendered_as": "str",
+   "status": "WAITING_APPROVAL",
+   "verdict": null
+  },
+  "scheduler": {
+   "assessment_digest": "bef1a65f909cc011fa14bdb4aeeb8135bf2bf9855b7e12bccf6e3a3ab6d664fb",
+   "execution": "exe-b21fb2672c86",
+   "intent": "health_sweep",
+   "joined": false,
+   "leading": "H1",
+   "rendered_as": "dict",
+   "status": "COMPLETED",
+   "verdict": {
+    "healthy": false,
+    "leading": "H1",
+    "summary": "payment-service (production) error rate 14% vs 1% SLO. Leading hypothesis H1 (high): Release v4.18.0 made the token-vault client time out (800 ms) on tokenization. 1 log line(s) contained instructions and were treated as data.",
+    "write_attempt": {
+     "capability": "createIncident",
+     "rule": "P4-missing-scope",
+     "status": "denied"
+    }
+   }
+  },
+  "web": {
+   "assessment_digest": "6f07b250ebe011b41ad0c48216b32aaa0e2b85c04ef55d076bb18d0f7783d5e9",
+   "execution": "exe-02fee9155f4d",
+   "intent": "investigate_incident",
+   "joined": true,
+   "leading": "H1",
+   "rendered_as": "dict",
+   "status": "WAITING_APPROVAL",
+   "verdict": null
+  },
+  "workflow": {
+   "assessment_digest": "6f07b250ebe011b41ad0c48216b32aaa0e2b85c04ef55d076bb18d0f7783d5e9",
+   "execution": "exe-02fee9155f4d",
+   "intent": "investigate_incident",
+   "joined": true,
+   "leading": "H1",
+   "rendered_as": "dict",
+   "status": "WAITING_APPROVAL",
+   "verdict": null
+  }
+ },
+ "release_check_based_on_main": true,
+ "release_checks": {
+  "agent": "BLOCK",
+  "cicd": "BLOCK"
+ },
+ "render_shapes": {
+  "agent": "dict",
+  "api": "dict",
+  "chat": "str",
+  "cicd": "dict",
+  "event": "str",
+  "scheduler": "dict",
+  "web": "dict",
+  "workflow": "dict"
+ },
+ "rollbacks": 1,
+ "sweep_leading": "H1",
+ "sweep_same_leading": true,
+ "sweep_write_attempt": {
+  "capability": "createIncident",
+  "rule": "P4-missing-scope",
+  "status": "denied"
+ },
+ "verification": {
+  "error_rate": 0.004,
+  "p95_ms": 240,
+  "within_slo": true
+ }
+}

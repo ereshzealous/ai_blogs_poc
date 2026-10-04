@@ -1,43 +1,28 @@
 [project]
-name = "headless-ai-platform"
-version = "0.1.0"
-description = "POC: a headless capability boundary around the layered agent platform, one incident (INC-4917) across Slack, Web, CLI, REST and events"
+name = "f3-headless-ai-poc"
+version = "1.0.0"
+description = "F3 POC: one incident-intelligence runtime, many consumers. Event, chat, API, workflow, scheduler, CI/CD and agent heads over one governed capability layer."
 readme = "README.md"
-requires-python = ">=3.12"
-license = { text = "MIT" }
+requires-python = ">=3.12,<3.13"
 dependencies = [
-    "layered-agent-platform",
-    "fastapi>=0.115",
-    "uvicorn>=0.30",
-    "httpx>=0.27",
     "pydantic>=2.8",
     "pyyaml>=6.0",
 ]
 
-[dependency-groups]
-dev = ["pytest>=8.3", "import-linter>=2.1"]
-
 [project.scripts]
-hai = "headless_ai_platform.channels.cli:main"
-hai-exp = "experiments.run:main"
+hai = "hai.cli:main"
 
-# Part 2 is used as an editable path dependency: it reads its config and runbooks from its own folder.
-# It needs the whole ai_blogs_poc repository, not this folder alone.
-[tool.uv.sources]
-layered-agent-platform = { path = "../layered_agent_platform", editable = true }
+[dependency-groups]
+dev = ["pytest>=8.3"]
 
 [build-system]
-requires = ["hatchling>=1.25"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/headless_ai_platform", "baseline", "experiments"]
+packages = ["hai"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q -rA"
-filterwarnings = ["ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning"]
-markers = [
-    "platform: starts the real layered platform (MCP server subprocesses); model answers are replayed or faked",
-    "ollama: calls the local Ollama models (skipped when Ollama or a model is unavailable)",
-]
+addopts = "-q -rA -p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning"]

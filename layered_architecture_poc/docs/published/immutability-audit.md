@@ -55,7 +55,17 @@ above was then re-run to confirm the run matches the recording exactly.
 Two consequences:
 
 1. `.gitignore` now excludes `*.db-wal` and `*.db-shm`, with a note that tools must open a recorded database with
-   `mode=ro`. `scripts/recompute.py` and `tools/check_figures.py` already do.
+   `mode=ro`. `scripts/recompute.py`, `tools/check_figures.py` and `diagrams/tools/fig_evidence.py` do.
+
+   Two readers still open read-write, and are deliberately left alone: `experiments/scorers/evidence.py` and
+   `experiments/runners/harness.py`. Both are **frozen inputs of the recorded run** — hashed in `manifest.json` and
+   `source_hashes.json` — so editing them would break the freeze. The attempt was made and reverted: the verifier
+   immediately failed `frozen inputs unchanged since the run`, and claim `C13`, which cites that check, refused to
+   build. A cosmetic fix does not justify a new evidence revision over scoring code, so verifying the run still
+   leaves 66 empty sidecars beside its databases. They are excluded from the published copy by `.gitignore`, they
+   contain no data, and the `.db` files stay byte-identical. Delete them with
+   `find runs -name '*.db-wal' -o -name '*.db-shm' -delete` if they are in the way, then restore the two the
+   recording itself contained.
 2. The published copy of the run therefore holds 988 files rather than 990: the two recorded sidecars are not
    published. Nothing is lost — the `-wal` is empty and the `-shm` is a shared-memory index, so the `.db` files are
    complete on their own. This is stated here so the file-count difference is explained rather than silent.

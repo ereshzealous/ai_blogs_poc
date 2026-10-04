@@ -4,7 +4,7 @@
 #   scripts/publish-checks.sh
 #
 # The replay uses the recorded model traffic of the reference run, so it also proves the published evidence still
-# reproduces against whatever version of layered_agent_poc this POC sits next to.
+# reproduces against whatever version of layered_agent_platform this POC sits next to.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -24,10 +24,10 @@ rm -rf runs/publish-check
 
 echo "· nothing was written outside this folder"
 # Bytecode caches are written by importing the dependency and are gitignored; anything else is a real stray.
-strays=$(find ../layered_agent_poc -newer "$marker" -type f \
+strays=$(find ../layered_agent_platform -newer "$marker" -type f \
   -not -path '*/.git/*' -not -path '*/__pycache__/*' -not -name '*.pyc' 2>/dev/null | head -5 || true)
 if [ -n "$strays" ]; then
-  echo "FAIL: wrote into layered_agent_poc:" >&2
+  echo "FAIL: wrote into layered_agent_platform:" >&2
   echo "$strays" >&2
   exit 1
 fi

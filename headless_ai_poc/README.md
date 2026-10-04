@@ -3,7 +3,7 @@
 The proof of concept behind **"Your AI Shouldn't Live Inside the UI"**, Part 3 of an AI architecture series.
 
 - **Part 1:** [MCP tool sprawl](../mcp_sprawl_poc).
-- **Part 2:** [Layered agent platform](../layered_agent_poc).
+- **Part 2:** [Layered agent platform](../layered_agent_platform).
 - **This POC:** adds a **headless capability boundary** *around* the unmodified Part 2 platform. It runs one simulated production incident, INC-4917, across Slack-shaped chat, a real web console, a CLI, a REST API and an alert webhook.
 
 ![One capability. Many experiences.](docs/images/01-headless-ai-hero.png)
@@ -59,7 +59,7 @@ headless_ai_poc/
 
 - Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 - **The whole `ai_blogs_poc` repository.**
-  - This POC depends on `../layered_agent_poc` as an editable path dependency. It reuses Part 2's engine, policy, principals, runbooks and simulated enterprise systems; nothing is copied.
+  - This POC depends on `../layered_agent_platform` as an editable path dependency. It reuses Part 2's engine, policy, principals, runbooks and simulated enterprise systems; nothing is copied.
   - Copying this folder out on its own is not supported.
 - For live runs only: [Ollama](https://ollama.com) with `gpt-oss:20b`, `qwen3:8b` and `nomic-embed-text`.
 - For the diagrams and screenshots only: Node 20+ and a local Chrome.

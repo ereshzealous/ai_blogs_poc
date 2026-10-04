@@ -4,15 +4,15 @@ Three POCs live here, each written in its own workspace, often at the same time.
 
 ## The rules
 
-1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `layered_agent_poc/`, `headless_ai_poc/`, `memory_context_state_poc/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
+1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, `memory_context_state_poc/`, and the shared `layered_agent_platform/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
 2. **Work in your own clone.** Do not share a working copy between sessions or people. A throwaway clone is fine.
 3. **Rebase, never force-push.** `git pull --rebase` before pushing. Because the folders are disjoint, a rebase never conflicts. Rewriting published history is a last resort, and only after telling everyone who publishes here.
 4. **Run your POC's checks before you push.** At minimum its fast tests and whatever boundary checks it has.
 5. **Write your folder in the subject line:** `layered_architecture_poc: warn when another process is using Ollama`. The body says what changed and why.
 6. **No tool attribution in commit messages or pull requests.** No `Co-Authored-By` for an AI assistant, no "generated with" lines.
-7. **Write only inside your own folder at run time.** Point every path an experiment uses at your folder, absolutely. A relative path can resolve against another project's root: that is how a run once mirrored itself into `layered_agent_poc/runs/2026-09-17-recorded/h2/`. For Part 2's platform, that means `LAP_RUNS_DIR`, `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_KNOWLEDGE_INDEX` and `LAP_MODEL_TRAFFIC`.
-8. **Importing a neighbouring POC writes into it.** If your checks or experiments import another folder's package, Python leaves `__pycache__` there, and any state that project defaults to its own directory lands there too. Run your checks with `PYTHONDONTWRITEBYTECODE=1`, point every path setting at your own folder, and keep `__pycache__/` in both folders' `.gitignore`. For `layered_agent_poc` that means setting `LAP_KNOWLEDGE_INDEX` as well as the database and runs paths: unset, its runbook index is built inside that POC.
-9. **Say when you change something others depend on.** `headless_ai_poc` uses `layered_agent_poc`'s service facade. Changing that facade, its commands or its configuration means telling whoever maintains the dependent POC, in the commit body and directly.
+7. **Write only inside your own folder at run time.** Point every path an experiment uses at your folder, absolutely. A relative path can resolve against another project's root: that is how a run once mirrored itself into `layered_agent_platform/runs/2026-09-17-recorded/h2/`. For Part 2's platform, that means `LAP_RUNS_DIR`, `LAP_PLATFORM_DB`, `LAP_ENTERPRISE_DB`, `LAP_KNOWLEDGE_INDEX` and `LAP_MODEL_TRAFFIC`.
+8. **Importing a neighbouring POC writes into it.** If your checks or experiments import another folder's package, Python leaves `__pycache__` there, and any state that project defaults to its own directory lands there too. Run your checks with `PYTHONDONTWRITEBYTECODE=1`, point every path setting at your own folder, and keep `__pycache__/` in both folders' `.gitignore`. For `layered_agent_platform` that means setting `LAP_KNOWLEDGE_INDEX` as well as the database and runs paths: unset, its runbook index is built inside that POC.
+9. **Say when you change something others depend on.** `headless_ai_poc` uses `layered_agent_platform`'s service facade. Changing that facade, its commands or its configuration means telling whoever maintains the dependent POC, in the commit body and directly.
 10. **Keep the machine in mind, not just the models.** The POCs share one Ollama. Check before a long live run, and wait rather than compete: `uv run poc check --wait` in Part 2, or the equivalent elsewhere. Memory is shared too, and a run that spawns many processes can hit the limit while the model sits idle: Part 1's 500-tool arms start 44 MCP servers at once and were killed most often, but a 100-tool arm was killed too when the machine was tightest, so it is the total pressure at that moment rather than a threshold in the workload. If that is your shape, run in chunks so a kill costs minutes rather than the whole run, and make the runner skip work it already has.
 
 11. **Say which files must never change by accident.** Some committed files are byte-exact artefacts: a published report, a generated catalogue, the evidence of a cited run. List them in `<folder>/.publish-frozen`, one glob per line, `!` to make an exception. The script then refuses a publish that touches them, unless you pass `--allow-frozen` and say why in the message.
@@ -31,7 +31,7 @@ exactly and more than twenty paths, a refusal without `--allow-frozen`, an unrea
 # from anywhere, with a clone of this repo:
 scripts/publish-poc.sh layered_architecture_poc \
   --from ~/work/layered-agent-platform \
-  --message "layered_agent_poc: warn when another process is using Ollama" \
+  --message "layered_architecture_poc: warn when another process is using Ollama" \
   --checks "uv run pytest -m 'not ollama' -q && uv run lint-imports"
 ```
 

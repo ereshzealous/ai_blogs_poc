@@ -490,7 +490,7 @@ The full matrix, with every number resolved from `facts.json`, is in [docs/claim
 | `runs/2026-09-28-recorded/diffs/E9_dry_run-layered.diff` | the frozen dry run patch as applied to the layered |
 | `runs/2026-09-28-recorded/scenarios/E4-layered-s7/score.json` | one scenario's score: every check, write counts, crash accounting (32 such files) |
 
-**Evidence bundle:** [`dist/2026-09-28-recorded-evidence.zip`](../../dist/2026-09-28-recorded-evidence.zip): 1,056 files, sha256 `0ca511b6e17f03bb…`, without packaging noise or the throwaway git worktrees (the patches stay in `diffs/`). The paths above are repository-relative; the links work from the repository or the extracted bundle.
+**Evidence bundle:** [`dist/2026-09-28-recorded-evidence.zip`](../../dist/2026-09-28-recorded-evidence.zip): 1,056 files, sha256 `7d4cc3e82f3d8573…`, without packaging noise or the throwaway git worktrees (the patches stay in `diffs/`). The paths above are repository-relative; the links work from the repository or the extracted bundle.
 
 ## 26 · Limitations
 

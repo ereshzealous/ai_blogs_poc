@@ -239,8 +239,9 @@ evidence and the Lab Console name. Absolute local paths in recorded files were r
 
 - Medium edition: link added on publication.
 - Technical edition: link added on publication.
-- Lab Console: [`evidence/lab-console.html`](evidence/lab-console.html), one self-contained page; open it in any
-  browser, offline.
+- Lab Console: [open it online](https://ereshzealous.github.io/ai_blogs_poc/mcp_sprawl_poc/evidence/lab-console.html)
+  (GitHub Pages). The file is [`evidence/lab-console.html`](evidence/lab-console.html), one self-contained page that
+  also opens offline in any browser.
 
 ## License
 

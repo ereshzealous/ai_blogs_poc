@@ -20,7 +20,7 @@ matrix, the bundle), and the regeneration is declared as evidence revision `r3` 
 | Frozen inputs | 98 entries in `source_hashes.json`; source-tree digest `ac36bff9273c` |
 | Models | `gpt-oss:20b` (A) and `qwen3:8b` (B), temperature 0, seeds 7/11/13, MCP SDK 2.2.0 |
 | Scenarios | 32 of 32 preregistered present; 7 real SIGKILLs; 0 tape misses |
-| Source commit | **none — this tree is not under version control.** Both F2 trees were archived to `~/Documents/Dev/_f2-snapshots/2026-10-04/` before any edit |
+| Source commit | **none for the engineering workspace**: `claude/ai/f2_layer_architecture/` is a working directory on disk, not a git checkout, so the pass had no commit to cite while it ran. The *published* copy is version-controlled — `layered_agent_poc_r3/` in `github.com/ereshzealous/ai_blogs_poc`, commit `1985252`. Both F2 workspaces were archived to `~/Documents/Dev/_f2-snapshots/2026-10-04/` before any edit |
 | Supplementary runs | one, `supplementary/E7-monolith-s7`, recorded with the original run; the pass added none |
 
 ## Test accounting, reported four ways
@@ -214,8 +214,19 @@ crash discussions state their exposure, E9's contradiction is kept, and every fi
    and **0 deletions**. See `publish-plan.md`.
 2. **Repository visibility.** `ai_blogs_poc` is private: every POC link in the articles 404s for readers. A
    publishing blocker to report, not to fix automatically.
-3. **No version control.** Neither F2 tree is in a git repository, so the archives in
-   `~/Documents/Dev/_f2-snapshots/2026-10-04/` are the only safety net.
+3. **The engineering workspaces are not git checkouts.** `claude/ai/f2_layer_architecture/` and
+   `claude/ai/layered_architecture/` are working directories under `~/Documents/Dev/Knowledge-Blogs`, which contains
+   no git repository; the archives in `~/Documents/Dev/_f2-snapshots/2026-10-04/` are their only safety net. This is
+   **not** a statement about the published POC: `layered_agent_poc_r3/` and `layered_agent_poc/` are both tracked in
+   `github.com/ereshzealous/ai_blogs_poc`, and publishing copies files from the workspace into a clone of that
+   repository. Two separate things, and only the workspace is unversioned.
+
+   Relatedly, `runs/<id>/worktrees/` is **deliberately** not committed. Those are the throwaway git checkouts the E2,
+   E3 and E9 change experiments build to apply a patch and run the tests in isolation. Each experiment survives
+   without them: the patch itself is in `runs/<id>/diffs/`, its base is hashed in `source_hashes.json`, the measured
+   change surface is in `facts.json`, the per-change test results are in `runs/<id>/changes/`, and
+   `scripts/recompute.py` recomputes the metrics from the patch text. They are disposable by design, not missing
+   evidence.
 4. **Canonical URL and cover image** for the three editions' metadata.
 5. **Figures were not re-exported**, by decision, and are byte-for-byte unchanged. Validation was added instead
    (`tools/check_figures.py`, in the gate): all 18 exist in three formats under the manifest's filenames, every

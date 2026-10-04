@@ -10,7 +10,10 @@ Proof that the standardization pass (evidence revision `r3`) did not alter the r
 The baseline is the archive taken **before** the pass began:
 `~/Documents/Dev/_f2-snapshots/2026-10-04/f2_layer_architecture.tar.gz`. Every file of the run was hashed with
 sha256 in both trees and compared by path. `worktrees/` is excluded from both sides: it holds the throwaway git
-checkouts the change experiments build, and it is not published.
+checkouts the E2, E3 and E9 change experiments build to apply a patch and run the tests in isolation. They are
+disposable by design and are not published, because each experiment survives without them — the patch is in
+`diffs/`, its base is hashed in `source_hashes.json`, the measured change surface is in `facts.json`, the per-change
+test results are in `changes/`, and `scripts/recompute.py` recomputes the metrics from the patch text.
 
 ## Result
 

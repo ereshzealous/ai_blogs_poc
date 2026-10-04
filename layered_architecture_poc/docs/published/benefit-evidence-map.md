@@ -7,7 +7,7 @@ measured it, the `facts.json` path that holds the number, and what the evidence 
 experiment is not in this table; it is in the last section, which is the honest half.
 
 Facts are cited as paths, never as values, so this document cannot go stale. Resolve them against the published run
-(`layered_agent_poc/runs/PUBLISHED`), or read them already substituted in `docs/claim_evidence_matrix.md`.
+(`layered_architecture_poc/runs/PUBLISHED`), or read them already substituted in `docs/claim_evidence_matrix.md`.
 
 | Benefit | Mechanism | Experiment | Facts | Recomputed by | Limitation |
 |---|---|---|---|---|---|

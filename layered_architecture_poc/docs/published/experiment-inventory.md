@@ -3,7 +3,7 @@
 # Experiment inventory, and why the ids are what they are
 
 The recorded run `2026-09-28-recorded` holds 32 scenarios in nine experiment families, E1 to E9. The ids are
-historical: they were fixed in `layered_agent_poc/experiments/preregistration/experiment_plan.yaml` before the run,
+historical: they were fixed in `layered_architecture_poc/experiments/preregistration/experiment_plan.yaml` before the run,
 and they are never renumbered, because every published claim, figure and verification check cites them.
 
 ## The families
@@ -39,7 +39,7 @@ as-recorded value is kept in each score file as `trace_as_recorded`, beside the 
 ## The second F2 and its different numbering
 
 A separate, smaller F2 implementation exists in this repository at `claude/ai/layered_architecture/`, published as
-`layered_agent_poc` in `github.com/ereshzealous/ai_blogs_poc`. It also uses E-ids, with **different meanings** (its
+`layered_architecture_poc` in `github.com/ereshzealous/ai_blogs_poc`. It also uses E-ids, with **different meanings** (its
 E1 is the requirement-change experiment; its E4 is the crash; its E5 and E6 are injected tool faults). Neither
 scheme may be renumbered to match the other. When citing an experiment across the two, name the run as well as the
 id: `2026-09-28-recorded/E5` is not `2026-09-17-recorded/E5`.

@@ -311,12 +311,12 @@ E8 has no scenarios of its own; it scores the traces of the runs above.
 
 ## Files behind this report
 
-- `layered_agent_poc/runs/2026-09-28-recorded/summary.json`: aggregates (source of facts.json)
-- `layered_agent_poc/runs/2026-09-28-recorded/facts.json`: the flat key/value facts used in every publication
-- `layered_agent_poc/runs/2026-09-28-recorded/manifest.json`: environment, hashes, revisions
-- `layered_agent_poc/runs/2026-09-28-recorded/verification.json`: the run verifier's checks
-- `layered_agent_poc/runs/2026-09-28-recorded/replay_comparison.json`: record/replay identity
-- `layered_agent_poc/runs/2026-09-28-recorded/tests.json`: pytest results
-- `layered_agent_poc/runs/2026-09-28-recorded/scenarios/`: per-scenario scores, logs, ledgers and tapes
-- `layered_agent_poc/runs/2026-09-28-recorded/experiments/`: per-experiment aggregates and E6 probes
-- `layered_agent_poc/runs/2026-09-28-recorded/diffs/`: change patches as applied
+- `layered_architecture_poc/runs/2026-09-28-recorded/summary.json`: aggregates (source of facts.json)
+- `layered_architecture_poc/runs/2026-09-28-recorded/facts.json`: the flat key/value facts used in every publication
+- `layered_architecture_poc/runs/2026-09-28-recorded/manifest.json`: environment, hashes, revisions
+- `layered_architecture_poc/runs/2026-09-28-recorded/verification.json`: the run verifier's checks
+- `layered_architecture_poc/runs/2026-09-28-recorded/replay_comparison.json`: record/replay identity
+- `layered_architecture_poc/runs/2026-09-28-recorded/tests.json`: pytest results
+- `layered_architecture_poc/runs/2026-09-28-recorded/scenarios/`: per-scenario scores, logs, ledgers and tapes
+- `layered_architecture_poc/runs/2026-09-28-recorded/experiments/`: per-experiment aggregates and E6 probes
+- `layered_architecture_poc/runs/2026-09-28-recorded/diffs/`: change patches as applied

@@ -114,9 +114,9 @@ Every run is scored on the same eight checks. **The checks read the simulated wo
 
 ## 08 · The architecture invariants
 
-*Setup · no results: layered_agent_poc/docs/invariants.yaml*
+*Setup · no results: layered_architecture_poc/docs/invariants.yaml*
 
-Fifteen properties we claimed a layered platform can hold, each with a stable id, the mechanism meant to hold it, and what enforces it: a rule checked on the source, a deterministic test, an experiment, or a recomputation from the raw records. The statements are in `layered_agent_poc/docs/architecture-invariants.md`; `docs/invariants.yaml` is the machine-readable form, and a test checks it against this repository so the list cannot drift from the code.
+Fifteen properties we claimed a layered platform can hold, each with a stable id, the mechanism meant to hold it, and what enforces it: a rule checked on the source, a deterministic test, an experiment, or a recomputation from the raw records. The statements are in `layered_architecture_poc/docs/architecture-invariants.md`; `docs/invariants.yaml` is the machine-readable form, and a test checks it against this repository so the list cannot drift from the code.
 
 | Id | The invariant | Enforced by |
 |---|---|---|
@@ -393,7 +393,7 @@ Replay re-executes MCP servers, the world, faults, SIGKILLs, checkpoints and pol
 
 ## 21 · The standardization pass, disclosed as revision r3
 
-*Setup · no results: layered_agent_poc/experiments/evidence-revisions.yaml*
+*Setup · no results: layered_architecture_poc/experiments/evidence-revisions.yaml*
 
 > **Evidence revision r3 · post-run analysis, no recorded value changed**
 >
@@ -429,7 +429,7 @@ The current suite is larger because the standardization pass added architecture,
 | During the recorded run | 67 pass · 0 fail · 4 expected skip |
 | Post-run publication checks | 4 / 4 pass |
 | Run verifier | 36 / 36 pass |
-| Evidence bundle | 1054 files, re-verified 35/36 after extraction |
+| Evidence bundle | 1056 files, re-verified 35/36 after extraction |
 | Plan | `f2-layered-v1` · `10612b11c4016ad7…` |
 | Source tree | `ac36bff9273ceffa…` |
 | Evidence revisions | r2 (E8 scorer, see section 14) |
@@ -454,7 +454,7 @@ The full matrix, with every number resolved from `facts.json`, is in [docs/claim
 
 ## 25 · Raw artifact index
 
-*Real: layered_agent_poc/runs/2026-09-28-recorded/*
+*Real: layered_architecture_poc/runs/2026-09-28-recorded/*
 
 | Path | What it proves |
 |---|---|
@@ -490,7 +490,7 @@ The full matrix, with every number resolved from `facts.json`, is in [docs/claim
 | `runs/2026-09-28-recorded/diffs/E9_dry_run-layered.diff` | the frozen dry run patch as applied to the layered |
 | `runs/2026-09-28-recorded/scenarios/E4-layered-s7/score.json` | one scenario's score: every check, write counts, crash accounting (32 such files) |
 
-**Evidence bundle:** [`dist/2026-09-28-recorded-evidence.zip`](../../dist/2026-09-28-recorded-evidence.zip): 1,054 files, sha256 `b3dc957a5f361f46…`, without packaging noise or the throwaway git worktrees (the patches stay in `diffs/`). The paths above are repository-relative; the links work from the repository or the extracted bundle.
+**Evidence bundle:** [`dist/2026-09-28-recorded-evidence.zip`](../../dist/2026-09-28-recorded-evidence.zip): 1,056 files, sha256 `ffce8509e75a3366…`, without packaging noise or the throwaway git worktrees (the patches stay in `diffs/`). The paths above are repository-relative; the links work from the repository or the extracted bundle.
 
 ## 26 · Limitations
 

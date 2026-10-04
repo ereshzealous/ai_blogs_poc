@@ -16,9 +16,9 @@ the second one, not the one that is published.
 
 | | **A · `claude/ai/layered_architecture/`** | **B · `claude/ai/f2_layer_architecture/`** |
 |---|---|---|
-| POC folder | `layered-agent-platform/` | `layered_agent_poc/` |
+| POC folder | `layered-agent-platform/` | `layered_architecture_poc/` |
 | Cited run | `2026-09-17-recorded` | `2026-09-28-recorded` (+ `-recorded-replay`, identical) |
-| Published? | **Yes** — `github.com/ereshzealous/ai_blogs_poc`, folder `layered_agent_poc`, head commit `c8dce15` | **No** — never published |
+| Published? | **Yes** — `github.com/ereshzealous/ai_blogs_poc`, folder `layered_architecture_poc`, head commit `c8dce15` | **No** — never published |
 | Article | "Your Agent Works in a Demo. Why Does It Break in Production?" (3,235 words) + visual edition + run report | Three tracks: medium, technical, learning (md + html + pdf each) |
 | Scenarios | 6 platform runs (2 models × 3) + faults + crash + monolith baseline + 3 change patches | **32 scenarios, E1–E9**, both architectures × 2 models × seeds 7/11/13 |
 | Preregistration | none | `experiments/preregistration/experiment_plan.yaml`, hashed before the run (`plan_id: f2-layered-v1`) |
@@ -101,7 +101,7 @@ Strengths worth preserving as-is:
 - **A's run `2026-09-17-recorded`.** Frozen in `.publish-frozen`; its raw records, scores and tapes stay byte-exact. Derived files (`facts.json`, `verification.json`, `freeze.json`, `article-*.json`, `report/`) are regenerated from it and are excepted deliberately.
 - **Both E-id numbering schemes.** Neither may be renumbered to match the other (§15).
 - **The two contradicted results in B** (C4 the invalid `previous` target, C10 the dry-run change surface) and the qualification on C3 (2 of 3 runs reached the kill).
-- **A's published commit `c8dce15`** and the folder name `layered_agent_poc` in `ai_blogs_poc`: B's POC folder has the same name, so publishing B without a decision would collide with A.
+- **A's published commit `c8dce15`** and the folder name `layered_architecture_poc` in `ai_blogs_poc`: B's POC folder has the same name, so publishing B without a decision would collide with A.
 - Repository visibility: `ai_blogs_poc` is private, which is a publishing blocker to report, not to fix (§56).
 
 ## The decision this audit cannot make
@@ -112,7 +112,7 @@ whose target must be chosen first:
 1. **Harden B** (the brief read literally). B keeps its run, ids and three tracks; the pass adds the invariants
    document, four-class verdicts, the four-way test accounting, exposure checks, the benefit map, the design
    checklist and the publish-check extensions. A is then either retired or demoted to a smaller companion, and the
-   published `layered_agent_poc` folder is replaced by B — a rewrite of what is already public.
+   published `layered_architecture_poc` folder is replaced by B — a rewrite of what is already public.
 2. **Harden A** (the tree this session owns and has published). A gains the same documents and checks, plus the
    missing architecture/authority tests, an Evidence Check page and, if wanted, the technical and learning editions.
    The brief's B-specific facts (the `previous` target, the dry-run contradiction, `2026-09-28-recorded`, the 32-row

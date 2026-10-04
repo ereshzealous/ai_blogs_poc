@@ -8,7 +8,7 @@ it, and the choice it could not make, are in [`f2-current-state-audit.md`](f2-cu
 The rule the pass worked under: **the recorded run is read-only.** No score file, tape, ledger, world database or
 diff was modified. Derived files were regenerated (`verification.json`, `outcomes.json`, the publications, the
 matrix, the bundle), and the regeneration is declared as evidence revision `r3` in
-`layered_agent_poc/experiments/evidence-revisions.yaml`.
+`layered_architecture_poc/experiments/evidence-revisions.yaml`.
 
 ## The run
 
@@ -20,7 +20,7 @@ matrix, the bundle), and the regeneration is declared as evidence revision `r3` 
 | Frozen inputs | 98 entries in `source_hashes.json`; source-tree digest `ac36bff9273c` |
 | Models | `gpt-oss:20b` (A) and `qwen3:8b` (B), temperature 0, seeds 7/11/13, MCP SDK 2.2.0 |
 | Scenarios | 32 of 32 preregistered present; 7 real SIGKILLs; 0 tape misses |
-| Source commit | **none for the engineering workspace**: `claude/ai/f2_layer_architecture/` is a working directory on disk, not a git checkout, so the pass had no commit to cite while it ran. The *published* copy is version-controlled — `layered_agent_poc_r3/` in `github.com/ereshzealous/ai_blogs_poc`, commit `1985252`. Both F2 workspaces were archived to `~/Documents/Dev/_f2-snapshots/2026-10-04/` before any edit |
+| Source commit | **none for the engineering workspace**: `claude/ai/f2_layer_architecture/` is a working directory on disk, not a git checkout, so the pass had no commit to cite while it ran. The *published* copy is version-controlled — `layered_architecture_poc_r3/` in `github.com/ereshzealous/ai_blogs_poc`, commit `1985252`. Both F2 workspaces were archived to `~/Documents/Dev/_f2-snapshots/2026-10-04/` before any edit |
 | Supplementary runs | one, `supplementary/E7-monolith-s7`, recorded with the original run; the pass added none |
 
 ## Test accounting, reported four ways
@@ -46,7 +46,7 @@ appears outside a known category, or if a directory holding tests is not in the 
 
 ## Architecture invariants
 
-15 invariants, `L1`–`L15`, in `layered_agent_poc/docs/architecture-invariants.md`, with the machine-readable form in
+15 invariants, `L1`–`L15`, in `layered_architecture_poc/docs/architecture-invariants.md`, with the machine-readable form in
 `docs/invariants.yaml`. Each names a mechanism and at least one enforcement: a source rule, a deterministic test, an
 experiment, or a recomputation. 6 further statements are listed as **not enforced** (`N1`–`N6`) so that nothing can
 pass for a result — among them "layering prevents model mistakes", which the run contradicts.
@@ -145,7 +145,7 @@ Two stale published numbers were also found and fixed: the run report claimed `2
 
 ## Claims
 
-17 claims in `layered_agent_poc/docs/claims.yaml`, rendered to `docs/claim_evidence_matrix.md` and validated against
+17 claims in `layered_architecture_poc/docs/claims.yaml`, rendered to `docs/claim_evidence_matrix.md` and validated against
 the run — the build fails if a claim cites a facts path, a verification check, a raw file, a test or an invariant
 that does not exist.
 
@@ -208,8 +208,8 @@ crash discussions state their exposure, E9's contradiction is kept, and every fi
 ## Still open
 
 1. **Publication, prepared and not pushed.** Decided on 2026-10-04: publish **beside** the historical edition,
-   never over it. The standardized bundle goes to a new sibling folder `layered_agent_poc_r3/`; the published
-   `layered_agent_poc/` keeps its path, its three runs and its links, because the published article's
+   never over it. The standardized bundle goes to a new sibling folder `layered_architecture_poc_r3/`; the published
+   `layered_architecture_poc/` keeps its path, its three runs and its links, because the published article's
    reproducibility chain depends on them. A real dry-run against `c8dce15` stages 1,158 additions, 0 replacements
    and **0 deletions**. See `publish-plan.md`.
 2. **Repository visibility.** `ai_blogs_poc` is private: every POC link in the articles 404s for readers. A
@@ -217,7 +217,7 @@ crash discussions state their exposure, E9's contradiction is kept, and every fi
 3. **The engineering workspaces are not git checkouts.** `claude/ai/f2_layer_architecture/` and
    `claude/ai/layered_architecture/` are working directories under `~/Documents/Dev/Knowledge-Blogs`, which contains
    no git repository; the archives in `~/Documents/Dev/_f2-snapshots/2026-10-04/` are their only safety net. This is
-   **not** a statement about the published POC: `layered_agent_poc_r3/` and `layered_agent_poc/` are both tracked in
+   **not** a statement about the published POC: `layered_architecture_poc_r3/` and `layered_architecture_poc/` are both tracked in
    `github.com/ereshzealous/ai_blogs_poc`, and publishing copies files from the workspace into a clone of that
    repository. Two separate things, and only the workspace is unversioned.
 

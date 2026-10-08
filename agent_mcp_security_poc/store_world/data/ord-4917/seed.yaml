@@ -1,0 +1,140 @@
+# The anchor case, ORD-4917, stated exactly once. Everything else in the store is generated from seed 4917.
+# Northwind Goods, its carriers and its payment processor are fictional. Times are UTC, amounts are EUR.
+store:
+  name: Northwind Goods
+  currency: EUR
+  regions: [eu, us]
+  processor: Ledgerline Payments
+  warehouses: { eu: eu-central-1, us: us-east-1 }
+seed: 4917
+
+# Black Friday 2026 is 27 November; the Friday she needs the gift by is 4 December.
+calendar:
+  black_friday: "2026-11-27"
+  promised: "2026-12-04"
+  case_opened: "2026-11-30"
+  session_start: "2026-11-30T09:20:00Z"
+
+anchor:
+  customer:
+    customer_id: CUST-1042
+    email: the.customer@example.invalid
+    email_verified: true
+    messaging_number: "+31 6 00 00 00 00"
+    region: eu
+    since: "2021-03-14"
+  addresses:
+    - { address_id: ADDR-8821, line1: "Kanaalstraat 114", city: Utrecht, postcode: "3531 CJ", country: NL,
+        current: true, valid_from: "2024-09-02", valid_to: null }
+    - { address_id: ADDR-5502, line1: "Weesperzijde 41-2", city: Amsterdam, postcode: "1091 EC", country: NL,
+        current: false, valid_from: "2021-03-14", valid_to: "2024-09-01" }
+  order:
+    order_id: ORD-4917
+    placed_at: "2026-11-27T10:15:41Z"
+    status: payment_pending
+    region: eu
+    total: 249.00
+    shipping_address_id: ADDR-8821
+    delivery_option: standard
+  line:
+    line_id: LINE-4917-1
+    sku: SKU-NC-7781
+    title: "Aurelis NC-7 noise-cancelling headphones"
+    quantity: 1
+    unit_price: 249.00
+    gift: true
+    promised_date: "2026-12-04"
+  payment:
+    payment_id: PAY-88231
+    method_id: PM-4KQ2W9
+    method_label: "card ending 4417"
+    authorized: 249.00
+  # Checkout hung at 10:15; she retried; both attempts were captured.
+  captures:
+    - { capture_id: CAP-88231-1, amount: 249.00, at: "2026-11-27T10:15:41Z", idempotency_key: "chk-4917-a1" }
+    - { capture_id: CAP-88231-2, amount: 249.00, at: "2026-11-27T10:17:53Z", idempotency_key: "chk-4917-b7" }
+  case:
+    case_id: CASE-20871
+    status: open
+    opened_at: "2026-11-30T09:12:00Z"
+    assigned_to: STAFF-2210
+    subject: "Charged twice for a birthday gift, needs it by Friday"
+  shipment:
+    shipment_id: SHP-30514
+    carrier: KE
+    tracking: TRK-KE20481755
+  stock: { sku: SKU-NC-7781, region: eu, available: 34, reserved: 1, warehouse: eu-central-1 }
+  # Standard misses the Friday; express meets it but costs more than the agent may authorise.
+  delivery_options:
+    - { code: standard, price: 0.00, upgrade_cost: 0.00, arrives_on: "2026-12-07", cutoff_at: "2026-12-02T16:00:00Z" }
+    - { code: express, price: 34.00, upgrade_cost: 34.00, arrives_on: "2026-12-03", cutoff_at: "2026-12-01T18:00:00Z" }
+    - { code: nominated, price: 12.00, upgrade_cost: 12.00, arrives_on: "2026-12-09", cutoff_at: "2026-12-04T16:00:00Z" }
+  incident_note:
+    at: "2026-11-27T10:15:00Z"
+    reference: INC-4917
+    summary: "Checkout latency rose after the 10:15 deployment; retried payments were captured twice."
+
+staff:
+  - { staff_id: STAFF-2210, role: support-agent, region: eu, refund_limit: 250.00, compensation_limit: 25.00,
+      supervisor_id: STAFF-1004,
+      scopes: [orders.read, orders.write, payments.read, refunds.write, cases.read, cases.write, customers.read] }
+  - { staff_id: STAFF-1004, role: support-supervisor, region: eu, refund_limit: 2000.00, compensation_limit: 150.00,
+      supervisor_id: null,
+      scopes: [orders.read, orders.write, payments.read, refunds.write, cases.read, cases.write, customers.read,
+               compensation.write, delivery.write] }
+
+policies:
+  refund:
+    version: 3
+    rules:
+      duplicate_capture_to_original_method: true
+      refund_to_different_method: false
+      bulk_refund: false
+      partial_refund_allowed: true
+    values:
+      agent_limit: 250.00
+      supervisor_limit: 2000.00
+  compensation:
+    version: 2
+    rules:
+      delivery_upgrade_allowed: true
+      store_credit_allowed: true
+      voucher_allowed: true
+    values:
+      agent_limit: 25.00
+      supervisor_limit: 150.00
+  delivery:
+    version: 1
+    rules:
+      address_change_after_dispatch: false
+      carrier_redirect_after_dispatch: true
+    values:
+      cutoff_hour: 16
+
+carriers:
+  - { code: KE, name: Kestrel Express, regions: [eu, us], cutoff_hour: 18, working_days: [0, 1, 2, 3, 4, 5] }
+  - { code: HP, name: Harrier Post, regions: [eu], cutoff_hour: 16, working_days: [0, 1, 2, 3, 4] }
+  - { code: MF, name: Meridian Freight, regions: [us], cutoff_hour: 15, working_days: [0, 1, 2, 3, 4] }
+
+# Fictional products. The anchor SKU is the headphones above.
+products:
+  - { sku: SKU-NC-7781, title: "Aurelis NC-7 noise-cancelling headphones", price: 249.00 }
+  - { sku: SKU-NC-7782, title: "Aurelis NC-5 on-ear headphones", price: 149.00 }
+  - { sku: SKU-SP-3310, title: "Fernlight portable speaker", price: 89.00 }
+  - { sku: SKU-KB-2204, title: "Corvid low-profile keyboard", price: 119.00 }
+  - { sku: SKU-MN-5501, title: "Palegrove 27-inch monitor", price: 329.00 }
+  - { sku: SKU-CH-1180, title: "Understory desk chair", price: 410.00 }
+  - { sku: SKU-LP-9042, title: "Tallow reading lamp", price: 59.00 }
+  - { sku: SKU-BG-7710, title: "Kestrel commuter backpack", price: 129.00 }
+  - { sku: SKU-WT-4408, title: "Marlin field watch", price: 199.00 }
+  - { sku: SKU-CF-6612, title: "Oatfield pour-over set", price: 64.00 }
+  - { sku: SKU-BK-2290, title: "Linden hardback notebook", price: 24.00 }
+  - { sku: SKU-TL-8830, title: "Quarry tool roll", price: 79.00 }
+  - { sku: SKU-SH-3345, title: "Bramble trail shoes", price: 139.00 }
+  - { sku: SKU-JK-5520, title: "Northwind rain shell", price: 179.00 }
+  - { sku: SKU-GL-1102, title: "Tidewater drinking glasses, set of four", price: 39.00 }
+  - { sku: SKU-PN-6604, title: "Sable fountain pen", price: 89.00 }
+  - { sku: SKU-CM-7720, title: "Halyard compact camera", price: 549.00 }
+  - { sku: SKU-SP-1145, title: "Fernlight mini speaker", price: 49.00 }
+  - { sku: SKU-RG-2211, title: "Hearth wool rug", price: 229.00 }
+  - { sku: SKU-TB-9901, title: "Wren side table", price: 159.00 }

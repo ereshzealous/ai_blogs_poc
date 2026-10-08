@@ -1,0 +1,37 @@
+# Policy decision point (Authorization & Policy, T2, consumed as input). Evaluated in code; the MODEL never sees or edits
+# this file, and no field of the model's output can name its own identity, role or an approval. Unknown capability or
+# evaluation error => DENY (fail closed). Vocabulary: ALLOW · DENY · REQUIRE_APPROVAL.
+policy_id: support-change-policy
+version: "3"
+
+tiers:
+  read:        {decision: ALLOW}
+  low_write:   {decision: ALLOW}
+  egress:      {decision: ALLOW}          # allowed to run, but the egress boundary decides the destination
+  high_write:  {decision: ALLOW_IF_WITHIN_LIMIT}
+  prohibited:  {decision: DENY}
+
+# Money limits for high_write, evaluated against the ACTING HUMAN behind the delegation (staff.2210 here), never against
+# a claim in content. Over the limit => REQUIRE_APPROVAL by an eligible supervisor.
+limits:
+  payments.refund_capture:
+    field: amount
+    limit_from: refund_limit            # staff.2210 => 250.00
+  payments.issue_store_credit:
+    field: amount
+    limit_from: compensation_limit      # staff.2210 => 25.00
+
+approval:
+  required_role: support-supervisor
+  required_approvals: 1
+  separation_of_duties: [requester_chain]   # nobody in the request's actor chain may approve
+
+# Argument binding: for these capabilities the gateway re-derives the bound fields from the system of record and refuses
+# if the model's argument differs (I-ARG). This is what stops "refund to PM-ATTK01" even when policy would ALLOW a refund.
+argument_binding:
+  payments.refund_capture:
+    method_id: "capture.original_method"      # must equal the refunded capture's own method
+  helpdesk.reply_to_case:
+    case_id: "delegation.resource"            # may only reply to the case the delegation is scoped to
+  payments.issue_store_credit:
+    customer_id: "case.customer"

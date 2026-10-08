@@ -27,6 +27,7 @@ scaffold() {
   git clone -q "$dir/origin.git" "$dir/repo"
   mkdir -p "$dir/repo/scripts" "$dir/work"
   cp "$SCRIPT" "$dir/repo/scripts/publish-poc.sh"
+  cp -R "$(dirname "$SCRIPT")/vendor" "$dir/repo/scripts/vendor"
   git -C "$dir/repo" -c user.email=t@local -c user.name=test add -A
   git -C "$dir/repo" -c user.email=t@local -c user.name=test commit -q -m "init"
   git -C "$dir/repo" push -q origin HEAD:main
@@ -113,6 +114,22 @@ code=0
 ( cd "$dir/repo" && mkdir -p poc && bash scripts/publish-poc.sh poc --from "$dir/work" \
     --message "poc: evidence" --checks "false" --allow-frozen --dry-run >"$dir/out.log" 2>&1 ) || code=$?
 if [ "$code" -ne 0 ]; then ok "a failing --checks command fails the publish"; else bad "a failing --checks command was ignored"; fi
+rm -rf "$dir"
+
+echo "hygiene gate: no local path, host name or address reaches main"
+
+dir=$(scaffold 2)
+printf '{"command": "/Users/jane/ws/run.py"}\n' > "$dir/work/runs/leak.json"
+code=$(run_publish "$dir" --allow-frozen --dry-run)
+check 1 "$code" "a staged file with a home path is refused"
+if grep -q "local path or identity" "$dir/out.log"; then ok "the refusal names the reason"; else bad "the refusal names the reason"; fi
+rm -rf "$dir"
+
+dir=$(scaffold 2)
+printf '/Users/jane/\n' > "$dir/work/.publish-hygiene-allow"
+printf '{"doc": "an example path /Users/jane/ in a tutorial"}\n' > "$dir/work/runs/example.json"
+code=$(run_publish "$dir" --allow-frozen --dry-run)
+check 0 "$code" "an intended match listed in .publish-hygiene-allow passes"
 rm -rf "$dir"
 
 printf '\n%s passed, %s failed\n' "$pass" "$fail"

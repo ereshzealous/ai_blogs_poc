@@ -10,6 +10,7 @@
 #   --no-checks         skip the checks, for a docs-only change
 #   --allow-frozen      allow changes to paths listed in <folder>/.publish-frozen (say why in the message)
 #   --dry-run           do everything except commit and push
+#   hygiene: staged files are scanned (scripts/vendor/evidence_kit_publication.py); intended matches go in <folder>/.publish-hygiene-allow
 set -euo pipefail
 
 die() { printf '\nrefusing to publish: %s\n' "$1" >&2; exit 1; }
@@ -68,6 +69,26 @@ printf '   %s file(s) staged\n' "$(printf '%s\n' "$staged" | wc -l | tr -d ' ')"
 outside=$(git status --porcelain | grep -v -E "^.. ?\"?$folder/" || true)
 [ -z "$outside" ] || die "the copy wrote outside $folder (rule 7):
 $outside"
+
+step "3b/6 hygiene (no local path, host name or personal address)"
+scanner="$(dirname "$0")/vendor/evidence_kit_publication.py"
+[ -f "$scanner" ] || die "the hygiene scanner is missing: $scanner"
+# Portable to macOS /bin/bash 3.2 under set -u: no mapfile, and empty arrays expanded with the ${a[@]+...} idiom.
+allow_args=()
+if [ -f "$folder/.publish-hygiene-allow" ]; then
+  while IFS= read -r rx || [ -n "$rx" ]; do [ -n "$rx" ] && allow_args+=(--allow "$rx"); done < "$folder/.publish-hygiene-allow"
+fi
+staged_files=()
+while IFS= read -r f; do staged_files+=("$f"); done < <(git diff --cached --name-only --diff-filter=AM)
+if [ "${#staged_files[@]}" -gt 0 ]; then
+  hygiene_log=$(mktemp)
+  if ! python3 -I "$scanner" "${staged_files[@]}" --root . ${allow_args[@]+"${allow_args[@]}"} >"$hygiene_log" 2>&1; then
+    sed -n '1,30p' "$hygiene_log"; rm -f "$hygiene_log"
+    die "a staged file carries a local path or identity (hygiene gate): rewrite it in a declared public copy, or list an intended match in $folder/.publish-hygiene-allow"
+  fi
+  rm -f "$hygiene_log"
+fi
+echo "   clean"
 
 # A .publish-frozen that exists but cannot be read as a regular file would silently disable rule 11, so say so
 # instead of skipping the guard.

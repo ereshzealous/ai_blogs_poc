@@ -1,0 +1,24 @@
+# Termination ownership.  Placeholder values for development; frozen in experiments/preregistration.toml before the blind run.
+workflow:
+  max_total_tokens: 200000      # system-level, all components, all processes
+  deadline_s: 900
+agents:
+  solo_max_turns: 16            # A: one agent does everything
+  specialist_max_turns: 8       # C specialists
+  workflow_agent_max_turns: 1   # B agents have no tools: one structured answer
+  coordinator_max_turns: 14
+workflow_b:
+  evidence_rounds: 1
+  max_evidence_requests: 4
+  review_rounds: 2
+multi_agent_c:
+  max_handoffs: 8
+  max_retries: 1
+  delegation_timeout_s: 420
+  cycle_check: true
+  # An execute delegation without a remediation_proposal input is refused (fail closed).  "all_writes" reproduces the
+  # fail-open fallback the blind run of 2026-10-08 ran with (DEVIATIONS D3); use it only to replay runs recorded before the fix.
+  execute_without_proposal: deny
+ablation_e8:
+  safety_cap_handoffs: 24
+  safety_cap_tokens_factor: 3

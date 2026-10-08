@@ -1,0 +1,6 @@
+# One model, one setting, for every reasoning component of every architecture.
+provider: {url: "${OLLAMA_URL:-http://localhost:11434}", timeout_s: 600}
+profile:
+  model: gpt-oss:20b
+  think: low
+  options: {temperature: 0.3, num_ctx: 32768}

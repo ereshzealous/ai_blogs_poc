@@ -1,0 +1,47 @@
+fixture_id: D4
+date: "2026-09-18"
+start_minute: 790
+incident:
+  id: INC-4911
+  title: "Stock checks slow during the autumn campaign"
+  service: inventory-api
+  environment: production
+  severity: SEV3
+  status: investigating
+  opened_minute: 778
+  reporter: alerting/latency-slo
+  customer_impact: "Product pages show stock with a 1-2 s delay; about 2% of stock checks time out."
+  notes: []
+services:
+  inventory-api: {owner: fulfilment, tier: 2, slo_p95_ms: 300, runbook: RB-INV-004, replicas: 4, depends_on: [inventory-db]}
+  inventory-db:  {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+  checkout-api:  {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [inventory-api]}
+deployments:
+  - {id: rel-3302, service: inventory-api, environment: production, version: 1.9.0, minute: -9000, author: sam.o, summary: "SKU cache warm-up on start", current: true}
+changes:
+  - {id: chg-1180, service: inventory-api, environment: production, minute: -7000, kind: config, key: threads.max, from: "150", to: "200", author: sam.o, summary: "More worker threads"}
+metrics:
+  inventory-api:
+    incident_start: 770
+    request_rate_rps: {baseline: 400, incident: 1300}
+    cpu_pct:          {baseline: 45, incident: 96}
+    latency_p95_ms:   {baseline: 120, incident: 1100}
+    error_rate_pct:   {baseline: 0.1, incident: 1.8}
+  inventory-db:
+    cpu_pct:            {baseline: 30, incident: 41}
+    connections_active: {baseline: 60, incident: 70}
+  checkout-api:
+    latency_p95_ms: {baseline: 210}
+logs:
+  inventory-api:
+    incident:
+      - "WARN  request queue depth 870 (worker threads 200/200 busy)"
+      - "INFO  traffic by campaign: utm_campaign=autumn-sale 71% of requests"
+      - "WARN  GET /v1/stock 504 reason=queue-timeout"
+    baseline:
+      - "INFO  GET /v1/stock 200 64ms"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: scale_service, args: {service: inventory-api, environment: production, replicas: {gte: 6, lte: 16}}, recovers: [inventory-api]}

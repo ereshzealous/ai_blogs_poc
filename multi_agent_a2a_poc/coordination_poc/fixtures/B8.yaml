@@ -1,0 +1,52 @@
+fixture_id: B8
+date: "2026-10-02"
+start_minute: 460
+incident:
+  id: INC-5190
+  title: "search-api p95 latency above SLO"
+  service: search-api
+  environment: production
+  severity: SEV3
+  status: investigating
+  opened_minute: 433
+  reporter: alerting/latency-slo
+  customer_impact: "Search results slow for a few minutes (alert fired at 07:13)."
+  notes: []
+services:
+  search-api:     {owner: discovery, tier: 2, slo_p95_ms: 300, runbook: RB-SRCH-008, replicas: 5, depends_on: [search-index]}
+  search-index:   {owner: discovery, tier: 2, slo_p95_ms: 100, runbook: RB-SRCH-008, replicas: 3, depends_on: []}
+  storefront-web: {owner: web-platform, tier: 1, slo_p95_ms: 800, runbook: RB-WEB-013, replicas: 8, depends_on: [search-api]}
+deployments:
+  - {id: rel-4409, service: search-api, environment: production, version: 6.1.0, minute: -9000, author: noor.h, summary: "Synonym expansion"}
+  - {id: rel-4410, service: search-api, environment: production, version: 6.1.1, minute: -2900, author: noor.h, summary: "Typo tolerance for brand names", current: true}
+changes:
+  - {id: job-7731, service: search-api, environment: production, minute: 438, kind: job, key: nightly-reindex, from: started, to: finished, author: scheduler, summary: "Nightly reindex (scheduled 07:10, finished 07:18)"}
+metrics:
+  search-api:
+    incident_start: 431
+    incident_end: 439
+    latency_p95_ms: {baseline: 95, incident: 1450}
+    error_rate_pct: {baseline: 0.1, incident: 0.4}
+    cpu_pct:        {baseline: 40, incident: 91}
+  search-index:
+    incident_start: 431
+    incident_end: 439
+    cpu_pct:        {baseline: 30, incident: 97}
+    latency_p95_ms: {baseline: 12, incident: 380}
+  storefront-web:
+    latency_p95_ms: {baseline: 420}
+    error_rate_pct: {baseline: 0.3}
+logs:
+  search-api:
+    incident:
+      - "WARN  slow query 1380ms (index refresh in progress)"
+    baseline:
+      - "INFO  GET /v1/search 200 61ms"
+      - "INFO  nightly reindex finished at 07:18; serving from index search-2026-10-02"
+  search-index:
+    baseline:
+      - "INFO  index search-2026-10-02 active; 0 pending merges"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes: []

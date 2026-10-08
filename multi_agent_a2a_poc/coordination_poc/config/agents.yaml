@@ -1,0 +1,7 @@
+# Architecture C's independent agents: one OS process each, one A2A server each (JSON-RPC binding).
+host: 127.0.0.1
+agents:
+  evidence:    {port: 18701, principal: agent.evidence,    skill: incident-evidence,    tools: [get_incident, get_runbook, query_metrics, search_logs, get_dependencies, list_deployments, get_change_history]}
+  diagnosis:   {port: 18702, principal: agent.diagnosis,   skill: incident-diagnosis,   tools: [get_incident, get_runbook, query_metrics, search_logs, get_dependencies, list_deployments, get_change_history]}
+  remediation: {port: 18703, principal: agent.remediation, skill: incident-remediation, tools: [get_incident, get_runbook, query_metrics, get_dependencies, list_deployments, get_change_history, rollback_release, restart_service, scale_service, flush_sessions, revert_config, set_feature_flag]}
+  review:      {port: 18704, principal: agent.review,      skill: remediation-review,   tools: [get_incident, get_runbook, query_metrics, search_logs, get_dependencies, list_deployments, get_change_history]}

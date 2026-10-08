@@ -1,0 +1,70 @@
+fixture_id: B4
+date: "2026-09-26"
+start_minute: 860
+incident:
+  id: INC-5101
+  title: "Product pages slow; pricing-api p95 above 1.8 s"
+  service: pricing-api
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 849
+  reporter: alerting/latency-slo
+  customer_impact: "Product and category pages take 2-3 s to render prices."
+  notes: []
+services:
+  pricing-api:    {owner: catalog-engineering, tier: 1, slo_p95_ms: 250, runbook: RB-PRC-006, replicas: 6, depends_on: [price-cache, catalog-db]}
+  price-cache:    {owner: catalog-engineering, tier: 1, slo_p95_ms: 5, runbook: RB-PC-015, replicas: 3, depends_on: []}
+  catalog-db:     {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+  storefront-web: {owner: web-platform, tier: 1, slo_p95_ms: 800, runbook: RB-WEB-013, replicas: 8, depends_on: [pricing-api]}
+deployments:
+  - {id: rel-5119, service: pricing-api, environment: production, version: 4.8.1, minute: -4300, author: tomas.b, summary: "Currency rounding for JPY"}
+  - {id: rel-5120, service: pricing-api, environment: production, version: 4.8.2, minute: 841, author: tomas.b, summary: "Copy update for discount banner; dependency bump (jackson 2.17.1)", current: true}
+changes:
+  - {id: chg-881, service: pricing-api, environment: production, minute: 842, kind: config, key: price_cache.ttl_seconds, from: "300", to: "1", author: config-sync-bot, summary: "Sync from staging profile"}
+  - {id: chg-860, service: pricing-api, environment: production, minute: -2000, kind: flag, key: banner.autumn, from: "off", to: "on", author: marketing.ops, summary: "Autumn sale banner"}
+metrics:
+  pricing-api:
+    incident_start: 843
+    latency_p95_ms: {baseline: 140, incident: 1900}
+    error_rate_pct: {baseline: 0.2, incident: 1.1}
+    cache_hit_pct:  {baseline: 96, incident: 3}
+    cpu_pct:        {baseline: 33, incident: 47}
+  price-cache:
+    latency_p95_ms: {baseline: 1}
+    memory_pct:     {baseline: 48}
+    evictions_per_s: {baseline: 0}
+  catalog-db:
+    incident_start: 843
+    cpu_pct:            {baseline: 35, incident: 92}
+    connections_active: {baseline: 90, incident: 240}
+    latency_p95_ms:     {baseline: 8, incident: 1240}
+  storefront-web:
+    incident_start: 843
+    latency_p95_ms: {baseline: 420, incident: 2600}
+    error_rate_pct: {baseline: 0.3, incident: 0.9}
+logs:
+  pricing-api:
+    incident:
+      - "INFO  started pricing-api 4.8.2 (jackson 2.17.1)"
+      - "WARN  price-cache hit ratio 0.03 over last 60s"
+      - "INFO  effective config price_cache.ttl_seconds=1 (source=config-sync, profile=staging)"
+      - "WARN  slow query catalog-db SELECT price FROM sku_prices WHERE sku=? 1240ms"
+      - "ERROR GET /v1/price 503 reason=catalog-db-timeout"
+    baseline:
+      - "INFO  GET /v1/price 200 31ms (cache hit)"
+      - "INFO  effective config price_cache.ttl_seconds=300 (source=config-sync, profile=production)"
+  catalog-db:
+    incident:
+      - "LOG  connections by application: pricing-api=228, catalog-admin=12"
+      - "LOG  duration: 1240 ms statement: SELECT price FROM sku_prices WHERE sku=$1"
+    baseline:
+      - "LOG  connections by application: pricing-api=78, catalog-admin=12"
+  price-cache:
+    baseline:
+      - "INFO  keys=1,204,882 used_memory=48% evicted_keys=0"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: revert_config, args: {service: pricing-api, environment: production, change_id: chg-881}, recovers: [pricing-api, catalog-db, storefront-web]}

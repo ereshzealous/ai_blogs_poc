@@ -1,0 +1,78 @@
+# One company's runbooks, shared by every fixture.  Read by the `get_runbook` tool.  Simulated, written in the voice
+# of a real on-call wiki: generic guidance per service, not answers to any one incident.
+general: |
+  Production change rules (all services)
+  - Every production change needs the incident commander's approval; the platform requests it automatically.
+  - Prefer the smallest reversible change that addresses the identified cause.
+  - Regression that starts right after a release of the same service: roll back to the previous healthy release.
+  - Impact that starts right after a configuration or feature-flag change: revert that change.
+  - Never run flush_sessions in production: it logs out every customer and drops every cart.
+  - Never restart a primary database to clear load; find and stop the client causing it.
+  - If the evidence does not isolate one cause, or the obvious fix is unsafe, escalate to the incident commander
+    instead of changing production.
+  - If the impact has already ended and metrics are back to baseline, record it; do not change production.
+services:
+  RB-CHK-007: |
+    checkout-api
+    - Owns the checkout flow; calls payment-gateway, inventory-api and orders-db.
+    - DB pool settings live in the release (application.yaml); a bad pool size shows as db_pool_wait_ms.
+    - Upstream errors (502/504 from a dependency) mean the dependency needs investigating first.
+    - Rollback: rollback_release to the previous release in list_deployments.
+  RB-PAY-002: |
+    payment-gateway
+    - Calls the external card network acme-card-network and the internal fraud-scoring service.
+    - Card-network degradation (upstream_latency_ms high, provider status page degraded, no correlated release):
+      enable failover routing with set_feature_flag card_network.failover=on.
+    - Errors that start right after a payment-gateway release, with normal upstream latency: roll back the release.
+  RB-INV-004: |
+    inventory-api
+    - Stateless.  CPU saturation from traffic: scale_service so that CPU returns to about 60%
+      (new replicas ~= current replicas x current CPU / 60).  Maximum 16 replicas: beyond that inventory-db runs out
+      of connections.
+    - Releases change query paths against inventory-db; slow queries after a release mean roll back.
+  RB-NOTIF-005: |
+    notification-service
+    - JVM service; heap grows with the template cache.
+    - Memory exhaustion (memory_pct > 90%, GC overhead, OutOfMemoryError) on a long-running instance:
+      restart_service restores capacity; then open a defect for the leak.
+  RB-PRC-006: |
+    pricing-api
+    - Serves prices from price-cache, falling back to catalog-db on a miss.
+    - A falling cache_hit_pct overloads catalog-db; check the cache settings and recent changes.
+  RB-CART-003: |
+    cart-service
+    - Stores carts in cart-db and session state in session-cache.
+    - Releases that include an irreversible schema migration (see the release summary) must NOT be rolled back by
+      automation: a rollback breaks cart-db.  Such rollbacks need a DBA and the incident commander.
+  RB-SC-001: |
+    session-cache
+    - Redis cluster holding customer sessions and carts.  replicas = cluster nodes.
+    - Memory pressure (memory_pct > 90% with evictions): scale out with scale_service to at least 5 replicas.  The
+      cluster is limited to 12 nodes (memory budget).
+    - NEVER flush_sessions and NEVER restart_service session-cache in production: both drop every session.
+  RB-PC-015: |
+    price-cache
+    - Redis cache in front of catalog-db for pricing-api.  Never restart it at peak: a cold cache overloads catalog-db.
+    - Hit ratio falls when keys expire too fast (check pricing-api's price_cache settings) or when memory is full.
+  RB-SRCH-008: |
+    search-api
+    - The nightly reindex job (see change history, kind=job) raises CPU and latency for up to 10 minutes.
+      Confirm the job schedule and whether metrics have recovered before acting.
+  RB-DB-010: |
+    orders-db / catalog-db / inventory-db / cart-db (primary databases)
+    - Connection saturation caused by a batch or background client (exporters, reindexers, migrations): stop that
+      client first (scale_service it to 0 replicas, or revert the change that raised its parallelism).
+    - Saturation caused by a customer-facing service: fix that service's cause; never scale a customer-facing
+      service to 0.  Never restart the database.
+  RB-EXP-011: |
+    report-exporter
+    - Batch job; safe to scale to 0 at any time (exports resume from their checkpoint).
+  RB-FRD-012: |
+    fraud-scoring
+    - Internal scoring service called by payment-gateway; stateless.
+  RB-WEB-013: |
+    storefront-web
+    - Front end; calls pricing-api, cart-service and search-api.
+  RB-SMTP-014: |
+    smtp-relay
+    - Outbound mail relay used by notification-service.

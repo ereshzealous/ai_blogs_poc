@@ -1,0 +1,60 @@
+fixture_id: D2
+date: "2026-09-16"
+start_minute: 560
+incident:
+  id: INC-4893
+  title: "orders-db connections at 100%; checkout and order history slow"
+  service: orders-db
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 548
+  reporter: alerting/db-connections
+  customer_impact: "Checkout and order history pages time out for some customers."
+  notes: []
+services:
+  orders-db:         {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+  checkout-api:      {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [orders-db]}
+  order-history-api: {owner: accounts, tier: 2, slo_p95_ms: 300, runbook: RB-CHK-007, replicas: 3, depends_on: [orders-db]}
+  report-exporter:   {owner: finance-eng, tier: 3, slo_p95_ms: 60000, runbook: RB-EXP-011, replicas: 2, depends_on: [orders-db]}
+deployments:
+  - {id: rel-2031, service: checkout-api, environment: production, version: 2.14.0, minute: -3000, author: leo.m, summary: "Pool size 30", current: true}
+  - {id: rel-ex-12, service: report-exporter, environment: production, version: 1.4.0, minute: -20000, author: finance-eng, summary: "Monthly export", current: true}
+changes:
+  - {id: chg-512, service: report-exporter, environment: production, minute: 538, kind: config, key: export.parallelism, from: "4", to: "32", author: finance-eng, summary: "Speed up month-end export"}
+  - {id: job-513, service: report-exporter, environment: production, minute: 540, kind: job, key: month-end-export, from: scheduled, to: running, author: scheduler, summary: "Month-end export started"}
+metrics:
+  orders-db:
+    incident_start: 541
+    connections_active: {baseline: 120, incident: 200}
+    cpu_pct:            {baseline: 31, incident: 88}
+    latency_p95_ms:     {baseline: 6, incident: 420}
+  checkout-api:
+    incident_start: 541
+    latency_p95_ms:  {baseline: 210, incident: 1700}
+    error_rate_pct:  {baseline: 0.2, incident: 2.6}
+    db_pool_wait_ms: {baseline: 3, incident: 900}
+  order-history-api:
+    incident_start: 541
+    latency_p95_ms: {baseline: 140, incident: 2100}
+  report-exporter:
+    cpu_pct: {baseline: 60}
+logs:
+  orders-db:
+    incident:
+      - "FATAL remaining connection slots are reserved for non-replication superuser connections"
+      - "LOG  connections by application: report-exporter=142, checkout-api=38, order-history-api=20"
+      - "LOG  long-running query (application=report-exporter) 00:19:44: SELECT ... FROM orders o JOIN order_lines l ..."
+    baseline:
+      - "LOG  connections by application: checkout-api=78, order-history-api=22, report-exporter=8"
+  checkout-api:
+    incident:
+      - "WARN  HikariPool-1 - Connection is not available, request timed out after 900ms"
+    baseline:
+      - "INFO  POST /v1/checkout 201 190ms"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: scale_service, args: {service: report-exporter, environment: production, replicas: 0}, recovers: [orders-db, checkout-api, order-history-api]}
+    - {tool: revert_config, args: {service: report-exporter, environment: production, change_id: chg-512}, recovers: [orders-db, checkout-api, order-history-api]}

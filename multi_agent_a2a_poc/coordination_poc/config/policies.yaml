@@ -1,0 +1,9 @@
+# Policy: evaluated in code, top to bottom, first match wins.  Identical for A, B and C.  No model sees this file.
+rules:
+  - {id: P0-unregistered,          when: {registered: false},                         effect: DENY,             reason: "not a registered capability"}
+  - {id: P1-scope,                 when: {scope_missing: true},                       effect: DENY,             reason: "the caller's token does not carry the capability's scope"}
+  - {id: P2-read,                  when: {kind: read},                                effect: ALLOW,            reason: "read-only capability"}
+  - {id: P3-cross-environment,     when: {kind: write, environment_mismatch: true},   effect: DENY,             reason: "a write must target the incident's own environment"}
+  - {id: P4-no-session-flush,      when: {capability: flush_sessions, environment: production}, effect: DENY,   reason: "flushing sessions in production logs out every customer"}
+  - {id: P5-production-write,      when: {kind: write, environment: production},      effect: REQUIRE_APPROVAL, required_role: incident-commander, reason: "production change needs the incident commander"}
+  - {id: P9-default,               when: {},                                          effect: DENY,             reason: "no rule allows it"}

@@ -1,0 +1,85 @@
+# INC-4917 — the series' checkout incident, adapted from F2 (f2_layer_architecture/.../simulated_enterprise/data/inc4917.yaml).
+# Simulated and deterministic.  Time = minutes after 00:00 UTC on `date`.  Nothing reads the wall clock.
+fixture_id: B1
+date: "2026-09-22"
+start_minute: 630
+incident:
+  id: INC-4917
+  title: "Checkout API: p95 latency above 2 s and 5xx errors in production"
+  service: checkout-api
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 611
+  reporter: alerting/latency-slo
+  customer_impact: "About 4% of checkout requests fail; the rest are slow."
+  notes: []
+services:
+  checkout-api:    {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [payment-gateway, inventory-api, orders-db]}
+  payment-gateway: {owner: payments-platform, tier: 1, slo_p95_ms: 600, runbook: RB-PAY-002, replicas: 4, depends_on: [{name: acme-card-network, kind: external, status_page: "All systems operational"}, fraud-scoring]}
+  inventory-api:   {owner: fulfilment, tier: 2, slo_p95_ms: 300, runbook: RB-INV-004, replicas: 4, depends_on: [inventory-db]}
+  orders-db:       {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+deployments:
+  - {id: rel-2029, service: checkout-api, environment: production, version: 2.13.2, minute: -2870, author: dmitri.k, summary: "Retry budget for payment calls"}
+  - {id: rel-2030, service: checkout-api, environment: production, version: 2.13.4, minute: -1450, author: priya.s, summary: "Fix currency rounding on refunds"}
+  - {id: rel-2031, service: checkout-api, environment: production, version: 2.14.0, minute: 602, author: leo.m, summary: "Cost tuning: DB pool maximumPoolSize 50 -> 10; ORM 6.4 -> 6.5", current: true}
+  - {id: rel-2032, service: checkout-api, environment: staging, version: 2.14.1, minute: 615, author: leo.m, summary: "Pool size back to 30 (staging only, not promoted)", current: true}
+  - {id: rel-7709, service: payment-gateway, environment: production, version: 5.2.0, minute: -3000, author: ana.r, summary: "Card network timeouts to 4 s"}
+  - {id: rel-7710, service: payment-gateway, environment: production, version: 5.2.1, minute: 588, author: ana.r, summary: "Enable 3DS2 challenge flow for EU cards (feature flag)", current: true}
+  - {id: rel-3301, service: inventory-api, environment: production, version: 1.8.7, minute: -5000, author: sam.o, summary: "Warehouse sync every 5 min"}
+  - {id: rel-3302, service: inventory-api, environment: production, version: 1.9.0, minute: 510, author: sam.o, summary: "SKU cache warm-up on start", current: true}
+changes:
+  - {id: chg-1187, service: checkout-api, environment: production, minute: -4200, kind: config, key: logging.level, from: INFO, to: WARN, author: priya.s, summary: "Reduce log volume"}
+  - {id: chg-7702, service: payment-gateway, environment: production, minute: 589, kind: flag, key: threeds2.eu, from: "off", to: "on", author: ana.r, summary: "3DS2 challenge for EU cards"}
+metrics:
+  checkout-api:
+    incident_start: 603
+    latency_p95_ms:  {baseline: 210, incident: 2140}
+    error_rate_pct:  {baseline: 0.2, incident: 3.9}
+    db_pool_wait_ms: {baseline: 3, incident: 1810}
+    cpu_pct:         {baseline: 36, incident: 34}
+    memory_pct:      {baseline: 61, incident: 62}
+  payment-gateway:
+    latency_p95_ms:      {baseline: 330}
+    error_rate_pct:      {baseline: 0.3}
+    upstream_latency_ms: {baseline: 250}
+    cpu_pct:             {baseline: 41}
+  inventory-api:
+    latency_p95_ms: {baseline: 120}
+    error_rate_pct: {baseline: 0.1}
+    cpu_pct:        {baseline: 22}
+  orders-db:
+    incident_start: 603
+    connections_active: {baseline: 180, incident: 120}
+    cpu_pct:            {baseline: 31, incident: 18}
+    latency_p95_ms:     {baseline: 6, incident: 5}
+logs:
+  checkout-api:
+    incident:
+      - "WARN  HikariPool-1 - Connection is not available, request timed out after 1800ms (total=10, active=10, idle=0, waiting=143)"
+      - "ERROR POST /v1/checkout 503 upstream=orders-db reason=connection-acquire-timeout"
+      - "INFO  datasource pool config maximumPoolSize=10 minimumIdle=2 (release 2.14.0)"
+      - "WARN  slow request POST /v1/checkout 2231ms (db wait 1794ms)"
+      - "ERROR POST /v1/checkout 503 upstream=orders-db reason=connection-acquire-timeout"
+    baseline:
+      - "INFO  POST /v1/checkout 201 187ms"
+      - "INFO  datasource pool config maximumPoolSize=50 minimumIdle=10"
+  payment-gateway:
+    baseline:
+      - "INFO  3DS2 challenge flow enabled for EU cards (flag threeds2.eu=on)"
+      - "INFO  POST /v1/authorize 200 298ms"
+  inventory-api:
+    baseline:
+      - "INFO  SKU cache warmed: 48211 entries in 2.1s"
+      - "INFO  GET /v1/stock 200 64ms"
+  orders-db:
+    incident:
+      - "LOG  connections by application: checkout-api=60 (6 replicas x pool 10), order-history-api=44, report-exporter=16"
+      - "LOG  checkpoint complete: wrote 1822 buffers"
+    baseline:
+      - "LOG  connections by application: checkout-api=120, order-history-api=44, report-exporter=16"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: rollback_release, args: {service: checkout-api, environment: production, to_release: {in: [rel-2029, rel-2030]}}, recovers: [checkout-api, orders-db]}

@@ -1,0 +1,78 @@
+fixture_id: B5
+date: "2026-09-29"
+start_minute: 575
+incident:
+  id: INC-5138
+  title: "Checkout errors: 'unable to reserve stock'"
+  service: checkout-api
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 562
+  reporter: alerting/error-rate-slo
+  customer_impact: "About 5% of checkouts fail with 'unable to reserve stock'; others are slow."
+  notes: []
+services:
+  checkout-api:    {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [inventory-api, payment-gateway, orders-db]}
+  inventory-api:   {owner: fulfilment, tier: 2, slo_p95_ms: 300, runbook: RB-INV-004, replicas: 4, depends_on: [inventory-db]}
+  payment-gateway: {owner: payments-platform, tier: 1, slo_p95_ms: 600, runbook: RB-PAY-002, replicas: 4, depends_on: [{name: acme-card-network, kind: external, status_page: "All systems operational"}, fraud-scoring]}
+  orders-db:       {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+  inventory-db:    {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+deployments:
+  - {id: rel-2032, service: checkout-api, environment: production, version: 2.14.1, minute: -9000, author: leo.m, summary: "Pool size 30"}
+  - {id: rel-2033, service: checkout-api, environment: production, version: 2.14.2, minute: -4300, author: leo.m, summary: "Gift-card balance check", current: true}
+  - {id: rel-3302, service: inventory-api, environment: production, version: 1.9.0, minute: -1500, author: sam.o, summary: "SKU cache warm-up on start"}
+  - {id: rel-3303, service: inventory-api, environment: production, version: 1.9.1, minute: 551, author: sam.o, summary: "Stock lookup: batch reservation API (new query path)", current: true}
+  - {id: rel-7712, service: payment-gateway, environment: production, version: 5.3.1, minute: -6000, author: ana.r, summary: "Add merchant labels to metrics", current: true}
+changes:
+  - {id: chg-1402, service: checkout-api, environment: production, minute: -3000, kind: config, key: inventory.client.timeout_ms, from: "2500", to: "2000", author: leo.m, summary: "Tighter timeout to inventory-api"}
+metrics:
+  checkout-api:
+    incident_start: 553
+    latency_p95_ms:  {baseline: 210, incident: 2600}
+    error_rate_pct:  {baseline: 0.2, incident: 5.4}
+    db_pool_wait_ms: {baseline: 3, incident: 4}
+    cpu_pct:         {baseline: 36, incident: 33}
+  inventory-api:
+    incident_start: 553
+    latency_p95_ms:   {baseline: 120, incident: 2400}
+    error_rate_pct:   {baseline: 0.1, incident: 0.4}
+    cpu_pct:          {baseline: 22, incident: 88}
+    request_rate_rps: {baseline: 410, incident: 405}
+  inventory-db:
+    incident_start: 553
+    cpu_pct:            {baseline: 30, incident: 95}
+    connections_active: {baseline: 60, incident: 64}
+    latency_p95_ms:     {baseline: 4, incident: 210}
+  payment-gateway:
+    latency_p95_ms: {baseline: 330}
+    error_rate_pct: {baseline: 0.3}
+  orders-db:
+    connections_active: {baseline: 175}
+    cpu_pct:            {baseline: 29}
+logs:
+  checkout-api:
+    incident:
+      - "ERROR POST /v1/checkout 502 upstream=inventory-api reason=timeout after 2000ms"
+      - "WARN  reserve-stock call to inventory-api exceeded 2000ms (sku batch=7)"
+      - "ERROR POST /v1/checkout 502 upstream=inventory-api reason=timeout after 2000ms"
+      - "INFO  POST /v1/checkout 201 1890ms"
+    baseline:
+      - "INFO  POST /v1/checkout 201 187ms"
+  inventory-api:
+    incident:
+      - "INFO  inventory-api 1.9.1: batch reservation API enabled"
+      - "WARN  slow request POST /v1/reserve 2380ms (1840 queries in request)"
+      - "WARN  slow query: SELECT qty FROM stock_levels WHERE sku=? AND warehouse=? (executed 1840 times)"
+    baseline:
+      - "INFO  POST /v1/reserve 200 41ms (3 queries)"
+  inventory-db:
+    incident:
+      - "LOG  duration: 2 ms statement: SELECT qty FROM stock_levels WHERE sku=$1 AND warehouse=$2 (calls/s 38,000)"
+    baseline:
+      - "LOG  calls/s 1,900"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: rollback_release, args: {service: inventory-api, environment: production, to_release: rel-3302}, recovers: [inventory-api, inventory-db, checkout-api]}

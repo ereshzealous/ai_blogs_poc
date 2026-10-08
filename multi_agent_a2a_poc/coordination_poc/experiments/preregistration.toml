@@ -1,0 +1,171 @@
+schema = "prereg/1"
+article = "C1 · Multi-Agent Systems & Agent2Agent (A2A)"
+frozen = "2026-10-08T01:38:01+0530"
+note = "Frozen after the dev smoke (D1-D4 only) and before any blind fixture runs. Hashes in FROZEN.sha256. Changes after the freeze go to DEVIATIONS.md, beside the as-recorded numbers, never instead of them."
+
+[question]
+primary = "When does splitting one reasoning component into several autonomous ones produce a better production system, on the same capability, model, tools, policy and budget?"
+secondary = [
+  "Where does the extra cost of autonomous coordination go (coordinator reasoning, handoffs, duplicate work, reconciliation)?",
+  "What happens to workflow state when an independent agent process dies mid-task, and who recovers it?",
+  "What does an A2A process boundary cost on its own, separated from coordination, and what does it buy?",
+]
+
+[arms.A]
+name = "One agent"
+next_step_decided_by = "the agent"
+reasoning_components = ["agent.incident-solo (all reads + eligible writes)"]
+triggers_write = "the agent, by tool call"
+process_boundaries = 0
+[arms.B]
+name = "Deterministic workflow + selective agents"
+next_step_decided_by = "workflow code"
+reasoning_components = ["b.diagnosis", "b.remediation", "b.review (conditional: confidence != high or alternatives listed)"]
+triggers_write = "the workflow, after deterministic checks"
+evidence_recipe = "generic: get_incident, list_deployments, get_change_history, get_dependencies, search_logs('error warn'), query_metrics(latency_p95_ms), query_metrics(error_rate_pct), get_runbook - all for the alerting service only; more only via the diagnosis agent's evidence_request (<= 4 reads, 1 round)"
+process_boundaries = 0
+[arms.C]
+name = "Multi-agent over A2A"
+next_step_decided_by = "coordinator agent (LLM)"
+reasoning_components = ["agent.coordinator (no tool authority)", "agent.evidence", "agent.diagnosis", "agent.remediation", "agent.review"]
+triggers_write = "agent.remediation, only in a delegation with authorize_execution (token narrowed to the proposal's write scope)"
+process_boundaries = "4 agent OS processes, A2A v1.0 JSON-RPC, SendStreamingMessage"
+
+[fairness]
+identical = ["model gpt-oss:20b, think=low, temperature 0.3, num_ctx 32768, seed = repeat seed (7, 11, 13) for every component",
+             "the 13 MCP tools over the same world", "capability gateway, policy file, approval rule, eligible write set",
+             "InvocationEnvelope -> ExecutionView contract", "system-level token budget and deadline", "deterministic evaluator",
+             "shared category definitions and production rules in every prompt (coord/prompts.py)"]
+differs = ["who reasons", "who decides the next step", "who triggers the write", "process boundaries", "per-component turn limits (A 16, C specialists 8, C coordinator 14, B agents 1 structured answer each)"]
+tuning = "dev fixtures only (dev-smoke-1..6); platform fixes F1-F10 apply to every arm they concern; prompt revisions used: A 2, B 0, C 2 (cap 3), plus one shared category-definition revision S1; all logged in experiments/tuning-log.md"
+dev_note = "dev results are tuning evidence only and never enter a headline number"
+order = "architecture order rotated per (fixture, repeat); world reset before every run; strictly serial execution"
+
+[fixtures]
+dev = ["D1", "D2", "D3", "D4"]
+blind = ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
+subset_simple = ["B1", "B2", "B8"]
+subset_complex = ["B4", "B5", "B6"]
+subset_other = ["B3", "B7"]
+labels = "groundtruth/labels.yaml (authored by hand; independent review in experiments/label-review.md; the author's labels are the source of truth)"
+headline = "blind only: 8 fixtures x 3 arms x 3 repeats = 72 runs. Dev results never enter a headline number."
+
+[primary_metric]
+name = "task success"
+definition = "rc_ok AND evidence_ok AND remediation_ok AND prohibited_ok AND approval_ok AND outcome_ok, computed by coord/evaluate.py from ledgers (no LLM judge)"
+unit = "run"
+report = "successes / 24 per arm; per subset / 9 (simple, complex) and / 6 (other); Wilson 95% interval"
+
+[secondary_metrics]
+latency = "wall time from capability.invoke to the ExecutionView, ms; median, p90, max (n = 24 per arm); comparative on one machine only"
+tokens = "input + output tokens over every model call of the workflow, all processes; median"
+llm_calls = "model calls, all components"
+tool_calls = "gateway calls (allowed or denied)"
+duplicate_tool_calls = "same capability + same canonical args + same world version, seen earlier in the same workflow; cross_component when the earlier call came from another component"
+handoffs = "B: agent invocations by the workflow; C: delegations (A2A tasks, retries excluded); A: 0"
+handoff_bytes = "B: serialized payload handed to an agent; C: request + response bytes on the wire"
+boundary_overhead_ms = "C: sum over completed attempts of client_ms - server_ms"
+coordination_tokens = "tokens of coordinator model calls (role=coordination)"
+state_conflicts = "an architecture's claim contradicts the ledger (claimed execution without one; claimed no_action/escalate with a write)"
+termination = "COMPLETED | ESCALATED-by-decision | NO_ACTION | FAILED | TIMEOUT | BUDGET_EXCEEDED | MAX_HANDOFFS | LOOP_DETECTED | POLICY_BLOCKED | SAFETY_CAP (E8 only)"
+trace_complete = "all spans of the workflow's trace, across all processes, form one tree (1 root, 0 orphans)"
+
+[[hypotheses]]
+id = "H1"
+kind = "confirmatory"
+statement = "On simple incidents (B1, B2, B8), C uses more tokens and more time than B without more successes."
+test = "median tokens C > B AND median latency C > B AND successes C <= successes B (of 9)"
+can_fail = true
+
+[[hypotheses]]
+id = "H2"
+kind = "hypothesis"
+statement = "On complex incidents (B4, B5, B6), independent agents earn their cost: C succeeds more often than B."
+test = "successes C >= successes B + 2 (of 9)"
+can_fail = true
+
+[[hypotheses]]
+id = "H3"
+kind = "hypothesis"
+statement = "One agent is enough for bounded incidents: on the simple subset A succeeds about as often as B."
+test = "successes A >= successes B - 1 (of 9)"
+can_fail = true
+
+[[hypotheses]]
+id = "H4"
+kind = "confirmatory"
+statement = "Autonomous decomposition creates duplicate work: C makes more duplicate tool calls per run than A and than B."
+test = "median duplicate_tool_calls C > median A AND > median B (all blind)"
+can_fail = true
+
+[[hypotheses]]
+id = "H5"
+kind = "hypothesis"
+statement = "Workflow by default: B's overall blind success is at least A's and at least C's."
+test = "successes B >= successes A AND successes B >= successes C (of 24)"
+can_fail = true
+
+[[hypotheses]]
+id = "H6"
+kind = "invariant-under-failure"
+statement = "Workflow-owned idempotency survives an agent crash: when the remediation agent is killed after its write, the retried delegation does not execute the same write twice; without it (negative control) it does."
+test = "K2: every run where the kill fired has world executions of the same (tool, args) == 1; K2-neg: at least one run with >= 2"
+can_fail = true
+
+[[hypotheses]]
+id = "H7"
+kind = "measurement"
+statement = "The A2A task does not survive its agent's process; the workflow does."
+test = "after restart, GetTask(old task id) does not return the task; the workflow still reaches a terminal state under the same workflow id"
+can_fail = true
+
+[[hypotheses]]
+id = "H8"
+kind = "measurement"
+statement = "The A2A process boundary itself is cheap next to the reasoning it carries."
+test = "E7 median (a2a - inproc) per delegation < 5% of the median live delegation server_ms observed in E1 for C"
+can_fail = true
+
+[[hypotheses]]
+id = "H9"
+kind = "hypothesis"
+statement = "Without an owner of termination, a multi-agent run can fail to stop on its own."
+test = "E8 (no hop limit, no cycle check, no budget; safety cap 24 handoffs): at least 1 of 8 runs ends at the safety cap or delegates the same (agent, inputs) >= 3 times"
+can_fail = true
+
+[invariants]
+I01 = "only coord/evaluate.py reads groundtruth/ (tests/test_imports.py)"
+I02 = "a token's scopes never widen across a hop (tests/test_identity.py)"
+I03 = "the coordinator holds no tool authority (tests/test_identity.py, tests/test_imports.py)"
+I04 = "policy is one engine and one file for every arm; flush_sessions in production is denied (tests/test_policy.py, tests/test_gateway.py)"
+I05 = "every executed write has an approval bound to its digest (tests/test_gateway.py, coord/evaluate.py)"
+I06 = "the same envelope yields the same ExecutionView shape for A, B and C (tests/test_runtime.py)"
+I07 = "the outcome is derived from the ledger, not the claim (tests/test_runtime.py)"
+I08 = "max_handoffs, the cycle check and the budget terminate a run (tests/test_runtime.py)"
+I09 = "a retried identical write executes once under workflow idempotency, twice without it (tests/test_gateway.py)"
+I10 = "an A2A server rejects a token minted for another agent and does no work (tests/test_a2a.py)"
+I11 = "a killed agent's task is not resumed by its restarted process (tests/test_a2a.py)"
+I12 = "one trace spans host and agent processes (tests/test_a2a.py, metrics.trace_completeness)"
+I13 = "every safe remediation in the labels is reachable and recovers its fixture (tests/test_fixtures.py)"
+
+[experiments]
+E1 = "baseline: blind 8 x {A,B,C} x repeats {1,2,3} (seeds 7,11,13), one recorded run"
+E2 = "complex subset of E1 (no extra runs)"
+E3 = "simple subset of E1 (no extra runs)"
+E4 = "coordination tax and duplicate work from E1 ledgers and traces (no extra runs)"
+E5 = "conflict and reconciliation: review rejections, escalations and state conflicts in E1, read per run for B4, B6 and every rejected review"
+E6 = "process kill on B1 (INC-4917), architecture C: K1, K2, K2-neg x 3 repeats (coord/exp_failure.py)"
+E7 = "A2A boundary: same diagnosis agent in-process vs over A2A, scripted model, n = 100 per mode interleaved (coord/exp_boundary.py)"
+E8 = "ablation: C with limits {ablation: true} (safety cap 24 handoffs, no cycle check, token budget x3), blind 8 x seed 7"
+
+[analysis]
+statistics = "counts and Wilson 95% intervals for success; median / p90 / max for latency, tokens and counts. No significance tests: n is small and the claim is architectural, stated with its boundary."
+difference_rule = "say an arm 'succeeds more often' only when the difference is >= 3 runs of 24 (>= 2 of 9 on a subset); smaller differences are reported as no measurable difference"
+coordination_tax = "reported as components, never summed into one number: coordinator tokens, handoffs, handoff bytes, duplicate tool calls (cross-component), review rejections, boundary_overhead_ms"
+two_overheads = "multi-agent coordination overhead (E1/E4) and A2A process-boundary overhead (E7, plus boundary_overhead_ms in E1) are reported separately"
+anomalies = "a model error is a FAILED run, never silently retried; a runner crash re-runs the workflow under a new id and is listed; every anomaly appears in the run notes"
+failed_hypotheses = "published with the same prominence as supported ones"
+
+[run]
+discipline = "warm the model once before each session; strictly serial; tape-record every model call; save every row, ledger and trace; no edits to prompts, fixtures, labels, limits or scorer after the blind run starts"
+limits_file = "config/limits.yaml (values frozen with this file)"

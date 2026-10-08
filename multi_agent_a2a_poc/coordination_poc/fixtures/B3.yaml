@@ -1,0 +1,63 @@
+fixture_id: B3
+date: "2026-09-25"
+start_minute: 845
+incident:
+  id: INC-5047
+  title: "Card payments slow and failing (EU and US)"
+  service: payment-gateway
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 834
+  reporter: alerting/error-rate-slo
+  customer_impact: "About 7% of card authorizations fail; successful ones take 3-4 s."
+  notes: []
+services:
+  payment-gateway: {owner: payments-platform, tier: 1, slo_p95_ms: 600, runbook: RB-PAY-002, replicas: 4, depends_on: [{name: acme-card-network, kind: external, status_page: "Degraded performance: elevated authorization latency for some merchants (investigating since 13:52 UTC)"}, fraud-scoring]}
+  fraud-scoring:   {owner: risk-engineering, tier: 1, slo_p95_ms: 150, runbook: RB-FRD-012, replicas: 3, depends_on: []}
+  checkout-api:    {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [payment-gateway, orders-db]}
+deployments:
+  - {id: rel-7711, service: payment-gateway, environment: production, version: 5.3.0, minute: -6100, author: ana.r, summary: "Idempotency keys on capture"}
+  - {id: rel-7712, service: payment-gateway, environment: production, version: 5.3.1, minute: -2900, author: ana.r, summary: "Add merchant labels to metrics", current: true}
+  - {id: rel-9001, service: fraud-scoring, environment: production, version: 7.0.4, minute: -800, author: mei.w, summary: "Model refresh (weekly)", current: true}
+changes:
+  - {id: chg-7720, service: payment-gateway, environment: production, minute: -9000, kind: flag, key: card_network.failover, from: "on", to: "off", author: ana.r, summary: "Back to primary network after provider maintenance"}
+metrics:
+  payment-gateway:
+    incident_start: 832
+    latency_p95_ms:      {baseline: 330, incident: 4100}
+    error_rate_pct:      {baseline: 0.3, incident: 7.5}
+    upstream_latency_ms: {baseline: 250, incident: 3900}
+    cpu_pct:             {baseline: 41, incident: 39}
+  fraud-scoring:
+    latency_p95_ms: {baseline: 85}
+    error_rate_pct: {baseline: 0.1}
+    cpu_pct:        {baseline: 44}
+  checkout-api:
+    incident_start: 832
+    latency_p95_ms: {baseline: 210, incident: 4300}
+    error_rate_pct: {baseline: 0.2, incident: 7.1}
+logs:
+  payment-gateway:
+    incident:
+      - "WARN  upstream acme-card-network timeout after 4000ms (attempt 1/1)"
+      - "ERROR POST /v1/authorize 504 upstream=acme-card-network"
+      - "INFO  circuit breaker card_network: half-open (failure rate 31%)"
+      - "WARN  upstream acme-card-network p95 3870ms (merchant=eu-*, us-*)"
+    baseline:
+      - "INFO  POST /v1/authorize 200 298ms"
+      - "INFO  routing: primary=acme-card-network failover=disabled"
+  fraud-scoring:
+    baseline:
+      - "INFO  POST /v1/score 200 61ms"
+  checkout-api:
+    incident:
+      - "ERROR POST /v1/checkout 502 upstream=payment-gateway reason=authorize-failed"
+    baseline:
+      - "INFO  POST /v1/checkout 201 190ms"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: set_feature_flag, args: {service: payment-gateway, environment: production, flag: card_network.failover, value: {in: ["on", "true"]}}, recovers: [payment-gateway, checkout-api]}
+    - {tool: revert_config, args: {service: payment-gateway, environment: production, change_id: chg-7720}, recovers: [payment-gateway, checkout-api]}

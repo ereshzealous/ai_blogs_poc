@@ -1,0 +1,65 @@
+fixture_id: B2
+date: "2026-09-24"
+start_minute: 860
+incident:
+  id: INC-5032
+  title: "Order confirmation emails delayed; notification-service returning 5xx"
+  service: notification-service
+  environment: production
+  severity: SEV3
+  status: investigating
+  opened_minute: 846
+  reporter: alerting/error-rate-slo
+  customer_impact: "Order confirmation emails delayed by up to 20 minutes; about 6% of sends fail and are retried."
+  notes: []
+services:
+  notification-service: {owner: messaging, tier: 2, slo_p95_ms: 400, runbook: RB-NOTIF-005, replicas: 3, depends_on: [smtp-relay, orders-db]}
+  smtp-relay:           {owner: messaging, tier: 2, slo_p95_ms: 300, runbook: RB-SMTP-014, replicas: 2, depends_on: []}
+  checkout-api:         {owner: checkout-engineering, tier: 1, slo_p95_ms: 400, runbook: RB-CHK-007, replicas: 6, depends_on: [notification-service, orders-db]}
+  orders-db:            {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+deployments:
+  - {id: rel-8119, service: notification-service, environment: production, version: 3.4.0, minute: -20160, author: kofi.a, summary: "Template cache for localized emails"}
+  - {id: rel-8120, service: notification-service, environment: production, version: 3.4.1, minute: -12100, author: kofi.a, summary: "Retry jitter for SMTP sends", current: true}
+  - {id: rel-0412, service: smtp-relay, environment: production, version: 2.1.3, minute: -2900, author: ops.bot, summary: "TLS certificate rotation", current: true}
+  - {id: rel-2034, service: checkout-api, environment: production, version: 2.14.3, minute: -1500, author: priya.s, summary: "Address validation copy", current: true}
+changes:
+  - {id: chg-1301, service: checkout-api, environment: production, minute: -1300, kind: flag, key: email.marketing_optin, from: "off", to: "on", author: growth.team, summary: "Marketing opt-in checkbox"}
+metrics:
+  notification-service:
+    incident_start: 838
+    memory_pct:       {baseline: 55, incident: 97}
+    cpu_pct:          {baseline: 38, incident: 71}
+    latency_p95_ms:   {baseline: 180, incident: 2900}
+    error_rate_pct:   {baseline: 0.1, incident: 6.2}
+    request_rate_rps: {baseline: 140, incident: 141}
+  smtp-relay:
+    latency_p95_ms: {baseline: 120}
+    error_rate_pct: {baseline: 0.0}
+  checkout-api:
+    latency_p95_ms: {baseline: 205}
+    error_rate_pct: {baseline: 0.2}
+  orders-db:
+    connections_active: {baseline: 178}
+    cpu_pct:            {baseline: 30}
+logs:
+  notification-service:
+    incident:
+      - "ERROR java.lang.OutOfMemoryError: Java heap space (TemplateRenderer.render)"
+      - "WARN  GC overhead: 96% of time in GC over the last 60s"
+      - "WARN  heap 97% used (instance uptime 8d 21h); template cache entries=2,113,402"
+      - "ERROR POST /v1/send 503 reason=renderer-unavailable"
+      - "INFO  smtp-relay accepted 812 messages in 60s"
+    baseline:
+      - "INFO  POST /v1/send 202 41ms"
+      - "INFO  template cache entries=18,220"
+  smtp-relay:
+    baseline:
+      - "INFO  accepted 803 messages in 60s, 0 deferred"
+  checkout-api:
+    baseline:
+      - "INFO  POST /v1/checkout 201 192ms"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 4, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: restart_service, args: {service: notification-service, environment: production}, recovers: [notification-service]}

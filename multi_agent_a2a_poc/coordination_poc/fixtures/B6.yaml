@@ -1,0 +1,64 @@
+fixture_id: B6
+date: "2026-09-30"
+start_minute: 600
+incident:
+  id: INC-5160
+  title: "Cart updates failing for about 8% of users"
+  service: cart-service
+  environment: production
+  severity: SEV2
+  status: investigating
+  opened_minute: 586
+  reporter: alerting/error-rate-slo
+  customer_impact: "About 8% of add-to-cart and update-cart requests fail."
+  notes: []
+services:
+  cart-service:   {owner: cart-team, tier: 1, slo_p95_ms: 200, runbook: RB-CART-003, replicas: 6, depends_on: [session-cache, cart-db]}
+  session-cache:  {owner: platform-data, tier: 1, slo_p95_ms: 5, runbook: RB-SC-001, replicas: 3, depends_on: []}
+  cart-db:        {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+  storefront-web: {owner: web-platform, tier: 1, slo_p95_ms: 800, runbook: RB-WEB-013, replicas: 8, depends_on: [cart-service]}
+deployments:
+  - {id: rel-6611, service: cart-service, environment: production, version: 3.1.4, minute: -2000, author: ines.p, summary: "Cart line-item limits"}
+  - {id: rel-6612, service: cart-service, environment: production, version: 3.2.0, minute: 578, author: ines.p, summary: "New cart serializer (protobuf CartV2); includes cart-db migration 0047 (adds NOT NULL column promo_ref; irreversible)", current: true}
+  - {id: rel-sc-77, service: session-cache, environment: production, version: 7.2.4, minute: -30000, author: platform-data, summary: "Redis 7.2.4 patch", current: true}
+changes:
+  - {id: evt-579, service: session-cache, environment: production, minute: 579, kind: event, key: failover, from: session-cache-0, to: session-cache-1, author: redis-sentinel, summary: "Automatic failover: primary session-cache-0 failed health checks; replica session-cache-1 promoted (replication lag at promotion: 4.1 s)"}
+  - {id: chg-6650, service: cart-service, environment: production, minute: -1800, kind: flag, key: cart.save_for_later, from: "off", to: "on", author: ines.p, summary: "Save-for-later"}
+metrics:
+  cart-service:
+    incident_start: 580
+    error_rate_pct: {baseline: 0.2, incident: 8.1}
+    latency_p95_ms: {baseline: 90, incident: 650}
+    cpu_pct:        {baseline: 40, incident: 42}
+  session-cache:
+    incident_start: 580
+    latency_p95_ms:  {baseline: 1, incident: 45}
+    cache_hit_pct:   {baseline: 99, incident: 91}
+    memory_pct:      {baseline: 52, incident: 50}
+    evictions_per_s: {baseline: 0, incident: 0}
+  cart-db:
+    cpu_pct:            {baseline: 28}
+    connections_active: {baseline: 70}
+  storefront-web:
+    incident_start: 580
+    error_rate_pct: {baseline: 0.3, incident: 2.4}
+logs:
+  cart-service:
+    incident:
+      - "ERROR SerializationException: cannot decode cart session (found CartV1 payload, expected CartV2); session created before 09:38"
+      - "WARN  session-cache read timeout after 50ms (attempt 2/2)"
+      - "ERROR PUT /v1/cart 500 reason=session-deserialize-failed"
+      - "WARN  session-cache READONLY: replica promoted, reconnecting"
+      - "ERROR PUT /v1/cart 500 reason=session-cache-timeout"
+    baseline:
+      - "INFO  PUT /v1/cart 200 38ms"
+  session-cache:
+    incident:
+      - "WARN  replica session-cache-1 promoted to primary (lag at promotion 4.1s; 18,204 keys behind)"
+      - "INFO  client reconnects: 4,880 in the last 60s"
+    baseline:
+      - "INFO  keys=2,881,004 used_memory=52% evicted_keys=0"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes: []

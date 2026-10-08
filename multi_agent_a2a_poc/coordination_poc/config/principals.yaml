@@ -1,0 +1,22 @@
+# Who can act, with what, and who may delegate to whom.  Simulated directory and token service (HMAC-signed tokens,
+# RFC 8693-style actor chain).  Scopes only ever narrow: a token's scopes are the intersection of its parent's scopes,
+# the target's allowed scopes and what the caller requested.
+token_ttl_s: 1800
+max_depth: 3
+read_scopes: &read ["read:incident", "read:telemetry", "read:deploy", "read:change"]
+write_scopes: &write ["write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]
+principals:
+  alice:                 {kind: human,    roles: [sre-oncall], delegable: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]}
+  ic.oncall:             {kind: human,    roles: [incident-commander]}
+  svc.incident-console:  {kind: workload, roles: [head], delegable: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]}
+  svc.c1-runtime:        {kind: workload, roles: [runtime], scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"], may_delegate_to: [agent.incident-solo, workflow.incident, agent.coordinator]}
+  # A: one agent with every read and every eligible write
+  agent.incident-solo:   {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]}
+  # B: the deterministic workflow holds the tool authority; its agents hold none
+  workflow.incident:     {kind: workflow, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]}
+  # C: the coordinator holds no tool authority; it can only delegate, and each specialist gets a narrowed subset
+  agent.coordinator:     {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"], tool_scopes: [], may_delegate_to: [agent.evidence, agent.diagnosis, agent.remediation, agent.review]}
+  agent.evidence:        {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change"]}
+  agent.diagnosis:       {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change"]}
+  agent.remediation:     {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change", "write:rollback", "write:restart", "write:scale", "write:sessions", "write:config", "write:flag"]}
+  agent.review:          {kind: agent, version: "1.0.0", scopes: ["read:incident", "read:telemetry", "read:deploy", "read:change"]}

@@ -1,0 +1,48 @@
+fixture_id: D3
+date: "2026-09-17"
+start_minute: 715
+incident:
+  id: INC-4902
+  title: "Promo codes failing at cart"
+  service: cart-service
+  environment: production
+  severity: SEV3
+  status: investigating
+  opened_minute: 706
+  reporter: alerting/error-rate-slo
+  customer_impact: "Applying a promo code fails for every customer; carts without promo codes work."
+  notes: []
+services:
+  cart-service:  {owner: cart-team, tier: 1, slo_p95_ms: 200, runbook: RB-CART-003, replicas: 6, depends_on: [session-cache, cart-db]}
+  session-cache: {owner: platform-data, tier: 1, slo_p95_ms: 5, runbook: RB-SC-001, replicas: 3, depends_on: []}
+  cart-db:       {owner: data-platform, tier: 1, slo_p95_ms: 50, runbook: RB-DB-010, replicas: 1, depends_on: []}
+deployments:
+  - {id: rel-6608, service: cart-service, environment: production, version: 3.1.2, minute: -5000, author: ines.p, summary: "Cart line-item limits"}
+  - {id: rel-6609, service: cart-service, environment: production, version: 3.1.3, minute: 700, author: ines.p, summary: "Logging: structured fields for cart events", current: true}
+changes:
+  - {id: chg-640, service: cart-service, environment: production, minute: 701, kind: flag, key: promo.engine_v2, from: "false", to: "true", author: growth.team, summary: "Roll out promo engine v2"}
+metrics:
+  cart-service:
+    incident_start: 702
+    error_rate_pct: {baseline: 0.2, incident: 4.6}
+    latency_p95_ms: {baseline: 90, incident: 95}
+    cpu_pct:        {baseline: 40, incident: 40}
+  session-cache:
+    latency_p95_ms: {baseline: 1}
+    memory_pct:     {baseline: 52}
+  cart-db:
+    cpu_pct: {baseline: 28}
+logs:
+  cart-service:
+    incident:
+      - "ERROR NullPointerException at PromoEngineV2.apply(PromoEngineV2.java:88) (promo.engine_v2=true)"
+      - "ERROR POST /v1/cart/promo 500 reason=promo-engine-error"
+      - "INFO  cart event logged with structured fields (release 3.1.3)"
+    baseline:
+      - "INFO  POST /v1/cart/promo 200 22ms"
+physics:
+  recovery_minutes: 3
+  durations: {rollback_release: 6, restart_service: 3, scale_service: 3, revert_config: 3, set_feature_flag: 3, flush_sessions: 1}
+  fixes:
+    - {tool: set_feature_flag, args: {service: cart-service, environment: production, flag: promo.engine_v2, value: {in: ["false", "off", "disabled", "0"]}}, recovers: [cart-service]}
+    - {tool: revert_config, args: {service: cart-service, environment: production, change_id: chg-640}, recovers: [cart-service]}

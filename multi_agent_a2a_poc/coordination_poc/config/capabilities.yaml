@@ -1,0 +1,19 @@
+# The capability registry: the 13 tools every architecture can reach, which MCP server serves each, what kind it is
+# and which scope a caller's token must carry.  The model never sees this file.
+capabilities:
+  get_incident:       {server: itsm,          kind: read,  scope: "read:incident"}
+  get_runbook:        {server: itsm,          kind: read,  scope: "read:incident"}
+  query_metrics:      {server: observability, kind: read,  scope: "read:telemetry"}
+  search_logs:        {server: observability, kind: read,  scope: "read:telemetry"}
+  get_dependencies:   {server: observability, kind: read,  scope: "read:telemetry"}
+  list_deployments:   {server: deploy,        kind: read,  scope: "read:deploy"}
+  get_change_history: {server: change,        kind: read,  scope: "read:change"}
+  rollback_release:   {server: deploy,        kind: write, scope: "write:rollback", risk: high}
+  restart_service:    {server: deploy,        kind: write, scope: "write:restart",  risk: high}
+  scale_service:      {server: deploy,        kind: write, scope: "write:scale",    risk: high}
+  flush_sessions:     {server: deploy,        kind: write, scope: "write:sessions", risk: high}
+  revert_config:      {server: change,        kind: write, scope: "write:config",   risk: high}
+  set_feature_flag:   {server: change,        kind: write, scope: "write:flag",     risk: high}
+# Action eligibility is identical for A, B and C: the same writes can be requested, and the same policy decides.
+eligible_writes: [rollback_release, restart_service, scale_service, flush_sessions, revert_config, set_feature_flag]
+timeouts: {read_s: 10, write_s: 10}

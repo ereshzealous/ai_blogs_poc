@@ -1,0 +1,15 @@
+D3 positive control (2026-10-08): does the fail-closed fix fire on the recorded case it targets?
+
+Run:     python -m coord.bench matrix --run-id 2026-10-08-blind --fixtures B1 --archs C --repeats 1 --tape replay
+         (code as fixed; multi_agent_c.execute_without_proposal = deny, the default; the verified replay directory was
+         moved aside for this and restored afterwards)
+Result:  the replay matched the recorded tape for six delegations
+           evidence, diagnosis, remediation (proposal, not authorized), review, evidence, diagnosis
+         then the seventh delegation, remediation with authorize_execution=true and inputs ["art-6"] (a diagnosis
+         artifact, no remediation_proposal), was refused before any token was minted:
+           execute_refused {"inputs":["art-6"],"reason":"authorize_execution without a remediation_proposal input"}
+         The coordinator's next model request contains the refusal, is not on the tape, and the replay ends there.
+As run:  the same delegation received every eligible write scope (O5), executed rollback_release to rel-2030, and the
+         run succeeded (counted in C's E1 successes).
+With the as-run setting (execute_without_proposal = all_writes) the full blind run replays identically, 72 of 72
+(runs/2026-10-08-blind/replay/verification.json).

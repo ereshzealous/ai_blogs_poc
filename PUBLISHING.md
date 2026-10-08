@@ -4,7 +4,7 @@ Three POCs live here, each written in its own workspace, often at the same time.
 
 ## The rules
 
-1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, `ai_control_plane_poc/`, `memory_context_state_poc/`, and the shared `layered_agent_platform/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
+1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, `ai_control_plane_poc/`, `memory_context_state_poc/`, `multi_agent_a2a_poc/`, and the shared `layered_agent_platform/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
 2. **Work in your own clone.** Do not share a working copy between sessions or people. A throwaway clone is fine.
 3. **Rebase, never force-push.** `git pull --rebase` before pushing. Because the folders are disjoint, a rebase never conflicts. Rewriting published history is a last resort, and only after telling everyone who publishes here.
 4. **Run your POC's checks before you push.** At minimum its fast tests and whatever boundary checks it has.

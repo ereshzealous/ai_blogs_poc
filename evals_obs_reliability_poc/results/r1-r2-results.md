@@ -120,12 +120,4 @@ make docs    # both editions and the three evidence documents as Markdown, stand
 make qa    # rendered checks of every page (desktop/tablet/mobile) and the Lab Console -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/evals_obs_reliability_poc/technical/evals-reliability-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/evals_obs_reliability_poc/results/evals-reliability-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/evals_obs_reliability_poc/results/evals-reliability-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/evals_obs_reliability_poc/results/evals-reliability-real-vs-simulated.md)
-- [Lab (an HTML page: open results/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/evals_obs_reliability_poc/results/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results R1+R2` from the files named above. It computes nothing new.*

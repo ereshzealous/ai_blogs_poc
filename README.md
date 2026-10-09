@@ -2,7 +2,7 @@
 
 One folder per chapter of [Production AI Engineering](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), a series on what it takes to
 run AI agents in production. Each folder is the chapter's proof of concept with the evidence its article cites: the
-code and its tests, the recorded run behind every number, a results page and the technical edition.
+code and its tests, the recorded run behind every number and a results page.
 
 | Chapter | Folder | Article | The question it answers | How the published run was made |
 |---|---|---|---|---|
@@ -26,14 +26,15 @@ code and its tests, the recorded run behind every number, a results page and the
 
 ## Every folder has the same shape
 
+Each folder holds the proof of concept, its results and its evidence, and nothing that builds the articles:
+
 ```
 <folder>/
   README.md          what the chapter showed, how to run it, where everything is
   Makefile           the same commands in every chapter (make help lists them)
   <poc>/             the proof of concept: code, tests, configuration, recorded runs
   results/           the results page (<code>-results.md) and the chapter's reports
-  technical/ or docs/  the technical edition (PDF) and the documents the pages link to
-  scripts/publish-checks.sh   the checks run before every publish
+  evidence/ proof/ verification/ experiment/   the published run's evidence, where the chapter keeps it
   .publish-frozen    the published run's evidence, which no publish may change
   public-redactions.json      what this public copy redacted (local paths, host names), with the original's hash
                               (F1 keeps its own in evidence/)

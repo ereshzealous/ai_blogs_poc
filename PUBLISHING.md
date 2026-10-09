@@ -4,9 +4,10 @@
 
 ## One shape for every folder
 
-Every chapter folder mirrors the chapter: its README, the same Makefile commands, the POC in its own subfolder,
-`results/`, the technical edition, `scripts/publish-checks.sh` (`make setup`, `make test`, `make verify` with no model
-reachable) and `.publish-frozen`. The folder is a declared public copy of the chapter
+Every chapter folder holds the POC in its own subfolder, `results/`, the published run's evidence, the README, the same
+Makefile commands (`make setup`, `make test`, `make verify`, all without a model) and `.publish-frozen`. Nothing that
+builds the articles is published: no editions, figure sources or build tools, except the few scripts a reader command
+runs in five chapters. The folder is a declared public copy of the chapter
 (`series-start-here/tools/series_public.py` in the author's workspace): local paths and host names are redacted by rule
 and listed with the original's hash in `public-redactions.json`, and evidence already published keeps its bytes.
 

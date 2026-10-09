@@ -92,9 +92,4 @@ make docs    # both editions + results pages as Markdown, standalone HTML and PD
 make qa    # rendered checks of the pages, when the chapter has them; make gate runs the publication gate
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/agent_mcp_security_poc/technical/securing-agents-tools-mcp-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/agent_mcp_security_poc/results/securing-agents-tools-mcp-evidence.md)
-
 *Built by `series-start-here/tools/series_edition.py results T6` from the files named above. It computes nothing new.*

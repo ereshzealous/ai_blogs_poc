@@ -116,15 +116,18 @@ def main() -> int:
     allf = {**shipped, **derived}
     probs = [f"{k}: printed {u['value']!r}, published {allf[k]['value']!r}" for k, u in uses.items() if k in allf and u["value"] != allf[k]["value"]]
     built = [ROOT / "medium" / "evals-reliability-medium.md", ROOT / "technical" / "evals-reliability-technical.md"]
-    for p in built:
-        t = p.read_text() if p.exists() else ""
-        if not t:
-            probs.append(f"{p.relative_to(ROOT)}: not built")
-        elif "{{" in t:
-            probs.append(f"{p.relative_to(ROOT)}: unresolved {{{{fact}}}}")
-        elif run_id not in t:
-            probs.append(f"{p.relative_to(ROOT)}: does not name the published run")
-    rep.add("Publication facts", not probs, f"{len(uses)} printed facts equal the published run's; {len(built)} editions name {run_id}", probs)
+    if not any(p.exists() for p in built):     # a public folder: the editions are published with the articles
+        rep.add("Publication facts", None, "the editions are not part of this folder; they are published with the articles")
+    else:
+        for p in built:
+            t = p.read_text() if p.exists() else ""
+            if not t:
+                probs.append(f"{p.relative_to(ROOT)}: not built")
+            elif "{{" in t:
+                probs.append(f"{p.relative_to(ROOT)}: unresolved {{{{fact}}}}")
+            elif run_id not in t:
+                probs.append(f"{p.relative_to(ROOT)}: does not name the published run")
+        rep.add("Publication facts", not probs, f"{len(uses)} printed facts equal the published run's; {len(built)} editions name {run_id}", probs)
 
     paths = [p for p in [*(ROOT / "evidence").rglob("*"), *(ROOT / "proof").glob("*"), *built] if p.is_file() and p.suffix != ".pdf"]
     paths += [p for p in run.rglob("*") if p.is_file() and p.suffix in (".json", ".jsonl", ".md")]

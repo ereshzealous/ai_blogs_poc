@@ -6,9 +6,8 @@ Production AI Engineering · R1+R2 · Reliability · chapter 12 of 15
 
 ## Read it
 
-- **Medium edition:** [`medium/evals-reliability-medium.md`](medium/evals-reliability-medium.md), and the paste-ready page [`medium/evals-reliability-medium.html`](medium/evals-reliability-medium.html)
-- **Technical deep dive:** [`technical/evals-reliability-technical.pdf`](technical/evals-reliability-technical.pdf)
-- **Results:** [`results/r1-r2-results.md`](results/r1-r2-results.md), every number the Medium edition uses with its source file, the checks and the two verdicts ([HTML](results/r1-r2-results.html))
+- **The article:** "R1+R2 · Evals & Reliability", on Medium
+- **Results:** [`results/r1-r2-results.md`](results/r1-r2-results.md), every number the article uses with its source file, the checks and the two verdicts ([rendered page](https://ereshzealous.github.io/ai_blogs_poc/evals_obs_reliability_poc/results/r1-r2-results.html))
 - **Series:** [Start Here](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), the map of all 15 chapters
 
 ## What the run showed
@@ -29,8 +28,6 @@ From this folder. None of these commands changes the published run; `make verify
 | `make verify` | PROOF VERIFICATION of the published run -> evidence/verification/verification.{txt,json} |
 | `make replay` | every deterministic experiment re-executed in a temp folder and compared with the published run (nothing recorded) |
 | `make demo` | the flagship (S09) through the naive and the classified runtime, explained step by step |
-| `make docs` | both editions and the three evidence documents as Markdown, standalone HTML and PDF |
-| `make qa` | rendered checks of every page (desktop/tablet/mobile) and the Lab Console -> qa/ |
 
 Author only: `make replay-live`, `make replay-record`, `make pack` rewrite published evidence, so they refuse unless run with `REWRITE_PUBLISHED=yes`.
 
@@ -38,23 +35,17 @@ Author only: `make replay-live`, `make replay-record`, `make pack` rewrite publi
 
 | Path | What is there |
 |---|---|
-| `diagrams/` | figures and the cover (Excalidraw sources, SVG, PNG) |
-| `docs/` | edition sources and build notes; docs/archive/ keeps replaced originals |
-| `evidence/` | the proof pack of the published run |
-| `medium/` | the Medium edition: Markdown, and the paste-ready standalone page |
-| `proof/` | preregistration, freeze and claim definitions |
-| `qa/` | rendered-page checks and screenshots |
 | `recovery_poc/` | the proof of concept and its recorded runs |
-| `research/` | sources and reading notes |
-| `results/` | the common results page and the detailed evidence pages |
-| `runner/` | the experiment runner |
-| `technical/` | the technical deep dive (Markdown, HTML, PDF) |
-| `tools/` | the chapter's build tools |
-| `vendor/` | vendored libraries (evidence-kit) |
+| `results/` | the results page and the detailed evidence pages |
+| `evidence/` | the proof pack of the published run |
+| `proof/` | preregistration, freeze and claim definitions |
 | `verification/` | the latest verification outputs |
-| `Makefile` | the standard commands (`make help` lists them) |
-| `QA.md` | publication checks |
+| `runner/` | the experiment runner |
+| `tools/` | the scripts `make test` and `make verify` run |
+| `vendor/` | the evidence kit the verification imports |
+| `docs/` | derived facts and the evidence documents the article cites |
+| `Makefile` | the commands above (`make help` lists them) |
 
 ## Provenance
 
-Every measured number in the editions comes from `recovery_poc/runs/2026-10-07-recorded/facts.json` of run `2026-10-07-recorded`. This README, the results page and the Medium edition's top and end are written by `series-start-here/tools/series_edition.py` from `series-start-here/series.json` and the chapter's own files; the previous README is kept in `docs/archive/README-original.md`.
+Every measured number comes from `recovery_poc/runs/2026-10-07-recorded/facts.json` of run `2026-10-07-recorded`. This README and the results page are generated from the chapter's own files; nothing in them is typed by hand.

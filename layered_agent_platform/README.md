@@ -199,7 +199,7 @@ ollama pull gpt-oss:20b && ollama pull qwen3:8b && ollama pull nomic-embed-text
 
 # 3. Code
 git clone https://github.com/ereshzealous/ai_blogs_poc.git
-cd ai_blogs_poc/layered_agent_poc
+cd ai_blogs_poc/layered_agent_platform
 uv sync
 
 # 4. Check the machine, then run one incident end to end (1 to 2 minutes)

@@ -1,0 +1,316 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "layered_agent_platform",
+ "redactions": [
+  {
+   "file": "runs/2026-09-16/faults/otel/traces/93fe22216d3d39fecc2dca29d229109e.jsonl",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 42,
+     "lines": [
+      67,
+      75,
+      77
+     ]
+    }
+   ],
+   "original_sha256": "3ba15f398dd1ed980fa05ade03f90671be9cbccb926cfd042c5693e0a6e9a139",
+   "public_sha256": "4c2e17f51adf5302f9096ca158b805b16ac2156f34815d197ff172bf6571c316",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-16/faults/record.json",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 42,
+     "lines": [
+      2327,
+      2485,
+      2529
+     ]
+    }
+   ],
+   "original_sha256": "5c58a3daba8c79ffd679e7a1b12a510f56516667000e439f6d352b67c1377e79",
+   "public_sha256": "e96a566a4759aefc4800d5eefad2811a0535a2c313e827010655f7c62af5413a",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-16/report/index.html",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 1,
+     "lines": [
+      165
+     ]
+    }
+   ],
+   "original_sha256": "2cdfb93232ceca6bd467873ad4fb616d4b74838ccdcbe7ca09ad840f1a467e95",
+   "public_sha256": "34ab207271626441c11df93cb17af770b8e8efd0e17d1e8f9710916d387a9303",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-16/tests/fast-2026-09-17.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "b3f2328538304228430c632db0d16a1307d4afe4806e8028a772b36587f73918",
+   "public_sha256": "5219bf143c80c1464aaae1b222b5573e40ce929fce940e99bf0212b046f3469a",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-16/tests/ollama-full-suite.log",
+   "rules": [
+    {
+     "pattern": "(?<=file://)~/[^\\s\"<>]*",
+     "replacement": "<workspace-path>",
+     "category": "local-path",
+     "reason": "the author's workspace layout, in a recorded test log",
+     "count": 2,
+     "lines": [
+      1,
+      2
+     ]
+    },
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 1,
+     "lines": [
+      44
+     ]
+    },
+    {
+     "pattern": "(?<![\\w/.~-])~/(?:[A-Z][\\w-]*/)+[^\\s\"'\\\\<>)\\]`]*",
+     "replacement": "<workspace-path>",
+     "category": "local-path",
+     "reason": "any other path under the author's workspace folder",
+     "count": 1,
+     "lines": [
+      30
+     ]
+    }
+   ],
+   "original_sha256": "f1560a1175c3f682009127903a1710752d3ddf8c356db70173399f872a63656b",
+   "public_sha256": "6558172ca750404d2de415a7e3a3279ceb5efb649ef095a6f46a0db36676d8cd",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17/tests/fast.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "3c3fdacb751dae4bc825b22e38a188e04a9470a9149da356e70b86910249424c",
+   "public_sha256": "2217cb0cac3054267391ad2903e0f5e59b98d0d64b87e35522a4f7753dbdff84",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17/tests/ollama.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "10a9241709c7063606c9fae708a5793fd6a77f0c34067218e074e6c82cbac8fc",
+   "public_sha256": "31239c9de20b48f595783a9d35ed05cc487029ad47d479466dc70d36b09eb3fe",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17-recorded/faults/otel/traces/b1dadd446ef296b5438384bbab14b9bb.jsonl",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 14,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "bf3059391d4b5b4e78c284c27bd00495f790a973dbb3cd86db077e3d859f3b41",
+   "public_sha256": "67a5bfacae5f1aae06b1dc0d133400b6d4be9efc0a5f00460e2014d7f53d6291",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17-recorded/faults/otel/traces/e17a8c1eada296530253b4134d7de3b8.jsonl",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 42,
+     "lines": [
+      69,
+      77,
+      79
+     ]
+    }
+   ],
+   "original_sha256": "7320a7606202c138fadcfdb9afb43a8a2c6dcab24808ed6411766690abfe7dae",
+   "public_sha256": "50eb1c9ed91b8e321622ee2bbbcccb8eca5b345176e83b47c9ad442dc361b30a",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17-recorded/faults/record.json",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 42,
+     "lines": [
+      2385,
+      2543,
+      2587
+     ]
+    }
+   ],
+   "original_sha256": "4a510623cf091efaab13ffd7cd99f8f1eeffc377f08bca5614bde86df1afd8ef",
+   "public_sha256": "0e50743d5d2ac1c67b1e0fc82d221ef914b62ecbef98c8e067a3af760d92d2ec",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17-recorded/tests/fast.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "5034052f231b3ed07b6448fcc49b5437eeb3f7c1197b2e0c9edd231cdb5ac684",
+   "public_sha256": "d827e3356abccb8885f5e4678a4f853dc2428b6c653537fa757a001f39b957de",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/2026-09-17-recorded/tests/ollama.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "b65744d092ee5eb36c689bb929ca3dbb05cdd670bbd39245b5918582045e63e7",
+   "public_sha256": "4008b62ce4f20b9412cc69d6973a1c54f18233d5b131939a75dd545eb12aec2e",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/chaos-check/faults/otel/traces/745dd0cd6e3c2f82df661f67dfb3cb97.jsonl",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 56,
+     "lines": [
+      23,
+      25,
+      73,
+      90
+     ]
+    }
+   ],
+   "original_sha256": "b366fb8f74c6b216c464d46aa91d4c929298666c05cb5277867f02e47b8c171f",
+   "public_sha256": "06a513e5a51e6a2e1d8cea751684eddf3b8c2417fa3e93ddeb203877ed9feed9",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/chaos-check/faults/record.json",
+   "rules": [
+    {
+     "pattern": "(?<![\\w/.~-])~/[^\\s\"'\\\\<>]*?/layered-agent-platform/",
+     "replacement": "<poc>/",
+     "category": "local-path",
+     "reason": "the author's workspace path to the legacy checkout, in recorded traces, fault records, the run report and a test log (release review 2026-10-09); the path inside the POC is kept",
+     "count": 56,
+     "lines": [
+      1407,
+      1451,
+      2480,
+      2822
+     ]
+    }
+   ],
+   "original_sha256": "8a03efe616d0ce71a4b319efe0dea6bfb3b37070d3947b34c8310eaf75c4ba64",
+   "public_sha256": "2cf3d4ef1e396cf7ac64002ed8644738df284bafaea119d5d7e69494292f907e",
+   "semantic_changes": false
+  },
+  {
+   "file": "runs/chaos-check/tests/fast.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"[^\"]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "63f5535ffcf9b013999e9b8561e45938c75c9b0036179370fbf251c25c132ac7",
+   "public_sha256": "a551e889a546e07478cd7809add1a5b81adcdd3bf87f1d15214dbc20b6785362",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

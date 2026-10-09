@@ -1,5 +1,5 @@
-   Building layered-agent-platform @ file://~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform
-      Built layered-agent-platform @ file://~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform
+   Building layered-agent-platform @ file://<workspace-path>
+      Built layered-agent-platform @ file://<workspace-path>
 Uninstalled 1 package in 1ms
 Installed 1 package in 1ms
 ..F.                                                                     [100%]
@@ -27,7 +27,7 @@ tests/conftest.py:50: in lap
     self._check_timeout(endtime, orig_timeout, stdout, stderr)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <Popen: returncode: -9 args: ['~/Documents/Dev/Knowledge-...>
+self = <Popen: returncode: -9 args: ['<workspace-path>>
 endtime = 13487.015054833, orig_timeout = 900, stdout_seq = [], stderr_seq = []
 skip_check_and_raise = False
 
@@ -41,7 +41,7 @@ skip_check_and_raise = False
                     self.args, orig_timeout,
                     output=b''.join(stdout_seq) if stdout_seq else None,
                     stderr=b''.join(stderr_seq) if stderr_seq else None)
-E           subprocess.TimeoutExpired: Command '['~/Documents/Dev/Knowledge-Blogs/claude/ai/layered_architecture/layered-agent-platform/.venv/bin/python3', '-m', 'agent_platform.channels.cli', 'run', 'INC-4917', '--as', 'alice']' timed out after 900 seconds
+E           subprocess.TimeoutExpired: Command '['<poc>/.venv/bin/python3', '-m', 'agent_platform.channels.cli', 'run', 'INC-4917', '--as', 'alice']' timed out after 900 seconds
 
 ~/.local/share/uv/python/cpython-3.14.4-macos-aarch64-none/lib/python3.14/subprocess.py:1268: TimeoutExpired
 ==================================== PASSES ====================================

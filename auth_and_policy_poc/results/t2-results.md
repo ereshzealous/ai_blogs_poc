@@ -87,9 +87,4 @@ make docs    # both editions as standalone HTML, the Medium image kit, then the 
 make qa    # the Medium edition's checks: what Medium cannot show, relative links, stale wording
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/auth_and_policy_poc/authorization-and-policy-for-ai-agents.pdf)
-- [Lab (an HTML page: open results/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/auth_and_policy_poc/results/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results T2` from the files named above. It computes nothing new.*

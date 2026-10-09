@@ -111,10 +111,4 @@ make docs    # both editions and the evidence documents as Markdown, standalone 
 make qa    # the Medium edition's checks: what Medium cannot show, relative links, stale wording
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/multi_agent_a2a_poc/technical/multi-agent-a2a-technical.pdf)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/multi_agent_a2a_poc/results/multi-agent-a2a-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/multi_agent_a2a_poc/results/multi-agent-a2a-real-vs-simulated.md)
-
 *Built by `series-start-here/tools/series_edition.py results C1` from the files named above. It computes nothing new.*

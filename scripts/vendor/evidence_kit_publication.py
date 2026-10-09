@@ -54,7 +54,9 @@ RULES += [
     ("mDNS host name", r"(?<![\w.-])[A-Za-z0-9][A-Za-z0-9-]*\.local(?![\w.(-])"),
     # every domain label carries a letter and the top-level domain is letters only, so fact keys (cells.C@500.unsafe)
     # and versioned ids (agent.x@1.3.0, pkg@5.3.0) are not addresses
-    ("e-mail address", r"(?<![\w.+-])(?!(?:no-?reply|git)@)[\w.+-]*[A-Za-z0-9][\w.+-]*@(?!" + _EMAIL_SAFE_DOMAIN + r")"
+    # the local part's letter-or-digit condition sits in a lookahead, not between two `*` runs: on a long base64 line the
+    # nested form backtracked quadratically (5.3.1)
+    ("e-mail address", r"(?<![\w.+-])(?!(?:no-?reply|git)@)(?=[\w.+-]*?[A-Za-z0-9])[\w.+-]+@(?!" + _EMAIL_SAFE_DOMAIN + r")"
                        r"(?:(?=[A-Za-z0-9-]*[A-Za-z])[A-Za-z0-9-]+\.)+[A-Za-z]{2,24}\b"),
 ]
 

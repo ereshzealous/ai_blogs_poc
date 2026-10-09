@@ -159,11 +159,4 @@ make docs    # the three publications as Markdown, standalone HTML and PDF, plus
 make qa    # publication checks: no hand-typed number in a publication, and the figures agree with the run
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/layered_architecture_poc/docs/publish/technical/layered-production-ai-architecture-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/layered_architecture_poc/docs/results/layered-agent-platform-evidence-check.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/layered_architecture_poc/docs/results/layered-agent-platform-run-report.md)
-- [Lab (an HTML page: open docs/results/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/layered_architecture_poc/docs/results/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results F2` from the files named above. It computes nothing new.*

@@ -6,9 +6,8 @@ Production AI Engineering · C1 · Coordination · chapter 13 of 15
 
 ## Read it
 
-- **Medium edition:** [`medium/multi-agent-a2a-medium.md`](medium/multi-agent-a2a-medium.md), and the paste-ready page [`medium/multi-agent-a2a-medium.html`](medium/multi-agent-a2a-medium.html)
-- **Technical deep dive:** [`technical/multi-agent-a2a-technical.pdf`](technical/multi-agent-a2a-technical.pdf)
-- **Results:** [`results/c1-results.md`](results/c1-results.md), every number the Medium edition uses with its source file, the checks and the two verdicts ([HTML](results/c1-results.html))
+- **The article:** "C1 · Multi-Agent & A2A", on Medium
+- **Results:** [`results/c1-results.md`](results/c1-results.md), every number the article uses with its source file, the checks and the two verdicts ([rendered page](https://ereshzealous.github.io/ai_blogs_poc/multi_agent_a2a_poc/results/c1-results.html))
 - **Series:** [Start Here](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), the map of all 15 chapters
 
 ## What the run showed
@@ -29,26 +28,16 @@ From this folder. None of these commands changes the published run; `make verify
 | `make verify` | frozen inputs unchanged, replay identical and the tests, in a throwaway copy of the POC (the published run is not written) -> verification/ |
 | `make replay` | the same as make verify: the published run's replay check runs in a throwaway copy |
 | `make demo` | one benchmark case (B1) through architecture C with a scripted model, in a throwaway copy of the POC |
-| `make docs` | both editions and the evidence documents as Markdown, standalone HTML and PDF (figures pending -> placeholders) |
-| `make qa` | the Medium edition's checks: what Medium cannot show, relative links, stale wording |
 
 ## Layout
 
 | Path | What is there |
 |---|---|
 | `coordination_poc/` | the proof of concept and its recorded runs |
-| `diagrams/` | figures and the cover (Excalidraw sources, SVG, PNG) |
-| `docs/` | edition sources and build notes; docs/archive/ keeps replaced originals |
-| `medium/` | the Medium edition: Markdown, and the paste-ready standalone page |
-| `research/` | sources and reading notes |
-| `results/` | the common results page and the detailed evidence pages |
-| `technical/` | the technical deep dive (Markdown, HTML, PDF) |
-| `tools/` | the chapter's build tools |
-| `vendor/` | vendored libraries (evidence-kit) |
+| `results/` | the results page and the detailed evidence pages |
 | `verification/` | the latest verification outputs |
-| `Makefile` | the standard commands (`make help` lists them) |
-| `QA.md` | publication checks |
+| `Makefile` | the commands above (`make help` lists them) |
 
 ## Provenance
 
-Every measured number in the editions comes from `coordination_poc/runs/2026-10-08-blind/facts.json` of run `2026-10-08-blind`. This README, the results page and the Medium edition's top and end are written by `series-start-here/tools/series_edition.py` from `series-start-here/series.json` and the chapter's own files; the previous README is kept in `docs/archive/README-original.md`.
+Every measured number comes from `coordination_poc/runs/2026-10-08-blind/facts.json` of run `2026-10-08-blind`. This README and the results page are generated from the chapter's own files; nothing in them is typed by hand.

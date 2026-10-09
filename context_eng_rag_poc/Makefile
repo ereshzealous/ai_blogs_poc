@@ -20,7 +20,7 @@ setup:         ## the POC environment (Python 3.12 via uv; pytest)
 
 test:          ## unit, integration and regression tests (no model, no Ollama) -> verification/pytest.*
 	mkdir -p verification
-	cd $(POC) && uv run --group dev pytest --junitxml=../verification/pytest.junit.xml > ../verification/pytest.txt 2>&1; s=$$?; sed -i.bak -E 's/ hostname="<host>"]*"//' ../verification/pytest.junit.xml && rm -f ../verification/pytest.junit.xml.bak; tail -1 ../verification/pytest.txt; exit $$s
+	cd $(POC) && uv run --group dev pytest --junitxml=../verification/pytest.junit.xml > ../verification/pytest.txt 2>&1; s=$$?; sed -i.bak -E 's/ hostname="[^"]*"//' ../verification/pytest.junit.xml && rm -f ../verification/pytest.junit.xml.bak; tail -1 ../verification/pytest.txt; exit $$s
 
 index:         ## AUTHOR ONLY (rewrites the frozen index): rebuild the index from the corpus and re-check it against the embedding tape
 	$(guard_published)

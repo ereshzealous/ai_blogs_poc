@@ -96,8 +96,4 @@ make docs    # the technical edition as standalone HTML and PDF, then the unifor
 make qa    # the Medium edition's checks: what Medium cannot show, relative links, stale wording
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/memory_context_state_poc/memory-context-state-poc/docs/S1-technical-reference.pdf)
-
 *Built by `series-start-here/tools/series_edition.py results S1` from the files named above. It computes nothing new.*

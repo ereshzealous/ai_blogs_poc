@@ -1,0 +1,59 @@
+# Tool capability contracts: the side-effect semantics the recovery policy reads.  FROZEN with the preregistration.
+#
+# A recovery decision is never derived from the exception alone.  The same timeout means different things for a read,
+# for a write the provider can be asked about, for a write that only deduplicates by key, and for a write nobody can
+# confirm.  These four tools were chosen because they cover exactly those four contracts.
+#
+#   effect          NONE (no external state changes) | EXTERNAL_WRITE
+#   idempotency     NONE | KEY (the provider deduplicates on Idempotency-Key for ttl_s seconds of provider time)
+#   status_query    NONE | BY_OPERATION_ID (GET by our operation id) | BY_REFERENCE (search by our business reference)
+#   compensation    NONE | <tool that undoes one effect>
+#   pre_execution   HTTP statuses the provider documents as "rejected before any effect" (certainty: NOT_EXECUTED)
+#   business_key    the business entity an effect must not repeat on (the duplicate-effect invariant counts per key)
+
+[tools.search_kb]
+layer = "context"
+effect = "NONE"
+idempotency = "NONE"
+status_query = "NONE"
+compensation = "NONE"
+pre_execution = [400, 404, 422]
+
+[tools.lookup_charges]
+layer = "tool"
+effect = "NONE"
+idempotency = "NONE"
+status_query = "NONE"
+compensation = "NONE"
+pre_execution = [400, 404, 422]
+
+[tools.issue_credit]
+layer = "tool"
+effect = "EXTERNAL_WRITE"
+risk = "PAYMENT"
+business_key = "charge_id"
+idempotency = "KEY"
+idempotency_ttl_s = 86400
+status_query = "BY_OPERATION_ID"
+compensation = "NONE"
+pre_execution = [400, 403, 404, 409, 422]
+
+[tools.create_ticket]
+layer = "tool"
+effect = "EXTERNAL_WRITE"
+risk = "RECORD"
+business_key = "case_id"
+idempotency = "NONE"          # the ticket API ignores Idempotency-Key: a retry with the same key creates a second ticket
+status_query = "BY_REFERENCE"
+compensation = "void_ticket"
+pre_execution = [400, 403, 404, 409, 422]
+
+[tools.send_notification]
+layer = "tool"
+effect = "EXTERNAL_WRITE"
+risk = "MESSAGE"
+business_key = "case_id"
+idempotency = "NONE"
+status_query = "NONE"         # fire-and-forget provider: no way to ask whether a message went out
+compensation = "NONE"
+pre_execution = [400, 403, 404, 422]

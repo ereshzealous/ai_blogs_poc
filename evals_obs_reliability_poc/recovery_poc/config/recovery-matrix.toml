@@ -1,0 +1,260 @@
+# The recovery matrix: evidence -> execution certainty -> recovery action.  FROZEN before the recorded run.
+#
+# The runtime loads this file; it is the policy, not documentation of it.  Two tables:
+#
+#   [[certainty]]  how observed evidence becomes an execution certainty (first match wins)
+#   [[rules]]      how failure class + certainty + side-effect semantics + persisted state become an action (first match wins)
+#
+# Every decision the runtime records names the rule id that produced it (invariant I12), so a decision can be
+# recomputed from this file and the recorded evidence alone.  No rule consults a model.
+#
+# Execution certainty answers one question about one operation attempt: did the target system execute it?
+#   NOT_EXECUTED   definitely not      (it never left the runtime, was never delivered, or was rejected before any effect)
+#   EXECUTED       definitely yes      (a response, a recorded result, or the provider's own record says so)
+#   UNKNOWN        cannot be known from the evidence in hand (sent, no answer; or a worker died in flight)
+#
+# Certainty is about execution; side-effect semantics (config/tools.toml) say what execution would have changed.  The
+# action needs both: UNKNOWN on a read is harmless, UNKNOWN on a payment is the whole problem.
+
+schema = "recovery-matrix/1"
+version = "2026-10-07.1"
+retry_budget = 2           # automatic RETRYs per step and failure class (attempts = 1 + budget)
+repair_budget = 1          # REPAIRs (regenerate the model's decision with the validation error) per step
+reconcile_budget = 2       # RECONCILE attempts per operation before the next rule applies
+
+# ---- evidence -> certainty -------------------------------------------------------------------------------------------
+[[certainty]]
+id = "C1"
+when = "request_sent = false"
+certainty = "NOT_EXECUTED"
+basis = "the request never left the runtime (blocked by validation or policy, or the pre-dispatch checkpoint failed)"
+
+[[certainty]]
+id = "C2"
+when = "transport = CONNECT_REFUSED"
+certainty = "NOT_EXECUTED"
+basis = "the connection was refused: no byte of the request was delivered"
+
+[[certainty]]
+id = "C3"
+when = "response_received = true and status in 2xx"
+certainty = "EXECUTED"
+basis = "the provider answered that it executed"
+
+[[certainty]]
+id = "C4"
+when = "response_received = true and status in tool.pre_execution"
+certainty = "NOT_EXECUTED"
+basis = "the provider documents this status as a rejection before any effect"
+
+[[certainty]]
+id = "C5"
+when = "response_received = true and status = 503 and header Not-Executed = true"
+certainty = "NOT_EXECUTED"
+basis = "the provider shed the request before accepting it"
+
+[[certainty]]
+id = "C6"
+when = "request_sent = true and response_received = false"
+certainty = "UNKNOWN"
+basis = "the request was sent and no answer came back: a timeout or reset says nothing about execution"
+
+[[certainty]]
+id = "C7"
+when = "journal: intent recorded, no result recorded (on resume)"
+certainty = "UNKNOWN"
+basis = "a worker recorded the intent, may have dispatched it, and died before recording the outcome"
+
+[[certainty]]
+id = "C8"
+when = "journal: result recorded (on resume)"
+certainty = "EXECUTED"
+basis = "the outcome was durably recorded before the interruption"
+
+[[certainty]]
+id = "C9"
+when = "journal: no intent recorded (on resume)"
+certainty = "NOT_EXECUTED"
+basis = "the runtime records intent before dispatch, so no intent means no dispatch"
+
+[[certainty]]
+id = "C10"
+when = "reconciliation: the provider's record for our operation id or reference, queried after the request deadline"
+certainty = "EXECUTED if found, NOT_EXECUTED if absent"
+basis = "the system of record is authoritative once the request can no longer arrive (the provider refuses requests past their deadline)"
+
+[[certainty]]
+id = "C11"
+when = "response_received = true and any other status (5xx)"
+certainty = "UNKNOWN"
+basis = "a server error after delivery does not say whether the effect committed"
+
+# ---- (class, certainty, semantics, state) -> action ------------------------------------------------------------------
+# Fields a rule may test: class, certainty, effect, idempotency, key_fresh, status_query, compensation, retries,
+# repairs, reconciles, fallback_available.  Counters are per step.  Omitted fields match anything.
+
+[[rules]]
+id = "M01"
+class = ["NONE"]
+action = "CONTINUE"
+why = "the step's outcome is confirmed"
+
+[[rules]]
+id = "M02"
+class = ["AUTHORIZATION_DENIED"]
+action = "ABORT"
+status = "DENIED"
+why = "a policy decision is not transient: retrying asks the same question and gets the same answer"
+
+[[rules]]
+id = "M03"
+class = ["ARGUMENT_VALIDATION", "TOOL_SELECTION_INVALID", "MODEL_OUTPUT_INVALID"]
+repairs_lt = 1
+action = "REPAIR"
+why = "the decision was wrong, not the infrastructure: regenerate it once with the validation error, never resend it"
+
+[[rules]]
+id = "M04"
+class = ["MODEL_OUTPUT_INVALID"]
+fallback_available = true
+action = "FALLBACK"
+why = "the primary model failed the output contract twice: use the fallback model"
+
+[[rules]]
+id = "M05"
+class = ["ARGUMENT_VALIDATION", "TOOL_SELECTION_INVALID", "MODEL_OUTPUT_INVALID"]
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "repair failed: a person decides"
+
+[[rules]]
+id = "M06"
+class = ["MODEL_UNAVAILABLE", "MODEL_RATE_LIMITED"]
+retries_lt = 1
+action = "RETRY"
+why = "a provider outage is transient and a model call has no external effect"
+
+[[rules]]
+id = "M07"
+class = ["MODEL_UNAVAILABLE", "MODEL_RATE_LIMITED"]
+fallback_available = true
+action = "FALLBACK"
+why = "the provider is still failing: switch to the fallback model rather than burn the retry budget"
+
+[[rules]]
+id = "M08"
+class = ["RETRIEVAL_UNAVAILABLE"]
+retries_lt = 2
+action = "RETRY"
+why = "retrieval is a read"
+
+[[rules]]
+id = "M09"
+class = ["TOOL_REJECTED"]
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "the provider refused on a business rule before any effect: retrying cannot change the rule"
+
+[[rules]]
+id = "M10"
+class = ["CHECKPOINT_WRITE_FAILED"]
+certainty = ["NOT_EXECUTED"]
+retries_lt = 2
+action = "RETRY"
+why = "the intent could not be persisted, so nothing was dispatched: retry the write, then dispatch"
+
+[[rules]]
+id = "M11"
+class = ["CHECKPOINT_WRITE_FAILED"]
+certainty = ["EXECUTED", "UNKNOWN"]
+action = "RESUME"
+why = "a fact we cannot persist is a fact we do not have: stop this worker; a fresh one resumes from the journal"
+
+[[rules]]
+id = "M12"
+class = ["PROCESS_INTERRUPTED"]
+certainty = ["NOT_EXECUTED"]
+action = "RESUME"
+why = "the interrupted step never dispatched: run it"
+
+[[rules]]
+id = "M13"
+certainty = ["EXECUTED"]
+class = ["PROCESS_INTERRUPTED", "RECONCILED"]
+action = "CONTINUE"
+why = "the effect is confirmed: continue from the recorded or reconciled result, never replay it"
+
+[[rules]]
+id = "M14"
+class = ["DUPLICATE_EFFECT"]
+compensation = "ANY"
+action = "COMPENSATE"
+why = "reconciliation found more effects than intended and the tool has an undo: keep one, undo the rest"
+
+[[rules]]
+id = "M15"
+class = ["DUPLICATE_EFFECT"]
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "a duplicate effect with no undo (a second credit, a second message) is a human decision"
+
+[[rules]]
+id = "M16"
+class = ["RECONCILED"]
+certainty = ["NOT_EXECUTED"]
+action = "RETRY"
+why = "the system of record shows no effect after the deadline: resend under the same operation id"
+
+[[rules]]
+id = "M17"
+certainty = ["NOT_EXECUTED"]
+retries_lt = 2
+action = "RETRY"
+why = "definitely not executed: a retry cannot duplicate anything"
+
+[[rules]]
+id = "M18"
+certainty = ["UNKNOWN"]
+effect = "NONE"
+retries_lt = 2
+action = "RETRY"
+why = "outcome unknown, but the operation changes nothing: repeating it is safe"
+
+[[rules]]
+id = "M19"
+certainty = ["UNKNOWN"]
+effect = "EXTERNAL_WRITE"
+status_query = "ANY"
+reconciles_lt = 2
+action = "RECONCILE"
+why = "outcome unknown on a write: ask the system of record before doing anything else"
+
+[[rules]]
+id = "M20"
+certainty = ["UNKNOWN"]
+effect = "EXTERNAL_WRITE"
+idempotency = "KEY"
+key_fresh = true
+retries_lt = 2
+action = "RETRY"
+why = "cannot reconcile, but the provider deduplicates this operation id inside its window: resend with the same key"
+
+[[rules]]
+id = "M21"
+certainty = ["UNKNOWN"]
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "irreducible uncertainty about an external effect: do not guess, hand it to a person with the evidence"
+
+[[rules]]
+id = "M22"
+class = ["STATE_INCONSISTENT"]
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "the journal contradicts itself: stop"
+
+[[rules]]
+id = "M99"
+action = "ESCALATE"
+status = "REQUIRES_HUMAN"
+why = "no rule covers this situation: never guess"

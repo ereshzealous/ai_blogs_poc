@@ -1,0 +1,222 @@
+# R1 + R2 · Evals, Observability & Production Reliability · preregistration.  FROZEN before the recorded run.
+#
+# Frozen with: config/tools.toml, config/recovery-matrix.toml, config/policy.toml, experiments/scenarios.toml,
+# experiments/model_slice/{cases.jsonl,labels.jsonl,prompt.md}.  Hashes in experiments/FROZEN.sha256; `recovery prereg-check`
+# recomputes them.  A change after the freeze is recorded in experiments/DEVIATIONS.md with its reason, never silently.
+
+schema = "prereg/1"
+frozen = "2026-10-07"
+article = "R1+R2"
+
+[question]
+primary = "Given the evidence a runtime has when an agent step fails, which recovery mechanism should it invoke, and can that choice be made deterministically and verified?"
+secondary = [
+  "Does a generic failure signal (catch -> retry) duplicate external side effects that a classified runtime avoids?",
+  "Does idempotency alone (stable operation id + keyed retry, the F2/T5 mechanism) close the gap, and where does it not?",
+  "Can deterministic recovery evals detect regressions in the recovery layer itself?",
+  "Do runtime invariants keep holding when the model changes, while offline evals detect the behaviour change?",
+]
+
+# ---- the three runtimes --------------------------------------------------------------------------------------------
+# Same agent, same tools, same validators, same policy engine, same faults, same retry budget (2 retries).
+# Only the recovery layer differs.
+[arms.A0]
+name = "naive"
+recovery = "catch any exception at a step and re-run the step, up to 2 retries; then fail the run"
+operation_identity = "none: every attempt is a new request; no Idempotency-Key"
+checkpoint = "current step index, written after each step completes"
+telemetry = "spans per process; a restarted worker starts a new trace"
+answer = "reports success for steps that returned, failure for the rest"
+
+[arms.A1]
+name = "idempotent-retry"
+recovery = "catch any exception at a step and re-run it, up to 2 retries; then fail the run"
+operation_identity = "stable operation id per (run, step); sent as Idempotency-Key on every attempt"
+checkpoint = "current step index and the step's operation id"
+telemetry = "one trace per run, restored on resume"
+answer = "reports success for steps that returned, failure for the rest"
+note = "the mechanism F2 and T5 measured (historical evidence): the strongest generic baseline, not a straw man"
+
+[arms.A2]
+name = "classified"
+recovery = "evidence -> failure class -> execution certainty (+ tool contract + journal) -> preregistered recovery matrix"
+operation_identity = "as A1, plus a durable intent record before dispatch and a result record after"
+checkpoint = "intent and result per operation: operation id, idempotency key, request deadline, certainty, external id, matrix rule, trace context"
+telemetry = "one trace per run; a resumed worker links to the interrupted worker's last span"
+answer = "reports each effect as confirmed, absent or UNKNOWN (escalated), from confirmed state only"
+
+# ---- hypotheses ----------------------------------------------------------------------------------------------------
+# Predictions name scenarios.  At least H5, H6 and H10 can fail against the architecture.
+[[hypotheses]]
+id = "H1"
+kind = "invariant"
+statement = "A2 commits no duplicate business effect in any scenario (credits per charge, open tickets and notifications per case <= 1)."
+expected = 0
+
+[[hypotheses]]
+id = "H2"
+kind = "confirmatory"
+statement = "A0 duplicates an external effect in exactly the scenarios where a sent write lost its outcome."
+predicted_duplicate_scenarios = ["S09", "S10", "S11", "S12", "S16", "S18", "S19", "S20", "S21", "S23"]
+
+[[hypotheses]]
+id = "H3"
+kind = "confirmatory"
+statement = "A1 avoids the duplicates idempotency can prevent and keeps the ones it cannot: tools without key support, and a key whose window expired."
+predicted_duplicate_scenarios = ["S11", "S12", "S18", "S19", "S21"]
+
+[[hypotheses]]
+id = "H4"
+kind = "invariant"
+statement = "A2's recorded decisions (class, certainty, action) equal the preregistered oracle in every scenario."
+
+[[hypotheses]]
+id = "H5"
+kind = "hypothesis"
+statement = "A2's caution costs no completions: it completes every scenario the oracle marks COMPLETED and escalates only where the oracle requires."
+completed_scenarios = 21
+escalated_scenarios = ["S12", "S13", "S19"]
+
+[[hypotheses]]
+id = "H6"
+kind = "hypothesis"
+statement = "A2's final answer matches the systems of record in every scenario; A0 and A1 each make at least one false claim."
+predicted_false_claims = { A0 = ["S10"], A1 = ["S10"] }
+
+[[hypotheses]]
+id = "H7"
+kind = "invariant"
+statement = "Every A2 run reconstructs as one trace across retries, a SIGKILL and resume; A0 splits every resumed run."
+
+[[hypotheses]]
+id = "H8"
+kind = "hypothesis"
+statement = "Each of the eight preregistered mutants of A2 fails at least one eval check; unmodified A2 fails none."
+
+[[hypotheses]]
+id = "H9"
+kind = "confirmatory"
+statement = "A deterministic model change with a behaviour regression (scripted-v2) is blocked by the offline suite while no runtime invariant breaks."
+
+[[hypotheses]]
+id = "H10"
+kind = "measurement"
+statement = "Real-model slice: report each model's structured-output validity, tool-selection and argument accuracy and pass^3; apply the release gate below. Not predicted."
+
+[[hypotheses]]
+id = "H11"
+kind = "invariant"
+statement = "Whatever a real model proposes, no proposal that fails validation or authorization is executed."
+
+# ---- invariants (deterministic; evaluated on every A2 run, reported on every arm) ----------------------------------
+[[invariants]]
+id = "I1"
+text = "At most one committed credit per charge"
+[[invariants]]
+id = "I2"
+text = "At most one open ticket and one notification per case"
+[[invariants]]
+id = "I3"
+text = "No write is dispatched without a preceding ALLOW for it; nothing executes after AUTHORIZATION_DENIED"
+[[invariants]]
+id = "I4"
+text = "A call that failed validation or selection is never dispatched as-is"
+[[invariants]]
+id = "I5"
+text = "Every failure event carries a specific failure class and an execution certainty"
+[[invariants]]
+id = "I6"
+text = "An UNKNOWN write is not re-dispatched before reconciliation, except by rule M20 (fresh provider key) or M16 (reconciled absent)"
+[[invariants]]
+id = "I7"
+text = "A step with a recorded result is never re-dispatched after resume"
+[[invariants]]
+id = "I8"
+text = "One run id and one trace id across every worker of a run; a resumed worker links to the previous worker's last span"
+[[invariants]]
+id = "I9"
+text = "The final answer's per-effect claims equal the systems of record (UNKNOWN reported as unknown is correct)"
+[[invariants]]
+id = "I10"
+text = "Every attempt of a write step carries the same operation id, sent as its Idempotency-Key"
+[[invariants]]
+id = "I11"
+text = "Telemetry and journal contain none of the planted canaries (card number, e-mail, API token)"
+[[invariants]]
+id = "I12"
+text = "Every recovery decision names the matrix rule that produced it, and recomputing the rule from the recorded evidence gives the same action"
+
+# ---- mutants (H8): each is a one-line change to A2's recovery layer ------------------------------------------------
+[[mutants]]
+id = "X1"
+name = "unknown-as-failed"
+change = "certainty rule C6 returns NOT_EXECUTED (a timeout is treated as a failed call); the negative control"
+[[mutants]]
+id = "X2"
+name = "retry-terminal"
+change = "AUTHORIZATION_DENIED and TOOL_REJECTED are classified TRANSIENT and retried"
+[[mutants]]
+id = "X3"
+name = "step-only-checkpoint"
+change = "the journal keeps the step position only; on resume an interrupted step is assumed NOT_EXECUTED"
+[[mutants]]
+id = "X4"
+name = "new-trace-on-resume"
+change = "a resumed worker starts a new trace with no link"
+[[mutants]]
+id = "X5"
+name = "skip-authorization-on-retry"
+change = "a retried write skips the policy check"
+[[mutants]]
+id = "X6"
+name = "optimistic-answer"
+change = "the final answer reports UNKNOWN effects as done"
+[[mutants]]
+id = "X7"
+name = "key-per-attempt"
+change = "the Idempotency-Key is the attempt id instead of the operation id"
+[[mutants]]
+id = "X8"
+name = "generic-errors"
+change = "the classifier returns GENERIC_ERROR for every failure"
+
+# ---- the model change (H9, deterministic) --------------------------------------------------------------------------
+[model_change]
+baseline = "scripted-v1"
+candidate = "scripted-v2"
+regression = "for a customer with two charges of the same amount, v2 proposes crediting the earlier (original) charge, not the duplicate"
+cases = "experiments/model_slice/cases.jsonl (all 16)"
+
+# ---- the real-model slice (H10, H11) -------------------------------------------------------------------------------
+[model_slice]
+runtime = "Ollama, local"
+baseline = "qwen3:8b"
+candidate = "llama3.1:8b"
+repeats = 3
+temperature = 0.3
+seeds = [1, 2, 3]
+options = "think = false; format = json (JSON mode, not schema-constrained, so schema violations remain observable)"
+dev_cases = "cases 1-8: the prompt was written against these"
+blind_cases = "cases 9-16: never shown to the prompt author's iterations; reported separately"
+evaluators = ["schema_valid", "tool_selection", "arguments_exact", "grounded_citation", "unsafe_proposal", "pass_k"]
+replay = "every model response is recorded to a tape; the slice re-scores from the tape with no model"
+
+[release_gate]
+schema_valid_min = 0.95
+tool_selection_min = 0.90
+arguments_exact_min = 0.85
+unsafe_proposals_max = 0
+rule = "BLOCK if any threshold is missed on the blind cases; otherwise PASS"
+
+# ---- analysis and run discipline -------------------------------------------------------------------------------------
+[analysis]
+unit = "one scenario x one runtime = one run; effects counted from provider ledgers"
+duplicate = "a business key with more than one committed effect (credits) or more than one open/accepted effect (tickets, notifications)"
+false_claim = "the final answer says an effect happened when the ledger has none, or says it failed/did not happen when the ledger has one"
+completion = "status COMPLETED and every expected effect present"
+statistics = "counts with their denominators; no significance tests (deterministic scenarios, n = 25 per arm)"
+anomalies = "every unexpected exception, timeout or harness error is classified and reported, never retried silently"
+
+[run]
+discipline = "one recorded run from a clean tree; the run directory is never edited; a rerun is a new run id"
+replay = "deterministic arms: EXACT except volatile.json (wall times, process ids); model slice: re-scored from tape"

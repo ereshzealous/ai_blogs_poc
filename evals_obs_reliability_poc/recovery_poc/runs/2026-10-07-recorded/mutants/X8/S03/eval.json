@@ -1,0 +1,108 @@
+{
+ "answer": {
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "confirmed": {
+   "credit": false,
+   "notify": false,
+   "ticket": false
+  },
+  "kind": "answer",
+  "seq": 10,
+  "status": "REQUIRES_HUMAN",
+  "step": "answer",
+  "text": "Status REQUIRES_HUMAN. Credit: not done. Ticket: not done. Notification: not done.",
+  "worker": "w1"
+ },
+ "checks": {
+  "I1": {
+   "detail": "max credits per charge 0",
+   "result": "PASS"
+  },
+  "I10": {
+   "detail": "0 identities over 0 write steps",
+   "result": "PASS"
+  },
+  "I11": {
+   "detail": "0 canary hits in 3 files",
+   "result": "PASS"
+  },
+  "I12": {
+   "detail": "1 of 1 decisions recompute",
+   "result": "PASS"
+  },
+  "I2": {
+   "detail": "open tickets 0, notifications 0",
+   "result": "PASS"
+  },
+  "I3": {
+   "detail": "credit dispatches without a matching ALLOW 0, dispatches after DENY 0",
+   "result": "PASS"
+  },
+  "I4": {
+   "detail": "invalid proposals 0",
+   "result": "PASS"
+  },
+  "I5": {
+   "detail": "0 of 1 failures diagnosed",
+   "result": "FAIL"
+  },
+  "I6": {
+   "detail": "0 unreconciled re-dispatches",
+   "result": "PASS"
+  },
+  "I7": {
+   "detail": "0 re-dispatches after an outcome was recorded",
+   "result": "PASS"
+  },
+  "I8": {
+   "detail": "1 trace(s), 1 worker(s), 0 of 0 resumed workers linked",
+   "result": "PASS"
+  },
+  "I9": {
+   "detail": "every claim matches the ledger",
+   "result": "PASS"
+  },
+  "OE1": {
+   "detail": "status and effects as the oracle states",
+   "result": "FAIL"
+  },
+  "RE1": {
+   "detail": "recorded [['GENERIC_ERROR', 'EXECUTED', 'ESCALATE']] · oracle [['MODEL_OUTPUT_INVALID', 'EXECUTED', 'REPAIR']]",
+   "result": "FAIL"
+  },
+  "RE2": {
+   "detail": "REQUIRES_HUMAN · oracle COMPLETED",
+   "result": "FAIL"
+  },
+  "RE3": {
+   "detail": "{'credits': 0, 'tickets': 0, 'notifications': 0} · oracle {'credits': 1, 'tickets': 1, 'notifications': 1}",
+   "result": "FAIL"
+  },
+  "RE4": {
+   "detail": "0 of 0 definite certainties contradicted",
+   "result": "PASS"
+  },
+  "TR1": {
+   "detail": "no credit dispatched",
+   "result": "PASS"
+  }
+ },
+ "decisions": [
+  [
+   "GENERIC_ERROR",
+   "EXECUTED",
+   "ESCALATE"
+  ]
+ ],
+ "effects": {
+  "credits": 0,
+  "credits_total": 0,
+  "notifications": 0,
+  "tickets": 0,
+  "tickets_created": 0
+ }
+}

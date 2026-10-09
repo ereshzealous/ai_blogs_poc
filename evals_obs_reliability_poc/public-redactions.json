@@ -1,0 +1,51 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "evals_obs_reliability_poc",
+ "redactions": [
+  {
+   "file": "recovery_poc/runs/record-2026-10-07.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/evals_obs_reliability/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 5,
+     "lines": [
+      379,
+      382,
+      384,
+      386,
+      389
+     ]
+    }
+   ],
+   "original_sha256": "abd14221d4a4169ae89d275d4496a5b418ea82a4e773431e774d0171b30b957e",
+   "public_sha256": "222b2c476dbb6a21ba8e42d5c927335bd8a4caaf19277bf8752e44d6d99da67c",
+   "semantic_changes": false
+  },
+  {
+   "file": "verification/pytest.junit.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"(?!localhost\")[^\"<&]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "16956f14a15a059aa50040859a59be57abcfa09544f0cdf4ca78eaa7e9244fd3",
+   "public_sha256": "51fed4e65f0fe43d1efa9e89965466329b846f9d36c0ad21b87ccc3852d80c45",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

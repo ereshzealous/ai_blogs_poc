@@ -1,0 +1,269 @@
+# Fault scenarios and their oracle.  FROZEN before the recorded run (experiments/FROZEN.sha256).
+#
+# Every scenario runs the same agent, the same tools and the same fault through three runtimes that differ only in their
+# recovery layer (preregistration.toml [arms]).  The oracle states, for the classified runtime (A2) only, the decision
+# sequence the preregistered matrix must produce, and for every runtime the business outcome that would be correct.
+# Effects are counted in the simulated providers' own ledgers, never in the agent's records.
+#
+# fault grammar:  "<target>:<kind>[@attempt|@all][:arg]"
+#   model:<step>:{unavailable,rate_limited,invalid_json,wrong_tool,bad_args}      the model gateway (decide = credit decision)
+#   kb:search:unavailable                                                     the retrieval index
+#   tool:<tool>:{refused,lost_response,stall_then_refuse,reject,duplicate_commit,lost_response_dup}
+#   status:<tool>:unavailable                                                 the provider's status / search endpoint
+#   journal:{intent,result}:<tool>:write_fails                                the workflow store (disk full)
+#   process:{before_dispatch,in_flight,after_result}:<tool>:sigkill            a real SIGKILL of the worker
+#   clock:advance_before_resume:<seconds>                                     provider time passes during an outage
+#
+# decisions: [class, certainty, action] in the order the A2 runtime must record them (CONTINUE on a clean step is not a
+# decision and is not listed).  effects: credits = committed credits on the charge; tickets = open tickets for the case;
+# notifications = messages accepted by the provider for the case.
+
+[[scenarios]]
+id = "S00"
+title = "Baseline: no fault"
+layer = "none"
+case = "CASE-1042"
+faults = []
+decisions = []
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S01"
+title = "Model provider unavailable once"
+layer = "model invocation"
+case = "CASE-1042"
+faults = ["model:decide:unavailable@1"]
+decisions = [["MODEL_UNAVAILABLE", "NOT_EXECUTED", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S02"
+title = "Primary model down for the whole run"
+layer = "model invocation"
+case = "CASE-1042"
+faults = ["model:decide:unavailable@all"]
+decisions = [["MODEL_UNAVAILABLE", "NOT_EXECUTED", "RETRY"], ["MODEL_UNAVAILABLE", "NOT_EXECUTED", "FALLBACK"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S03"
+title = "Model returns output that is not valid JSON"
+layer = "structured-output parsing"
+case = "CASE-1042"
+faults = ["model:decide:invalid_json@1"]
+decisions = [["MODEL_OUTPUT_INVALID", "EXECUTED", "REPAIR"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S04"
+title = "Retrieval index unavailable once"
+layer = "retrieval"
+case = "CASE-1042"
+faults = ["kb:search:unavailable@1"]
+decisions = [["RETRIEVAL_UNAVAILABLE", "NOT_EXECUTED", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S05"
+title = "Model selects a tool outside the task's allow-list"
+layer = "tool selection"
+case = "CASE-1042"
+faults = ["model:decide:wrong_tool@1"]
+decisions = [["TOOL_SELECTION_INVALID", "NOT_EXECUTED", "REPAIR"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S06"
+title = "Model proposes a credit amount the charge does not support"
+layer = "tool arguments"
+case = "CASE-1042"
+faults = ["model:decide:bad_args@1"]
+decisions = [["ARGUMENT_VALIDATION", "NOT_EXECUTED", "REPAIR"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S07"
+title = "Credit above the agent's limit: policy denies"
+layer = "authorization / policy"
+case = "CASE-2077"
+faults = []
+decisions = [["AUTHORIZATION_DENIED", "NOT_EXECUTED", "ABORT"]]
+status = "DENIED"
+effects = { credits = 0, tickets = 0, notifications = 0 }
+
+[[scenarios]]
+id = "S08"
+title = "Credit API refuses the connection once"
+layer = "tool transport"
+case = "CASE-1042"
+faults = ["tool:issue_credit:refused@1"]
+decisions = [["TOOL_UNAVAILABLE", "NOT_EXECUTED", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S09"
+title = "FLAGSHIP: credit committed, response lost"
+layer = "network response"
+case = "CASE-1042"
+faults = ["tool:issue_credit:lost_response@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S10"
+title = "Credit committed, every response lost"
+layer = "network response"
+case = "CASE-1042"
+faults = ["tool:issue_credit:lost_response@all"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S11"
+title = "Ticket created, response lost (no idempotency, searchable)"
+layer = "network response"
+case = "CASE-1042"
+faults = ["tool:create_ticket:lost_response@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S12"
+title = "Message sent, response lost (no idempotency, no status query)"
+layer = "external side effect"
+case = "CASE-1042"
+faults = ["tool:send_notification:lost_response@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "ESCALATE"]]
+status = "REQUIRES_HUMAN"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S13"
+title = "Credit rejected on a business rule (charge under dispute)"
+layer = "tool execution"
+case = "CASE-3105"
+faults = []
+decisions = [["TOOL_REJECTED", "NOT_EXECUTED", "ESCALATE"]]
+status = "REQUIRES_HUMAN"
+effects = { credits = 0, tickets = 0, notifications = 0 }
+
+[[scenarios]]
+id = "S14"
+title = "Read-only lookup times out once"
+layer = "downstream dependency"
+case = "CASE-1042"
+faults = ["tool:lookup_charges:lost_response@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S15"
+title = "Worker killed before the credit is dispatched"
+layer = "orchestrator"
+case = "CASE-1042"
+faults = ["process:before_dispatch:issue_credit:sigkill"]
+decisions = [["PROCESS_INTERRUPTED", "NOT_EXECUTED", "RESUME"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S16"
+title = "Worker killed with the credit in flight"
+layer = "orchestrator"
+case = "CASE-1042"
+faults = ["process:in_flight:issue_credit:sigkill"]
+decisions = [["PROCESS_INTERRUPTED", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S17"
+title = "Worker killed after the credit result was recorded"
+layer = "orchestrator"
+case = "CASE-1042"
+faults = ["process:after_result:issue_credit:sigkill"]
+decisions = [["PROCESS_INTERRUPTED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S18"
+title = "Credit in flight at a crash; the idempotency window expires before resume"
+layer = "orchestrator + external side effect"
+case = "CASE-1042"
+faults = ["process:in_flight:issue_credit:sigkill", "clock:advance_before_resume:90000"]
+decisions = [["PROCESS_INTERRUPTED", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S19"
+title = "Ticket response lost and ticket search down: irreconcilable"
+layer = "downstream dependency"
+case = "CASE-1042"
+faults = ["tool:create_ticket:lost_response@1", "status:create_ticket:unavailable@all"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILE_FAILED", "UNKNOWN", "RECONCILE"], ["RECONCILE_FAILED", "UNKNOWN", "ESCALATE"]]
+status = "REQUIRES_HUMAN"
+effects = { credits = 1, tickets = 1, notifications = 0 }
+
+[[scenarios]]
+id = "S20"
+title = "Credit response lost and status endpoint down: fall back to a keyed retry"
+layer = "downstream dependency"
+case = "CASE-1042"
+faults = ["tool:issue_credit:lost_response@1", "status:issue_credit:unavailable@all"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILE_FAILED", "UNKNOWN", "RECONCILE"], ["RECONCILE_FAILED", "UNKNOWN", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S21"
+title = "Ticket API commits twice internally, response lost"
+layer = "external side effect"
+case = "CASE-1042"
+faults = ["tool:create_ticket:lost_response_dup@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["DUPLICATE_EFFECT", "EXECUTED", "COMPENSATE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S22"
+title = "Workflow store fails to record the intent before the credit"
+layer = "workflow checkpoint"
+case = "CASE-1042"
+faults = ["journal:intent:issue_credit:write_fails@1"]
+decisions = [["CHECKPOINT_WRITE_FAILED", "NOT_EXECUTED", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S23"
+title = "Workflow store fails to record the credit result after it committed"
+layer = "workflow persistence"
+case = "CASE-1042"
+faults = ["journal:result:issue_credit:write_fails@1"]
+decisions = [["CHECKPOINT_WRITE_FAILED", "EXECUTED", "RESUME"], ["PROCESS_INTERRUPTED", "UNKNOWN", "RECONCILE"], ["RECONCILED", "EXECUTED", "CONTINUE"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }
+
+[[scenarios]]
+id = "S24"
+title = "Credit request delivered, provider stalls and refuses it after its deadline"
+layer = "network response"
+case = "CASE-1042"
+faults = ["tool:issue_credit:stall_then_refuse@1"]
+decisions = [["RESPONSE_LOST", "UNKNOWN", "RECONCILE"], ["RECONCILED", "NOT_EXECUTED", "RETRY"]]
+status = "COMPLETED"
+effects = { credits = 1, tickets = 1, notifications = 1 }

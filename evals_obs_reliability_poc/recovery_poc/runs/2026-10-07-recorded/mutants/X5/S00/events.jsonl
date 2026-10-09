@@ -1,0 +1,11 @@
+{"kind":"worker.start","resumed":false,"seq":1,"step":"retrieve","trace_id":"806493413cf7433723c7998074875870","worker":"w1"}
+{"documents":[{"id":"kb-duplicate-v3","score":4.4483,"version":3},{"id":"kb-cancellation","score":2.9195,"version":3},{"id":"kb-auth-holds","score":2.2371,"version":1}],"kind":"retrieval","seq":2,"step":"retrieve","worker":"w1"}
+{"charges":2,"kind":"tool.read","seq":4,"step":"lookup","tool":"lookup_charges","worker":"w1"}
+{"kind":"model.call","model":"scripted-v1","seq":6,"step":"decide","usage":{"input_tokens":309,"output_tokens":54},"worker":"w1"}
+{"arguments":{"amount":42.5,"charge_id":"ch_1042_b"},"citations":["kb-duplicate-v3"],"kind":"model.proposal","proposal":"ac8baa0fa8ed","seq":7,"step":"decide","tool":"issue_credit","worker":"w1"}
+{"kind":"gate.validate","ok":true,"proposal":"ac8baa0fa8ed","seq":9,"step":"validate","worker":"w1"}
+{"decision_id":"pd-d3a5d376","effect":"ALLOW","kind":"policy.decision","policy_version":"support-credits@7","proposal":"ac8baa0fa8ed","reason":"within the agent's grant","rule":null,"seq":11,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"allow":"pd-d3a5d376","attempt_id":"att-a71173d8","idempotency_key":"op-57e5fbcc","kind":"tool.dispatch","operation_id":"op-57e5fbcc","proposal":"ac8baa0fa8ed","seq":14,"step":"credit","tool":"issue_credit","worker":"w1"}
+{"allow":"pd-d3a5d376","attempt_id":"att-aed24491","idempotency_key":"op-8343c7cc","kind":"tool.dispatch","operation_id":"op-8343c7cc","proposal":null,"seq":18,"step":"ticket","tool":"create_ticket","worker":"w1"}
+{"allow":"pd-d3a5d376","attempt_id":"att-9e7ac8f9","idempotency_key":"op-77c39680","kind":"tool.dispatch","operation_id":"op-77c39680","proposal":null,"seq":22,"step":"notify","tool":"send_notification","worker":"w1"}
+{"claims":{"credit":"done","notify":"done","ticket":"done"},"confirmed":{"credit":true,"notify":true,"ticket":true},"kind":"answer","seq":25,"status":"COMPLETED","step":"answer","text":"Status COMPLETED. Credit: done. Ticket: done. Notification: done.","worker":"w1"}

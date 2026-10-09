@@ -1,0 +1,24 @@
+# Authorization policy for the support agent (deterministic, T2-style).  FROZEN with the preregistration.
+# The policy engine returns ALLOW or DENY with a decision id and the rule that decided; it never retries anything.
+
+version = "support-credits@7"
+agent = "agent:support-ops"
+allowed_tools = ["search_kb", "lookup_charges", "issue_credit", "create_ticket", "send_notification"]
+
+[[rules]]
+id = "P1"
+tool = "issue_credit"
+deny_if = "amount > 200.00"
+reason = "credits above 200.00 need a human approver (T3); the agent may not issue them"
+
+[[rules]]
+id = "P2"
+tool = "issue_credit"
+deny_if = "charge does not belong to the case's customer"
+reason = "an agent acts only on the customer it was asked about"
+
+[[rules]]
+id = "P3"
+tool = "*"
+deny_if = "tool not in allowed_tools"
+reason = "outside the agent's grant"

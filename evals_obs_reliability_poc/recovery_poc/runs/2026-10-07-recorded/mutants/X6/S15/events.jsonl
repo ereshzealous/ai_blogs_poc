@@ -1,0 +1,15 @@
+{"kind":"worker.start","resumed":false,"seq":1,"step":"retrieve","trace_id":"fe47f0122fc3974a934b3a07a41977c4","worker":"w1"}
+{"documents":[{"id":"kb-duplicate-v3","score":4.4483,"version":3},{"id":"kb-cancellation","score":2.9195,"version":3},{"id":"kb-auth-holds","score":2.2371,"version":1}],"kind":"retrieval","seq":2,"step":"retrieve","worker":"w1"}
+{"charges":2,"kind":"tool.read","seq":4,"step":"lookup","tool":"lookup_charges","worker":"w1"}
+{"kind":"model.call","model":"scripted-v1","seq":6,"step":"decide","usage":{"input_tokens":309,"output_tokens":54},"worker":"w1"}
+{"arguments":{"amount":42.5,"charge_id":"ch_1042_b"},"citations":["kb-duplicate-v3"],"kind":"model.proposal","proposal":"ac8baa0fa8ed","seq":7,"step":"decide","tool":"issue_credit","worker":"w1"}
+{"kind":"gate.validate","ok":true,"proposal":"ac8baa0fa8ed","seq":9,"step":"validate","worker":"w1"}
+{"decision_id":"pd-27b78ef9","effect":"ALLOW","kind":"policy.decision","policy_version":"support-credits@7","proposal":"ac8baa0fa8ed","reason":"within the agent's grant","rule":null,"seq":11,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"kind":"crash.injected","seq":13,"step":"before_dispatch","tool":"issue_credit","worker":"w1"}
+{"kind":"worker.start","resumed":true,"seq":14,"step":"credit","trace_id":"fe47f0122fc3974a934b3a07a41977c4","worker":"w2"}
+{"certainty_basis":"no intent recorded, so no dispatch","certainty_rule":"C9","evidence":{"intent_recorded":false,"result_recorded":false},"execution_certainty":"NOT_EXECUTED","failure_class":"PROCESS_INTERRUPTED","kind":"failure","layer":"orchestrator","operation":"tool:issue_credit","operation_id":"op-f07cf5c3","seq":15,"side_effect":"EXTERNAL_WRITE","step":"credit","worker":"w2"}
+{"action":"RESUME","certainty":"NOT_EXECUTED","failure_class":"PROCESS_INTERRUPTED","kind":"decision","operation_id":"op-f07cf5c3","rule":"M12","seq":16,"situation":{"certainty":"NOT_EXECUTED","class":"PROCESS_INTERRUPTED","compensation":"NONE","effect":"EXTERNAL_WRITE","fallback_available":true,"idempotency":"KEY","key_fresh":false,"reconciles":0,"repairs":0,"retries":0,"status_query":"BY_OPERATION_ID"},"step":"credit","why":"the interrupted step never dispatched: run it","worker":"w2"}
+{"allow":"pd-27b78ef9","attempt_id":"att-9bcd6da4","idempotency_key":"op-f07cf5c3","kind":"tool.dispatch","operation_id":"op-f07cf5c3","proposal":"ac8baa0fa8ed","seq":18,"step":"credit","tool":"issue_credit","worker":"w2"}
+{"allow":"pd-27b78ef9","attempt_id":"att-1df794ab","idempotency_key":"op-f73858a3","kind":"tool.dispatch","operation_id":"op-f73858a3","proposal":null,"seq":22,"step":"ticket","tool":"create_ticket","worker":"w2"}
+{"allow":"pd-27b78ef9","attempt_id":"att-61a6a54c","idempotency_key":"op-9f4c3da5","kind":"tool.dispatch","operation_id":"op-9f4c3da5","proposal":null,"seq":26,"step":"notify","tool":"send_notification","worker":"w2"}
+{"claims":{"credit":"done","notify":"done","ticket":"done"},"confirmed":{"credit":true,"notify":true,"ticket":true},"kind":"answer","seq":29,"status":"COMPLETED","step":"answer","text":"Status COMPLETED. Credit: done. Ticket: done. Notification: done.","worker":"w2"}

@@ -1,0 +1,239 @@
+{
+ "article_id": "R1",
+ "benchmark": {
+  "arms": [
+   "A0",
+   "A1",
+   "A2"
+  ],
+  "modes": [
+   {
+    "key": "A0",
+    "name": "naive: catch -> retry"
+   },
+   {
+    "key": "A1",
+    "name": "idempotent retry"
+   },
+   {
+    "key": "A2",
+    "name": "classified: evidence -> certainty -> recovery matrix"
+   }
+  ],
+  "mutants": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "X6",
+   "X7",
+   "X8"
+  ],
+  "scenarios": 25,
+  "slice_cases": 16,
+  "slice_seeds": 3
+ },
+ "claim_problems": [],
+ "completed_at": "unknown (not recorded)",
+ "entrypoints": {
+  "lab": "make console",
+  "make": "make help",
+  "negative_control": "make demo-mutant X=X1 S=S11",
+  "package": "make pack",
+  "proof": "make pack",
+  "replay": "make replay",
+  "test": "make test",
+  "verify": "make verify"
+ },
+ "environment": {
+  "arch": "arm64",
+  "model": "llama3.1:latest, qwen3:8b",
+  "model_runtime": "Ollama (local) for the model slice; scripted models for the fault scenarios",
+  "model_version": {
+   "llama3.1:latest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+   "qwen3:8b": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+  },
+  "os": "Darwin arm64",
+  "python": "3.12.13",
+  "seed": "1, 2, 3 (slice); none needed for the deterministic scenarios",
+  "temperature": 0.3
+ },
+ "execution_profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "check": "REL-R5-C01",
+      "text": "Separate worker processes; 4 real SIGKILLs per runtime; a fail-stop and resume"
+     },
+     {
+      "check": "REL-R2-C02",
+      "text": "HTTP over TCP to the providers, real socket timeouts, ECONNREFUSED on a closed port"
+     },
+     {
+      "check": "REL-R3-C01",
+      "text": "A SQLite workflow journal with intent and result records"
+     },
+     {
+      "check": "REL-R1-C03",
+      "text": "Provider-side idempotency windows, request deadlines and status queries"
+     },
+     {
+      "check": "REL-R9-C01",
+      "text": "96 calls to two local models through Ollama"
+     },
+     {
+      "check": "REL-R11-C07",
+      "text": "A real-model end-to-end run: qwen3:8b deciding in every scenario x runtime, 78 calls, taped and replayed"
+     }
+    ],
+    "meaning": "the actual mechanism was exercised"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "The credit, ticket and message providers, the CRM and the knowledge base, each with its own ledger"
+     },
+     {
+      "text": "Provider time, advanced to expire idempotency keys (S18)"
+     },
+     {
+      "text": "A scripted model for the fault scenarios, so that the recovery layer is the only variable"
+     }
+    ],
+    "meaning": "a faithful local substitute for an external system"
+   },
+   {
+    "class": "RECORDED",
+    "items": [
+     {
+      "check": "REL-R10-C01",
+      "text": "The real-model tape (recovery_poc/runs/<run>/model-slice/tape.jsonl)"
+     }
+    ],
+    "meaning": "captured model traffic, reused for deterministic re-scoring"
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "check": "REL-R1-C01",
+      "text": "25 preregistered faults (experiments/scenarios.toml)"
+     },
+     {
+      "check": "REL-R7-C01",
+      "text": "8 mutants of the recovery layer; X1 is the negative control"
+     }
+    ],
+    "meaning": "a failure introduced on purpose"
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "Load, backoff and retry budgets under contention; online evals on live traffic; a production escalation workflow"
+     },
+     {
+      "text": "Eventually consistent status queries; partial batch success; providers other than the four simulated"
+     }
+    ],
+    "meaning": "design this POC does not exercise"
+   }
+  ],
+  "groups": [
+   {
+    "group": "RUNS",
+    "rows": [
+     [
+      "Scenario runs",
+      "75 (25 scenarios × 3 runtimes); 8 × 25 mutant runs",
+      "REL-R1-C01"
+     ]
+    ]
+   },
+   {
+    "group": "REPLAY",
+    "rows": [
+     [
+      "Level",
+      "EXACT: 1,958 of 1,958 files byte-identical, 0 different",
+      "REL-R10-C01"
+     ]
+    ]
+   },
+   {
+    "group": "NEGATIVE CONTROL",
+    "rows": [
+     [
+      "Safeguard removed",
+      "UNKNOWN → reconcile: duplicates in 5 scenarios (S11, S12, S18, S19, S21); 25 runs completed",
+      "REL-R7-C01"
+     ]
+    ]
+   }
+  ]
+ },
+ "frozen_sha256": {
+  "config/policy.toml": "c140a779a0cf1cd5542d23b61b52f2dd1d9fab17dc69c80194dbfbb2aa880cbe",
+  "config/recovery-matrix.toml": "dfdaf9e359f5b77709817201f85bb7ab62e1934c7288d2f6149a47c3b38cd694",
+  "config/tools.toml": "84782b90eab5b986a1cf5281413208b43311ae0d3893d8e174cb17ce6565c143",
+  "config/world.toml": "1cc3f9bf50b54c99a3c71242240d3cb2e610990b1bceb831e0eb453fd589b8fd",
+  "experiments/model_slice/cases.jsonl": "dcc12cbecf91047eda73f330bc4c7bbc178125ba418c8626c5343db5998415df",
+  "experiments/model_slice/labels.jsonl": "c7711e9c5247ca4060a42ad097e18065c696ea1b7596f883501a5041fa3ec85c",
+  "experiments/model_slice/prompt.md": "837722394a7f7bd1d250d0df6c0533747fe0d9c9dcf47d5b046be4d66324662b",
+  "experiments/preregistration.toml": "a7d2745f5abbf089b9463b2401e0511bc178465ab22a3b79cfbbf79e18f4eb02",
+  "experiments/scenarios.toml": "8f1978a005cfc4c8fdc2cb7c68df2f4c514523d6db5e2a3896d28bc643efd57a"
+ },
+ "integrity": {
+  "raw": "recovery_poc/runs/2026-10-07-recorded",
+  "sha256sums": "evidence/runs/2026-10-07-recorded/SHA256SUMS"
+ },
+ "poc": "recovery_poc",
+ "provenance": {
+  "fields": {
+   "benchmark": "recorded",
+   "execution_profile": "frozen",
+   "frozen_sha256": "recorded",
+   "python": "recorded",
+   "results": "reconstructed from the recorded facts and the raw ledgers by tools/proof_facts.py",
+   "source_commit": "unknown",
+   "source_sha256": "recorded",
+   "started_at": "unknown"
+  },
+  "manifest_origin": "built by tools/proof_pack.py from recovery_poc/runs/2026-10-07-recorded/manifest.json (recorded) and proof/manifest.toml (frozen words)"
+ },
+ "replay": {
+  "contract": "every file of the run except volatile/ (wall times, pids), the recorded model tape and the recording manifest is byte-identical on a rerun from source; the slice is re-scored from its tape",
+  "level": "EXACT",
+  "record": "evidence/runs/2026-10-07-recorded/replay.json"
+ },
+ "run_id": "2026-10-07-recorded",
+ "runtime_mode": "deterministic scenarios (scripted model, real processes, sockets and SIGKILLs) plus a recorded real-model slice",
+ "scenario": "A support agent crediting a duplicate charge, opening a ticket and notifying the customer, through 25 preregistered faults and three recovery layers, against simulated providers with ledgers",
+ "schema": "pae-proof/v1",
+ "series": "Production AI Engineering",
+ "source_commit": "unknown (not a git repository); source_sha256 lists every POC source file's hash",
+ "source_sha256": {
+  "recovery/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "recovery/classify.py": "82a49d85754092cd8440ab024566d553a4489c81fe08deb34f31ee47e74fa194",
+  "recovery/cli.py": "9baf2e8fac70d3a74d22fa91bb4a0948b9564b0ef1eb7e06bd0506c45f5b4d72",
+  "recovery/common.py": "fd72f54cc152545e3d96ecdcc40a8aa75a19c1bf99c11a5e9da08b647a963ebf",
+  "recovery/evals.py": "20d07aff7460d31b6e94bdc617689524b769b3f609c0c9a3372921ed56105ab9",
+  "recovery/gates.py": "59ca0070a4007d93939bf7d802358461a78e2f1d97fa932d8af5f71e7d1df10a",
+  "recovery/harness.py": "500ca3f18fa0a631104ccc13ab76508799b98e7d184eff1421215cc4758ab087",
+  "recovery/journal.py": "4a6603ef65d5fa6f1ec64e4be350e4687b7b3397bbb8416d38f4073c2c4f8875",
+  "recovery/modelslice.py": "8b0e65ccc71fa3aab5bee6de924f5bbaf44dd5662c90480d7bf28a2e0f2bed5e",
+  "recovery/policy.py": "61ed5266119fa2a63be91a54a5c24b16c41735e739496040e254b65d712739a1",
+  "recovery/run.py": "9c5ac715866201aca94b5f38d913546d2b3c7c0dd8431303952af1ce3c41d2e4",
+  "recovery/runtime.py": "384480004869c5604888995db5c94ef0eaa4b7255667663d40739eca71c1e32e",
+  "recovery/scripted.py": "80296fd3b30abb577bb7f0094ed2f8a344f1f44045cdd724a07ebb12d8cc2222",
+  "recovery/taxonomy.py": "3d3c487edec0023635d837e23628310f4fde8d5e65c148995c346e0e125256a3",
+  "recovery/telemetry.py": "e4072db8cc35c52c14e7a59621ca8abbb57a17aa007df939e4db289daa9816cf",
+  "recovery/toolclient.py": "185dce62e270286408f50005e33a0f613b70d922e53a9cb0fa7d823c21f45ae6",
+  "recovery/world.py": "27d7c46d364ea9ee12df07cd6e95d8ee7d5cc8573be3b2fb7fcf06388d047452"
+ },
+ "started_at": "unknown (not recorded: deterministic runs record logical sequence numbers, wall times live in volatile/)"
+}

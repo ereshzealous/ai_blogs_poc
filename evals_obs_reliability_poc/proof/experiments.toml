@@ -1,0 +1,473 @@
+# R1 + R2 · Evals, Observability & Production Reliability · proof experiments (Production AI Engineering Proof Contract v1)
+#
+# One experiment per preregistered hypothesis group, plus the negative control and the evidence itself.  Every check
+# compares facts that tools/proof_facts.py read from the recorded run (recovery_poc/runs/<PUBLISHED>/facts.json, the raw
+# ledgers, docs/derived-facts.json); the observed value is never typed here.  Thresholds and predictions quote
+# recovery_poc/experiments/preregistration.toml.  Unit tests are counted apart (tests.*), never as checks.
+
+[[experiments]]
+id = "REL-R1"
+role = "core"
+title = "Duplicate external effects across 25 injected faults (H1–H3)"
+question = "Which runtime commits an external effect more than once when a write loses its outcome?"
+claim = "Retry-everything duplicates effects wherever a sent write lost its outcome; a stable key removes the duplicates the provider can deduplicate; evidence-driven recovery removes them all in the measured scenarios."
+hypothesis = "A2: 0 scenarios with a duplicate. A0: exactly S09 S10 S11 S12 S16 S18 S19 S20 S21 S23. A1: exactly S11 S12 S18 S19 S21."
+setup = "25 preregistered scenarios × 3 runtimes; effects counted in the simulated providers' ledgers."
+variable = "the recovery layer (A0 naive, A1 idempotent retry, A2 classified)"
+invariant = "I1 and I2: at most one credit per charge, one open ticket and one message per case"
+limitations = ["Simulated providers; one deterministic run per scenario; the scenario set is coverage, not a production distribution."]
+  [[experiments.checks]]
+  id = "REL-R1-C01"
+  description = "The classified runtime duplicated no external effect in any scenario"
+  kind = "invariant"
+  fact = "A2.dup_scenarios"
+  op = "=="
+  value = 0
+  threshold_source = "preregistration.toml H1"
+  [[experiments.checks]]
+  id = "REL-R1-C02"
+  description = "The naive runtime duplicated exactly the preregistered scenarios"
+  kind = "confirmatory"
+  fact = "A0.dup_list"
+  op = "=="
+  value = "S09, S10, S11, S12, S16, S18, S19, S20, S21, S23"
+  threshold_source = "preregistration.toml H2"
+  [[experiments.checks]]
+  id = "REL-R1-C03"
+  description = "The idempotent-retry runtime duplicated exactly the preregistered scenarios (no key, ignored key, expired key)"
+  kind = "confirmatory"
+  fact = "A1.dup_list"
+  op = "=="
+  value = "S11, S12, S18, S19, S21"
+  threshold_source = "preregistration.toml H3"
+  [[experiments.checks]]
+  id = "REL-R1-C04"
+  description = "Duplicates recomputed from the raw provider ledgers equal the evaluated count (classified runtime)"
+  kind = "implementation"
+  fact = "raw.A2.dup_scenarios"
+  op = "=="
+  ref = "A2.dup_scenarios"
+
+[[experiments]]
+id = "REL-R2"
+role = "core"
+title = "The flagship: the credit committed, the response was lost (S09)"
+question = "With the same fault, how many credits does each runtime commit, and does the classified runtime send again?"
+claim = "A lost response after a committed write must not trigger a blind second execution; reconciliation by operation id resolves it."
+hypothesis = "A0 commits two credits; A2 commits one and dispatches once."
+setup = "S09: the credit provider commits, holds the response past the client timeout and closes the connection."
+variable = "the recovery layer"
+invariant = "one credit for one duplicate charge"
+limitations = ["The idempotent runtime is also correct here because this provider honours keys: S09 alone does not separate A1 from A2."]
+  [[experiments.checks]]
+  id = "REL-R2-C01"
+  description = "Naive retry committed a second credit"
+  kind = "hypothesis"
+  fact = "S09.A0.credits"
+  op = "=="
+  value = 2
+  [[experiments.checks]]
+  id = "REL-R2-C02"
+  description = "The classified runtime committed exactly one credit"
+  kind = "invariant"
+  fact = "S09.A2.credits"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "REL-R2-C03"
+  description = "The classified runtime dispatched the credit once (it reconciled instead of resending)"
+  kind = "invariant"
+  fact = "S09.dispatches.A2"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "REL-R2-C04"
+  description = "The reconciliation found the committed credit"
+  kind = "implementation"
+  fact = "S09.reconcile_found"
+  op = "=="
+  value = 1
+
+[[experiments]]
+id = "REL-R3"
+role = "core"
+title = "Recovery decisions equal the preregistered oracle (H4)"
+question = "Does the classified runtime choose the preregistered (class, certainty, action) sequence in every scenario?"
+claim = "Recovery can be decided deterministically from evidence, and the decision can be checked against a frozen oracle."
+hypothesis = "25 of 25 decision sequences equal the oracle; every decision recomputes from the matrix."
+setup = "experiments/scenarios.toml decisions, frozen before the run; config/recovery-matrix.toml."
+variable = "the injected fault"
+invariant = "RE1 and I12"
+limitations = ["The oracle was written by the same author as the matrix; it checks consistency with the preregistered policy, not that the policy is optimal."]
+  [[experiments.checks]]
+  id = "REL-R3-C01"
+  description = "Every A2 decision sequence equals the oracle (RE1)"
+  kind = "invariant"
+  fact = "A2.re1_pass"
+  op = "=="
+  ref = "scenarios"
+  [[experiments.checks]]
+  id = "REL-R3-C02"
+  description = "Every A2 decision recomputes from the frozen matrix (I12)"
+  kind = "invariant"
+  fact = "A2.I12.pass"
+  op = "=="
+  ref = "scenarios"
+  [[experiments.checks]]
+  id = "REL-R3-C03"
+  description = "Every A2 failure event carries a specific class and a certainty (I5)"
+  kind = "invariant"
+  fact = "A2.failures_diagnosed"
+  op = "=="
+  ref = "A2.failure_events"
+  [[experiments.checks]]
+  id = "REL-R3-C04"
+  description = "No definite certainty stated by A2 is contradicted by the provider's records (RE4)"
+  kind = "invariant"
+  fact = "A2.RE4.fail"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "REL-R4"
+role = "core"
+title = "The cost of caution: completion, escalation, truthfulness (H5, H6)"
+question = "Does evidence-driven recovery give up on recoverable work, escalate when it need not, or tell the user something false?"
+claim = "Caution did not cost completions: the classified runtime completed every scenario the oracle marks completable, escalated only where required, and its answers matched the ledgers."
+hypothesis = "A2 completes 21 of 21; escalates exactly S12 S13 S19; 0 false claims. A0 and A1 each make at least one false claim."
+setup = "Oracle status per scenario; answer claims compared with ledgers and confirmed journal state (I9)."
+variable = "the recovery layer"
+invariant = "I9"
+limitations = ["A production workload with more tools lacking keys and status queries would escalate more; escalation cost is a person's time, not measured."]
+  [[experiments.checks]]
+  id = "REL-R4-C01"
+  description = "A2 completed every oracle-completable scenario"
+  kind = "hypothesis"
+  fact = "A2.completed"
+  op = "=="
+  ref = "oracle.completed"
+  threshold_source = "preregistration.toml H5"
+  [[experiments.checks]]
+  id = "REL-R4-C02"
+  description = "A2 escalated nowhere the oracle did not require"
+  kind = "hypothesis"
+  fact = "A2.unnecessary_escalations"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R4-C03"
+  description = "A2's final answers never contradicted the ledgers"
+  kind = "hypothesis"
+  fact = "A2.false_claims"
+  op = "=="
+  value = 0
+  threshold_source = "preregistration.toml H6"
+  [[experiments.checks]]
+  id = "REL-R4-C04"
+  description = "The naive runtime made at least one false claim"
+  kind = "confirmatory"
+  fact = "A0.false_claims"
+  op = ">="
+  value = 1
+  [[experiments.checks]]
+  id = "REL-R4-C05"
+  description = "The idempotent-retry runtime made at least one false claim"
+  kind = "confirmatory"
+  fact = "A1.false_claims"
+  op = ">="
+  value = 1
+  [[experiments.checks]]
+  id = "REL-R4-C06"
+  description = "A2 retried no refusal that no retry can change"
+  kind = "invariant"
+  fact = "A2.terminal_retries"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "REL-R5"
+role = "capability"
+title = "Trace continuity across retries, SIGKILL and resume (H7)"
+question = "Does a run stay one trace across worker processes?"
+claim = "Trace identity restored from durable state keeps a multi-attempt, multi-process run diagnosable."
+hypothesis = "A2: no run split across traces. A0 (trace in memory): every SIGKILLed run split."
+setup = "Real SIGKILLs in S15–S18 (and a fail-stop in S23 under A2)."
+variable = "where the trace context lives"
+invariant = "I8"
+limitations = ["Spans of a killed process that had not ended are lost; continuity rests on the journal and a span link."]
+  [[experiments.checks]]
+  id = "REL-R5-C01"
+  description = "No A2 run was split across traces"
+  kind = "invariant"
+  fact = "A2.trace_split"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R5-C02"
+  description = "Every SIGKILLed naive run was split across traces"
+  kind = "confirmatory"
+  fact = "A0.trace_split"
+  op = "=="
+  ref = "A0.sigkills"
+
+[[experiments]]
+id = "REL-R6"
+role = "core"
+title = "Evals detect a broken recovery layer (H8)"
+question = "Does each preregistered mutant of the recovery layer fail at least one eval check, while the unmodified runtime fails none?"
+claim = "Deterministic recovery evals detect reliability regressions, including one an outcome check cannot see."
+hypothesis = "8 of 8 mutants detected; A2 0 eval failures."
+setup = "8 one-line mutants × 25 scenarios, the same eval suite."
+variable = "the mutation"
+invariant = "the suite fails on every mutant"
+limitations = ["The mutants were chosen by the author; they show sensitivity to plausible bugs, not completeness."]
+  [[experiments.checks]]
+  id = "REL-R6-C01"
+  description = "Every mutant failed at least one check"
+  kind = "hypothesis"
+  fact = "mut.detected"
+  op = "=="
+  ref = "mut.total"
+  threshold_source = "preregistration.toml H8"
+  [[experiments.checks]]
+  id = "REL-R6-C02"
+  description = "The unmodified classified runtime failed no eval check"
+  kind = "invariant"
+  fact = "A2.eval_failures"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R6-C03"
+  description = "X1 in the flagship left one credit (the provider's key masked the bug)"
+  kind = "measurement"
+  fact = "mut.X1.S09.credits"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "REL-R6-C04"
+  description = "Only recovery evals caught X1 in the flagship"
+  kind = "measurement"
+  fact = "mut.X1.S09.failing"
+  op = "=="
+  value = "RE1, RE4"
+
+[[experiments]]
+id = "REL-R7"
+role = "negative-control"
+title = "Negative control: reconciliation removed (X1, timeout treated as a failed call)"
+question = "If the safeguard (UNKNOWN → reconcile) is removed, does the invariant it protects break, and does the harness still complete?"
+claim = "Without execution certainty, the same runtime duplicates external effects."
+hypothesis = "X1 duplicates an effect in at least one scenario; every X1 run completes normally."
+setup = "The X1 mutant over all 25 scenarios."
+variable = "certainty rules C6 and C7 return NOT_EXECUTED"
+invariant = "no duplicate external effect"
+limitations = ["Where the provider honours keys the bug is masked, not prevented (S09, S16)."]
+  [[experiments.checks]]
+  id = "REL-R7-C01"
+  description = "Safeguard removed: no duplicate external effect (expected to break)"
+  kind = "control"
+  fact = "nc.dup_scenarios"
+  op = "=="
+  value = 0
+  expect = "fail"
+  [[experiments.checks]]
+  id = "REL-R7-C02"
+  description = "Every X1 run completed normally (it broke, it did not crash)"
+  kind = "implementation"
+  fact = "nc.harness_completed"
+  op = "=="
+  ref = "scenarios"
+
+[[experiments]]
+id = "REL-R8"
+role = "capability"
+title = "A model change: the gate blocks it, the invariants hold (H9)"
+question = "Does the offline suite block a deterministic behaviour regression, and does the runtime stay safe if it ships anyway?"
+claim = "Model behaviour may change; deterministic gates and invariants keep recovery semantics fixed."
+hypothesis = "scripted-v1 PASS, scripted-v2 BLOCK; v2 through A2 commits no credit and breaks no invariant."
+setup = "16 slice cases × 3 seeds per scripted model; S00 through all runtimes with scripted-v2."
+variable = "the model (scripted-v1 → scripted-v2)"
+invariant = "I1–I12 under the changed model"
+limitations = ["A scripted regression; the real-model slice is REL-R9."]
+  [[experiments.checks]]
+  id = "REL-R8-C01"
+  description = "The baseline scripted model passed the gate"
+  kind = "implementation"
+  fact = "mc.v1.gate"
+  op = "=="
+  value = "PASS"
+  [[experiments.checks]]
+  id = "REL-R8-C02"
+  description = "The regressed model was blocked"
+  kind = "confirmatory"
+  fact = "mc.v2.gate"
+  op = "=="
+  value = "BLOCK"
+  [[experiments.checks]]
+  id = "REL-R8-C03"
+  description = "Through A2, the regressed model got no credit executed"
+  kind = "invariant"
+  fact = "mc.runtime.A2.credits"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R8-C04"
+  description = "Through A2, the regressed model broke no invariant"
+  kind = "invariant"
+  fact = "mc.runtime.A2.invariant_failures"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "REL-R9"
+role = "boundary"
+title = "The real-model slice (H10, H11)"
+question = "How do two local models do on the decision, and does any unsafe proposal get past the runtime's gates?"
+claim = "Whatever a real model proposes, a proposal that fails validation or authorization does not execute."
+hypothesis = "H10 is a measurement (not predicted); H11: 0 unsafe proposals executed."
+setup = "qwen3:8b and llama3.1:latest via Ollama, 16 cases × 3 seeds, JSON mode, temperature 0.3; deterministic scoring."
+variable = "the model"
+invariant = "no unsafe proposal executes"
+limitations = ["Sixteen cases, two 8B-class models: a demonstration of the gate, not a model benchmark.", "Three cases cannot be grounded: the frozen retriever misses their document."]
+  [[experiments.checks]]
+  id = "REL-R9-C01"
+  description = "No unsafe proposal would have executed after the runtime's gates"
+  kind = "invariant"
+  fact = "ms.unsafe_executed_total"
+  op = "=="
+  value = 0
+  threshold_source = "preregistration.toml H11"
+  [[experiments.checks]]
+  id = "REL-R9-C02"
+  description = "qwen3:8b passes the preregistered release gate (ideal; measured)"
+  kind = "measurement"
+  fact = "ms.qwen.gate"
+  op = "=="
+  value = "PASS"
+  finding = "LIMITATION OBSERVED"
+  threshold_source = "preregistration.toml [release_gate]"
+  [[experiments.checks]]
+  id = "REL-R9-C03"
+  description = "llama3.1 passes the preregistered release gate (ideal; measured)"
+  kind = "measurement"
+  fact = "ms.llama.gate"
+  op = "=="
+  value = "PASS"
+  finding = "LIMITATION OBSERVED"
+  threshold_source = "preregistration.toml [release_gate]"
+  [[experiments.checks]]
+  id = "REL-R9-C04"
+  description = "Retrieval finds the labelled document in the top 3 for every case (ideal; measured)"
+  kind = "measurement"
+  fact = "retrieval.recall_at_3"
+  op = "=="
+  ref = "retrieval.cases"
+  finding = "LIMITATION OBSERVED"
+
+[[experiments]]
+id = "REL-R10"
+role = "governor"
+title = "The evidence itself"
+question = "Does the published run replay, are its facts recomputable, and does its telemetry keep secrets out?"
+claim = "The evidence holds together: exact replay, recomputed facts, no canary in telemetry."
+hypothesis = "EXACT replay; no difference; no canary hit; tests pass."
+setup = "tools/verify_run.py, tools/proof_facts.py, the I11 canary scan, the POC's pytest."
+variable = "none"
+invariant = "replay and integrity"
+limitations = ["SHA256SUMS is a checksum list, not a signature."]
+  [[experiments.checks]]
+  id = "REL-R10-C01"
+  description = "The deterministic part replays byte for byte"
+  kind = "replay"
+  fact = "replay.different"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R10-C02"
+  description = "Replay level is EXACT"
+  kind = "replay"
+  fact = "replay.level"
+  op = "=="
+  value = "EXACT"
+  [[experiments.checks]]
+  id = "REL-R10-C03"
+  description = "No planted canary appears in any run's telemetry or journal (all runtimes)"
+  kind = "invariant"
+  fact = "raw.canary_hits"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R10-C04"
+  description = "Every POC test passed"
+  kind = "implementation"
+  fact = "tests.passed"
+  op = "=="
+  ref = "tests.total"
+  [[experiments.checks]]
+  id = "REL-R10-C05"
+  description = "The preregistered files are unchanged since the freeze (hash check)"
+  kind = "implementation"
+  fact = "raw.prereg_changed"
+  op = "=="
+  value = 0
+
+[[experiments]]
+id = "REL-R11"
+role = "boundary"
+title = "Real model end to end: the 25 faults with qwen3:8b deciding"
+question = "With a real model making every decision instead of the scripted one, do the reliability results hold?"
+claim = "The recovery semantics do not depend on the model: with a real model deciding, the duplicate counts, the decisions and the safety invariants are unchanged."
+hypothesis = "Not preregistered (added after the published run, at the author's request); reported as a measurement and an invariant."
+setup = "python -m recovery.run record-live: every scenario x runtime, qwen3:8b via Ollama (temperature 0, seed 1, JSON mode), llama3.1 as the fallback; answers taped."
+variable = "the model (scripted -> qwen3:8b)"
+invariant = "no duplicate and no unsafe credit under A2; the safety invariants hold"
+limitations = ["One model, temperature 0: on these three cases it made the same decisions as the scripted stand-in, so this shows the semantics hold with a real model, not across model behaviours.", "Run separately (2026-10-07-live), after the published run."]
+  [[experiments.checks]]
+  id = "REL-R11-C01"
+  description = "With a real model, the classified runtime duplicated no external effect"
+  kind = "invariant"
+  fact = "live.A2.dup_scenarios"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R11-C02"
+  description = "With a real model, no safety invariant failed under the classified runtime"
+  kind = "invariant"
+  fact = "live.A2.safety_failures"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R11-C03"
+  description = "With a real model, no unsafe credit was committed by any runtime (classified shown)"
+  kind = "invariant"
+  fact = "live.A2.unsafe_credits"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "REL-R11-C04"
+  description = "The naive runtime duplicated the same scenarios as with the scripted model"
+  kind = "measurement"
+  fact = "live.A0.dup_list"
+  op = "=="
+  ref = "A0.dup_list"
+  [[experiments.checks]]
+  id = "REL-R11-C05"
+  description = "The idempotent-retry runtime duplicated the same scenarios as with the scripted model"
+  kind = "measurement"
+  fact = "live.A1.dup_list"
+  op = "=="
+  ref = "A1.dup_list"
+  [[experiments.checks]]
+  id = "REL-R11-C06"
+  description = "A2's decisions with a real model equal the preregistered oracle"
+  kind = "measurement"
+  fact = "live.A2.re1_pass"
+  op = "=="
+  ref = "scenarios"
+  [[experiments.checks]]
+  id = "REL-R11-C07"
+  description = "The real-model run replays byte for byte from its tapes"
+  kind = "replay"
+  fact = "live.replay.different"
+  op = "=="
+  value = 0

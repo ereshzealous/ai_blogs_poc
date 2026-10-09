@@ -1,0 +1,179 @@
+# R1 + R2 · claims → experiments → checks (Production AI Engineering Proof Contract v1)
+#
+# The ten claims the brief asked the evidence to make defensible, plus the limitations.  No result number is typed:
+# `facts` lists what the editions print for each claim.  `class` is what a reader sees (SUPPORTED, QUALIFIED,
+# NEGATIVE CONTROL, ARGUED, NOT TESTED); tools/verify_evidence.py checks that it goes with the verdict.
+
+[[claims]]
+id = "REL-C01"
+class = "SUPPORTED"
+statement = "A generic failure signal is insufficient for safe recovery: the runtime that treated every failure alike duplicated effects, retried refusals and made a false claim."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R1", "REL-R4"]
+checks = ["REL-R1-C02", "REL-R4-C04"]
+article = ["Executive summary", "Results", "fig:scorecard"]
+facts = ["A0.dup_scenarios", "A0.dup_list", "A0.terminal_retries", "A0.false_claims", "A0.false_claim_list", "A0.outcome_correct", "A0.failures_diagnosed", "A0.failure_events"]
+
+[[claims]]
+id = "REL-C02"
+class = "SUPPORTED"
+statement = "Failure classification distinguishes operationally different conditions: every failure the classified runtime met carried a specific class and a certainty, and no stated certainty was contradicted by the provider."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R3"]
+checks = ["REL-R3-C03", "REL-R3-C04"]
+article = ["Failure taxonomy", "fig:failure-taxonomy"]
+facts = ["A2.failures_diagnosed", "A2.failure_events", "A2.classes_seen", "taxonomy.classes"]
+
+[[claims]]
+id = "REL-C03"
+class = "SUPPORTED"
+statement = "Execution certainty changes the correct recovery action, and a deterministic matrix chose the preregistered action in every scenario."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R3"]
+checks = ["REL-R3-C01", "REL-R3-C02"]
+article = ["Execution certainty", "The recovery decision", "fig:one-timeout-four-answers", "fig:recovery-engine"]
+facts = ["A2.re1_pass", "A2.decisions", "A2.actions_used", "matrix.rules", "matrix.certainty_rules", "matrix.version"]
+
+[[claims]]
+id = "REL-C04"
+class = "SUPPORTED"
+statement = "Blind retry can duplicate external side effects: in the flagship, the naive runtime credited the customer twice for one request."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R2"]
+checks = ["REL-R2-C01"]
+article = ["The flagship", "fig:flagship", "fig:cover"]
+facts = ["S09.A0.credits", "S09.A0.requests", "S09.dispatches.A0"]
+
+[[claims]]
+id = "REL-C05"
+class = "SUPPORTED"
+statement = "Reconciliation resolves ambiguous outcomes: the classified runtime asked the system of record instead of resending and committed one effect, including where an idempotency key could not help."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R1", "REL-R2"]
+checks = ["REL-R1-C01", "REL-R1-C03", "REL-R1-C04", "REL-R2-C02", "REL-R2-C03", "REL-R2-C04"]
+article = ["Reconciliation", "Where idempotency alone fails", "fig:reconciliation", "fig:idempotency-limits"]
+facts = ["A2.dup_scenarios", "A1.dup_scenarios", "A1.dup_list", "A2.status_queries", "S09.A2.credits", "S09.reconcile_found", "S09.op_id", "raw.A2.dup_scenarios"]
+
+[[claims]]
+id = "REL-C06"
+class = "SUPPORTED"
+statement = "Checkpoint and resume must preserve operation semantics, not only workflow position: with intent and result records the classified runtime resumed every crash without a duplicate, and a step-only checkpoint (X3) duplicated a credit."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R1", "REL-R6"]
+checks = ["REL-R1-C01", "REL-R6-C01"]
+article = ["Checkpoints and resume", "fig:checkpoint-semantics"]
+facts = ["S16.A0.credits", "S16.A2.credits", "mut.X3.scenarios_failed", "mut.X3.dups", "A2.failstops"]
+
+[[claims]]
+id = "REL-C07"
+class = "SUPPORTED"
+statement = "Trace continuity makes multi-attempt execution diagnosable: the classified runtime kept every run in one trace across SIGKILL and resume; a trace held in memory split every crashed run."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R5"]
+checks = ["REL-R5-C01", "REL-R5-C02"]
+article = ["Correlation", "fig:trace-anatomy"]
+facts = ["A2.trace_split", "A0.trace_split", "A0.sigkills", "S16.A2.traces", "S16.A0.traces", "S16.A2.spans", "S16.A2.trace_id"]
+
+[[claims]]
+id = "REL-C08"
+class = "SUPPORTED"
+statement = "Deterministic eval invariants and recovery evals detect reliability regressions: every preregistered mutant of the recovery layer failed a check, including one an outcome check could not see."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R6"]
+checks = ["REL-R6-C01", "REL-R6-C02", "REL-R6-C03", "REL-R6-C04"]
+article = ["Evals as a tripwire", "fig:mutants"]
+facts = ["mut.detected", "mut.total", "mut.X1.S09.credits", "mut.X1.S09.failing", "A2.eval_failures", "mut.X7.scenarios_failed", "mut.X8.scenarios_failed"]
+
+[[claims]]
+id = "REL-C09"
+class = "NEGATIVE CONTROL"
+statement = "Without execution certainty (timeouts treated as failed calls), the same runtime duplicated external effects, and broke cleanly rather than crashing."
+type = "control"
+verdict = "control"
+experiments = ["REL-R7"]
+checks = ["REL-R7-C01", "REL-R7-C02"]
+article = ["Evals as a tripwire"]
+facts = ["nc.dup_scenarios", "nc.dup_list", "nc.harness_completed"]
+
+[[claims]]
+id = "REL-C10"
+class = "SUPPORTED"
+statement = "Observability and evals serve different purposes, and gates keep a changed model safe: the offline gate blocked a behaviour regression that the runtime's invariants also contained."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R8"]
+checks = ["REL-R8-C01", "REL-R8-C02", "REL-R8-C03", "REL-R8-C04"]
+article = ["Regression and release gates", "fig:release-lifecycle"]
+facts = ["mc.v1.gate", "mc.v2.gate", "mc.v2.blind_args_pct", "mc.v1.blind_args_pct", "mc.v2.unsafe", "mc.v2.n", "mc.v1.unsafe", "mc.runtime.A2.decisions", "mc.runtime.A2.credits", "mc.runtime.A2.invariant_failures"]
+
+[[claims]]
+id = "REL-C11"
+class = "QUALIFIED"
+statement = "Reliability is the policy that connects evidence to the next safe action: with real models proposing, no unsafe proposal executed, although neither model passed the release gate and retrieval missed three cases."
+qualification = "two local 8B-class models on sixteen cases; both blocked by the gate"
+bound_checks = ["REL-R9-C02", "REL-R9-C03", "REL-R9-C04"]
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R9"]
+checks = ["REL-R9-C01"]
+article = ["The real-model slice", "fig:model-slice"]
+facts = ["ms.unsafe_executed_total", "ms.unsafe_proposals_total", "ms.calls", "ms.qwen.gate", "ms.llama.gate", "ms.qwen.model", "ms.llama.model",
+         "ms.qwen.missed", "ms.llama.missed", "retrieval.recall_at_3", "retrieval.cases", "retrieval.misses"]
+
+[[claims]]
+id = "REL-C12"
+class = "SUPPORTED"
+statement = "The evidence holds together: the deterministic run replays byte for byte, and no planted secret reached telemetry."
+type = "implementation"
+verdict = "implementation"
+experiments = ["REL-R10"]
+checks = ["REL-R10-C01", "REL-R10-C02", "REL-R10-C03", "REL-R10-C04", "REL-R10-C05"]
+article = ["Method", "Telemetry governance"]
+facts = ["replay.level", "replay.identical", "replay.files", "replay.different", "tests.total", "tests.passed", "raw.canary_hits", "raw.prereg_changed"]
+
+[[claims]]
+id = "REL-C13"
+class = "ARGUED"
+statement = "Recovery decisions should not be delegated to a model: a policy over facts is testable, reproducible and auditable."
+type = "limitation"
+verdict = "limitation"
+rests_on = "the design argument in the technical edition §17; the POC shows a deterministic policy works, not that a model-based one fails"
+experiments = []
+checks = []
+article = ["The recovery decision"]
+facts = []
+
+[[claims]]
+id = "REL-C14"
+class = "NOT TESTED"
+statement = "Behaviour under load, eventual consistency of status queries, partial batch success, and the real distribution of these faults in production."
+type = "limitation"
+verdict = "limitation"
+rests_on = "out of scope; the scenarios are deterministic, single-run and simulated"
+experiments = []
+checks = []
+article = ["Limitations"]
+facts = []
+
+[[claims]]
+id = "REL-C15"
+class = "SUPPORTED"
+statement = "With a real model making every decision, the reliability results are unchanged: the same duplicates under the baselines, none under the classified runtime, no unsafe credit, and the preregistered decisions."
+type = "measured"
+verdict = "supported"
+experiments = ["REL-R11"]
+checks = ["REL-R11-C01", "REL-R11-C02", "REL-R11-C03", "REL-R11-C04", "REL-R11-C05", "REL-R11-C06", "REL-R11-C07"]
+article = ["The real-model end-to-end run", "fig:real-model-e2e"]
+facts = ["live.A0.dup_scenarios", "live.A1.dup_scenarios", "live.A2.dup_scenarios", "live.A0.dup_list", "live.A1.dup_list", "live.A2.re1_pass",
+         "live.A2.safety_failures", "live.A0.unsafe_credits", "live.A1.unsafe_credits", "live.A2.unsafe_credits", "live.model.calls", "live.model.distinct_prompts",
+         "live.model.prompts_with_varying_output", "live.model.repair_calls", "live.model.fallback_calls", "live.replay.files", "live.replay.different",
+         "live.A0.outcome_correct", "live.A1.outcome_correct", "live.A2.outcome_correct", "live.A2.re1_miss_list", "live.run.id", "live.A0.false_claims",
+         "live.A1.false_claims", "live.A2.false_claims", "live.A2.escalations", "live.A2.denied", "live.model.primary_calls", "live.model.proposed.issue_credit"]

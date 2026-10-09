@@ -1,0 +1,134 @@
+# The simulated enterprise: customers, charges, cases and the knowledge base.  SIMULATED, deterministic.
+# Canaries (I11): the card number, e-mail address and provider token below must never appear in telemetry or the journal.
+
+provider_token = "sk_live_CANARY_7f3a9e2b41"
+request_deadline_ms = 1500       # the providers refuse a request whose deadline has passed (rule C10)
+client_timeout_ms = 900          # the runtime's per-call timeout
+lost_response_hold_ms = 2600     # a "lost" response: the provider commits, holds the connection past the timeout, closes it
+
+[[customers]]
+id = "C-1042"
+name = "Dana Reyes"
+email = "dana.reyes@example.test"
+card = "4111 1111 1111 1111"
+
+[[customers]]
+id = "C-2077"
+name = "Sam Okafor"
+email = "sam.okafor@example.test"
+card = "5500 0000 0000 0004"
+
+[[customers]]
+id = "C-3105"
+name = "Lee Park"
+email = "lee.park@example.test"
+card = "3400 0000 0000 009"
+
+[[charges]]
+id = "ch_1042_a"
+customer = "C-1042"
+amount = 42.50
+date = "2026-10-01T09:14:02Z"
+description = "Annual plan"
+[[charges]]
+id = "ch_1042_b"
+customer = "C-1042"
+amount = 42.50
+date = "2026-10-01T09:14:09Z"
+description = "Annual plan"
+duplicate_of = "ch_1042_a"
+
+[[charges]]
+id = "ch_2077_a"
+customer = "C-2077"
+amount = 480.00
+date = "2026-10-02T15:40:11Z"
+description = "Team plan (12 seats)"
+[[charges]]
+id = "ch_2077_b"
+customer = "C-2077"
+amount = 480.00
+date = "2026-10-02T15:40:15Z"
+description = "Team plan (12 seats)"
+duplicate_of = "ch_2077_a"
+
+[[charges]]
+id = "ch_3105_a"
+customer = "C-3105"
+amount = 63.00
+date = "2026-10-03T11:02:40Z"
+description = "Monthly plan"
+[[charges]]
+id = "ch_3105_b"
+customer = "C-3105"
+amount = 63.00
+date = "2026-10-03T11:02:44Z"
+description = "Monthly plan"
+duplicate_of = "ch_3105_a"
+disputed = true
+
+[[cases]]
+id = "CASE-1042"
+customer = "C-1042"
+message = "Hi, I was charged twice for my annual plan on October 1st. Can you refund the extra charge? You can reach me at dana.reyes@example.test."
+[[cases]]
+id = "CASE-2077"
+customer = "C-2077"
+message = "Our team plan was billed twice on October 2nd. Please refund the duplicate."
+[[cases]]
+id = "CASE-3105"
+customer = "C-3105"
+message = "I see two charges for my monthly plan on October 3rd. Refund one please."
+
+# ---- knowledge base (retrieval) -------------------------------------------------------------------------------------
+[[kb]]
+id = "kb-duplicate-v3"
+title = "Duplicate charges (current policy)"
+text = "When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued."
+version = 3
+[[kb]]
+id = "kb-duplicate-v2"
+title = "Duplicate charges (superseded policy)"
+text = "Duplicate charges may be refunded to the card within 14 days. Superseded by version 3: issue an account credit instead."
+version = 2
+superseded = true
+[[kb]]
+id = "kb-credit-limits"
+title = "Credit limits for support agents"
+text = "Automated agents may issue account credits up to 200.00 per charge. Credits above 200.00 require a human approver; escalate with the case id."
+version = 5
+[[kb]]
+id = "kb-disputes"
+title = "Charges under dispute"
+text = "A charge with an open dispute or chargeback cannot be credited or refunded. Escalate to the payments team; do not promise a credit."
+version = 2
+[[kb]]
+id = "kb-auth-holds"
+title = "Pending authorizations are not charges"
+text = "A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer."
+version = 1
+[[kb]]
+id = "kb-address-change"
+title = "Changing a billing address"
+text = "Billing address changes are handled by the accounts team. Open a ticket with the new address; do not edit it in chat."
+version = 4
+[[kb]]
+id = "kb-cancellation"
+title = "Cancelling a subscription"
+text = "Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation."
+version = 3
+[[kb]]
+id = "kb-invoice-copy"
+title = "Invoice copies"
+text = "Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day."
+version = 2
+[[kb]]
+id = "kb-price-difference"
+title = "Charges with different amounts"
+text = "Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit."
+version = 1
+[[kb]]
+id = "kb-password-reset"
+title = "Password reset"
+text = "Customers reset their password from the sign-in page. Support never asks for a password."
+version = 6

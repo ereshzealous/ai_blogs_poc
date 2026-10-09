@@ -1,0 +1,2058 @@
+[
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I10"
+  ],
+  "layer": "none",
+  "scenario": "S00",
+  "status": "COMPLETED",
+  "title": "Baseline: no fault"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "model invocation",
+  "scenario": "S01",
+  "status": "COMPLETED",
+  "title": "Model provider unavailable once"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "model invocation",
+  "scenario": "S02",
+  "status": "FAILED",
+  "title": "Primary model down for the whole run"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "structured-output parsing",
+  "scenario": "S03",
+  "status": "COMPLETED",
+  "title": "Model returns output that is not valid JSON"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "retrieval",
+  "scenario": "S04",
+  "status": "COMPLETED",
+  "title": "Retrieval index unavailable once"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "tool selection",
+  "scenario": "S05",
+  "status": "FAILED",
+  "title": "Model selects a tool outside the task's allow-list"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "tool arguments",
+  "scenario": "S06",
+  "status": "FAILED",
+  "title": "Model proposes a credit amount the charge does not support"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "OE1"
+  ],
+  "layer": "authorization / policy",
+  "scenario": "S07",
+  "status": "FAILED",
+  "title": "Credit above the agent's limit: policy denies"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "tool transport",
+  "scenario": "S08",
+  "status": "COMPLETED",
+  "title": "Credit API refuses the connection once"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "I5",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "network response",
+  "scenario": "S09",
+  "status": "COMPLETED",
+  "title": "FLAGSHIP: credit committed, response lost"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "failed",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 3,
+   "credits_total": 3,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I1",
+   "I5",
+   "I9",
+   "I10",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "network response",
+  "scenario": "S10",
+  "status": "FAILED",
+  "title": "Credit committed, every response lost"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 2,
+   "tickets_created": 2
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "network response",
+  "scenario": "S11",
+  "status": "COMPLETED",
+  "title": "Ticket created, response lost (no idempotency, searchable)"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 2,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "I10",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "external side effect",
+  "scenario": "S12",
+  "status": "COMPLETED",
+  "title": "Message sent, response lost (no idempotency, no status query)"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "failed",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "I10",
+   "RE2",
+   "OE1"
+  ],
+  "layer": "tool execution",
+  "scenario": "S13",
+  "status": "FAILED",
+  "title": "Credit rejected on a business rule (charge under dispute)"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S14",
+  "status": "COMPLETED",
+  "title": "Read-only lookup times out once"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I8",
+   "I10"
+  ],
+  "layer": "orchestrator",
+  "scenario": "S15",
+  "status": "COMPLETED",
+  "title": "Worker killed before the credit is dispatched"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "I8",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "orchestrator",
+  "scenario": "S16",
+  "status": "COMPLETED",
+  "title": "Worker killed with the credit in flight"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I8",
+   "I10"
+  ],
+  "layer": "orchestrator",
+  "scenario": "S17",
+  "status": "COMPLETED",
+  "title": "Worker killed after the credit result was recorded"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "I8",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "orchestrator + external side effect",
+  "scenario": "S18",
+  "status": "COMPLETED",
+  "title": "Credit in flight at a crash; the idempotency window expires before resume"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 2,
+   "tickets_created": 2
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "I10",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S19",
+  "status": "COMPLETED",
+  "title": "Ticket response lost and ticket search down: irreconcilable"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "I5",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S20",
+  "status": "COMPLETED",
+  "title": "Credit response lost and status endpoint down: fall back to a keyed retry"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 3,
+   "tickets_created": 3
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "external side effect",
+  "scenario": "S21",
+  "status": "COMPLETED",
+  "title": "Ticket API commits twice internally, response lost"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "workflow checkpoint",
+  "scenario": "S22",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the intent before the credit"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "I5",
+   "I10",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "workflow persistence",
+  "scenario": "S23",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the credit result after it committed"
+ },
+ {
+  "arm": "A0",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5",
+   "I10"
+  ],
+  "layer": "network response",
+  "scenario": "S24",
+  "status": "COMPLETED",
+  "title": "Credit request delivered, provider stalls and refuses it after its deadline"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "none",
+  "scenario": "S00",
+  "status": "COMPLETED",
+  "title": "Baseline: no fault"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "model invocation",
+  "scenario": "S01",
+  "status": "COMPLETED",
+  "title": "Model provider unavailable once"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "model invocation",
+  "scenario": "S02",
+  "status": "FAILED",
+  "title": "Primary model down for the whole run"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "structured-output parsing",
+  "scenario": "S03",
+  "status": "COMPLETED",
+  "title": "Model returns output that is not valid JSON"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "retrieval",
+  "scenario": "S04",
+  "status": "COMPLETED",
+  "title": "Retrieval index unavailable once"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "tool selection",
+  "scenario": "S05",
+  "status": "FAILED",
+  "title": "Model selects a tool outside the task's allow-list"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "tool arguments",
+  "scenario": "S06",
+  "status": "FAILED",
+  "title": "Model proposes a credit amount the charge does not support"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "OE1"
+  ],
+  "layer": "authorization / policy",
+  "scenario": "S07",
+  "status": "FAILED",
+  "title": "Credit above the agent's limit: policy denies"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "tool transport",
+  "scenario": "S08",
+  "status": "COMPLETED",
+  "title": "Credit API refuses the connection once"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "network response",
+  "scenario": "S09",
+  "status": "COMPLETED",
+  "title": "FLAGSHIP: credit committed, response lost"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "failed",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "I9",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "network response",
+  "scenario": "S10",
+  "status": "FAILED",
+  "title": "Credit committed, every response lost"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 2,
+   "tickets_created": 2
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "network response",
+  "scenario": "S11",
+  "status": "COMPLETED",
+  "title": "Ticket created, response lost (no idempotency, searchable)"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 2,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "external side effect",
+  "scenario": "S12",
+  "status": "COMPLETED",
+  "title": "Message sent, response lost (no idempotency, no status query)"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "failed",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [
+   "I5",
+   "RE2",
+   "OE1"
+  ],
+  "layer": "tool execution",
+  "scenario": "S13",
+  "status": "FAILED",
+  "title": "Credit rejected on a business rule (charge under dispute)"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S14",
+  "status": "COMPLETED",
+  "title": "Read-only lookup times out once"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S15",
+  "status": "COMPLETED",
+  "title": "Worker killed before the credit is dispatched"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S16",
+  "status": "COMPLETED",
+  "title": "Worker killed with the credit in flight"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S17",
+  "status": "COMPLETED",
+  "title": "Worker killed after the credit result was recorded"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 2,
+   "credits_total": 2,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I1",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "orchestrator + external side effect",
+  "scenario": "S18",
+  "status": "COMPLETED",
+  "title": "Credit in flight at a crash; the idempotency window expires before resume"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 2,
+   "tickets_created": 2
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "RE2",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S19",
+  "status": "COMPLETED",
+  "title": "Ticket response lost and ticket search down: irreconcilable"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "downstream dependency",
+  "scenario": "S20",
+  "status": "COMPLETED",
+  "title": "Credit response lost and status endpoint down: fall back to a keyed retry"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": true,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 3,
+   "tickets_created": 3
+  },
+  "fails": [
+   "I2",
+   "I5",
+   "RE3",
+   "OE1"
+  ],
+  "layer": "external side effect",
+  "scenario": "S21",
+  "status": "COMPLETED",
+  "title": "Ticket API commits twice internally, response lost"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "workflow checkpoint",
+  "scenario": "S22",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the intent before the credit"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "workflow persistence",
+  "scenario": "S23",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the credit result after it committed"
+ },
+ {
+  "arm": "A1",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [
+   "I5"
+  ],
+  "layer": "network response",
+  "scenario": "S24",
+  "status": "COMPLETED",
+  "title": "Credit request delivered, provider stalls and refuses it after its deadline"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "none",
+  "scenario": "S00",
+  "status": "COMPLETED",
+  "title": "Baseline: no fault"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "MODEL_UNAVAILABLE",
+    "NOT_EXECUTED",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "model invocation",
+  "scenario": "S01",
+  "status": "COMPLETED",
+  "title": "Model provider unavailable once"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "MODEL_UNAVAILABLE",
+    "NOT_EXECUTED",
+    "RETRY"
+   ],
+   [
+    "MODEL_UNAVAILABLE",
+    "NOT_EXECUTED",
+    "FALLBACK"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "model invocation",
+  "scenario": "S02",
+  "status": "COMPLETED",
+  "title": "Primary model down for the whole run"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "MODEL_OUTPUT_INVALID",
+    "EXECUTED",
+    "REPAIR"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "structured-output parsing",
+  "scenario": "S03",
+  "status": "COMPLETED",
+  "title": "Model returns output that is not valid JSON"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RETRIEVAL_UNAVAILABLE",
+    "NOT_EXECUTED",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "retrieval",
+  "scenario": "S04",
+  "status": "COMPLETED",
+  "title": "Retrieval index unavailable once"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "TOOL_SELECTION_INVALID",
+    "NOT_EXECUTED",
+    "REPAIR"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "tool selection",
+  "scenario": "S05",
+  "status": "COMPLETED",
+  "title": "Model selects a tool outside the task's allow-list"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "ARGUMENT_VALIDATION",
+    "NOT_EXECUTED",
+    "REPAIR"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "tool arguments",
+  "scenario": "S06",
+  "status": "COMPLETED",
+  "title": "Model proposes a credit amount the charge does not support"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [
+   [
+    "AUTHORIZATION_DENIED",
+    "NOT_EXECUTED",
+    "ABORT"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [],
+  "layer": "authorization / policy",
+  "scenario": "S07",
+  "status": "DENIED",
+  "title": "Credit above the agent's limit: policy denies"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "TOOL_UNAVAILABLE",
+    "NOT_EXECUTED",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "tool transport",
+  "scenario": "S08",
+  "status": "COMPLETED",
+  "title": "Credit API refuses the connection once"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "network response",
+  "scenario": "S09",
+  "status": "COMPLETED",
+  "title": "FLAGSHIP: credit committed, response lost"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "network response",
+  "scenario": "S10",
+  "status": "COMPLETED",
+  "title": "Credit committed, every response lost"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "network response",
+  "scenario": "S11",
+  "status": "COMPLETED",
+  "title": "Ticket created, response lost (no idempotency, searchable)"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "unknown",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "ESCALATE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "external side effect",
+  "scenario": "S12",
+  "status": "REQUIRES_HUMAN",
+  "title": "Message sent, response lost (no idempotency, no status query)"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "not_done",
+   "notify": "not_done",
+   "ticket": "not_done"
+  },
+  "decisions": [
+   [
+    "TOOL_REJECTED",
+    "NOT_EXECUTED",
+    "ESCALATE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 0,
+   "credits_total": 0,
+   "notifications": 0,
+   "tickets": 0,
+   "tickets_created": 0
+  },
+  "fails": [],
+  "layer": "tool execution",
+  "scenario": "S13",
+  "status": "REQUIRES_HUMAN",
+  "title": "Credit rejected on a business rule (charge under dispute)"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "downstream dependency",
+  "scenario": "S14",
+  "status": "COMPLETED",
+  "title": "Read-only lookup times out once"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "PROCESS_INTERRUPTED",
+    "NOT_EXECUTED",
+    "RESUME"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S15",
+  "status": "COMPLETED",
+  "title": "Worker killed before the credit is dispatched"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "PROCESS_INTERRUPTED",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S16",
+  "status": "COMPLETED",
+  "title": "Worker killed with the credit in flight"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "PROCESS_INTERRUPTED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator",
+  "scenario": "S17",
+  "status": "COMPLETED",
+  "title": "Worker killed after the credit result was recorded"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "PROCESS_INTERRUPTED",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "orchestrator + external side effect",
+  "scenario": "S18",
+  "status": "COMPLETED",
+  "title": "Credit in flight at a crash; the idempotency window expires before resume"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "not_done",
+   "ticket": "unknown"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILE_FAILED",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILE_FAILED",
+    "UNKNOWN",
+    "ESCALATE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 0,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "downstream dependency",
+  "scenario": "S19",
+  "status": "REQUIRES_HUMAN",
+  "title": "Ticket response lost and ticket search down: irreconcilable"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILE_FAILED",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILE_FAILED",
+    "UNKNOWN",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "downstream dependency",
+  "scenario": "S20",
+  "status": "COMPLETED",
+  "title": "Credit response lost and status endpoint down: fall back to a keyed retry"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "DUPLICATE_EFFECT",
+    "EXECUTED",
+    "COMPENSATE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 2
+  },
+  "fails": [],
+  "layer": "external side effect",
+  "scenario": "S21",
+  "status": "COMPLETED",
+  "title": "Ticket API commits twice internally, response lost"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "CHECKPOINT_WRITE_FAILED",
+    "NOT_EXECUTED",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "workflow checkpoint",
+  "scenario": "S22",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the intent before the credit"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "CHECKPOINT_WRITE_FAILED",
+    "EXECUTED",
+    "RESUME"
+   ],
+   [
+    "PROCESS_INTERRUPTED",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "EXECUTED",
+    "CONTINUE"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "workflow persistence",
+  "scenario": "S23",
+  "status": "COMPLETED",
+  "title": "Workflow store fails to record the credit result after it committed"
+ },
+ {
+  "arm": "A2",
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "decisions": [
+   [
+    "RESPONSE_LOST",
+    "UNKNOWN",
+    "RECONCILE"
+   ],
+   [
+    "RECONCILED",
+    "NOT_EXECUTED",
+    "RETRY"
+   ]
+  ],
+  "duplicate": false,
+  "effects": {
+   "credits": 1,
+   "credits_total": 1,
+   "notifications": 1,
+   "tickets": 1,
+   "tickets_created": 1
+  },
+  "fails": [],
+  "layer": "network response",
+  "scenario": "S24",
+  "status": "COMPLETED",
+  "title": "Credit request delivered, provider stalls and refuses it after its deadline"
+ }
+]

@@ -1,0 +1,68 @@
+{
+ "checkpoint": [
+  {
+   "data": "{\"ctx\":{\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}]}}",
+   "run_id": "run-88b1e990",
+   "seq": 3,
+   "step": "lookup"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}]}}",
+   "run_id": "run-88b1e990",
+   "seq": 5,
+   "step": "decide"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-88b1e990",
+   "seq": 8,
+   "step": "validate"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-88b1e990",
+   "seq": 10,
+   "step": "authorize"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-dc68540b\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-88b1e990",
+   "seq": 12,
+   "step": "credit"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-dc68540b\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}},\"in_progress\":\"credit\",\"operation_id\":\"op-4390c404\"}",
+   "run_id": "run-88b1e990",
+   "seq": 13,
+   "step": "credit"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-dc68540b\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"attempted\":{\"credit\":true},\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}},\"in_progress\":\"credit\",\"operation_id\":\"op-4390c404\"}",
+   "run_id": "run-88b1e990",
+   "seq": 16,
+   "step": "credit"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-dc68540b\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"attempted\":{\"credit\":true},\"charges\":[{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:40Z\",\"description\":\"Monthly plan\",\"id\":\"ch_3105_a\"},{\"amount\":63.0,\"customer\":\"C-3105\",\"date\":\"2026-10-03T11:02:44Z\",\"description\":\"Monthly plan\",\"duplicate_of\":\"ch_3105_a\",\"id\":\"ch_3105_b\"}],\"docs\":[{\"id\":\"kb-price-difference\",\"score\":3.8325,\"text\":\"Two charges with different amounts are not duplicates. Open a ticket for billing review rather than issuing a credit.\",\"title\":\"Charges with different amounts\",\"version\":1},{\"id\":\"kb-invoice-copy\",\"score\":2.0377,\"text\":\"Customers can request a copy of any invoice. Open a ticket and the billing team sends it within one business day.\",\"title\":\"Invoice copies\",\"version\":2},{\"id\":\"kb-duplicate-v3\",\"score\":1.2826,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3}],\"proposal\":{\"arguments\":{\"amount\":63.0,\"charge_id\":\"ch_3105_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We have credited the second charge for your monthly plan on October 3rd. A ticket has been created for the billing audit trail, and you will receive an email once the credit is issued.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}},\"in_progress\":\"credit\",\"operation_id\":\"op-4390c404\"}",
+   "run_id": "run-88b1e990",
+   "seq": 19,
+   "step": "credit"
+  }
+ ],
+ "intent": [],
+ "result": [],
+ "run": [
+  {
+   "arm": "A1",
+   "case_id": "CASE-3105",
+   "last_span": "682f3e003ad34489",
+   "last_worker": "w1",
+   "matrix_version": "2026-10-07.1",
+   "run_id": "run-88b1e990",
+   "scenario": "S13",
+   "status": "FAILED",
+   "trace_id": "da9a3a822e95d0e332ddd3ea6c1b74c0",
+   "workers": 1
+  }
+ ]
+}

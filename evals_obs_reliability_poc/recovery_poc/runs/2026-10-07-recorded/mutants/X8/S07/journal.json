@@ -1,0 +1,44 @@
+{
+ "checkpoint": [
+  {
+   "data": "{\"ctx\":{\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":3.8672,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":1.1258,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-address-change\",\"score\":1.046,\"text\":\"Billing address changes are handled by the accounts team. Open a ticket with the new address; do not edit it in chat.\",\"title\":\"Changing a billing address\",\"version\":4}]}}",
+   "run_id": "run-7d213007",
+   "seq": 3,
+   "step": "lookup"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:11Z\",\"description\":\"Team plan (12 seats)\",\"id\":\"ch_2077_a\"},{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:15Z\",\"description\":\"Team plan (12 seats)\",\"duplicate_of\":\"ch_2077_a\",\"id\":\"ch_2077_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":3.8672,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":1.1258,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-address-change\",\"score\":1.046,\"text\":\"Billing address changes are handled by the accounts team. Open a ticket with the new address; do not edit it in chat.\",\"title\":\"Changing a billing address\",\"version\":4}]}}",
+   "run_id": "run-7d213007",
+   "seq": 5,
+   "step": "decide"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:11Z\",\"description\":\"Team plan (12 seats)\",\"id\":\"ch_2077_a\"},{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:15Z\",\"description\":\"Team plan (12 seats)\",\"duplicate_of\":\"ch_2077_a\",\"id\":\"ch_2077_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":3.8672,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":1.1258,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-address-change\",\"score\":1.046,\"text\":\"Billing address changes are handled by the accounts team. Open a ticket with the new address; do not edit it in chat.\",\"title\":\"Changing a billing address\",\"version\":4}],\"proposal\":{\"arguments\":{\"amount\":480.0,\"charge_id\":\"ch_2077_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 480.00 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-7d213007",
+   "seq": 8,
+   "step": "validate"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:11Z\",\"description\":\"Team plan (12 seats)\",\"id\":\"ch_2077_a\"},{\"amount\":480.0,\"customer\":\"C-2077\",\"date\":\"2026-10-02T15:40:15Z\",\"description\":\"Team plan (12 seats)\",\"duplicate_of\":\"ch_2077_a\",\"id\":\"ch_2077_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":3.8672,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":1.1258,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-address-change\",\"score\":1.046,\"text\":\"Billing address changes are handled by the accounts team. Open a ticket with the new address; do not edit it in chat.\",\"title\":\"Changing a billing address\",\"version\":4}],\"proposal\":{\"arguments\":{\"amount\":480.0,\"charge_id\":\"ch_2077_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 480.00 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-7d213007",
+   "seq": 10,
+   "step": "authorize"
+  }
+ ],
+ "intent": [],
+ "result": [],
+ "run": [
+  {
+   "arm": "A2",
+   "case_id": "CASE-2077",
+   "last_span": "016e6ee8279e077b",
+   "last_worker": "w1",
+   "matrix_version": "2026-10-07.1",
+   "run_id": "run-7d213007",
+   "scenario": "S07",
+   "status": "REQUIRES_HUMAN",
+   "trace_id": "4af82cb8220f74d4e4ff774116991948",
+   "workers": 1
+  }
+ ]
+}

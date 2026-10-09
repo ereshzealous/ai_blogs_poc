@@ -1,0 +1,13 @@
+{"kind":"worker.start","resumed":false,"seq":1,"step":"retrieve","trace_id":"93fbd8dac110ca43a8e320e7b3b8643d","worker":"w1"}
+{"documents":[{"id":"kb-duplicate-v3","score":4.4483,"version":3},{"id":"kb-cancellation","score":2.9195,"version":3},{"id":"kb-auth-holds","score":2.2371,"version":1}],"kind":"retrieval","seq":2,"step":"retrieve","worker":"w1"}
+{"charges":2,"kind":"tool.read","seq":4,"step":"lookup","tool":"lookup_charges","worker":"w1"}
+{"kind":"model.call","model":"scripted-v1","seq":6,"step":"decide","usage":{"input_tokens":309,"output_tokens":54},"worker":"w1"}
+{"arguments":{"amount":42.5,"charge_id":"ch_1042_b"},"citations":["kb-duplicate-v3"],"kind":"model.proposal","proposal":"ac8baa0fa8ed","seq":7,"step":"decide","tool":"issue_credit","worker":"w1"}
+{"kind":"gate.validate","ok":true,"proposal":"ac8baa0fa8ed","seq":9,"step":"validate","worker":"w1"}
+{"decision_id":"pd-2f50fa0f","effect":"ALLOW","kind":"policy.decision","policy_version":"support-credits@7","proposal":"ac8baa0fa8ed","reason":"within the agent's grant","rule":null,"seq":11,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"allow":"pd-2f50fa0f","attempt_id":"att-3cf9c93d","idempotency_key":"op-8bd80f7a","kind":"tool.dispatch","operation_id":"op-8bd80f7a","proposal":"ac8baa0fa8ed","seq":14,"step":"credit","tool":"issue_credit","worker":"w1"}
+{"allow":"pd-2f50fa0f","attempt_id":"att-acf9cc73","idempotency_key":"op-a89ecb9f","kind":"tool.dispatch","operation_id":"op-a89ecb9f","proposal":null,"seq":17,"step":"ticket","tool":"create_ticket","worker":"w1"}
+{"attempt":1,"error":"tool:create_ticket: TIMEOUT","failed":true,"kind":"failure","seq":18,"step":"ticket","worker":"w1"}
+{"allow":"pd-2f50fa0f","attempt_id":"att-a8e1ea62","idempotency_key":"op-a89ecb9f","kind":"tool.dispatch","operation_id":"op-a89ecb9f","proposal":null,"seq":20,"step":"ticket","tool":"create_ticket","worker":"w1"}
+{"allow":"pd-2f50fa0f","attempt_id":"att-415a96d4","idempotency_key":"op-7d4f5a1c","kind":"tool.dispatch","operation_id":"op-7d4f5a1c","proposal":null,"seq":23,"step":"notify","tool":"send_notification","worker":"w1"}
+{"claims":{"credit":"done","notify":"done","ticket":"done"},"confirmed":{"credit":false,"notify":false,"ticket":false},"kind":"answer","seq":25,"status":"COMPLETED","step":"answer","text":"Status COMPLETED. Credit: done. Ticket: done. Notification: done.","worker":"w1"}

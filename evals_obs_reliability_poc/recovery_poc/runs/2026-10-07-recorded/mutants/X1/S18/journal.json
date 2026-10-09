@@ -1,0 +1,130 @@
+{
+ "checkpoint": [
+  {
+   "data": "{\"ctx\":{\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}]}}",
+   "run_id": "run-f2efe43e",
+   "seq": 3,
+   "step": "lookup"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}]}}",
+   "run_id": "run-f2efe43e",
+   "seq": 5,
+   "step": "decide"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 8,
+   "step": "validate"
+  },
+  {
+   "data": "{\"ctx\":{\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 10,
+   "step": "authorize"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-2063c007\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 12,
+   "step": "credit"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-2063c007\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"},\"results\":{\"credit\":{\"certainty\":\"EXECUTED\",\"external_id\":\"cr_0002\",\"replayed\":false}}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 22,
+   "step": "ticket"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-2063c007\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"},\"results\":{\"credit\":{\"certainty\":\"EXECUTED\",\"external_id\":\"cr_0002\",\"replayed\":false},\"ticket\":{\"certainty\":\"EXECUTED\",\"external_id\":\"TCK-0001\",\"replayed\":false}}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 26,
+   "step": "notify"
+  },
+  {
+   "data": "{\"ctx\":{\"allow\":{\"decision_id\":\"pd-2063c007\",\"effect\":\"ALLOW\",\"policy_version\":\"support-credits@7\",\"reason\":\"within the agent's grant\",\"rule\":null,\"tool\":\"issue_credit\"},\"charges\":[{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:02Z\",\"description\":\"Annual plan\",\"id\":\"ch_1042_a\"},{\"amount\":42.5,\"customer\":\"C-1042\",\"date\":\"2026-10-01T09:14:09Z\",\"description\":\"Annual plan\",\"duplicate_of\":\"ch_1042_a\",\"id\":\"ch_1042_b\"}],\"docs\":[{\"id\":\"kb-duplicate-v3\",\"score\":4.4483,\"text\":\"When a customer is charged twice for the same purchase, credit the full amount of the later duplicate charge to the customer's account balance. Open a ticket for the billing audit trail and notify the customer by e-mail once the credit is issued.\",\"title\":\"Duplicate charges (current policy)\",\"version\":3},{\"id\":\"kb-cancellation\",\"score\":2.9195,\"text\":\"Cancellations take effect at the end of the billing period. Open a ticket for the accounts team to process the cancellation.\",\"title\":\"Cancelling a subscription\",\"version\":3},{\"id\":\"kb-auth-holds\",\"score\":2.2371,\"text\":\"A pending card authorization can look like a second charge. It is released automatically within 7 days and is never credited; explain this to the customer.\",\"title\":\"Pending authorizations are not charges\",\"version\":1}],\"proposal\":{\"arguments\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\"},\"citations\":[\"kb-duplicate-v3\"],\"reply\":\"We've credited 42.50 for the duplicate charge to your account.\",\"requires_approval\":false,\"tool\":\"issue_credit\"},\"results\":{\"credit\":{\"certainty\":\"EXECUTED\",\"external_id\":\"cr_0002\",\"replayed\":false},\"notify\":{\"certainty\":\"EXECUTED\",\"external_id\":\"msg_0001\",\"replayed\":false},\"ticket\":{\"certainty\":\"EXECUTED\",\"external_id\":\"TCK-0001\",\"replayed\":false}}}}",
+   "run_id": "run-f2efe43e",
+   "seq": 30,
+   "step": "answer"
+  }
+ ],
+ "intent": [
+  {
+   "idempotency_key": "op-b3eb4571",
+   "op_id": "op-b3eb4571",
+   "request": "{\"body\":{\"amount\":42.5,\"charge_id\":\"ch_1042_b\",\"reason\":\"duplicate_charge\"},\"path\":\"/credits\"}",
+   "run_id": "run-f2efe43e",
+   "seq": 19,
+   "step": "credit",
+   "tool": "issue_credit",
+   "trace_id": "02aabef270fa7a3c8c55c1f883e4afbe"
+  },
+  {
+   "idempotency_key": "op-664996d4",
+   "op_id": "op-664996d4",
+   "request": "{\"body\":{\"case_id\":\"CASE-1042\",\"reference\":\"op-664996d4\",\"summary\":\"duplicate charge credited\"},\"path\":\"/tickets\"}",
+   "run_id": "run-f2efe43e",
+   "seq": 23,
+   "step": "ticket",
+   "tool": "create_ticket",
+   "trace_id": "02aabef270fa7a3c8c55c1f883e4afbe"
+  },
+  {
+   "idempotency_key": "op-083da86b",
+   "op_id": "op-083da86b",
+   "request": "{\"body\":{\"case_id\":\"CASE-1042\",\"channel\":\"email\",\"template\":\"credit_issued\"},\"path\":\"/notifications\"}",
+   "run_id": "run-f2efe43e",
+   "seq": 27,
+   "step": "notify",
+   "tool": "send_notification",
+   "trace_id": "02aabef270fa7a3c8c55c1f883e4afbe"
+  }
+ ],
+ "result": [
+  {
+   "certainty": "EXECUTED",
+   "external_id": "cr_0002",
+   "op_id": "op-b3eb4571",
+   "response": "{\"amount\":42.5,\"charge_id\":\"ch_1042_b\",\"credit_id\":\"cr_0002\",\"status\":\"COMMITTED\"}",
+   "rule": "C3",
+   "run_id": "run-f2efe43e",
+   "seq": 21,
+   "step": "credit"
+  },
+  {
+   "certainty": "EXECUTED",
+   "external_id": "TCK-0001",
+   "op_id": "op-664996d4",
+   "response": "{\"status\":\"OPEN\",\"ticket_id\":\"TCK-0001\"}",
+   "rule": "C3",
+   "run_id": "run-f2efe43e",
+   "seq": 25,
+   "step": "ticket"
+  },
+  {
+   "certainty": "EXECUTED",
+   "external_id": "msg_0001",
+   "op_id": "op-083da86b",
+   "response": "{\"message_id\":\"msg_0001\",\"status\":\"ACCEPTED\"}",
+   "rule": "C3",
+   "run_id": "run-f2efe43e",
+   "seq": 29,
+   "step": "notify"
+  }
+ ],
+ "run": [
+  {
+   "arm": "A2",
+   "case_id": "CASE-1042",
+   "last_span": "5f6ba9ef9bf04832",
+   "last_worker": "w2",
+   "matrix_version": "2026-10-07.1",
+   "run_id": "run-f2efe43e",
+   "scenario": "S18",
+   "status": "COMPLETED",
+   "trace_id": "02aabef270fa7a3c8c55c1f883e4afbe",
+   "workers": 2
+  }
+ ]
+}

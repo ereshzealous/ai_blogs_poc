@@ -1,0 +1,108 @@
+{
+ "answer": {
+  "claims": {
+   "credit": "done",
+   "notify": "done",
+   "ticket": "done"
+  },
+  "confirmed": {
+   "credit": true,
+   "notify": true,
+   "ticket": true
+  },
+  "kind": "answer",
+  "seq": 29,
+  "status": "COMPLETED",
+  "step": "answer",
+  "text": "Status COMPLETED. Credit: done. Ticket: done. Notification: done.",
+  "worker": "w2"
+ },
+ "checks": {
+  "I1": {
+   "detail": "max credits per charge 1",
+   "result": "PASS"
+  },
+  "I10": {
+   "detail": "3 identities over 3 write steps",
+   "result": "PASS"
+  },
+  "I11": {
+   "detail": "0 canary hits in 3 files",
+   "result": "PASS"
+  },
+  "I12": {
+   "detail": "1 of 1 decisions recompute",
+   "result": "PASS"
+  },
+  "I2": {
+   "detail": "open tickets 1, notifications 1",
+   "result": "PASS"
+  },
+  "I3": {
+   "detail": "credit dispatches without a matching ALLOW 0, dispatches after DENY 0",
+   "result": "PASS"
+  },
+  "I4": {
+   "detail": "invalid proposals 0",
+   "result": "PASS"
+  },
+  "I5": {
+   "detail": "1 of 1 failures diagnosed",
+   "result": "PASS"
+  },
+  "I6": {
+   "detail": "0 unreconciled re-dispatches",
+   "result": "PASS"
+  },
+  "I7": {
+   "detail": "0 re-dispatches after an outcome was recorded",
+   "result": "PASS"
+  },
+  "I8": {
+   "detail": "1 trace(s), 2 worker(s), 1 of 1 resumed workers linked",
+   "result": "PASS"
+  },
+  "I9": {
+   "detail": "every claim matches the ledger",
+   "result": "PASS"
+  },
+  "OE1": {
+   "detail": "status and effects as the oracle states",
+   "result": "PASS"
+  },
+  "RE1": {
+   "detail": "recorded [['PROCESS_INTERRUPTED', 'EXECUTED', 'CONTINUE']] · oracle [['PROCESS_INTERRUPTED', 'EXECUTED', 'CONTINUE']]",
+   "result": "PASS"
+  },
+  "RE2": {
+   "detail": "COMPLETED · oracle COMPLETED",
+   "result": "PASS"
+  },
+  "RE3": {
+   "detail": "{'credits': 1, 'tickets': 1, 'notifications': 1} · oracle {'credits': 1, 'tickets': 1, 'notifications': 1}",
+   "result": "PASS"
+  },
+  "RE4": {
+   "detail": "0 of 1 definite certainties contradicted",
+   "result": "PASS"
+  },
+  "TR1": {
+   "detail": "retrieval@2 -> model@7 -> validate@9 -> authorize@11 -> dispatch@14",
+   "result": "PASS"
+  }
+ },
+ "decisions": [
+  [
+   "PROCESS_INTERRUPTED",
+   "EXECUTED",
+   "CONTINUE"
+  ]
+ ],
+ "effects": {
+  "credits": 1,
+  "credits_total": 1,
+  "notifications": 1,
+  "tickets": 1,
+  "tickets_created": 1
+ }
+}

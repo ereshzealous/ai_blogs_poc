@@ -1,0 +1,94 @@
+# R1 + R2 · proof manifest (Production AI Engineering Proof Contract v1, pae-proof/v1)
+
+schema = "pae-proof/v1"
+
+[article]
+id = "R1"                # the combined R1 + R2 article holds the R1 slot (series-start-here/learning-map.yaml)
+series = "Production AI Engineering"
+learning = "R1 + R2"
+title = "Evals, Observability & Production Reliability"
+headline = "“The agent failed” is not an operational signal."
+question = "Given the evidence a runtime has when an agent step fails, which recovery should it invoke, can that choice be deterministic, and can evals verify it?"
+thesis = ["Observability creates evidence.", "Classification turns evidence into operational state.", "Reliability chooses the next safe action.", "Evals verify that the behaviour and the recovery are still correct."]
+principle = "LLM behaviour may be probabilistic. Recovery semantics must not be."
+poc = "recovery_poc"
+scenario = "A support agent crediting a duplicate charge, opening a ticket and notifying the customer, through 25 preregistered faults and three recovery layers, against simulated providers with ledgers"
+one_line = "This POC injects 25 faults into one agent workflow and measures what three recovery layers (catch → retry, idempotent retry, evidence → certainty → matrix) do to the outside world, then breaks the third on purpose to test the evals."
+
+[run]
+runtime_mode = "deterministic scenarios (scripted model, real processes, sockets and SIGKILLs) plus a recorded real-model slice"
+replay_level = "EXACT"
+replay_contract = "every file of the run except volatile/ (wall times, pids), the recorded model tape and the recording manifest is byte-identical on a rerun from source; the slice is re-scored from its tape"
+
+[entrypoints]
+verify = "make verify"
+test = "make test"
+proof = "make pack"
+replay = "make replay"
+negative_control = "make demo-mutant X=X1 S=S11"
+lab = "make console"
+package = "make pack"
+make = "make help"
+
+[paths]
+published = "evidence/published.json"
+lab = "results/lab-console.html"
+medium = "medium/evals-reliability-medium.html"
+technical = "technical/evals-reliability-technical.html"
+readme = "README.md"
+verification = "evidence/verification/verification.json"
+contract = "vendor/kit5/evidence_kit/proof_contract/PROOF_STANDARD.md"
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised"
+items = [
+  { text = "Separate worker processes; {{A2.sigkills}} real SIGKILLs per runtime; a fail-stop and resume", check = "REL-R5-C01" },
+  { text = "HTTP over TCP to the providers, real socket timeouts, ECONNREFUSED on a closed port", check = "REL-R2-C02" },
+  { text = "A SQLite workflow journal with intent and result records", check = "REL-R3-C01" },
+  { text = "Provider-side idempotency windows, request deadlines and status queries", check = "REL-R1-C03" },
+  { text = "{{ms.calls}} calls to two local models through Ollama", check = "REL-R9-C01" },
+  { text = "A real-model end-to-end run: qwen3:8b deciding in every scenario x runtime, {{live.model.calls}} calls, taped and replayed", check = "REL-R11-C07" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a faithful local substitute for an external system"
+items = [
+  { text = "The credit, ticket and message providers, the CRM and the knowledge base, each with its own ledger" },
+  { text = "Provider time, advanced to expire idempotency keys (S18)" },
+  { text = "A scripted model for the fault scenarios, so that the recovery layer is the only variable" },
+]
+
+[[reality]]
+class = "RECORDED"
+meaning = "captured model traffic, reused for deterministic re-scoring"
+items = [{ text = "The real-model tape (recovery_poc/runs/<run>/model-slice/tape.jsonl)", check = "REL-R10-C01" }]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure introduced on purpose"
+items = [
+  { text = "25 preregistered faults (experiments/scenarios.toml)", check = "REL-R1-C01" },
+  { text = "8 mutants of the recovery layer; X1 is the negative control", check = "REL-R7-C01" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "design this POC does not exercise"
+items = [
+  { text = "Load, backoff and retry budgets under contention; online evals on live traffic; a production escalation workflow" },
+  { text = "Eventually consistent status queries; partial batch success; providers other than the four simulated" },
+]
+
+[[profile]]
+group = "RUNS"
+rows = [["Scenario runs", "{{runs.deterministic}} ({{scenarios}} scenarios × {{arms}} runtimes); {{mut.total}} × {{scenarios}} mutant runs", "REL-R1-C01"]]
+
+[[profile]]
+group = "REPLAY"
+rows = [["Level", "{{replay.level}}: {{replay.identical}} of {{replay.files}} files byte-identical, {{replay.different}} different", "REL-R10-C01"]]
+
+[[profile]]
+group = "NEGATIVE CONTROL"
+rows = [["Safeguard removed", "UNKNOWN → reconcile: duplicates in {{nc.dup_scenarios}} scenarios ({{nc.dup_list}}); {{nc.harness_completed}} runs completed", "REL-R7-C01"]]

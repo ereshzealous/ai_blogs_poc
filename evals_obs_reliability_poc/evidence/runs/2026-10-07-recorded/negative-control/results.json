@@ -1,0 +1,26 @@
+{
+ "checks": {
+  "REL-R7-C01": "EXPECTED_FAILURE"
+ },
+ "expected": "the invariant breaks wherever no idempotency key protects the write",
+ "experiment": "REL-R7",
+ "governed": {
+  "dup_scenarios": 0
+ },
+ "harness_completed": true,
+ "invariant": "no external effect is committed twice (I1, I2)",
+ "mutated": {
+  "dup_list": "S11, S12, S18, S19, S21",
+  "dup_scenarios": 5,
+  "masked_by_key_in_S09": 1
+ },
+ "observed": "Safeguard removed: no duplicate external effect (expected to break) → 5",
+ "result": "EXPECTED_FAILURE",
+ "safeguard_removed": "execution certainty: a timeout (C6) and an in-flight crash (C7) are treated as NOT_EXECUTED, so the runtime retries instead of reconciling",
+ "scenarios": {
+  "governed": "A2 (classified)",
+  "mutated": "A2 with mutant X1"
+ },
+ "schema": "pae-proof/v1",
+ "test_assertions": "25/25 runs completed"
+}

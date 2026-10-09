@@ -1,0 +1,14 @@
+{"kind":"worker.start","resumed":false,"seq":1,"step":"retrieve","trace_id":"e39063742266328a4bb3d9a07a06b5cf","worker":"w1"}
+{"documents":[{"id":"kb-duplicate-v3","score":3.8672,"version":3},{"id":"kb-cancellation","score":1.1258,"version":3},{"id":"kb-address-change","score":1.046,"version":4}],"kind":"retrieval","seq":2,"step":"retrieve","worker":"w1"}
+{"charges":2,"kind":"tool.read","seq":4,"step":"lookup","tool":"lookup_charges","worker":"w1"}
+{"kind":"model.call","model":"qwen3:8b","seq":6,"step":"decide","usage":{"input_tokens":748,"output_tokens":85},"worker":"w1"}
+{"arguments":{"amount":480.0,"charge_id":"ch_2077_b"},"citations":["kb-duplicate-v3"],"kind":"model.proposal","proposal":"8f6aee14243f","seq":7,"step":"decide","tool":"issue_credit","worker":"w1"}
+{"kind":"gate.validate","ok":true,"proposal":"8f6aee14243f","seq":9,"step":"validate","worker":"w1"}
+{"decision_id":"pd-6efe3625","effect":"DENY","kind":"policy.decision","policy_version":"support-credits@7","proposal":"8f6aee14243f","reason":"credits above 200.00 need a human approver (T3); the agent may not issue them","rule":"P1","seq":11,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"attempt":1,"error":"tool:issue_credit: credits above 200.00 need a human approver (T3); the agent may not issue them","failed":true,"kind":"failure","seq":12,"step":"authorize","worker":"w1"}
+{"decision_id":"pd-b9099f7c","effect":"DENY","kind":"policy.decision","policy_version":"support-credits@7","proposal":"8f6aee14243f","reason":"credits above 200.00 need a human approver (T3); the agent may not issue them","rule":"P1","seq":13,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"attempt":2,"error":"tool:issue_credit: credits above 200.00 need a human approver (T3); the agent may not issue them","failed":true,"kind":"failure","seq":14,"step":"authorize","worker":"w1"}
+{"decision_id":"pd-4a304167","effect":"DENY","kind":"policy.decision","policy_version":"support-credits@7","proposal":"8f6aee14243f","reason":"credits above 200.00 need a human approver (T3); the agent may not issue them","rule":"P1","seq":15,"step":"authorize","tool":"issue_credit","worker":"w1"}
+{"attempt":3,"error":"tool:issue_credit: credits above 200.00 need a human approver (T3); the agent may not issue them","failed":true,"kind":"failure","seq":16,"step":"authorize","worker":"w1"}
+{"kind":"run.stop","reason":"agent_error at authorize: tool:issue_credit: credits above 200.00 need a human approver (T3); the agent may not issue them","seq":17,"status":"FAILED","step":"-","worker":"w1"}
+{"claims":{"credit":"not_done","notify":"not_done","ticket":"not_done"},"confirmed":{"credit":false,"notify":false,"ticket":false},"kind":"answer","seq":18,"status":"FAILED","step":"answer","text":"Status FAILED. Credit: not done. Ticket: not done. Notification: not done.","worker":"w1"}

@@ -79,5 +79,3 @@ Two consequences:
   four-way verdict; and no measured number in a publication is typed by hand.
 
 `r3` is not a new model run. No model was called during the pass.
-
-**Public-copy note (2026-10-09).** In this public folder, the junit XML files and two monolith logs under `runs/2026-09-28-recorded/` (and its replay) have the author's home path rewritten to `<poc>/` or `~/` and the build machine's name to `<host>`, and three audit documents name the workspace and snapshot folders as `<workspace>` and `<snapshots>/`. Nothing else changed: no number, verdict, row id or timestamp. Every rewritten file is listed in `public-redactions.json` with the SHA-256 of the original and of this copy, and `python -m evidence_kit.public_copy verify` re-derives the copy from the original. The original bytes are unchanged in the author's workspace and in this repository's history.

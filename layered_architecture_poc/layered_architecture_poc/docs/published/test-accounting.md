@@ -15,5 +15,3 @@ Four numbers, reported separately so none can stand in for another. Cited run `2
 - The current suite grew by 90 case(s) since that run, mostly architecture and evidence tests added by the standardization pass. The article must cite the cited run's number where it describes the run.
 - 3 test(s) need a local model and are excluded from the current count.
 - The run verifier recomputed 12 of its 36 checks from raw evidence.
-
-**Public-copy note (2026-10-09).** In this public folder, the junit XML files and two monolith logs under `runs/2026-09-28-recorded/` (and its replay) have the author's home path rewritten to `<poc>/` or `~/` and the build machine's name to `<host>`, and three audit documents name the workspace and snapshot folders as `<workspace>` and `<snapshots>/`. Nothing else changed: no number, verdict, row id or timestamp. Every rewritten file is listed in `public-redactions.json` with the SHA-256 of the original and of this copy, and `python -m evidence_kit.public_copy verify` re-derives the copy from the original. The original bytes are unchanged in the author's workspace and in this repository's history.

@@ -1,0 +1,24 @@
+# One explicit authority policy for this simulated estate. Not a universal hierarchy.
+# Authority depends on the SOURCE and the CLAIM TYPE, not on the channel the information arrived through: a trusted
+# system-of-record query returned by a tool is authoritative; text from an unregistered tool is unverified.
+tiers:
+  system_of_record:  { rank: 1, label: authoritative, authoritative_for: [current_fact] }
+  managed_knowledge: { rank: 2, label: authoritative, authoritative_for: [procedure] }
+  verified_episode:  { rank: 3, label: advisory,      authoritative_for: [] }
+  conversation:      { rank: 4, label: contextual,    authoritative_for: [] }
+  unverified:        { rank: 5, label: unverified,    authoritative_for: [] }
+
+# trust.source_class -> tier
+source_classes:
+  system-of-record: system_of_record
+  source-owned: managed_knowledge
+  platform-verified: verified_episode
+  operator-note: verified_episode
+  user-asserted: conversation
+  unverified-external: unverified
+
+# Claim types memory may never answer: they have an authoritative store elsewhere.
+never_from_memory: [workflow_status]
+
+# Unverified content is not admitted until verified.
+admit_unverified: false

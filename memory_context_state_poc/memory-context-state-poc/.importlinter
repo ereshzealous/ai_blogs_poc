@@ -1,0 +1,48 @@
+[importlinter]
+root_packages =
+    governed_memory
+    s1_experiments
+include_external_packages = True
+
+[importlinter:contract:sut-blind-to-ground-truth]
+name = The system under test never imports the experiment package (which loads the ground-truth labels)
+type = forbidden
+source_modules =
+    governed_memory
+forbidden_modules =
+    s1_experiments
+
+[importlinter:contract:f2-only-through-the-adapter]
+name = Only governed_memory.platform imports F2 (agent_platform, traffic)
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    governed_memory.models
+    governed_memory.retrieval
+    governed_memory.context
+    governed_memory.write_policy
+    governed_memory.stores
+forbidden_modules =
+    agent_platform
+    traffic
+
+[importlinter:contract:admission-is-pure]
+name = Gates, ranking and assembly never touch storage, models or the network
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    governed_memory.models
+    governed_memory.retrieval
+    governed_memory.context
+forbidden_modules =
+    governed_memory.platform
+    governed_memory.stores
+    httpx
+    sqlite3
+
+[importlinter:contract:experiments-above-sut]
+name = Experiments sit above the system under test
+type = layers
+layers =
+    s1_experiments
+    governed_memory

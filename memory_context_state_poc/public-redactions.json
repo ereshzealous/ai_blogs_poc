@@ -1,0 +1,66 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "memory_context_state_poc",
+ "redactions": [
+  {
+   "file": "memory-context-state-poc/pyproject.toml",
+   "rules": [
+    {
+     "pattern": "(?<=\")\\.\\./\\.\\./layered_architecture/layered-agent-platform(?=\")",
+     "replacement": "../../layered_agent_platform",
+     "category": "local-path",
+     "reason": "workspace-relative dependency path; in the repository the library is the sibling folder layered_agent_platform",
+     "count": 1,
+     "lines": [
+      14
+     ]
+    }
+   ],
+   "original_sha256": "6c87337d910798405335818fd6bb9a6700e72ed02e4d3a7d026fb0c7095a2b30",
+   "public_sha256": "47c827230106f0823254bedbdcef12041925f1aa2b46ad65331aa9da740d5fa5",
+   "semantic_changes": false
+  },
+  {
+   "file": "memory-context-state-poc/runs/2026-09-18-recorded.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/memory_context_state/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      112
+     ]
+    }
+   ],
+   "original_sha256": "d9da0bd4d86a3022a6e10a28fd05202d630fc5d21cf27fee29409503d2b48e31",
+   "public_sha256": "e62edb04b84b35f96c0f482b21b6bf984292273c8f4202888520a8873cd9756f",
+   "semantic_changes": false
+  },
+  {
+   "file": "memory-context-state-poc/uv.lock",
+   "rules": [
+    {
+     "pattern": "(?<=\")\\.\\./\\.\\./layered_architecture/layered-agent-platform(?=\")",
+     "replacement": "../../layered_agent_platform",
+     "category": "local-path",
+     "reason": "workspace-relative dependency path; in the repository the library is the sibling folder layered_agent_platform",
+     "count": 2,
+     "lines": [
+      446,
+      555
+     ]
+    }
+   ],
+   "original_sha256": "ef50435859e766b17d1f315b3e7e6fbf6ed42255c3b4f24de3ec29d0ed9ce24f",
+   "public_sha256": "c2540d92733ee92916e4d47e4bf6cb8f5913090706b38b3e0855193052173975",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

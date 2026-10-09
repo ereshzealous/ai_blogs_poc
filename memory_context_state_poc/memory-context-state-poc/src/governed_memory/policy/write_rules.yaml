@@ -1,0 +1,30 @@
+# Memory write policy: remembering is a write operation, so it is a trust boundary.
+rules:
+  user_message:
+    persist: true
+    memory_type: user_assertion
+    source_class: user-asserted          # tier: conversation (contextual), never procedure
+    claim_type: instruction
+    scope: user_session                  # visible only to the same user and session
+    ttl_hours: 24
+  tool_output:
+    persist_if: registered_tool          # unregistered / unverified tool text is not remembered
+    memory_type: episode
+    source_class: platform-verified
+    claim_type: incident_history
+    scope: tenant_environment
+    ttl_days: 30
+  model_output:
+    persist_if: has_evidence_refs        # speculation without evidence is not remembered
+    memory_type: episode
+    source_class: platform-verified
+    claim_type: incident_history
+    scope: tenant_environment
+    ttl_days: 30
+  workflow_outcome:
+    persist_if: verified_with_evidence
+    memory_type: episode
+    source_class: platform-verified
+    claim_type: incident_history
+    scope: tenant_environment
+    ttl_days: 180

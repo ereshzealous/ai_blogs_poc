@@ -1,0 +1,142 @@
+{
+ "clock": "2026-09-18T09:00:00Z",
+ "seeds": [
+  7,
+  17,
+  27,
+  37,
+  47
+ ],
+ "model": "gpt-oss:20b",
+ "embedding_model": "nomic-embed-text",
+ "candidates_n": 20,
+ "evidence_budget_tokens": 450,
+ "sensitivity_k": 5,
+ "query_scope": {
+  "tenant": "acme",
+  "environment": "production",
+  "entities": [
+   "checkout-api",
+   "orders-db"
+  ],
+  "user": "alice",
+  "session": "ses-s1-current"
+ },
+ "incident_query": "INC-5208: checkout-api p95 latency rose from 180 ms to 2.4 s about 12 minutes after the v4.21 deploy, with orders-db connection pool saturation alerts. How should we remediate?",
+ "approval_query": "INC-5208 checkout-api rollback: has the approval been completed, and what is the next step?",
+ "workflows": {
+  "proposing": {
+   "id": "wf-s1-5208",
+   "incident_id": "INC-5208",
+   "status": "RUNNING",
+   "current_step": "propose_remediation",
+   "note": "No remediation has been proposed yet."
+  },
+  "waiting": {
+   "id": "wf-s1-5208",
+   "incident_id": "INC-5208",
+   "status": "WAITING_APPROVAL",
+   "current_step": "await_approval",
+   "note": "Proposed: source_control.rollback_release checkout-api to v4.20. Approval requested from role incident-commander; no decision recorded."
+  }
+ },
+ "conversation": [
+  {
+   "role": "user",
+   "content": "checkout is slow since the deploy this morning, what should we do?"
+  }
+ ],
+ "experiments": {
+  "M0": {
+   "title": "Combined hero scenario",
+   "inject": [
+    "expired",
+    "wrong_tenant",
+    "wrong_environment",
+    "contradicted",
+    "superseded",
+    "poisoned",
+    "workflow_claim"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M1": {
+   "title": "Correct, relevant memory",
+   "inject": [],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M2": {
+   "title": "Expired memory",
+   "inject": [
+    "expired"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M3": {
+   "title": "Wrong tenant",
+   "inject": [
+    "wrong_tenant"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M4": {
+   "title": "Wrong environment",
+   "inject": [
+    "wrong_environment"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M5": {
+   "title": "Episode vs authoritative runbook",
+   "inject": [
+    "contradicted"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M7": {
+   "title": "Superseded memory",
+   "inject": [
+    "superseded"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M8": {
+   "title": "More valid evidence than budget",
+   "inject": [
+    "over_budget"
+   ],
+   "query": "incident_query",
+   "workflow": "proposing",
+   "correct_action": "rollback_release_pipeline"
+  },
+  "M9": {
+   "title": "Workflow state is not memory",
+   "inject": [
+    "workflow_claim"
+   ],
+   "query": "approval_query",
+   "workflow": "waiting",
+   "correct_action": "wait_for_approval"
+  }
+ },
+ "m6": {
+  "write_session": "ses-s1-older",
+  "query": "incident_query",
+  "workflow": "proposing",
+  "correct_action": "rollback_release_pipeline"
+ }
+}

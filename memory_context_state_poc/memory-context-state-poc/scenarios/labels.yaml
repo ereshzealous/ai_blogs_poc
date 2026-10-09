@@ -1,0 +1,39 @@
+# Ground truth for scoring ONLY. The system under test (governed_memory) never reads this file; an import-linter
+# contract forbids governed_memory from importing s1_experiments, which is the only loader.
+#
+# valid:    allowed to influence a decision for tenant acme / production / checkout-api at the evaluation clock
+# relevant: about this incident's topic (checkout-api or orders-db latency after a deploy)
+# useful:   evidence a correct remediation decision should rest on
+# failure:  the injected failure class, or null
+kb-rb-chk-007:          { valid: true,  relevant: true,  useful: true,  failure: null }
+kb-rb-db-003:           { valid: true,  relevant: true,  useful: true,  failure: null }
+kb-rb-gen-012:          { valid: true,  relevant: true,  useful: true,  failure: null }
+kb-rb-pay-002:          { valid: true,  relevant: false, useful: false, failure: null }
+sor-release-v421:       { valid: true,  relevant: true,  useful: true,  failure: null }
+ep-inc-4917:            { valid: true,  relevant: true,  useful: true,  failure: null }
+ep-inc-4630:            { valid: true,  relevant: true,  useful: true,  failure: null }
+ep-inc-4411:            { valid: true,  relevant: true,  useful: true,  failure: null }
+ep-inc-4502:            { valid: true,  relevant: false, useful: false, failure: null }
+ep-inc-4380:            { valid: true,  relevant: false, useful: false, failure: null }
+ep-pref-alice:          { valid: true,  relevant: false, useful: false, failure: null }
+inj-expired-workaround: { valid: false, relevant: true,  useful: false, failure: expired }
+inj-globex-kubectl:     { valid: false, relevant: true,  useful: false, failure: wrong_tenant }
+inj-staging-restart:    { valid: false, relevant: true,  useful: false, failure: wrong_environment }
+inj-old-restart-episode: { valid: false, relevant: true, useful: false, failure: contradicted }
+inj-rollback-deploycli: { valid: false, relevant: true,  useful: false, failure: superseded }
+inj-rollback-pipeline:  { valid: true,  relevant: true,  useful: true,  failure: null }
+inj-poisoned-assertion: { valid: false, relevant: true,  useful: false, failure: poisoned }
+inj-approval-claim:     { valid: false, relevant: true,  useful: false, failure: workflow_claim }
+inj-m8-01: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-02: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-03: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-04: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-05: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-06: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-07: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-08: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-09: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-10: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-11: { valid: true, relevant: true, useful: false, failure: null }
+inj-m8-12: { valid: true, relevant: true, useful: false, failure: null }
+# M6 writer outputs are labelled by the event they came from (see write_events.yaml: label).

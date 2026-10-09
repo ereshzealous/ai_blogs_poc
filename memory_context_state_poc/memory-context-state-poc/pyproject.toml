@@ -1,0 +1,33 @@
+[project]
+name = "memory-context-state-poc"
+version = "0.1.0"
+description = "S1 POC: naive similarity memory vs governed memory (provenance, scope, expiry, authority) under injected memory failures"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "layered-agent-platform",   # F2, imported through governed_memory.platform only; never copied
+    "pyyaml>=6.0",
+]
+
+[tool.uv.sources]
+layered-agent-platform = { path = "../../layered_agent_platform", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "import-linter>=2.1"]
+
+[project.scripts]
+s1 = "s1_experiments.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/governed_memory", "src/s1_experiments"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -rA"
+asyncio_mode = "auto"
+filterwarnings = ["ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning"]

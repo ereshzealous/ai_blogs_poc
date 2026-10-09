@@ -1,0 +1,4473 @@
+{
+ "article": "O1",
+ "check_counts": {
+  "checks": 65,
+  "expected_failure": 1,
+  "experiments": 11,
+  "fail": 1,
+  "pass": 63
+ },
+ "checks": [
+  "OPS-E1-C01",
+  "OPS-E1-C02",
+  "OPS-E1-C03",
+  "OPS-E1-C04",
+  "OPS-E1-C05",
+  "OPS-E1-C06",
+  "OPS-E1-C07",
+  "OPS-E2-C01",
+  "OPS-E2-C02",
+  "OPS-E2-C03",
+  "OPS-E2-C04",
+  "OPS-E2-C05",
+  "OPS-E2-C06",
+  "OPS-E3-C01",
+  "OPS-E3-C02",
+  "OPS-E3-C03",
+  "OPS-E3-C04",
+  "OPS-E3-C05",
+  "OPS-E3-C06",
+  "OPS-E4-C01",
+  "OPS-E4-C02",
+  "OPS-E4-C03",
+  "OPS-E4-C04",
+  "OPS-E4-C05",
+  "OPS-E5-C01",
+  "OPS-E5-C02",
+  "OPS-E5-C03",
+  "OPS-E5-C04",
+  "OPS-E5-C05",
+  "OPS-E5-C06",
+  "OPS-E5-C07",
+  "OPS-E5-C08",
+  "OPS-E6-C01",
+  "OPS-E6-C02",
+  "OPS-E6-C03",
+  "OPS-E6-C04",
+  "OPS-E6-C05",
+  "OPS-E6-C06",
+  "OPS-E6-C07",
+  "OPS-E7-C01",
+  "OPS-E7-C02",
+  "OPS-E7-C03",
+  "OPS-E7-C04",
+  "OPS-E7-C05",
+  "OPS-E7-C06",
+  "OPS-E7-C07",
+  "OPS-E7-C08",
+  "OPS-E7-C09",
+  "OPS-E8-C01",
+  "OPS-E8-C02",
+  "OPS-E8-C03",
+  "OPS-E8-C04",
+  "OPS-E8-C05",
+  "OPS-E9-C01",
+  "OPS-E9-C02",
+  "OPS-E9-C03",
+  "OPS-E9-C04",
+  "OPS-E10-C01",
+  "OPS-E10-C02",
+  "OPS-E10-C03",
+  "OPS-E10-C04",
+  "OPS-E10-C05",
+  "OPS-E10-C06",
+  "OPS-E10-C07",
+  "OPS-NC-C01"
+ ],
+ "claims": [
+  {
+   "article": [
+    "A Queue Is Not Capacity",
+    "§7 Admission control comes before execution"
+   ],
+   "checks": [
+    "OPS-E1-C01",
+    "OPS-E1-C02",
+    "OPS-E1-C03",
+    "OPS-E1-C04",
+    "OPS-E1-C05",
+    "OPS-E1-C06",
+    "OPS-E1-C07"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/stats.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/stats.json"
+   ],
+   "experiments": [
+    "OPS-E1"
+   ],
+   "facts": [
+    "e1.naive.max_work_in_system",
+    "e1.controlled.max_work_in_system",
+    "e1.naive.retry_amplification",
+    "e1.controlled.goodput_pct",
+    "e1.naive.goodput_pct",
+    "e1.controlled.refused_pct"
+   ],
+   "id": "OPS-C01",
+   "statement": "Capacity should be enforced before unlimited work enters the runtime: bounding work in system kept the surge out of the runtime, and open admission turned timeouts into retries and an unbounded queue.",
+   "statuses": {
+    "OPS-E1-C01": "PASS",
+    "OPS-E1-C02": "PASS",
+    "OPS-E1-C03": "PASS",
+    "OPS-E1-C04": "PASS",
+    "OPS-E1-C05": "PASS",
+    "OPS-E1-C06": "PASS",
+    "OPS-E1-C07": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "The Noisy Neighbour Is Your Own Finance Team",
+    "§8 Orchestration owns concurrency, queues and backpressure"
+   ],
+   "checks": [
+    "OPS-E2-C01",
+    "OPS-E2-C02",
+    "OPS-E2-C03",
+    "OPS-E2-C04",
+    "OPS-E2-C05",
+    "OPS-E2-C06"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+    "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/stats.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl"
+   ],
+   "experiments": [
+    "OPS-E2"
+   ],
+   "facts": [
+    "e2.naive.support.goodput_pct",
+    "e2.controlled.support.goodput_pct",
+    "e2.controlled.finance.makespan_s",
+    "e2.naive.finance.makespan_s"
+   ],
+   "id": "OPS-C02",
+   "statement": "Multi-tenant agent platforms need tenant-aware resource controls, not only global limits: under one global FIFO the finance run starved support; with weighted fair scheduling and a bulkhead, support was served and the batch still completed, later.",
+   "statuses": {
+    "OPS-E2-C01": "PASS",
+    "OPS-E2-C02": "PASS",
+    "OPS-E2-C03": "PASS",
+    "OPS-E2-C04": "PASS",
+    "OPS-E2-C05": "PASS",
+    "OPS-E2-C06": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "The Noisy Neighbour Is Your Own Finance Team",
+    "§8 Orchestration owns concurrency, queues and backpressure"
+   ],
+   "checks": [
+    "OPS-E3-C01",
+    "OPS-E3-C02",
+    "OPS-E3-C03",
+    "OPS-E3-C04",
+    "OPS-E3-C05",
+    "OPS-E3-C06"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/stats.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/stats.json"
+   ],
+   "experiments": [
+    "OPS-E3"
+   ],
+   "facts": [
+    "e3.naive.max_active",
+    "e3.controlled.max_active",
+    "e3.naive.goodput_pct",
+    "e3.controlled.goodput_pct",
+    "e3.naive.wasted_cu_pct",
+    "e3.controlled.wasted_cu_pct"
+   ],
+   "id": "OPS-C03",
+   "statement": "Concurrency must be bounded independently of incoming request volume: unbounded concurrency slowed every workflow and spent most of its cost on attempts nobody was waiting for; slots, a bounded queue and deadline-aware dequeue kept goodput up.",
+   "statuses": {
+    "OPS-E3-C01": "PASS",
+    "OPS-E3-C02": "PASS",
+    "OPS-E3-C03": "PASS",
+    "OPS-E3-C04": "PASS",
+    "OPS-E3-C05": "PASS",
+    "OPS-E3-C06": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "Unlimited Reasoning Is Not an Architecture",
+    "§6 Give every workflow a resource envelope",
+    "§31 The cost of control"
+   ],
+   "bound_checks": [
+    "OPS-E4-C05"
+   ],
+   "checks": [
+    "OPS-E4-C01",
+    "OPS-E4-C02",
+    "OPS-E4-C03",
+    "OPS-E4-C04"
+   ],
+   "class": "QUALIFIED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl"
+   ],
+   "experiments": [
+    "OPS-E4"
+   ],
+   "facts": [
+    "e4.none.runaway.cost_cu",
+    "e4.envelope.runaway.cost_cu",
+    "e4.envelope.legit_cut",
+    "e4.per-agent.coord.model_calls",
+    "e4.envelope.coord.model_calls"
+   ],
+   "id": "OPS-C04",
+   "statement": "Production agents need explicit execution budgets, propagated to child workflows: the envelope stopped a runaway loop and bounded a coordinator with sub-agents, where per-agent budgets did not; calibrated on a development sample, it also stopped some legitimate workflows of the blind sample.",
+   "statuses": {
+    "OPS-E4-C01": "PASS",
+    "OPS-E4-C02": "PASS",
+    "OPS-E4-C03": "PASS",
+    "OPS-E4-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "The Cheapest Model Is Not Always an Eligible One",
+    "§9 Model services own routing economics"
+   ],
+   "checks": [
+    "OPS-E5-C01",
+    "OPS-E5-C02",
+    "OPS-E5-C03",
+    "OPS-E5-C04",
+    "OPS-E5-C05",
+    "OPS-E5-C06",
+    "OPS-E5-C07",
+    "OPS-E5-C08"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/facts.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+   ],
+   "experiments": [
+    "OPS-E5"
+   ],
+   "facts": [
+    "e5.routed.cost_per_success",
+    "e5.all-large.cost_per_success",
+    "e5.all-small.cost_per_success",
+    "e5.all-small.capability_violations",
+    "e5.routed-any-fallback.data_violations"
+   ],
+   "id": "OPS-C05",
+   "note": "Synthetic eligibility contract and success table: no statement about the quality of any real model.",
+   "statement": "Model routing should optimise within a declared quality/policy contract, not cost alone: inside the contract, routing cost less per successful workflow than all-large with no violation, deferring explicitly during a throttle; optimising cost alone (all-small, any fallback) left the contract.",
+   "statuses": {
+    "OPS-E5-C01": "PASS",
+    "OPS-E5-C02": "PASS",
+    "OPS-E5-C03": "PASS",
+    "OPS-E5-C04": "PASS",
+    "OPS-E5-C05": "PASS",
+    "OPS-E5-C06": "PASS",
+    "OPS-E5-C07": "PASS",
+    "OPS-E5-C08": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "Context and Tools Have Their Own Limits",
+    "§10 Context and knowledge have operational cost"
+   ],
+   "checks": [
+    "OPS-E6-C01",
+    "OPS-E6-C02",
+    "OPS-E6-C03",
+    "OPS-E6-C04",
+    "OPS-E6-C05",
+    "OPS-E6-C06",
+    "OPS-E6-C07"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl"
+   ],
+   "experiments": [
+    "OPS-E6"
+   ],
+   "facts": [
+    "e6.naive.context_tokens_mean",
+    "e6.bounded.context_tokens_mean",
+    "e6.bounded.missing_required",
+    "e6.cache.query-text.cross_principal",
+    "e6.cache.query-text.stale"
+   ],
+   "id": "OPS-C06",
+   "statement": "Context and retrieval need resource controls like model execution: bounded retrieval kept every declared required evidence id with far fewer tokens, and a cache keyed by tenant, principal scope and versions hit without leaking or going stale, unlike a query-text cache.",
+   "statuses": {
+    "OPS-E6-C01": "PASS",
+    "OPS-E6-C02": "PASS",
+    "OPS-E6-C03": "PASS",
+    "OPS-E6-C04": "PASS",
+    "OPS-E6-C05": "PASS",
+    "OPS-E6-C06": "PASS",
+    "OPS-E6-C07": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "Context and Tools Have Their Own Limits",
+    "§11 Tools have a different scaling limit"
+   ],
+   "checks": [
+    "OPS-E7-C01",
+    "OPS-E7-C02",
+    "OPS-E7-C03",
+    "OPS-E7-C04",
+    "OPS-E7-C05",
+    "OPS-E7-C06",
+    "OPS-E7-C07",
+    "OPS-E7-C08",
+    "OPS-E7-C09"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+    "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json"
+   ],
+   "experiments": [
+    "OPS-E7"
+   ],
+   "facts": [
+    "e7.naive.max_inflight",
+    "e7.controlled.max_inflight",
+    "e7.naive.http_503",
+    "e7.controlled.support_goodput_pct",
+    "e7.composed.support_goodput_pct"
+   ],
+   "id": "OPS-C07",
+   "statement": "Tool capacity must be governed independently of model capacity: the gateway held the payments API inside its capacity with no 503s and far fewer attempts; alone on a FIFO queue it moved the wait into the runtime's slots, and composed with fair scheduling it served support too.",
+   "statuses": {
+    "OPS-E7-C01": "PASS",
+    "OPS-E7-C02": "PASS",
+    "OPS-E7-C03": "PASS",
+    "OPS-E7-C04": "PASS",
+    "OPS-E7-C05": "PASS",
+    "OPS-E7-C06": "PASS",
+    "OPS-E7-C07": "PASS",
+    "OPS-E7-C08": "PASS",
+    "OPS-E7-C09": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "Then Someone Changed the Prompt",
+    "§20 The agent release unit"
+   ],
+   "checks": [
+    "OPS-E8-C01",
+    "OPS-E8-C02",
+    "OPS-E8-C03",
+    "OPS-E8-C04",
+    "OPS-E8-C05"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/**/rows*.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/*.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl"
+   ],
+   "experiments": [
+    "OPS-E8"
+   ],
+   "facts": [
+    "e8.distinct_release_ids",
+    "e8.distinct_image_digests",
+    "e8.R42-a.tool_calls_delta_pct"
+   ],
+   "id": "OPS-C08",
+   "statement": "Behaviourally relevant non-code changes must create a distinguishable agent release: six single-artifact changes produced six new release ids under one unchanged image digest, and every telemetry row is attributable to its release. (The behaviour a tool description causes is declared in the scripted agent.)",
+   "statuses": {
+    "OPS-E8-C01": "PASS",
+    "OPS-E8-C02": "PASS",
+    "OPS-E8-C03": "PASS",
+    "OPS-E8-C04": "PASS",
+    "OPS-E8-C05": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "Gates Are Binary. Averages Aren't.",
+    "§22 Policy and invariant gates"
+   ],
+   "checks": [
+    "OPS-E9-C01",
+    "OPS-E9-C02",
+    "OPS-E9-C03",
+    "OPS-E9-C04"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/facts.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json + registry.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json"
+   ],
+   "experiments": [
+    "OPS-E9"
+   ],
+   "facts": [
+    "e9.blocked",
+    "e9.R42-b.task_success",
+    "e9.blocked_weight_granted"
+   ],
+   "id": "OPS-C09",
+   "statement": "Behavioural releases should pass machine-checkable gates before receiving production traffic: three candidates with good averages and one broken invariant each were blocked and granted no traffic.",
+   "statuses": {
+    "OPS-E9-C01": "PASS",
+    "OPS-E9-C02": "PASS",
+    "OPS-E9-C03": "PASS",
+    "OPS-E9-C04": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "HTTP 200 Is Not Health",
+    "§22 Canary",
+    "§22 Roll back"
+   ],
+   "checks": [
+    "OPS-E10-C01",
+    "OPS-E10-C02",
+    "OPS-E10-C03",
+    "OPS-E10-C04",
+    "OPS-E10-C05",
+    "OPS-E10-C06",
+    "OPS-E10-C07"
+   ],
+   "class": "SUPPORTED",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/rows.jsonl",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+    "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json"
+   ],
+   "experiments": [
+    "OPS-E10"
+   ],
+   "facts": [
+    "e10.R42-a.mix-adjusted.decision",
+    "e10.R42-a.mix-adjusted.last.tool_calls_pct",
+    "e10.R42-a.mix-adjusted.effects_before_decision",
+    "e10.R42-e.raw.decision"
+   ],
+   "id": "OPS-C10",
+   "statement": "Agent releases require behavioural canaries and rollback on operational evidence, not process health: a release that passed the offline gate and kept its error rate rolled back on tool-call amplification; a clean one was promoted; a raw-average comparison would have rolled the clean one back; the rollback did not undo replies already sent.",
+   "statuses": {
+    "OPS-E10-C01": "PASS",
+    "OPS-E10-C02": "PASS",
+    "OPS-E10-C03": "PASS",
+    "OPS-E10-C04": "PASS",
+    "OPS-E10-C05": "PASS",
+    "OPS-E10-C06": "PASS",
+    "OPS-E10-C07": "PASS"
+   },
+   "type": "measured",
+   "verdict": "supported"
+  },
+  {
+   "article": [
+    "We Built the Overload on Purpose",
+    "§25 Method"
+   ],
+   "checks": [
+    "OPS-NC-C01"
+   ],
+   "class": "NEGATIVE CONTROL",
+   "evidence": [
+    "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+    "ops_poc/runs/2026-10-08-recorded/negative-control/stats.json"
+   ],
+   "experiments": [
+    "OPS-NC"
+   ],
+   "facts": [
+    "nc.max_work_in_system"
+   ],
+   "id": "OPS-C11",
+   "statement": "The proof can fail: with the admission bound removed, the E1 invariant check breaks.",
+   "statuses": {
+    "OPS-NC-C01": "EXPECTED_FAILURE"
+   },
+   "type": "control",
+   "verdict": "control"
+  },
+  {
+   "article": [
+    "§34 Anti-patterns"
+   ],
+   "checks": [],
+   "class": "ARGUED",
+   "evidence": [],
+   "experiments": [],
+   "id": "OPS-C12",
+   "rests_on": [
+    "research/sources.md: k8s-hpa, sre-overload, aws-queue-backlogs, aws-load-shedding",
+    "OPS-E1 and OPS-E7 as illustrations, not tests of autoscaling"
+   ],
+   "statement": "Autoscaling helps but does not remove provider quotas, downstream limits, budgets or tenant fairness; a queue absorbs imbalance, it does not create capacity.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  },
+  {
+   "article": [
+    "§22 Roll back"
+   ],
+   "checks": [],
+   "class": "ARGUED",
+   "evidence": [],
+   "experiments": [],
+   "id": "OPS-C13",
+   "rests_on": [
+    "research/sources.md: aws-rollback-safety, sre-release-engineering, flagger-strategies, istio-mirroring",
+    "OPS-E10-C06 shows only the side-effect half"
+   ],
+   "statement": "Rollback across a stateful agent platform is harder than rolling back a stateless binary: indexes, memory, migrations and external side effects need compatible versions or reconciliation.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  },
+  {
+   "article": [
+    "What This POC Does Not Prove",
+    "§39 Limitations"
+   ],
+   "checks": [],
+   "class": "NOT TESTED",
+   "evidence": [],
+   "experiments": [],
+   "id": "OPS-C14",
+   "rests_on": [
+    "ops_poc/config/*.toml (declared parameters)",
+    "proof/manifest.toml [[reality]] ARCHITECTURE"
+   ],
+   "statement": "Real provider latency, quotas and prices; real model quality; human approval capacity; shadow traffic; real tool limits. Every number in this POC is a simulation unit.",
+   "statuses": {},
+   "type": "limitation",
+   "verdict": "limitation"
+  }
+ ],
+ "contract": "Production AI Engineering Proof Contract v1",
+ "experiment_results": {
+  "expected_failure": 1,
+  "fail": 1,
+  "pass": 9
+ },
+ "experiments": [
+  {
+   "checks": [
+    "OPS-E1-C01",
+    "OPS-E1-C02",
+    "OPS-E1-C03",
+    "OPS-E1-C04",
+    "OPS-E1-C05",
+    "OPS-E1-C06",
+    "OPS-E1-C07"
+   ],
+   "claim": "Capacity should be enforced before unlimited work enters the runtime.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 7
+   },
+   "finding": "PASS",
+   "hypothesis": "H1 (preregistration.toml)",
+   "id": "OPS-E1",
+   "invariant": "work in system <= slots + queue bound",
+   "limitations": [
+    "Simulated clients and providers; the bound protects the runtime, it does not create capacity: refused requests are the cost"
+   ],
+   "question": "When offered demand exceeds capacity, does bounding work in system keep the overload out of the runtime?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "Black Friday surge: support requests at a multiple of capacity for 120 s, then the evening; same clients in both arms (they give up after 20 s and retry)",
+   "title": "Admission before execution",
+   "variable": "admission: open (unbounded queue) vs bounded work in system with a capacity error and Retry-After"
+  },
+  {
+   "checks": [
+    "OPS-E2-C01",
+    "OPS-E2-C02",
+    "OPS-E2-C03",
+    "OPS-E2-C04",
+    "OPS-E2-C05",
+    "OPS-E2-C06"
+   ],
+   "claim": "Multi-tenant agent platforms need tenant-aware resource controls, not only global limits.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 6
+   },
+   "finding": "PASS",
+   "hypothesis": "H2",
+   "id": "OPS-E2",
+   "invariant": "finance never holds more than its bulkhead",
+   "limitations": [
+    "Two tenants and one shared resource (slots); real platforms share more (providers, tools, caches)"
+   ],
+   "question": "When one tenant floods the shared platform, do global limits alone protect the other tenant?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "support at a steady rate; finance submits its reconciliation run in ten seconds; same 32 slots",
+   "title": "Tenant fairness: the noisy neighbour is your own finance team",
+   "variable": "scheduling: one global FIFO vs weighted fair scheduling with a finance bulkhead"
+  },
+  {
+   "checks": [
+    "OPS-E3-C01",
+    "OPS-E3-C02",
+    "OPS-E3-C03",
+    "OPS-E3-C04",
+    "OPS-E3-C05",
+    "OPS-E3-C06"
+   ],
+   "claim": "Concurrency must be bounded independently of incoming request volume.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 6
+   },
+   "finding": "PASS",
+   "hypothesis": "H3",
+   "id": "OPS-E3",
+   "invariant": "running attempts <= slots at every event; no attempt starts after its client's deadline",
+   "limitations": [
+    "Contention is a declared processor-sharing model, not a measured runtime"
+   ],
+   "question": "Does bounding concurrency, independently of demand, protect the work the runtime does?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "overload at 1.5x capacity for 60 s, then light load; same clients",
+   "title": "Bounded concurrency, backpressure and deadlines",
+   "variable": "unbounded concurrency vs slots + bounded queue + deadline-aware dequeue + cancellation"
+  },
+  {
+   "checks": [
+    "OPS-E4-C01",
+    "OPS-E4-C02",
+    "OPS-E4-C03",
+    "OPS-E4-C04",
+    "OPS-E4-C05"
+   ],
+   "claim": "Production agents need explicit execution budgets, propagated to child workflows.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 1,
+    "PASS": 4
+   },
+   "finding": "LIMITATION OBSERVED",
+   "hypothesis": "H4",
+   "id": "OPS-E4",
+   "invariant": "the runaway stops on its envelope; the coordinator's total stays within its envelope",
+   "limitations": [
+    "The envelope is calibrated on a 350-workflow development sample (max x 1.25); a larger sample or explicit retry allowance would cut fewer legitimate workflows"
+   ],
+   "question": "Does an explicit envelope stop runaway execution, including across sub-agents, and what does it cut?",
+   "result": "FAIL",
+   "role": "core",
+   "setup": "a refund whose payment never settles; a coordinator with three sub-agents, one stuck, re-delegated; 350 calibrated normal workflows",
+   "title": "Workflow resource envelopes, propagated to children",
+   "variable": "budgets: none vs per-agent vs a propagated envelope"
+  },
+  {
+   "checks": [
+    "OPS-E5-C01",
+    "OPS-E5-C02",
+    "OPS-E5-C03",
+    "OPS-E5-C04",
+    "OPS-E5-C05",
+    "OPS-E5-C06",
+    "OPS-E5-C07",
+    "OPS-E5-C08"
+   ],
+   "claim": "Model routing should optimise within a quality/policy boundary, not optimise cost alone.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 8
+   },
+   "finding": "PASS",
+   "hypothesis": "H5",
+   "id": "OPS-E5",
+   "invariant": "routed never uses an ineligible profile",
+   "limitations": [
+    "The success table is declared, not measured: this tests routing within the contract, not any model's quality",
+    "A validator that catches every wrong answer is assumed; uncaught wrong answers would cost more than their tokens"
+   ],
+   "question": "Can routing reduce modelled cost without leaving a declared capability and data-policy contract, including during a provider throttle?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "800 workflows (support mix + finance), the EU private deployment throttled for 30 s",
+   "title": "Routing inside an eligibility contract",
+   "variable": "all-large vs all-small vs routed vs routed with any fallback"
+  },
+  {
+   "checks": [
+    "OPS-E6-C01",
+    "OPS-E6-C02",
+    "OPS-E6-C03",
+    "OPS-E6-C04",
+    "OPS-E6-C05",
+    "OPS-E6-C06",
+    "OPS-E6-C07"
+   ],
+   "claim": "Context and retrieval need resource controls just like model execution.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 7
+   },
+   "finding": "PASS",
+   "hypothesis": "H6",
+   "id": "OPS-E6",
+   "invariant": "the scoped cache never serves across principals or versions",
+   "limitations": [
+    "Relevance scores are a frozen fixture, not a retriever; required ids make the check mechanical, not a measure of retrieval quality"
+   ],
+   "question": "Can retrieval be bounded without losing the evidence a query needs, and can a cache help without leaking or going stale?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "12 fixture queries with declared required evidence ids; a 24-lookup cache sequence with a knowledge and a policy version change",
+   "title": "Context budgets and cache scope",
+   "variable": "naive vs bounded retrieval; query-text vs scoped cache key"
+  },
+  {
+   "checks": [
+    "OPS-E7-C01",
+    "OPS-E7-C02",
+    "OPS-E7-C03",
+    "OPS-E7-C04",
+    "OPS-E7-C05",
+    "OPS-E7-C06",
+    "OPS-E7-C07",
+    "OPS-E7-C08",
+    "OPS-E7-C09"
+   ],
+   "claim": "Tool capacity must be governed independently of model capacity.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 9
+   },
+   "finding": "PASS",
+   "hypothesis": "H7",
+   "id": "OPS-E7",
+   "invariant": "with the gateway, calls in flight <= the API's capacity and no 503",
+   "limitations": [
+    "Read-only tool: idempotency of writes (R2) is not exercised",
+    "One constrained downstream"
+   ],
+   "question": "Does governing a tool's capacity independently of the runtime protect the downstream, and what else does it need?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "payments-status API (capacity 8, connection limit 16, 20 rps) behind a 64-slot runtime; a finance run and support traffic",
+   "title": "A tool gateway in front of a constrained downstream",
+   "variable": "direct calls with immediate retries vs the gateway vs the gateway composed with fair scheduling"
+  },
+  {
+   "checks": [
+    "OPS-E8-C01",
+    "OPS-E8-C02",
+    "OPS-E8-C03",
+    "OPS-E8-C04",
+    "OPS-E8-C05"
+   ],
+   "claim": "Behaviourally relevant non-code changes must create a distinguishable agent release.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 5
+   },
+   "finding": "PASS",
+   "hypothesis": "H8",
+   "id": "OPS-E8",
+   "invariant": "one image digest; seven release ids; one artifact per diff; every row attributable",
+   "limitations": [
+    "The behaviour a change causes is declared in the scripted agent: the size of R42-a's effect is a modelling assumption, not a measurement; what is tested is release identity, attribution, and (E9, E10) whether gates and canaries notice"
+   ],
+   "question": "If no code changes, does the platform still see a new release?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "R41 and six candidates, each changing one artifact; the same 300-workflow Cyber Monday sample replayed under each",
+   "title": "The behavioural release",
+   "variable": "one artifact per candidate"
+  },
+  {
+   "checks": [
+    "OPS-E9-C01",
+    "OPS-E9-C02",
+    "OPS-E9-C03",
+    "OPS-E9-C04"
+   ],
+   "claim": "Behavioural releases should pass machine-checkable gates before receiving production traffic.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 4
+   },
+   "finding": "PASS",
+   "hypothesis": "H9",
+   "id": "OPS-E9",
+   "invariant": "a blocked candidate gets no traffic",
+   "limitations": [
+    "Task success comes from the declared outcome model; tool-call volume is not a gate criterion (an operational property, left to the canary)"
+   ],
+   "question": "Do machine-checkable gates stop a release whose averages look fine but which breaks an invariant?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "a 40-case offline suite (historical, adversarial, synthetic) under R41 and five candidates",
+   "title": "Offline evals and invariant gates",
+   "variable": "the candidate release"
+  },
+  {
+   "checks": [
+    "OPS-E10-C01",
+    "OPS-E10-C02",
+    "OPS-E10-C03",
+    "OPS-E10-C04",
+    "OPS-E10-C05",
+    "OPS-E10-C06",
+    "OPS-E10-C07"
+   ],
+   "claim": "Agent releases require behavioural canaries and rollback based on operational evidence, not merely process health.",
+   "counts": {
+    "EXPECTED_FAILURE": 0,
+    "FAIL": 0,
+    "PASS": 7
+   },
+   "finding": "PASS",
+   "hypothesis": "H10",
+   "id": "OPS-E10",
+   "invariant": "after a rollback, no request reaches the candidate",
+   "limitations": [
+    "Canary effects are simulated replies; write-capable canaries need scoped or sandboxed execution or reconciliation (R2)"
+   ],
+   "question": "Does a canary that watches behaviour, not status codes, catch a release the offline gate passed, and leave a clean one alone?",
+   "result": "PASS",
+   "role": "core",
+   "setup": "Cyber Monday support traffic; 10 / 50 / 100 % stages; windows of 60 candidate workflows; frozen guardrails",
+   "title": "A behavioural canary, promotion and rollback",
+   "variable": "the candidate (R42-a, R42-e) and the comparison (mix-adjusted, raw)"
+  },
+  {
+   "checks": [
+    "OPS-NC-C01"
+   ],
+   "claim": "The E1 invariant check detects a missing admission bound.",
+   "counts": {
+    "EXPECTED_FAILURE": 1,
+    "FAIL": 0,
+    "PASS": 0
+   },
+   "finding": "EXPECTED FAILURE",
+   "hypothesis": "NC",
+   "id": "OPS-NC",
+   "invariant": "work in system <= slots + queue bound (expected to break)",
+   "limitations": [],
+   "question": "Can the proof fail? Remove the admission bound and the E1 invariant must break.",
+   "result": "EXPECTED_FAILURE",
+   "role": "negative-control",
+   "setup": "E1's controlled arm, identical except that the admission bound is removed",
+   "title": "Negative control: admission removed",
+   "variable": "the admission bound"
+  }
+ ],
+ "facts": {
+  "amp.coord.component_sum_s": {
+   "derivation": "sum of every component's time, children included",
+   "display": "29",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 29.0
+  },
+  "amp.coord.cost_cu": {
+   "display": "129.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 129.2
+  },
+  "amp.coord.input_tokens": {
+   "display": "26,733",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 26733
+  },
+  "amp.coord.model_calls": {
+   "derivation": "a dispute investigation: coordinator + three sub-agents",
+   "display": "8.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 8.4
+  },
+  "amp.coord.wall_s": {
+   "derivation": "end-to-end: children run concurrently",
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 16.0
+  },
+  "amp.cost_cu": {
+   "display": "15.08",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 15.08
+  },
+  "amp.cost_share.model_pct": {
+   "derivation": "model share of workflow cost",
+   "display": "99.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 99.1
+  },
+  "amp.cost_share.platform_pct": {
+   "derivation": "platform share of workflow cost",
+   "display": "0.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 0.3
+  },
+  "amp.cost_share.retrieval_pct": {
+   "derivation": "retrieval share of workflow cost",
+   "display": "0.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 0.3
+  },
+  "amp.cost_share.tool_pct": {
+   "derivation": "tool share of workflow cost",
+   "display": "0.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 0.4
+  },
+  "amp.input_tokens": {
+   "display": "8,580",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 8580
+  },
+  "amp.model_calls": {
+   "display": "2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 2.0
+  },
+  "amp.ops": {
+   "derivation": "model + retrieval + tool operations per external request",
+   "display": "4.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 4.5
+  },
+  "amp.output_tokens": {
+   "display": "302",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 302
+  },
+  "amp.requests": {
+   "derivation": "Cyber Monday sample under R41, no load",
+   "display": "300",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 300
+  },
+  "amp.retrieval_calls": {
+   "derivation": "source queries per request",
+   "display": "1.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 1.4
+  },
+  "amp.single.cost_cu": {
+   "display": "76",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 76.0
+  },
+  "amp.single.model_calls": {
+   "derivation": "a single-agent refund dispute",
+   "display": "3.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 3.1
+  },
+  "amp.steps": {
+   "derivation": "workflow steps per external request",
+   "display": "4.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 4.2
+  },
+  "amp.tool_calls": {
+   "display": "1.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 1.1
+  },
+  "cfg.batch_deadline_s": {
+   "display": "900",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 900
+  },
+  "cfg.canary_stages": {
+   "display": "10 / 50 / 100",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": "10 / 50 / 100"
+  },
+  "cfg.canary_window": {
+   "display": "60",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 60
+  },
+  "cfg.capacity": {
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 32
+  },
+  "cfg.client_timeout_s": {
+   "display": "20",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 20
+  },
+  "cfg.e1_surge_rate": {
+   "display": "20",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 20.0
+  },
+  "cfg.e1_surge_s": {
+   "display": "120",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 120
+  },
+  "cfg.e2_finance_items": {
+   "display": "3,000",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 3000
+  },
+  "cfg.e2_support_rate": {
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 5.0
+  },
+  "cfg.e7_finance_items": {
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 1500
+  },
+  "cfg.e7_slots": {
+   "display": "64",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 64
+  },
+  "cfg.finance_bulkhead": {
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 16
+  },
+  "cfg.gate.cost_regression_max_pct": {
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 10
+  },
+  "cfg.gate.invariant_violations_max": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 0
+  },
+  "cfg.gate.p95_regression_max_pct": {
+   "display": "15",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 15
+  },
+  "cfg.gate.task_success_min": {
+   "display": "0.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 0.9
+  },
+  "cfg.gate.tool_selection_min": {
+   "display": "0.95",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 0.95
+  },
+  "cfg.guardrail.cost_per_success_delta_max_pct": {
+   "display": "15",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 15
+  },
+  "cfg.guardrail.error_rate_delta_max_pp": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 1.0
+  },
+  "cfg.guardrail.p95_delta_max_pct": {
+   "display": "20",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 20
+  },
+  "cfg.guardrail.success_delta_min_pp": {
+   "display": "-2",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": -2.0
+  },
+  "cfg.guardrail.tool_calls_delta_max_pct": {
+   "display": "25",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 25
+  },
+  "cfg.guardrail.violations_max": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/preregistration.toml",
+   "value": 0
+  },
+  "cfg.harness_guard_steps": {
+   "display": "400",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 400
+  },
+  "cfg.naive_retries": {
+   "display": "2",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 2
+  },
+  "cfg.payments_capacity": {
+   "display": "8",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+   "value": 8
+  },
+  "cfg.payments_hard_limit": {
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+   "value": 16
+  },
+  "cfg.payments_rps": {
+   "display": "20",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+   "value": 20
+  },
+  "cfg.queue_bound": {
+   "display": "96",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 96
+  },
+  "cfg.retry_after_s": {
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 4
+  },
+  "cfg.slots": {
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 32
+  },
+  "cfg.weights": {
+   "display": "3:1",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": "3:1"
+  },
+  "cfg.work_in_system_bound": {
+   "derivation": "slots + queue_bound",
+   "display": "128",
+   "source": "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+   "value": 128
+  },
+  "e1.controlled.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "4,564",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 4564
+  },
+  "e1.controlled.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "27966.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 27966.3
+  },
+  "e1.controlled.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "35",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 35
+  },
+  "e1.controlled.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "45.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 45.5
+  },
+  "e1.controlled.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "14,296",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 14296
+  },
+  "e1.controlled.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "23,374",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 23374
+  },
+  "e1.controlled.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "25,321",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 25321
+  },
+  "e1.controlled.max_active": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/stats.json",
+   "value": 32
+  },
+  "e1.controlled.max_queued": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "96",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/stats.json",
+   "value": 96
+  },
+  "e1.controlled.max_work_in_system": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "128",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/stats.json",
+   "value": 128
+  },
+  "e1.controlled.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "11,589",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 11589
+  },
+  "e1.controlled.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "14,027",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 14027
+  },
+  "e1.controlled.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "1,405",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 1405
+  },
+  "e1.controlled.refused_pct": {
+   "display": "53.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 53.2
+  },
+  "e1.controlled.requests": {
+   "derivation": "support requests",
+   "display": "2,640",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 2640
+  },
+  "e1.controlled.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e1.controlled.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e1.controlled.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "3,144",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 3144
+  },
+  "e1.controlled.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e1.controlled.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e1.controlled.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "1.73",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 1.73
+  },
+  "e1.controlled.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "1,200",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+   "value": 1200
+  },
+  "e1.controlled.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e1.controlled.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "220",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 220
+  },
+  "e1.controlled.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "57.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 57.9
+  },
+  "e1.naive.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "7,430",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 7430
+  },
+  "e1.naive.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "111168",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 111168.4
+  },
+  "e1.naive.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "2,395",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 2395
+  },
+  "e1.naive.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "9.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 9.3
+  },
+  "e1.naive.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "368,748",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 368748
+  },
+  "e1.naive.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "683,415",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 683415
+  },
+  "e1.naive.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "691,714",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 691714
+  },
+  "e1.naive.max_active": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/stats.json",
+   "value": 32
+  },
+  "e1.naive.max_queued": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "5,759",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/stats.json",
+   "value": 5759
+  },
+  "e1.naive.max_work_in_system": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "5,791",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/stats.json",
+   "value": 5791
+  },
+  "e1.naive.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "365,808",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 365808
+  },
+  "e1.naive.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "686,675",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 686675
+  },
+  "e1.naive.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 0
+  },
+  "e1.naive.refused_pct": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 0.0
+  },
+  "e1.naive.requests": {
+   "derivation": "support requests",
+   "display": "2,640",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 2640
+  },
+  "e1.naive.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 0
+  },
+  "e1.naive.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 0
+  },
+  "e1.naive.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 0
+  },
+  "e1.naive.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 0
+  },
+  "e1.naive.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 12
+  },
+  "e1.naive.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "2.81",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 2.81
+  },
+  "e1.naive.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "245",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl",
+   "value": 245
+  },
+  "e1.naive.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "7,134",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 7134
+  },
+  "e1.naive.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "7,167",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 7167
+  },
+  "e1.naive.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "97.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl",
+   "value": 97.4
+  },
+  "e10.R42-a.mix-adjusted.breaches": {
+   "display": "tool_calls_pct",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": "tool_calls_pct"
+  },
+  "e10.R42-a.mix-adjusted.candidate_after_decision": {
+   "derivation": "requests that arrived after the decision and were served by the candidate",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/rows.jsonl",
+   "value": 0
+  },
+  "e10.R42-a.mix-adjusted.candidate_requests": {
+   "display": "61",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/rows.jsonl",
+   "value": 61
+  },
+  "e10.R42-a.mix-adjusted.decided_at_s": {
+   "display": "132.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 132.7
+  },
+  "e10.R42-a.mix-adjusted.decision": {
+   "display": "ROLLBACK",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": "ROLLBACK"
+  },
+  "e10.R42-a.mix-adjusted.effects_before_decision": {
+   "derivation": "replies sent to customers by candidate workflows before the decision",
+   "display": "60",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 60
+  },
+  "e10.R42-a.mix-adjusted.effects_reverted": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 0
+  },
+  "e10.R42-a.mix-adjusted.error_pct_delta_max": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-a.mix-adjusted.final_stage_pct": {
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 10
+  },
+  "e10.R42-a.mix-adjusted.last.adj.cost_per_success_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "-0.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": -0.1
+  },
+  "e10.R42-a.mix-adjusted.last.adj.tool_calls_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "88.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 88.9
+  },
+  "e10.R42-a.mix-adjusted.last.cost_per_success_pct": {
+   "derivation": "the last analysis window",
+   "display": "-0.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": -0.1
+  },
+  "e10.R42-a.mix-adjusted.last.error_pp": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-a.mix-adjusted.last.p95_pct": {
+   "derivation": "the last analysis window",
+   "display": "-0.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": -0.2
+  },
+  "e10.R42-a.mix-adjusted.last.raw.cost_per_success_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "19.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 19.7
+  },
+  "e10.R42-a.mix-adjusted.last.raw.tool_calls_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "79.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 79.1
+  },
+  "e10.R42-a.mix-adjusted.last.success_pp": {
+   "derivation": "the last analysis window",
+   "display": "0.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 0.2
+  },
+  "e10.R42-a.mix-adjusted.last.tool_calls_pct": {
+   "derivation": "the last analysis window",
+   "display": "88.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 88.9
+  },
+  "e10.R42-a.mix-adjusted.last.violations": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 0
+  },
+  "e10.R42-a.mix-adjusted.windows": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json",
+   "value": 1
+  },
+  "e10.R42-a.offline_cost_delta_pct": {
+   "display": "0.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0.7
+  },
+  "e10.R42-e.mix-adjusted.breaches": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": "none"
+  },
+  "e10.R42-e.mix-adjusted.candidate_after_decision": {
+   "derivation": "requests that arrived after the decision and were served by the candidate",
+   "display": "1,396",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/rows.jsonl",
+   "value": 1396
+  },
+  "e10.R42-e.mix-adjusted.candidate_requests": {
+   "display": "1,653",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/rows.jsonl",
+   "value": 1653
+  },
+  "e10.R42-e.mix-adjusted.decided_at_s": {
+   "display": "320.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 320.6
+  },
+  "e10.R42-e.mix-adjusted.decision": {
+   "display": "PROMOTE",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": "PROMOTE"
+  },
+  "e10.R42-e.mix-adjusted.effects_before_decision": {
+   "derivation": "replies sent to customers by candidate workflows before the decision",
+   "display": "242",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 242
+  },
+  "e10.R42-e.mix-adjusted.effects_reverted": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 0
+  },
+  "e10.R42-e.mix-adjusted.error_pct_delta_max": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.mix-adjusted.final_stage_pct": {
+   "display": "50",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 50
+  },
+  "e10.R42-e.mix-adjusted.last.adj.cost_per_success_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "-5.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": -5.9
+  },
+  "e10.R42-e.mix-adjusted.last.adj.tool_calls_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "4.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 4.4
+  },
+  "e10.R42-e.mix-adjusted.last.cost_per_success_pct": {
+   "derivation": "the last analysis window",
+   "display": "-5.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": -5.9
+  },
+  "e10.R42-e.mix-adjusted.last.error_pp": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.mix-adjusted.last.p95_pct": {
+   "derivation": "the last analysis window",
+   "display": "-44.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": -44.9
+  },
+  "e10.R42-e.mix-adjusted.last.raw.cost_per_success_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "-0.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": -0.2
+  },
+  "e10.R42-e.mix-adjusted.last.raw.tool_calls_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "11.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 11.1
+  },
+  "e10.R42-e.mix-adjusted.last.success_pp": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.mix-adjusted.last.tool_calls_pct": {
+   "derivation": "the last analysis window",
+   "display": "4.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 4.4
+  },
+  "e10.R42-e.mix-adjusted.last.violations": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 0
+  },
+  "e10.R42-e.mix-adjusted.served_after_promotion": {
+   "display": "1,396",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/rows.jsonl",
+   "value": 1396
+  },
+  "e10.R42-e.mix-adjusted.windows": {
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json",
+   "value": 4
+  },
+  "e10.R42-e.raw.breaches": {
+   "display": "cost_per_success_pct",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": "cost_per_success_pct"
+  },
+  "e10.R42-e.raw.candidate_after_decision": {
+   "derivation": "requests that arrived after the decision and were served by the candidate",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/rows.jsonl",
+   "value": 0
+  },
+  "e10.R42-e.raw.candidate_requests": {
+   "display": "196",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/rows.jsonl",
+   "value": 196
+  },
+  "e10.R42-e.raw.decided_at_s": {
+   "display": "297.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 297.8
+  },
+  "e10.R42-e.raw.decision": {
+   "display": "ROLLBACK",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": "ROLLBACK"
+  },
+  "e10.R42-e.raw.effects_before_decision": {
+   "derivation": "replies sent to customers by candidate workflows before the decision",
+   "display": "187",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 187
+  },
+  "e10.R42-e.raw.effects_reverted": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 0
+  },
+  "e10.R42-e.raw.error_pct_delta_max": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.raw.final_stage_pct": {
+   "display": "50",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 50
+  },
+  "e10.R42-e.raw.last.adj.cost_per_success_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "-7.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": -7.8
+  },
+  "e10.R42-e.raw.last.adj.tool_calls_pct": {
+   "derivation": "per workflow type, weighted by the baseline's mix",
+   "display": "-1.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": -1.8
+  },
+  "e10.R42-e.raw.last.cost_per_success_pct": {
+   "derivation": "the last analysis window",
+   "display": "21",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 21.0
+  },
+  "e10.R42-e.raw.last.error_pp": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.raw.last.p95_pct": {
+   "derivation": "the last analysis window",
+   "display": "-0.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": -0.7
+  },
+  "e10.R42-e.raw.last.raw.cost_per_success_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "21",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 21.0
+  },
+  "e10.R42-e.raw.last.raw.tool_calls_pct": {
+   "derivation": "raw window averages, no mix adjustment",
+   "display": "8.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 8.8
+  },
+  "e10.R42-e.raw.last.success_pp": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 0.0
+  },
+  "e10.R42-e.raw.last.tool_calls_pct": {
+   "derivation": "the last analysis window",
+   "display": "8.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 8.8
+  },
+  "e10.R42-e.raw.last.violations": {
+   "derivation": "the last analysis window",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 0
+  },
+  "e10.R42-e.raw.windows": {
+   "display": "3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json",
+   "value": 3
+  },
+  "e2.controlled.finance.completed": {
+   "derivation": "finance items that reached an answer (success or escalation)",
+   "display": "3,000",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 3000
+  },
+  "e2.controlled.finance.makespan_s": {
+   "derivation": "first submission to last completion, simulated seconds",
+   "display": "374.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 374.9
+  },
+  "e2.controlled.finance.max_active": {
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/stats.json",
+   "value": 16
+  },
+  "e2.controlled.support.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 1500
+  },
+  "e2.controlled.support.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "25287.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 25287.8
+  },
+  "e2.controlled.support.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 100.0
+  },
+  "e2.controlled.support.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "2,257",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 2257
+  },
+  "e2.controlled.support.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "11,473",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 11473
+  },
+  "e2.controlled.support.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "11,739",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 11739
+  },
+  "e2.controlled.support.max_active": {
+   "display": "29",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/stats.json",
+   "value": 29
+  },
+  "e2.controlled.support.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "63",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 63
+  },
+  "e2.controlled.support.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "499",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 499
+  },
+  "e2.controlled.support.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.refused_pct": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 0.0
+  },
+  "e2.controlled.support.requests": {
+   "derivation": "support requests",
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 1500
+  },
+  "e2.controlled.support.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 1.0
+  },
+  "e2.controlled.support.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+   "value": 1500
+  },
+  "e2.controlled.support.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e2.controlled.support.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/rows.jsonl",
+   "value": 0.0
+  },
+  "e2.makespan_ratio": {
+   "derivation": "controlled makespan / naive makespan",
+   "display": "2.23",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/*/requests.jsonl",
+   "value": 2.23
+  },
+  "e2.naive.finance.completed": {
+   "derivation": "finance items that reached an answer (success or escalation)",
+   "display": "3,000",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 3000
+  },
+  "e2.naive.finance.makespan_s": {
+   "derivation": "first submission to last completion, simulated seconds",
+   "display": "168.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 168.1
+  },
+  "e2.naive.finance.max_active": {
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/stats.json",
+   "value": 32
+  },
+  "e2.naive.support.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "4,392",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 4392
+  },
+  "e2.naive.support.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "67601.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 67601.2
+  },
+  "e2.naive.support.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "1,446",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 1446
+  },
+  "e2.naive.support.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "3.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 3.6
+  },
+  "e2.naive.support.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "255,596",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 255596
+  },
+  "e2.naive.support.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "350,703",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 350703
+  },
+  "e2.naive.support.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "357,466",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 357466
+  },
+  "e2.naive.support.max_active": {
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/stats.json",
+   "value": 32
+  },
+  "e2.naive.support.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "251,566",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 251566
+  },
+  "e2.naive.support.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "351,027",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 351027
+  },
+  "e2.naive.support.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.refused_pct": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 0.0
+  },
+  "e2.naive.support.requests": {
+   "derivation": "support requests",
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 1500
+  },
+  "e2.naive.support.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 0
+  },
+  "e2.naive.support.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "2.93",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 2.93
+  },
+  "e2.naive.support.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "54",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl",
+   "value": 54
+  },
+  "e2.naive.support.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "4,336",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 4336
+  },
+  "e2.naive.support.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "4,336",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 4336
+  },
+  "e2.naive.support.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "93.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/rows.jsonl",
+   "value": 93.4
+  },
+  "e3.controlled.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "1,347",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 1347
+  },
+  "e3.controlled.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "12587.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 12587.6
+  },
+  "e3.controlled.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 0
+  },
+  "e3.controlled.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "84.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 84.4
+  },
+  "e3.controlled.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "10,490",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 10490
+  },
+  "e3.controlled.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "16,388",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 16388
+  },
+  "e3.controlled.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "20,169",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 20169
+  },
+  "e3.controlled.max_active": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/stats.json",
+   "value": 32
+  },
+  "e3.controlled.max_queued": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "96",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/stats.json",
+   "value": 96
+  },
+  "e3.controlled.max_work_in_system": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "128",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/stats.json",
+   "value": 128
+  },
+  "e3.controlled.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "7,239",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 7239
+  },
+  "e3.controlled.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "10,920",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 10920
+  },
+  "e3.controlled.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "132",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 132
+  },
+  "e3.controlled.refused_pct": {
+   "display": "12.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 12.2
+  },
+  "e3.controlled.requests": {
+   "derivation": "support requests",
+   "display": "1,080",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 1080
+  },
+  "e3.controlled.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 1
+  },
+  "e3.controlled.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e3.controlled.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "386",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 386
+  },
+  "e3.controlled.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "36",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 36
+  },
+  "e3.controlled.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e3.controlled.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "1.25",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 1.25
+  },
+  "e3.controlled.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "911",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+   "value": 911
+  },
+  "e3.controlled.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e3.controlled.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 12
+  },
+  "e3.controlled.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "7.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 7.8
+  },
+  "e3.naive.attempts": {
+   "derivation": "support attempts submitted (retries included)",
+   "display": "2,286",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 2286
+  },
+  "e3.naive.cost_cu": {
+   "derivation": "every attempt, every cost component",
+   "display": "46212.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 46212.5
+  },
+  "e3.naive.gave_up": {
+   "derivation": "requests whose client gave up on every attempt",
+   "display": "603",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 603
+  },
+  "e3.naive.goodput_pct": {
+   "derivation": "served / requests",
+   "display": "44.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 44.2
+  },
+  "e3.naive.latency_p50_ms": {
+   "derivation": "nearest-rank p50 of arrival-to-end, successful support attempts",
+   "display": "66,121",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 66121
+  },
+  "e3.naive.latency_p95_ms": {
+   "derivation": "nearest-rank p95 of arrival-to-end, successful support attempts",
+   "display": "251,507",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 251507
+  },
+  "e3.naive.latency_p99_ms": {
+   "derivation": "nearest-rank p99 of arrival-to-end, successful support attempts",
+   "display": "262,688",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 262688
+  },
+  "e3.naive.max_active": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "1,227",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/stats.json",
+   "value": 1227
+  },
+  "e3.naive.max_queued": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/stats.json",
+   "value": 1
+  },
+  "e3.naive.max_work_in_system": {
+   "derivation": "maximum over every event of the run (platform counter)",
+   "display": "1,227",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/stats.json",
+   "value": 1227
+  },
+  "e3.naive.queue_p50_ms": {
+   "derivation": "nearest-rank p50 of queue delay, attempts that started",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.queue_p99_ms": {
+   "derivation": "nearest-rank p99 of queue delay, attempts that started",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.refused": {
+   "derivation": "requests refused with an explicit capacity error after their one polite retry",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 0
+  },
+  "e3.naive.refused_pct": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 0.0
+  },
+  "e3.naive.requests": {
+   "derivation": "support requests",
+   "display": "1,080",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 1080
+  },
+  "e3.naive.results.CANCELLED_DEADLINE": {
+   "derivation": "support attempts ending CANCELLED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.results.FAILED_TOOL": {
+   "derivation": "support attempts ending FAILED_TOOL",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.results.REJECTED_CAPACITY": {
+   "derivation": "support attempts ending REJECTED_CAPACITY",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.results.SHED_DEADLINE": {
+   "derivation": "support attempts ending SHED_DEADLINE",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.results.UNFINISHED": {
+   "derivation": "support attempts ending UNFINISHED",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.retry_amplification": {
+   "derivation": "support attempts / support requests",
+   "display": "2.12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 2.12
+  },
+  "e3.naive.served": {
+   "derivation": "requests with a SUCCESS attempt that finished while the client still waited",
+   "display": "477",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl",
+   "value": 477
+  },
+  "e3.naive.started_after_deadline": {
+   "derivation": "attempts that started after their client's deadline",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 0
+  },
+  "e3.naive.wasted_completions": {
+   "derivation": "successful attempts that finished after their client had given up",
+   "display": "1,806",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 1806
+  },
+  "e3.naive.wasted_cu_pct": {
+   "derivation": "cu spent on attempts that ended after their client gave up / all cu",
+   "display": "95.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl",
+   "value": 95.2
+  },
+  "e4.coord_cost_ratio": {
+   "display": "131",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/*/rows.jsonl",
+   "value": 131
+  },
+  "e4.envelope.coord.cost_cu": {
+   "derivation": "children included",
+   "display": "127.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 127.6
+  },
+  "e4.envelope.coord.model_calls": {
+   "derivation": "children included",
+   "display": "9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 9
+  },
+  "e4.envelope.coord.reason": {
+   "display": "fanout",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "fanout"
+  },
+  "e4.envelope.coord.result": {
+   "display": "BUDGET_EXCEEDED",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "BUDGET_EXCEEDED"
+  },
+  "e4.envelope.coord.steps": {
+   "display": "17",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 17
+  },
+  "e4.envelope.coord.tool_calls": {
+   "derivation": "children included",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 4
+  },
+  "e4.envelope.coord_model_calls_mean": {
+   "display": "8.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 8.1
+  },
+  "e4.envelope.legit_cut": {
+   "derivation": "blind-sample workflows (no injected pathology) stopped by the envelope",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 4
+  },
+  "e4.envelope.legit_cut_ids": {
+   "display": "E4-S00019, E4-S00071, E4-S00255, E4-D011",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "E4-S00019, E4-S00071, E4-S00255, E4-D011"
+  },
+  "e4.envelope.legit_cut_reasons": {
+   "display": "delivery-change (steps); dispute-investigation (wall_ms)",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "delivery-change (steps); dispute-investigation (wall_ms)"
+  },
+  "e4.envelope.legit_cut_rerun": {
+   "derivation": "cut workflows that had re-run after a wrong answer",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 4
+  },
+  "e4.envelope.legit_n": {
+   "display": "350",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 350
+  },
+  "e4.envelope.runaway.cost_cu": {
+   "derivation": "children included",
+   "display": "150",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 150.0
+  },
+  "e4.envelope.runaway.model_calls": {
+   "derivation": "children included",
+   "display": "6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 6
+  },
+  "e4.envelope.runaway.reason": {
+   "display": "tool_calls",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "tool_calls"
+  },
+  "e4.envelope.runaway.result": {
+   "display": "BUDGET_EXCEEDED",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": "BUDGET_EXCEEDED"
+  },
+  "e4.envelope.runaway.steps": {
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 12
+  },
+  "e4.envelope.runaway.tool_calls": {
+   "derivation": "children included",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+   "value": 5
+  },
+  "e4.limit.delivery-change.cost_cu": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "35.33",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 35.33
+  },
+  "e4.limit.delivery-change.model_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 3
+  },
+  "e4.limit.delivery-change.steps": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 7
+  },
+  "e4.limit.delivery-change.tool_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 3
+  },
+  "e4.limit.delivery-change.wall_ms": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "7,910",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 7910
+  },
+  "e4.limit.dispute-investigation.cost_cu": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "153.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 153.8
+  },
+  "e4.limit.dispute-investigation.fanout": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 4
+  },
+  "e4.limit.dispute-investigation.model_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 10
+  },
+  "e4.limit.dispute-investigation.steps": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "18",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 18
+  },
+  "e4.limit.dispute-investigation.tool_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 4
+  },
+  "e4.limit.dispute-investigation.wall_ms": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "19,057",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 19057
+  },
+  "e4.limit.order-status.cost_cu": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "5.89",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 5.89
+  },
+  "e4.limit.order-status.model_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 5
+  },
+  "e4.limit.order-status.steps": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 10
+  },
+  "e4.limit.order-status.tool_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 3
+  },
+  "e4.limit.order-status.wall_ms": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "5,385",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 5385
+  },
+  "e4.limit.refund-dispute.cost_cu": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "184.69",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 184.69
+  },
+  "e4.limit.refund-dispute.model_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 8
+  },
+  "e4.limit.refund-dispute.steps": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "18",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 18
+  },
+  "e4.limit.refund-dispute.tool_calls": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 5
+  },
+  "e4.limit.refund-dispute.wall_ms": {
+   "derivation": "max over the development sample x 1.25, rounded up",
+   "display": "28,573",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+   "value": 28573
+  },
+  "e4.none.coord.cost_cu": {
+   "derivation": "children included",
+   "display": "16735.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 16735.1
+  },
+  "e4.none.coord.model_calls": {
+   "derivation": "children included",
+   "display": "205",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 205
+  },
+  "e4.none.coord.reason": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "none"
+  },
+  "e4.none.coord.result": {
+   "display": "HARNESS_GUARD",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "HARNESS_GUARD"
+  },
+  "e4.none.coord.steps": {
+   "display": "410",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 410
+  },
+  "e4.none.coord.tool_calls": {
+   "derivation": "children included",
+   "display": "202",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 202
+  },
+  "e4.none.coord_model_calls_mean": {
+   "display": "8.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 8.4
+  },
+  "e4.none.legit_cut": {
+   "derivation": "blind-sample workflows (no injected pathology) stopped by the envelope",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 0
+  },
+  "e4.none.legit_cut_ids": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "none"
+  },
+  "e4.none.legit_cut_reasons": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "none"
+  },
+  "e4.none.legit_cut_rerun": {
+   "derivation": "cut workflows that had re-run after a wrong answer",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 0
+  },
+  "e4.none.legit_n": {
+   "display": "350",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 350
+  },
+  "e4.none.runaway.cost_cu": {
+   "derivation": "children included",
+   "display": "18960.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 18960.3
+  },
+  "e4.none.runaway.model_calls": {
+   "derivation": "children included",
+   "display": "200",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 200
+  },
+  "e4.none.runaway.reason": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "none"
+  },
+  "e4.none.runaway.result": {
+   "display": "HARNESS_GUARD",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": "HARNESS_GUARD"
+  },
+  "e4.none.runaway.steps": {
+   "display": "400",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 400
+  },
+  "e4.none.runaway.tool_calls": {
+   "derivation": "children included",
+   "display": "199",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl",
+   "value": 199
+  },
+  "e4.per-agent.coord.cost_cu": {
+   "derivation": "children included",
+   "display": "153.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 153.1
+  },
+  "e4.per-agent.coord.model_calls": {
+   "derivation": "children included",
+   "display": "11",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 11
+  },
+  "e4.per-agent.coord.reason": {
+   "display": "wall_ms",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "wall_ms"
+  },
+  "e4.per-agent.coord.result": {
+   "display": "BUDGET_EXCEEDED",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "BUDGET_EXCEEDED"
+  },
+  "e4.per-agent.coord.steps": {
+   "display": "21",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 21
+  },
+  "e4.per-agent.coord.tool_calls": {
+   "derivation": "children included",
+   "display": "6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 6
+  },
+  "e4.per-agent.coord_model_calls_mean": {
+   "display": "8.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 8.1
+  },
+  "e4.per-agent.legit_cut": {
+   "derivation": "blind-sample workflows (no injected pathology) stopped by the envelope",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 4
+  },
+  "e4.per-agent.legit_cut_ids": {
+   "display": "E4-S00019, E4-S00071, E4-S00255, E4-D011",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "E4-S00019, E4-S00071, E4-S00255, E4-D011"
+  },
+  "e4.per-agent.legit_cut_reasons": {
+   "display": "delivery-change (steps); dispute-investigation (wall_ms)",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "delivery-change (steps); dispute-investigation (wall_ms)"
+  },
+  "e4.per-agent.legit_cut_rerun": {
+   "derivation": "cut workflows that had re-run after a wrong answer",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 4
+  },
+  "e4.per-agent.legit_n": {
+   "display": "350",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 350
+  },
+  "e4.per-agent.runaway.cost_cu": {
+   "derivation": "children included",
+   "display": "150",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 150.0
+  },
+  "e4.per-agent.runaway.model_calls": {
+   "derivation": "children included",
+   "display": "6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 6
+  },
+  "e4.per-agent.runaway.reason": {
+   "display": "tool_calls",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "tool_calls"
+  },
+  "e4.per-agent.runaway.result": {
+   "display": "BUDGET_EXCEEDED",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": "BUDGET_EXCEEDED"
+  },
+  "e4.per-agent.runaway.steps": {
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 12
+  },
+  "e4.per-agent.runaway.tool_calls": {
+   "derivation": "children included",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl",
+   "value": 5
+  },
+  "e4.runaway_cost_ratio": {
+   "derivation": "unbounded runaway cost / enveloped runaway cost",
+   "display": "126",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E4/*/rows.jsonl",
+   "value": 126
+  },
+  "e5.all-large.capability_violations": {
+   "derivation": "model calls below the task's min tier",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-large.cost_per_request": {
+   "derivation": "machine cu / workflows",
+   "display": "24.02",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 24.02
+  },
+  "e5.all-large.cost_per_success": {
+   "derivation": "machine cu (every attempt and re-run) / successes",
+   "display": "24.92",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 24.92
+  },
+  "e5.all-large.cost_per_success_incl_escalation": {
+   "derivation": "plus the declared 60 cu per escalation",
+   "display": "24.92",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 24.92
+  },
+  "e5.all-large.data_violations": {
+   "derivation": "model calls on a profile not allowed the data class",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-large.deferred": {
+   "derivation": "explicitly deferred during the throttle",
+   "display": "29",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 29
+  },
+  "e5.all-large.escalated": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-large.fallbacks": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-large.latency_p95_ms": {
+   "display": "11,404",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 11404
+  },
+  "e5.all-large.mach_cu": {
+   "display": "19215.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 19215.9
+  },
+  "e5.all-large.n": {
+   "display": "800",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 800
+  },
+  "e5.all-large.success_pct": {
+   "derivation": "workflows that ended SUCCESS (after at most one re-run)",
+   "display": "96.4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 96.4
+  },
+  "e5.all-large.successes": {
+   "display": "771",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 771
+  },
+  "e5.all-large.wrong_first": {
+   "derivation": "workflows whose first answer was wrong (caught by the declared validator)",
+   "display": "30",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+   "value": 30
+  },
+  "e5.all-small.capability_violations": {
+   "derivation": "model calls below the task's min tier",
+   "display": "516",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 516
+  },
+  "e5.all-small.cost_per_request": {
+   "derivation": "machine cu / workflows",
+   "display": "2.51",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 2.51
+  },
+  "e5.all-small.cost_per_success": {
+   "derivation": "machine cu (every attempt and re-run) / successes",
+   "display": "2.56",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 2.56
+  },
+  "e5.all-small.cost_per_success_incl_escalation": {
+   "derivation": "plus the declared 60 cu per escalation",
+   "display": "3.79",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 3.79
+  },
+  "e5.all-small.data_violations": {
+   "derivation": "model calls on a profile not allowed the data class",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-small.deferred": {
+   "derivation": "explicitly deferred during the throttle",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-small.escalated": {
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 16
+  },
+  "e5.all-small.fallbacks": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 0
+  },
+  "e5.all-small.latency_p95_ms": {
+   "display": "4,691",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 4691
+  },
+  "e5.all-small.mach_cu": {
+   "display": "2010.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 2010.5
+  },
+  "e5.all-small.n": {
+   "display": "800",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 800
+  },
+  "e5.all-small.success_pct": {
+   "derivation": "workflows that ended SUCCESS (after at most one re-run)",
+   "display": "98",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 98.0
+  },
+  "e5.all-small.successes": {
+   "display": "784",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 784
+  },
+  "e5.all-small.wrong_first": {
+   "derivation": "workflows whose first answer was wrong (caught by the declared validator)",
+   "display": "81",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+   "value": 81
+  },
+  "e5.break_even_escalation_cu": {
+   "derivation": "the cost a person handling one escalation would need to exceed for all-small's cost per success to reach routed's",
+   "display": "364",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/*/rows.jsonl",
+   "value": 364
+  },
+  "e5.routed-any-fallback.capability_violations": {
+   "derivation": "model calls below the task's min tier",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed-any-fallback.cost_per_request": {
+   "derivation": "machine cu / workflows",
+   "display": "10.27",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 10.27
+  },
+  "e5.routed-any-fallback.cost_per_success": {
+   "derivation": "machine cu (every attempt and re-run) / successes",
+   "display": "10.27",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 10.27
+  },
+  "e5.routed-any-fallback.cost_per_success_incl_escalation": {
+   "derivation": "plus the declared 60 cu per escalation",
+   "display": "10.27",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 10.27
+  },
+  "e5.routed-any-fallback.data_violations": {
+   "derivation": "model calls on a profile not allowed the data class",
+   "display": "18",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 18
+  },
+  "e5.routed-any-fallback.deferred": {
+   "derivation": "explicitly deferred during the throttle",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed-any-fallback.escalated": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed-any-fallback.fallbacks": {
+   "display": "18",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 18
+  },
+  "e5.routed-any-fallback.latency_p95_ms": {
+   "display": "11,404",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 11404
+  },
+  "e5.routed-any-fallback.mach_cu": {
+   "display": "8213.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 8213.2
+  },
+  "e5.routed-any-fallback.n": {
+   "display": "800",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 800
+  },
+  "e5.routed-any-fallback.success_pct": {
+   "derivation": "workflows that ended SUCCESS (after at most one re-run)",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 100.0
+  },
+  "e5.routed-any-fallback.successes": {
+   "display": "800",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 800
+  },
+  "e5.routed-any-fallback.wrong_first": {
+   "derivation": "workflows whose first answer was wrong (caught by the declared validator)",
+   "display": "33",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl",
+   "value": 33
+  },
+  "e5.routed.capability_violations": {
+   "derivation": "model calls below the task's min tier",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed.cost_per_request": {
+   "derivation": "machine cu / workflows",
+   "display": "9.91",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 9.91
+  },
+  "e5.routed.cost_per_success": {
+   "derivation": "machine cu (every attempt and re-run) / successes",
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 10.0
+  },
+  "e5.routed.cost_per_success_incl_escalation": {
+   "derivation": "plus the declared 60 cu per escalation",
+   "display": "10",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 10.0
+  },
+  "e5.routed.data_violations": {
+   "derivation": "model calls on a profile not allowed the data class",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed.deferred": {
+   "derivation": "explicitly deferred during the throttle",
+   "display": "7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 7
+  },
+  "e5.routed.escalated": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed.fallbacks": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 0
+  },
+  "e5.routed.latency_p95_ms": {
+   "display": "11,404",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 11404
+  },
+  "e5.routed.mach_cu": {
+   "display": "7927.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 7927.5
+  },
+  "e5.routed.n": {
+   "display": "800",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 800
+  },
+  "e5.routed.success_pct": {
+   "derivation": "workflows that ended SUCCESS (after at most one re-run)",
+   "display": "99.1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 99.1
+  },
+  "e5.routed.successes": {
+   "display": "793",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 793
+  },
+  "e5.routed.wrong_first": {
+   "derivation": "workflows whose first answer was wrong (caught by the declared validator)",
+   "display": "33",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl",
+   "value": 33
+  },
+  "e5.routed_vs_large_pct": {
+   "derivation": "1 - routed cost per success / all-large cost per success",
+   "display": "59.9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E5/*/rows.jsonl",
+   "value": 59.9
+  },
+  "e6.bounded.chunks_retrieved": {
+   "display": "96",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 96
+  },
+  "e6.bounded.context_tokens_mean": {
+   "derivation": "system + history + admitted chunks, mean over the fixture queries",
+   "display": "5,982",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 5982
+  },
+  "e6.bounded.missing_required": {
+   "derivation": "required evidence ids (declared in the fixture) absent from the admitted context",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 0
+  },
+  "e6.bounded.queries": {
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 12
+  },
+  "e6.bounded.retrieval_cost_cu": {
+   "display": "0.67",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 0.67
+  },
+  "e6.bounded.sources_queried": {
+   "display": "24",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 24
+  },
+  "e6.cache.query-text.cross_principal": {
+   "derivation": "a personal answer cached for one customer served to another",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 5
+  },
+  "e6.cache.query-text.hits": {
+   "display": "15",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 15
+  },
+  "e6.cache.query-text.lookups": {
+   "display": "24",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 24
+  },
+  "e6.cache.query-text.stale": {
+   "derivation": "an entry from an older knowledge or policy version served",
+   "display": "5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 5
+  },
+  "e6.cache.scoped.cross_principal": {
+   "derivation": "a personal answer cached for one customer served to another",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 0
+  },
+  "e6.cache.scoped.hits": {
+   "display": "7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 7
+  },
+  "e6.cache.scoped.lookups": {
+   "display": "24",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 24
+  },
+  "e6.cache.scoped.stale": {
+   "derivation": "an entry from an older knowledge or policy version served",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl",
+   "value": 0
+  },
+  "e6.naive.chunks_retrieved": {
+   "display": "960",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 960
+  },
+  "e6.naive.context_tokens_mean": {
+   "derivation": "system + history + admitted chunks, mean over the fixture queries",
+   "display": "34,716",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 34716
+  },
+  "e6.naive.missing_required": {
+   "derivation": "required evidence ids (declared in the fixture) absent from the admitted context",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 0
+  },
+  "e6.naive.queries": {
+   "display": "12",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 12
+  },
+  "e6.naive.retrieval_cost_cu": {
+   "display": "2.88",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 2.88
+  },
+  "e6.naive.sources_queried": {
+   "display": "48",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 48
+  },
+  "e6.required_ids": {
+   "display": "15",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 15
+  },
+  "e6.token_reduction_pct": {
+   "display": "82.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl",
+   "value": 82.8
+  },
+  "e7.composed.attempts_per_call": {
+   "derivation": "downstream attempts / logical tool calls (a failed step counts once)",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/rows.jsonl",
+   "value": 1.0
+  },
+  "e7.composed.completed": {
+   "derivation": "workflows that reached an answer",
+   "display": "2,222",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/rows.jsonl",
+   "value": 2222
+  },
+  "e7.composed.failed_tool": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/rows.jsonl",
+   "value": 0
+  },
+  "e7.composed.finance_completed": {
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl",
+   "value": 1500
+  },
+  "e7.composed.finance_makespan_s": {
+   "display": "161.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl",
+   "value": 161.2
+  },
+  "e7.composed.http_200": {
+   "display": "3,169",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json",
+   "value": 3169
+  },
+  "e7.composed.http_429": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json",
+   "value": 0
+  },
+  "e7.composed.http_503": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json",
+   "value": 0
+  },
+  "e7.composed.max_inflight": {
+   "derivation": "payments-status calls in flight, maximum over the run",
+   "display": "8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json",
+   "value": 8
+  },
+  "e7.composed.support_goodput_pct": {
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl",
+   "value": 100.0
+  },
+  "e7.controlled.attempts_per_call": {
+   "derivation": "downstream attempts / logical tool calls (a failed step counts once)",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+   "value": 1.0
+  },
+  "e7.controlled.completed": {
+   "derivation": "workflows that reached an answer",
+   "display": "3,584",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+   "value": 3584
+  },
+  "e7.controlled.failed_tool": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+   "value": 0
+  },
+  "e7.controlled.finance_completed": {
+   "display": "1,500",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/requests.jsonl",
+   "value": 1500
+  },
+  "e7.controlled.finance_makespan_s": {
+   "display": "157.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/requests.jsonl",
+   "value": 157.6
+  },
+  "e7.controlled.http_200": {
+   "display": "3,282",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json",
+   "value": 3282
+  },
+  "e7.controlled.http_429": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json",
+   "value": 0
+  },
+  "e7.controlled.http_503": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json",
+   "value": 0
+  },
+  "e7.controlled.max_inflight": {
+   "derivation": "payments-status calls in flight, maximum over the run",
+   "display": "8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json",
+   "value": 8
+  },
+  "e7.controlled.support_goodput_pct": {
+   "display": "5.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/requests.jsonl",
+   "value": 5.3
+  },
+  "e7.naive.attempts_per_call": {
+   "derivation": "downstream attempts / logical tool calls (a failed step counts once)",
+   "display": "2.81",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl",
+   "value": 2.81
+  },
+  "e7.naive.completed": {
+   "derivation": "workflows that reached an answer",
+   "display": "911",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl",
+   "value": 911
+  },
+  "e7.naive.failed_tool": {
+   "display": "1,311",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl",
+   "value": 1311
+  },
+  "e7.naive.finance_completed": {
+   "display": "195",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl",
+   "value": 195
+  },
+  "e7.naive.finance_makespan_s": {
+   "display": "31.8",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl",
+   "value": 31.8
+  },
+  "e7.naive.http_200": {
+   "display": "679",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json",
+   "value": 679
+  },
+  "e7.naive.http_429": {
+   "display": "5,932",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json",
+   "value": 5932
+  },
+  "e7.naive.http_503": {
+   "display": "237",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json",
+   "value": 237
+  },
+  "e7.naive.max_inflight": {
+   "derivation": "payments-status calls in flight, maximum over the run",
+   "display": "16",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json",
+   "value": 16
+  },
+  "e7.naive.support_goodput_pct": {
+   "display": "99.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl",
+   "value": 99.2
+  },
+  "e8.R41.cost_per_wf": {
+   "display": "15.08",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 15.08
+  },
+  "e8.R41.input_tokens_per_wf": {
+   "display": "8,580",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 8580
+  },
+  "e8.R41.model_calls_per_wf": {
+   "display": "1.98",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 1.98
+  },
+  "e8.R41.release_id": {
+   "display": "rel-c084dffaf6c9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R41.json",
+   "value": "rel-c084dffaf6c9"
+  },
+  "e8.R41.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+   "value": 1.117
+  },
+  "e8.R42-a.artifact": {
+   "display": "tools.orders.lookup",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "tools.orders.lookup"
+  },
+  "e8.R42-a.cost_per_wf": {
+   "display": "15.2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl",
+   "value": 15.2
+  },
+  "e8.R42-a.input_tokens_per_wf": {
+   "display": "8,876",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl",
+   "value": 8876
+  },
+  "e8.R42-a.model_calls_per_wf": {
+   "display": "2",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl",
+   "value": 2.0
+  },
+  "e8.R42-a.release_id": {
+   "display": "rel-ec085ba7c34e",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-a.json",
+   "value": "rel-ec085ba7c34e"
+  },
+  "e8.R42-a.tool_calls_delta_pct": {
+   "display": "71.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/*.jsonl",
+   "value": 71.3
+  },
+  "e8.R42-a.tool_calls_per_wf": {
+   "display": "1.913",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl",
+   "value": 1.913
+  },
+  "e8.R42-e.artifact": {
+   "display": "prompt",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "prompt"
+  },
+  "e8.R42-e.cost_per_wf": {
+   "display": "13.97",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-e.jsonl",
+   "value": 13.97
+  },
+  "e8.R42-e.input_tokens_per_wf": {
+   "display": "7,789",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-e.jsonl",
+   "value": 7789
+  },
+  "e8.R42-e.model_calls_per_wf": {
+   "display": "1.98",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-e.jsonl",
+   "value": 1.98
+  },
+  "e8.R42-e.release_id": {
+   "display": "rel-0e00bddbbffb",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-e.json",
+   "value": "rel-0e00bddbbffb"
+  },
+  "e8.R42-e.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-e.jsonl",
+   "value": 1.117
+  },
+  "e8.R42-kb.artifact": {
+   "display": "knowledge",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "knowledge"
+  },
+  "e8.R42-kb.cost_per_wf": {
+   "display": "15.08",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-kb.jsonl",
+   "value": 15.08
+  },
+  "e8.R42-kb.input_tokens_per_wf": {
+   "display": "8,580",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-kb.jsonl",
+   "value": 8580
+  },
+  "e8.R42-kb.model_calls_per_wf": {
+   "display": "1.98",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-kb.jsonl",
+   "value": 1.98
+  },
+  "e8.R42-kb.release_id": {
+   "display": "rel-3b3cce63002f",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-kb.json",
+   "value": "rel-3b3cce63002f"
+  },
+  "e8.R42-kb.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-kb.jsonl",
+   "value": 1.117
+  },
+  "e8.R42-policy.artifact": {
+   "display": "authz_policy",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "authz_policy"
+  },
+  "e8.R42-policy.cost_per_wf": {
+   "display": "15.08",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-policy.jsonl",
+   "value": 15.08
+  },
+  "e8.R42-policy.input_tokens_per_wf": {
+   "display": "8,580",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-policy.jsonl",
+   "value": 8580
+  },
+  "e8.R42-policy.model_calls_per_wf": {
+   "display": "1.98",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-policy.jsonl",
+   "value": 1.98
+  },
+  "e8.R42-policy.release_id": {
+   "display": "rel-91e7d99815c9",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-policy.json",
+   "value": "rel-91e7d99815c9"
+  },
+  "e8.R42-policy.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-policy.jsonl",
+   "value": 1.117
+  },
+  "e8.R42-routing.artifact": {
+   "display": "routing",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "routing"
+  },
+  "e8.R42-routing.cost_per_wf": {
+   "display": "18.5",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-routing.jsonl",
+   "value": 18.5
+  },
+  "e8.R42-routing.input_tokens_per_wf": {
+   "display": "8,562",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-routing.jsonl",
+   "value": 8562
+  },
+  "e8.R42-routing.model_calls_per_wf": {
+   "display": "1.97",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-routing.jsonl",
+   "value": 1.97
+  },
+  "e8.R42-routing.release_id": {
+   "display": "rel-d540123fc17c",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-routing.json",
+   "value": "rel-d540123fc17c"
+  },
+  "e8.R42-routing.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-routing.jsonl",
+   "value": 1.117
+  },
+  "e8.R42-topk.artifact": {
+   "display": "retrieval",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": "retrieval"
+  },
+  "e8.R42-topk.cost_per_wf": {
+   "display": "20.52",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-topk.jsonl",
+   "value": 20.52
+  },
+  "e8.R42-topk.input_tokens_per_wf": {
+   "display": "12,020",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-topk.jsonl",
+   "value": 12020
+  },
+  "e8.R42-topk.model_calls_per_wf": {
+   "display": "1.96",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-topk.jsonl",
+   "value": 1.96
+  },
+  "e8.R42-topk.release_id": {
+   "display": "rel-550efbb7626c",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R42-topk.json",
+   "value": "rel-550efbb7626c"
+  },
+  "e8.R42-topk.tool_calls_per_wf": {
+   "display": "1.117",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-topk.jsonl",
+   "value": 1.117
+  },
+  "e8.behaviour_changed": {
+   "derivation": "candidates whose replayed workload differs from R41 on any of four behaviour metrics",
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/*.jsonl",
+   "value": 4
+  },
+  "e8.distinct_image_digests": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/*.json",
+   "value": 1
+  },
+  "e8.distinct_release_ids": {
+   "display": "7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/*.json",
+   "value": 7
+  },
+  "e8.image_digest": {
+   "display": "img-b07d496787c0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/R41.json",
+   "value": "img-b07d496787c0"
+  },
+  "e8.max_artifacts_changed": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": 1
+  },
+  "e8.min_artifacts_changed": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json",
+   "value": 1
+  },
+  "e8.releases": {
+   "display": "7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/",
+   "value": 7
+  },
+  "e8.replay_n": {
+   "display": "300",
+   "source": "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+   "value": 300
+  },
+  "e8.rows_total": {
+   "derivation": "every telemetry row the run wrote",
+   "display": "58,573",
+   "source": "ops_poc/runs/2026-10-08-recorded/**/rows*.jsonl",
+   "value": 58573
+  },
+  "e8.rows_with_release_id": {
+   "display": "58,573",
+   "source": "ops_poc/runs/2026-10-08-recorded/**/rows*.jsonl",
+   "value": 58573
+  },
+  "e9.R41.inv.approval_bypass": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 0
+  },
+  "e9.R41.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 0
+  },
+  "e9.R41.inv.data_policy": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 0
+  },
+  "e9.R41.inv.envelope_unenforceable": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 0
+  },
+  "e9.R41.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 1.0
+  },
+  "e9.R41.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 100.0
+  },
+  "e9.R41.tool_calls_per_wf": {
+   "display": "1.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 1.3
+  },
+  "e9.R42-a.cost_delta_pct": {
+   "display": "0.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0.7
+  },
+  "e9.R42-a.inv.approval_bypass": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0
+  },
+  "e9.R42-a.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0
+  },
+  "e9.R42-a.inv.data_policy": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0
+  },
+  "e9.R42-a.inv.envelope_unenforceable": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 0
+  },
+  "e9.R42-a.reasons": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": "none"
+  },
+  "e9.R42-a.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 1.0
+  },
+  "e9.R42-a.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 100.0
+  },
+  "e9.R42-a.tool_calls_delta_pct": {
+   "display": "32.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json",
+   "value": 32.7
+  },
+  "e9.R42-a.tool_calls_per_wf": {
+   "display": "1.725",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-a.json",
+   "value": 1.725
+  },
+  "e9.R42-b.cost_delta_pct": {
+   "display": "-15.73",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": -15.73
+  },
+  "e9.R42-b.inv.approval_bypass": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 0
+  },
+  "e9.R42-b.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 0
+  },
+  "e9.R42-b.inv.data_policy": {
+   "display": "21",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 21
+  },
+  "e9.R42-b.inv.envelope_unenforceable": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 0
+  },
+  "e9.R42-b.reasons": {
+   "display": "invariant data_policy: 21",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": "invariant data_policy: 21"
+  },
+  "e9.R42-b.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 1.0
+  },
+  "e9.R42-b.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 100.0
+  },
+  "e9.R42-b.tool_calls_per_wf": {
+   "display": "1.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json",
+   "value": 1.3
+  },
+  "e9.R42-c.cost_delta_pct": {
+   "display": "-0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": -0.0
+  },
+  "e9.R42-c.inv.approval_bypass": {
+   "display": "4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 4
+  },
+  "e9.R42-c.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 0
+  },
+  "e9.R42-c.inv.data_policy": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 0
+  },
+  "e9.R42-c.inv.envelope_unenforceable": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 0
+  },
+  "e9.R42-c.reasons": {
+   "display": "invariant approval_bypass: 4",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": "invariant approval_bypass: 4"
+  },
+  "e9.R42-c.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 1.0
+  },
+  "e9.R42-c.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 100.0
+  },
+  "e9.R42-c.tool_calls_per_wf": {
+   "display": "1.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-c.json",
+   "value": 1.3
+  },
+  "e9.R42-d.cost_delta_pct": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 0.0
+  },
+  "e9.R42-d.inv.approval_bypass": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 0
+  },
+  "e9.R42-d.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 0
+  },
+  "e9.R42-d.inv.data_policy": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 0
+  },
+  "e9.R42-d.inv.envelope_unenforceable": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 1
+  },
+  "e9.R42-d.reasons": {
+   "display": "invariant envelope_unenforceable: 1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": "invariant envelope_unenforceable: 1"
+  },
+  "e9.R42-d.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 1.0
+  },
+  "e9.R42-d.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 100.0
+  },
+  "e9.R42-d.tool_calls_per_wf": {
+   "display": "1.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-d.json",
+   "value": 1.3
+  },
+  "e9.R42-e.cost_delta_pct": {
+   "display": "-7.22",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": -7.22
+  },
+  "e9.R42-e.inv.approval_bypass": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 0
+  },
+  "e9.R42-e.inv.capability": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 0
+  },
+  "e9.R42-e.inv.data_policy": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 0
+  },
+  "e9.R42-e.inv.envelope_unenforceable": {
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 0
+  },
+  "e9.R42-e.reasons": {
+   "display": "none",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": "none"
+  },
+  "e9.R42-e.task_success": {
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 1.0
+  },
+  "e9.R42-e.task_success_pct": {
+   "derivation": "task success on the offline suite, as a percentage",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 100.0
+  },
+  "e9.R42-e.tool_calls_per_wf": {
+   "display": "1.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-e.json",
+   "value": 1.3
+  },
+  "e9.blocked": {
+   "display": "R42-b, R42-c and R42-d",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json",
+   "value": [
+    "R42-b",
+    "R42-c",
+    "R42-d"
+   ]
+  },
+  "e9.blocked_n": {
+   "display": "3",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json",
+   "value": 3
+  },
+  "e9.blocked_weight_granted": {
+   "derivation": "canary traffic share the registry granted to blocked candidates",
+   "display": "0",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json + registry.json",
+   "value": 0
+  },
+  "e9.cases": {
+   "display": "40",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R41.json",
+   "value": 40
+  },
+  "e9.passed": {
+   "display": "R42-a and R42-e",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json",
+   "value": [
+    "R42-a",
+    "R42-e"
+   ]
+  },
+  "lat.e2e.mean_ms": {
+   "display": "15,241",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 15241
+  },
+  "lat.e2e.p50_ms": {
+   "display": "14,296",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 14296
+  },
+  "lat.e2e.p95_ms": {
+   "display": "23,374",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 23374
+  },
+  "lat.e2e.p99_ms": {
+   "display": "25,321",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 25321
+  },
+  "lat.model.p50_ms": {
+   "derivation": "per successful attempt: time in model",
+   "display": "1,776",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 1776
+  },
+  "lat.model.p95_ms": {
+   "display": "10,548",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 10548
+  },
+  "lat.overhead.p50_ms": {
+   "derivation": "per successful attempt: time in overhead",
+   "display": "100",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 100
+  },
+  "lat.overhead.p95_ms": {
+   "display": "175",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 175
+  },
+  "lat.queue.p50_ms": {
+   "display": "11,589",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 11589
+  },
+  "lat.queue.p95_ms": {
+   "display": "13,643",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 13643
+  },
+  "lat.queue_share_pct": {
+   "derivation": "share of end-to-end time spent queued, successful attempts under surge",
+   "display": "70.6",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 70.6
+  },
+  "lat.retrieval.p50_ms": {
+   "derivation": "per successful attempt: time in retrieval",
+   "display": "128",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 128
+  },
+  "lat.retrieval.p95_ms": {
+   "display": "256",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 256
+  },
+  "lat.tool.p50_ms": {
+   "derivation": "per successful attempt: time in tool",
+   "display": "150",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 150
+  },
+  "lat.tool.p95_ms": {
+   "display": "450",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 450
+  },
+  "nc.goodput_pct": {
+   "display": "9.3",
+   "source": "ops_poc/runs/2026-10-08-recorded/negative-control/requests.jsonl",
+   "value": 9.3
+  },
+  "nc.harness_completed": {
+   "derivation": "every attempt reached a recorded result",
+   "display": "1",
+   "source": "ops_poc/runs/2026-10-08-recorded/negative-control/rows.jsonl",
+   "value": 1
+  },
+  "nc.max_active": {
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/negative-control/stats.json",
+   "value": 32
+  },
+  "nc.max_work_in_system": {
+   "display": "5,791",
+   "source": "ops_poc/runs/2026-10-08-recorded/negative-control/stats.json",
+   "value": 5791
+  },
+  "proof.checks": {
+   "display": "65",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → check_counts",
+   "value": 65
+  },
+  "proof.claims": {
+   "display": "14",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → claims",
+   "value": 14
+  },
+  "proof.claims_qualified": {
+   "display": "1",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → claims",
+   "value": 1
+  },
+  "proof.claims_tested": {
+   "derivation": "SUPPORTED + QUALIFIED",
+   "display": "10",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → claims",
+   "value": 10
+  },
+  "proof.e5.success_gap_pp": {
+   "derivation": "routed success % - all-large success %",
+   "display": "2.7",
+   "source": "ops_poc/runs/2026-10-08-recorded/facts.json",
+   "value": 2.7
+  },
+  "proof.e9.blocked_set": {
+   "display": "R42-b, R42-c, R42-d",
+   "source": "ops_poc/runs/2026-10-08-recorded/facts.json",
+   "value": "R42-b, R42-c, R42-d"
+  },
+  "proof.e9.passed_set": {
+   "display": "R42-a, R42-e",
+   "source": "ops_poc/runs/2026-10-08-recorded/facts.json",
+   "value": "R42-a, R42-e"
+  },
+  "proof.expected_failure": {
+   "display": "1",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → check_counts",
+   "value": 1
+  },
+  "proof.experiments": {
+   "display": "11",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → check_counts",
+   "value": 11
+  },
+  "proof.fail": {
+   "display": "1",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → check_counts",
+   "value": 1
+  },
+  "proof.limitation": {
+   "display": "1",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → finding_counts",
+   "value": 1
+  },
+  "proof.not_supported": {
+   "display": "0",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → finding_counts",
+   "value": 0
+  },
+  "proof.pass": {
+   "display": "63",
+   "source": "evidence/runs/2026-10-08-recorded/results.json → check_counts",
+   "value": 63
+  },
+  "raw.e1.controlled.max_work_in_system": {
+   "derivation": "maximum overlap of [arrival_ms, end_ms) over admitted attempts, recomputed from the raw rows",
+   "display": "128",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+   "value": 128
+  },
+  "raw.e3.controlled.max_active": {
+   "derivation": "maximum overlap of [start_ms, end_ms) over admitted attempts, recomputed from the raw rows",
+   "display": "32",
+   "source": "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+   "value": 32
+  },
+  "raw.prereg_changed": {
+   "derivation": "frozen files whose sha256 differs from the freeze",
+   "display": "0",
+   "source": "ops_poc/experiments/FROZEN.sha256",
+   "value": 0
+  },
+  "replay.different": {
+   "display": "0",
+   "source": "evidence/runs/2026-10-08-recorded/replay.json",
+   "value": 0
+  },
+  "replay.files": {
+   "display": "99",
+   "source": "evidence/runs/2026-10-08-recorded/replay.json",
+   "value": 99
+  },
+  "replay.identical": {
+   "display": "99",
+   "source": "evidence/runs/2026-10-08-recorded/replay.json",
+   "value": 99
+  },
+  "replay.level": {
+   "display": "EXACT",
+   "source": "evidence/runs/2026-10-08-recorded/replay.json",
+   "value": "EXACT"
+  },
+  "run.id": {
+   "display": "2026-10-08-recorded",
+   "source": "ops_poc/runs/2026-10-08-recorded/manifest.json",
+   "value": "2026-10-08-recorded"
+  },
+  "sources.n": {
+   "derivation": "numbered, verified sources",
+   "display": "46",
+   "source": "research/sources.md",
+   "value": 46
+  },
+  "tests.passed": {
+   "display": "23",
+   "source": "verification/pytest.junit.xml",
+   "value": 23
+  },
+  "tests.scenarios": {
+   "derivation": "tests/test_scenarios.py: one per claim",
+   "display": "10",
+   "source": "verification/pytest.junit.xml",
+   "value": 10
+  },
+  "tests.scenarios_passed": {
+   "display": "10",
+   "source": "verification/pytest.junit.xml",
+   "value": 10
+  },
+  "tests.total": {
+   "display": "23",
+   "source": "verification/pytest.junit.xml",
+   "value": 23
+  },
+  "tests.unit": {
+   "display": "13",
+   "source": "verification/pytest.junit.xml",
+   "value": 13
+  }
+ },
+ "finding_counts": {
+  "LIMITATION OBSERVED": 1
+ },
+ "paths": {
+  "claim_evidence": "results/claim-evidence.json",
+  "negative_control": "evidence/runs/2026-10-08-recorded/negative-control/results.json",
+  "raw": "ops_poc/runs/2026-10-08-recorded",
+  "replay": "evidence/runs/2026-10-08-recorded/replay.json"
+ },
+ "profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "check": "OPS-E1-C01",
+      "text": "Admission with a work-in-system bound and an explicit capacity error (128 = slots + queue bound)"
+     },
+     {
+      "check": "OPS-E2-C03",
+      "text": "Weighted fair scheduling (deficit round robin, 3:1) with a finance bulkhead of 16"
+     },
+     {
+      "check": "OPS-E3-C03",
+      "text": "Bounded concurrency, deadline-aware dequeue and cooperative cancellation"
+     },
+     {
+      "check": "OPS-E4-C03",
+      "text": "Workflow resource envelopes and a ledger shared with child workflows"
+     },
+     {
+      "check": "OPS-E5-C03",
+      "text": "Routing inside an eligibility contract with policy-aware fallback"
+     },
+     {
+      "check": "OPS-E6-C03",
+      "text": "Bounded retrieval and a cache keyed by tenant, principal scope, knowledge and policy version"
+     },
+     {
+      "check": "OPS-E7-C01",
+      "text": "A tool gateway: per-tool concurrency, rate limit, bounded priority wait, circuit breaker"
+     },
+     {
+      "check": "OPS-E9-C02",
+      "text": "Content-addressed release manifests, a registry that refuses ungated releases, an invariant gate and a mix-adjusted canary"
+     }
+    ],
+    "meaning": "the actual mechanism was exercised: each control is real code, executed on every simulated request"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "The clock (integer simulated milliseconds), the model providers (latency, quotas, 429), the downstream APIs (capacity, 503, 429) and the clients (timeouts, retries)"
+     },
+     {
+      "text": "Scripted agents: the plans are fixed per workflow type; the only behaviour a release changes is declared (a tool description, a prompt length, a routing table)"
+     },
+     {
+      "text": "Cost in cost units (cu): synthetic per-1k-token rates, per-query and per-call charges; not any provider's prices"
+     }
+    ],
+    "meaning": "a deterministic local substitute"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "The eligibility contract and the success table by capability gap (config/models.toml): routing is tested within them, never real model quality"
+     },
+     {
+      "text": "Processor-sharing contention beyond 32 concurrent workflows; a downstream that slows above its capacity and refuses at its connection limit"
+     },
+     {
+      "text": "A validator that catches every wrong answer; a person handling an escalation costs 60 cu"
+     }
+    ],
+    "meaning": "declared: an assumption the simulation encodes and the article states"
+   },
+   {
+    "class": "GENERATED",
+    "items": [
+     {
+      "text": "Workload: seeded arrivals, cases and long-tail shapes (seed 4917; E4 calibration seed 1101)"
+     },
+     {
+      "text": "The knowledge fixture (120 documents, 12 queries with declared required evidence ids, a 24-lookup cache sequence) and the 40-case offline eval suite (scripts/make_fixtures.py)"
+     }
+    ],
+    "meaning": "synthetic inputs generated deterministically and frozen"
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "check": "OPS-E1-C02",
+      "text": "A Black Friday surge at 20 requests/s; a finance run of 3,000 items in ten seconds"
+     },
+     {
+      "check": "OPS-E4-C01",
+      "text": "A payment that never settles (a runaway loop) and a coordinator that re-delegates a failing sub-agent"
+     },
+     {
+      "check": "OPS-E5-C08",
+      "text": "A 30 s throttle of the EU private deployment"
+     },
+     {
+      "check": "OPS-E8-C03",
+      "text": "Candidate releases: one tool description, one prompt, one retrieval top-k, one knowledge index, one policy, one routing table; three that break an invariant"
+     },
+     {
+      "check": "OPS-NC-C01",
+      "text": "The admission bound removed (the negative control)"
+     }
+    ],
+    "meaning": "a failure or change introduced on purpose"
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "Autoscaling, real providers' quotas and latency, real prices, real model quality, human approval capacity, shadow traffic, rollback of stateful artifacts (indexes, memory, migrations)"
+     }
+    ],
+    "meaning": "design this POC does not exercise"
+   }
+  ],
+  "groups": [
+   {
+    "group": "The run",
+    "rows": [
+     [
+      "Scenarios",
+      "10 (E1–E10) + the negative control"
+     ],
+     [
+      "Model calls to a real model",
+      "0"
+     ],
+     [
+      "Network",
+      "none"
+     ],
+     [
+      "Seed",
+      "4917 (blind) · 1101 (E4 calibration)"
+     ],
+     [
+      "Units",
+      "sim-ms · cu"
+     ]
+    ]
+   }
+  ]
+ },
+ "run_id": "2026-10-08-recorded",
+ "schema": "pae-proof/v1",
+ "status": "COMPLETE",
+ "tables": {}
+}

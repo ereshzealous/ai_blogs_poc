@@ -1,0 +1,101 @@
+# O1 + O2 · the ten scenarios: workloads and arms (frozen with the preregistration).
+# Every arm of a scenario sees the same seed, the same arrivals, the same cases and the same clients; only the policy
+# named under `variable` differs. Times in sim-ms; rates in requests per simulated second.
+
+seed = 4917
+
+[E1]
+title = "Admission before execution"
+variable = "admission: open (unbounded queue) vs bounded work in system with an explicit capacity error"
+phases = [[120000, 20.0], [60000, 4.0]]       # the Black Friday surge, then the evening
+horizon_ms = 900000
+arms.naive = { admission = "open", slots = 32, scheduling = "fifo", deadlines = false }
+arms.controlled = { admission = "bounded", slots = 32, scheduling = "fifo", deadlines = false }
+
+[E2]
+title = "Tenant fairness: the noisy neighbour is your own finance team"
+variable = "scheduling: one global FIFO vs per-tenant weighted fair scheduling with a finance bulkhead"
+support_phases = [[300000, 5.0]]
+finance_items = 3000
+finance_window_ms = [10000, 20000]           # Finance submits its reconciliation run in ten seconds
+horizon_ms = 1800000
+arms.naive = { admission = "open", slots = 32, scheduling = "fifo", deadlines = false }
+arms.controlled = { admission = "open", slots = 32, scheduling = "fair", deadlines = false }
+
+[E3]
+title = "Bounded concurrency, backpressure and deadlines"
+variable = "concurrency: unbounded vs slots + bounded queue + deadline-aware dequeue + cancellation"
+phases = [[60000, 14.0], [60000, 4.0]]
+horizon_ms = 900000
+arms.naive = { admission = "open", slots = "unbounded", scheduling = "fifo", deadlines = false }
+arms.controlled = { admission = "bounded", slots = 32, scheduling = "fifo", deadlines = true }
+
+[E4]
+title = "Workflow resource envelopes, propagated to children"
+variable = "budgets: none vs per-agent (each child its own) vs a propagated envelope (children draw from the parent)"
+dev_seed = 1101                              # the envelope is calibrated on this sample ...
+normal_n = 300                               # ... and measured on a blind sample of the same size (seed above)
+coordinators_n = 20                          # dispute investigations in each sample (coordinator + 3 children)
+finance_n = 30                               # finance reconciliation checks in each sample
+calibration_margin = 1.25                    # limit = max observed in the dev sample x margin (rounded up)
+rate = 2.0                                   # no load: budgets are the only variable
+arms = ["none", "per-agent", "envelope"]
+
+[E5]
+title = "Routing inside an eligibility contract"
+variable = "routing: all-large vs all-small vs routed (cheapest eligible, policy-aware fallback) vs routed with any fallback"
+n = 800
+rate = 4.0
+finance_share = 0.30
+outage = { profile = "large-eu", window_ms = [60000, 90000] }   # the private EU deployment is throttled for 30 s
+arms = ["all-large", "all-small", "routed", "routed-any-fallback"]
+
+[E6]
+title = "Context budgets and cache scope"
+variable = "retrieval: naive (all sources, top-k 20, full history) vs bounded (routed sources, release top-k, token cap); cache: query text vs scoped key"
+# the queries, their required evidence ids and the cache sequence live in fixtures/knowledge.json
+
+[E7]
+title = "A tool gateway in front of a constrained downstream"
+variable = "tool access: direct calls with immediate retries vs the tool gateway; and the gateway composed with E2's fair scheduling"
+support_phases = [[180000, 4.0]]
+finance_items = 1500
+finance_window_ms = [5000, 35000]
+horizon_ms = 1800000
+slots = 64                                   # the runtime is eight times wider than the payments-status API
+constrained = ["payments.status"]
+arms.naive = { gateway = false, scheduling = "fifo" }
+arms.controlled = { gateway = true, scheduling = "fifo" }
+arms.composed = { gateway = true, scheduling = "fair" }   # added before the freeze, after development run D1 (DEVIATIONS.md)
+
+[E8]
+title = "The behavioural release"
+variable = "one artifact per candidate; code and image unchanged"
+candidates = ["R42-e", "R42-a", "R42-topk", "R42-kb", "R42-policy", "R42-routing"]
+replay_n = 300                               # the same Cyber Monday sample replayed under each release (no load)
+
+[E9]
+title = "Offline evals and invariant gates"
+variable = "the candidate release"
+candidates = ["R42-a", "R42-b", "R42-c", "R42-d", "R42-e"]
+# the cases live in fixtures/eval_suite.json
+
+[E10]
+title = "A behavioural canary, promotion and rollback"
+variable = "the candidate release under a 10 / 50 / 100 % canary"
+n = 3000
+rate = 5.0
+mix = "cyber-monday"
+stages = [10, 50, 100]
+window = 60                                  # candidate workflows per analysis window
+windows_to_advance = 2
+candidates = ["R42-a", "R42-e"]
+# the controller compares candidate and baseline per workflow type, weighted by the baseline's mix ("mix-adjusted");
+# the same clean release is also run under a controller that compares raw window averages ("raw"), added before the
+# freeze after development run D1 showed it rolling back a clean release (DEVIATIONS.md)
+analyses = [["R42-a", "mix-adjusted"], ["R42-e", "mix-adjusted"], ["R42-e", "raw"]]
+
+[NC]
+title = "Negative control: admission removed"
+variable = "E1's controlled arm with the admission bound removed (everything else identical)"
+arm = { admission = "open", slots = 32, scheduling = "fifo", deadlines = false }

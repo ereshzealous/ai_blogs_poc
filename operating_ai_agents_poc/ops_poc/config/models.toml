@@ -1,0 +1,89 @@
+# O1 + O2 · model profiles, the eligibility contract and the declared outcome model.
+#
+# SYNTHETIC. These profiles are not real models and their numbers are not real prices, latencies or quality.
+# The eligibility contract and the outcome table are ASSUMPTIONS the simulation encodes; in production, which model is
+# eligible for which task is established by evals outside this simulation (R1 + R2), not by this table.
+
+[profiles.small]
+tier = 1
+region = "global"
+data = ["public", "internal"]
+in_cu_per_1k = 0.25
+out_cu_per_1k = 1.0
+base_ms = 250
+ms_per_1k_in = 20
+ms_per_out = 4
+rps = 60                 # provider quota: requests per second (token bucket, burst = 1 s of quota)
+itps = 200000            # provider quota: input tokens per second
+
+[profiles.large]
+tier = 3
+region = "global"
+data = ["public", "internal"]
+in_cu_per_1k = 3.0
+out_cu_per_1k = 12.0
+base_ms = 700
+ms_per_1k_in = 60
+ms_per_out = 12
+rps = 40
+itps = 150000
+
+[profiles.small-eu]
+tier = 1
+region = "eu-private"
+data = ["public", "internal", "payment"]
+in_cu_per_1k = 0.35
+out_cu_per_1k = 1.4
+base_ms = 300
+ms_per_1k_in = 25
+ms_per_out = 5
+rps = 50
+itps = 150000
+
+[profiles.large-eu]
+tier = 3
+region = "eu-private"
+data = ["public", "internal", "payment"]
+in_cu_per_1k = 4.0
+out_cu_per_1k = 16.0
+base_ms = 800
+ms_per_1k_in = 70
+ms_per_out = 14
+rps = 25
+itps = 100000
+
+# Eligibility contract: the minimum capability tier and the data class of each task. A route is eligible only if the
+# profile's tier >= min_tier AND the profile may process the data class. Payment data stays on eu-private profiles.
+[contract.order-status]
+min_tier = 1
+data = "internal"
+[contract.product-question]
+min_tier = 1
+data = "public"
+[contract.delivery-change]
+min_tier = 2
+data = "internal"
+[contract.refund-dispute]
+min_tier = 3
+data = "payment"
+[contract.recon-check]
+min_tier = 1
+data = "payment"
+[contract.dispute-investigation]
+min_tier = 3
+data = "payment"
+
+# Declared outcome model: the probability that a workflow's decisive answer is correct, by capability gap
+# (gap = min_tier - profile tier). A deterministic validator catches a wrong answer; the workflow is retried once on
+# the same route and escalated to a human after that. Draws are hash-based, so every run is identical.
+[outcome]
+gap_0 = 0.97
+gap_1 = 0.80
+gap_2 = 0.55
+max_workflow_attempts = 2
+escalation_cu = 60        # declared cost of a person handling an escalated case, in cu (E5 reports it separately)
+
+[gateway]
+quota_wait_ms = 8000      # policy-aware fallback (E5): wait this long for an eligible profile's quota, then defer
+naive_retry_pause_ms = 100
+naive_retries = 4

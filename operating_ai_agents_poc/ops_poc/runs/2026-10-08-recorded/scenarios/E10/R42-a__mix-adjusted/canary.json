@@ -1,0 +1,96 @@
+{
+ "baseline_id": "rel-c084dffaf6c9",
+ "candidate": "R42-a",
+ "candidate_id": "rel-ec085ba7c34e",
+ "comparison": "mix-adjusted",
+ "decided_at_ms": 132728,
+ "decision": "ROLLBACK",
+ "effects": {
+  "by_candidate": 61,
+  "by_candidate_before_decision": 60,
+  "note": "a rollback moves the release pointer; replies already sent under the candidate stay sent",
+  "reverted_by_rollback": 0
+ },
+ "offline_gate": {
+  "passed": true,
+  "reasons": []
+ },
+ "registry": [
+  {
+   "event": "production",
+   "release": "R41",
+   "release_id": "rel-c084dffaf6c9"
+  },
+  {
+   "event": "submitted",
+   "release": "R42-a",
+   "release_id": "rel-ec085ba7c34e"
+  },
+  {
+   "event": "gate",
+   "passed": true,
+   "reasons": [],
+   "release": "R42-a",
+   "release_id": "rel-ec085ba7c34e"
+  },
+  {
+   "event": "weight",
+   "reason": "canary stage 1",
+   "release": "R42-a",
+   "release_id": "rel-ec085ba7c34e",
+   "weight": 10
+  },
+  {
+   "event": "rollback",
+   "reason": "guardrails breached: tool_calls_pct",
+   "release": "R42-a",
+   "release_id": "rel-ec085ba7c34e",
+   "restored": "rel-c084dffaf6c9",
+   "restored_manifest": "every artifact of the production release, by id"
+  }
+ ],
+ "windows": [
+  {
+   "at_ms": 132728,
+   "baseline": {
+    "cost_per_success": 13.147,
+    "error_pct": 0.0,
+    "n": 581,
+    "p95_ms": 11429,
+    "success_pct": 99.828,
+    "tool_calls_per_wf": 1.079,
+    "violations": 0
+   },
+   "breaches": [
+    "tool_calls_pct"
+   ],
+   "candidate": {
+    "cost_per_success": 15.74,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11404,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 1.933,
+    "violations": 0
+   },
+   "deltas": {
+    "cost_per_success_pct": -0.091,
+    "error_pp": 0.0,
+    "p95_pct": -0.219,
+    "success_pp": 0.172,
+    "tool_calls_pct": 88.891,
+    "violations": 0
+   },
+   "mix_adjusted_deltas": {
+    "cost_per_success_pct": -0.091,
+    "tool_calls_pct": 88.891
+   },
+   "raw_deltas": {
+    "cost_per_success_pct": 19.72,
+    "tool_calls_pct": 79.149
+   },
+   "stage_pct": 10,
+   "window": 1
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+# O1 + O2 · proof manifest (Production AI Engineering Proof Contract v1, pae-proof/v1)
+
+schema = "pae-proof/v1"
+
+[article]
+id = "O1"                # the combined O1 + O2 article holds the O1 slot (series-start-here/learning-map.yaml)
+series = "Production AI Engineering"
+learning = "O1 + O2"
+title = "Operating AI Agents at Scale — Cost, Latency, Scale & Lifecycle"
+headline = "At production scale, cost and latency become architectural constraints, and every agent change becomes an operational event."
+question = "When usage becomes large and the system keeps changing, which platform controls keep an agent platform inside its operating envelope, and what do they cost?"
+thesis = ["Load: one request becomes many units of work, so capacity, fairness, budgets and downstream limits are enforced before and during execution.",
+          "Change: a release is every artifact that can change behaviour, so it is versioned, gated on invariants and promoted on operational evidence.",
+          "Two control loops, one evidence plane: runtime control governs the current release; change control governs the next one."]
+principle = "Operating AI is not keeping agents available. It is controlling demand, resources, behaviour and change."
+poc = "ops_poc"
+scenario = "Northwind Goods' shared agent platform on Black Friday (a support surge and a finance reconciliation run on the same slots) and on Cyber Monday (a release that changed no code), simulated deterministically in sim-ms and cost units"
+one_line = "This POC runs ten scenarios through a deterministic agent-operations simulator, each with a naive and a controlled arm on the same workload, and records every workflow attempt as a telemetry row."
+
+[run]
+runtime_mode = "deterministic discrete-event simulation; scripted agents; simulated providers, tools and clients; no model, no network"
+replay_level = "EXACT"
+replay_contract = "every file of the run except volatile/ (wall-clock timings) is byte-identical on a rerun from source into a scratch copy"
+
+[entrypoints]
+verify = "make verify"
+test = "make test"
+proof = "make pack"
+replay = "make replay"
+negative_control = "make scenario S=E1   # and the proof pack's OPS-NC"
+demo = "make demo"
+make = "make help"
+
+[paths]
+published = "evidence/published.json"
+medium = "medium/operating-ai-agents-medium.html"
+technical = "technical/operating-ai-agents-technical.html"
+evidence = "results/operating-ai-agents-evidence.html"
+claim_evidence = "results/claim-evidence.json"
+readme = "README.md"
+verification = "evidence/verification/verification.json"
+contract = "vendor/kit5/evidence_kit/proof_contract/PROOF_STANDARD.md"
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised: each control is real code, executed on every simulated request"
+items = [
+  { text = "Admission with a work-in-system bound and an explicit capacity error ({{cfg.work_in_system_bound}} = slots + queue bound)", check = "OPS-E1-C01" },
+  { text = "Weighted fair scheduling (deficit round robin, {{cfg.weights}}) with a finance bulkhead of {{cfg.finance_bulkhead}}", check = "OPS-E2-C03" },
+  { text = "Bounded concurrency, deadline-aware dequeue and cooperative cancellation", check = "OPS-E3-C03" },
+  { text = "Workflow resource envelopes and a ledger shared with child workflows", check = "OPS-E4-C03" },
+  { text = "Routing inside an eligibility contract with policy-aware fallback", check = "OPS-E5-C03" },
+  { text = "Bounded retrieval and a cache keyed by tenant, principal scope, knowledge and policy version", check = "OPS-E6-C03" },
+  { text = "A tool gateway: per-tool concurrency, rate limit, bounded priority wait, circuit breaker", check = "OPS-E7-C01" },
+  { text = "Content-addressed release manifests, a registry that refuses ungated releases, an invariant gate and a mix-adjusted canary", check = "OPS-E9-C02" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a deterministic local substitute"
+items = [
+  { text = "The clock (integer simulated milliseconds), the model providers (latency, quotas, 429), the downstream APIs (capacity, 503, 429) and the clients (timeouts, retries)" },
+  { text = "Scripted agents: the plans are fixed per workflow type; the only behaviour a release changes is declared (a tool description, a prompt length, a routing table)" },
+  { text = "Cost in cost units (cu): synthetic per-1k-token rates, per-query and per-call charges; not any provider's prices" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "declared: an assumption the simulation encodes and the article states"
+items = [
+  { text = "The eligibility contract and the success table by capability gap (config/models.toml): routing is tested within them, never real model quality" },
+  { text = "Processor-sharing contention beyond {{cfg.capacity}} concurrent workflows; a downstream that slows above its capacity and refuses at its connection limit" },
+  { text = "A validator that catches every wrong answer; a person handling an escalation costs 60 cu" },
+]
+
+[[reality]]
+class = "GENERATED"
+meaning = "synthetic inputs generated deterministically and frozen"
+items = [
+  { text = "Workload: seeded arrivals, cases and long-tail shapes (seed 4917; E4 calibration seed 1101)" },
+  { text = "The knowledge fixture (120 documents, 12 queries with declared required evidence ids, a 24-lookup cache sequence) and the 40-case offline eval suite (scripts/make_fixtures.py)" },
+]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure or change introduced on purpose"
+items = [
+  { text = "A Black Friday surge at {{cfg.e1_surge_rate}} requests/s; a finance run of {{cfg.e2_finance_items}} items in ten seconds", check = "OPS-E1-C02" },
+  { text = "A payment that never settles (a runaway loop) and a coordinator that re-delegates a failing sub-agent", check = "OPS-E4-C01" },
+  { text = "A 30 s throttle of the EU private deployment", check = "OPS-E5-C08" },
+  { text = "Candidate releases: one tool description, one prompt, one retrieval top-k, one knowledge index, one policy, one routing table; three that break an invariant", check = "OPS-E8-C03" },
+  { text = "The admission bound removed (the negative control)", check = "OPS-NC-C01" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "design this POC does not exercise"
+items = [
+  { text = "Autoscaling, real providers' quotas and latency, real prices, real model quality, human approval capacity, shadow traffic, rollback of stateful artifacts (indexes, memory, migrations)" },
+]
+
+[[profile]]
+group = "The run"
+rows = [["Scenarios", "10 (E1–E10) + the negative control"], ["Model calls to a real model", "0"], ["Network", "none"],
+        ["Seed", "4917 (blind) · 1101 (E4 calibration)"], ["Units", "sim-ms · cu"]]

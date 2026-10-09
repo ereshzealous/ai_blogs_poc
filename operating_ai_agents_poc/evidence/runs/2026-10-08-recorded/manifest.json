@@ -1,0 +1,275 @@
+{
+ "article_id": "O1",
+ "benchmark": {
+  "arms": {
+   "E1": [
+    "naive",
+    "controlled"
+   ],
+   "E2": [
+    "naive",
+    "controlled"
+   ],
+   "E3": [
+    "naive",
+    "controlled"
+   ],
+   "E4": [
+    "none",
+    "per-agent",
+    "envelope"
+   ],
+   "E5": [
+    "all-large",
+    "all-small",
+    "routed",
+    "routed-any-fallback"
+   ],
+   "E7": [
+    "naive",
+    "controlled",
+    "composed"
+   ]
+  },
+  "modes": [
+   {
+    "key": "naive",
+    "name": "the uncontrolled platform"
+   },
+   {
+    "key": "controlled",
+    "name": "the control under test"
+   }
+  ],
+  "scenarios": 10,
+  "units": {
+   "cost": "cost units (cu)",
+   "time": "simulated milliseconds (sim-ms)"
+  }
+ },
+ "claim_problems": [],
+ "completed_at": "unknown (not recorded)",
+ "entrypoints": {
+  "demo": "make demo",
+  "make": "make help",
+  "negative_control": "make scenario S=E1   # and the proof pack's OPS-NC",
+  "proof": "make pack",
+  "replay": "make replay",
+  "test": "make test",
+  "verify": "make verify"
+ },
+ "environment": {
+  "arch": "arm64",
+  "model": "none",
+  "model_runtime": "none: scripted agents",
+  "model_version": {},
+  "os": "Darwin arm64",
+  "python": "3.12.13",
+  "seed": "4917 (every scenario), 1101 (E4 calibration sample)",
+  "temperature": "n/a"
+ },
+ "execution_profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "check": "OPS-E1-C01",
+      "text": "Admission with a work-in-system bound and an explicit capacity error (128 = slots + queue bound)"
+     },
+     {
+      "check": "OPS-E2-C03",
+      "text": "Weighted fair scheduling (deficit round robin, 3:1) with a finance bulkhead of 16"
+     },
+     {
+      "check": "OPS-E3-C03",
+      "text": "Bounded concurrency, deadline-aware dequeue and cooperative cancellation"
+     },
+     {
+      "check": "OPS-E4-C03",
+      "text": "Workflow resource envelopes and a ledger shared with child workflows"
+     },
+     {
+      "check": "OPS-E5-C03",
+      "text": "Routing inside an eligibility contract with policy-aware fallback"
+     },
+     {
+      "check": "OPS-E6-C03",
+      "text": "Bounded retrieval and a cache keyed by tenant, principal scope, knowledge and policy version"
+     },
+     {
+      "check": "OPS-E7-C01",
+      "text": "A tool gateway: per-tool concurrency, rate limit, bounded priority wait, circuit breaker"
+     },
+     {
+      "check": "OPS-E9-C02",
+      "text": "Content-addressed release manifests, a registry that refuses ungated releases, an invariant gate and a mix-adjusted canary"
+     }
+    ],
+    "meaning": "the actual mechanism was exercised: each control is real code, executed on every simulated request"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "The clock (integer simulated milliseconds), the model providers (latency, quotas, 429), the downstream APIs (capacity, 503, 429) and the clients (timeouts, retries)"
+     },
+     {
+      "text": "Scripted agents: the plans are fixed per workflow type; the only behaviour a release changes is declared (a tool description, a prompt length, a routing table)"
+     },
+     {
+      "text": "Cost in cost units (cu): synthetic per-1k-token rates, per-query and per-call charges; not any provider's prices"
+     }
+    ],
+    "meaning": "a deterministic local substitute"
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "The eligibility contract and the success table by capability gap (config/models.toml): routing is tested within them, never real model quality"
+     },
+     {
+      "text": "Processor-sharing contention beyond 32 concurrent workflows; a downstream that slows above its capacity and refuses at its connection limit"
+     },
+     {
+      "text": "A validator that catches every wrong answer; a person handling an escalation costs 60 cu"
+     }
+    ],
+    "meaning": "declared: an assumption the simulation encodes and the article states"
+   },
+   {
+    "class": "GENERATED",
+    "items": [
+     {
+      "text": "Workload: seeded arrivals, cases and long-tail shapes (seed 4917; E4 calibration seed 1101)"
+     },
+     {
+      "text": "The knowledge fixture (120 documents, 12 queries with declared required evidence ids, a 24-lookup cache sequence) and the 40-case offline eval suite (scripts/make_fixtures.py)"
+     }
+    ],
+    "meaning": "synthetic inputs generated deterministically and frozen"
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "check": "OPS-E1-C02",
+      "text": "A Black Friday surge at 20 requests/s; a finance run of 3,000 items in ten seconds"
+     },
+     {
+      "check": "OPS-E4-C01",
+      "text": "A payment that never settles (a runaway loop) and a coordinator that re-delegates a failing sub-agent"
+     },
+     {
+      "check": "OPS-E5-C08",
+      "text": "A 30 s throttle of the EU private deployment"
+     },
+     {
+      "check": "OPS-E8-C03",
+      "text": "Candidate releases: one tool description, one prompt, one retrieval top-k, one knowledge index, one policy, one routing table; three that break an invariant"
+     },
+     {
+      "check": "OPS-NC-C01",
+      "text": "The admission bound removed (the negative control)"
+     }
+    ],
+    "meaning": "a failure or change introduced on purpose"
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "Autoscaling, real providers' quotas and latency, real prices, real model quality, human approval capacity, shadow traffic, rollback of stateful artifacts (indexes, memory, migrations)"
+     }
+    ],
+    "meaning": "design this POC does not exercise"
+   }
+  ],
+  "groups": [
+   {
+    "group": "The run",
+    "rows": [
+     [
+      "Scenarios",
+      "10 (E1–E10) + the negative control"
+     ],
+     [
+      "Model calls to a real model",
+      "0"
+     ],
+     [
+      "Network",
+      "none"
+     ],
+     [
+      "Seed",
+      "4917 (blind) · 1101 (E4 calibration)"
+     ],
+     [
+      "Units",
+      "sim-ms · cu"
+     ]
+    ]
+   }
+  ]
+ },
+ "frozen_sha256": {
+  "config/models.toml": "7ff23b741be6f28745726dc20f20d40a872f38aa3a664a6c3481ea953d241e6f",
+  "config/platform.toml": "c67fe2ac18807ab83f41ab50f7defc347b4dce8bae05e53896dfe76eab4a92bc",
+  "config/releases.toml": "2088f14cf4ed7a35f7a3bf078760c5adc28199d289235745c0e6446a50838803",
+  "config/tools.toml": "b7f8e722582324750be39c542b873d88572ce906624043dbee018baa61f70d01",
+  "config/workflows.toml": "f9bc58e0de09d2c65cf62ea4dbac027176cc8d54b419e47fbcf5ef2abc4acebc",
+  "experiments/fixtures/eval_suite.json": "327a9a4750fff571b36903c4fc4deef446bd99f7db514ab0d69888619062140b",
+  "experiments/fixtures/knowledge.json": "ba088ee4ea92923b25dcbd4d3df32d4f07acac063249a1653da6a91eff26b6c8",
+  "experiments/preregistration.toml": "a12b015010cb59dba73dabe3c6b2403bc7b99af5281628652094ac4adc19442c",
+  "experiments/scenarios.toml": "fc585ff7b4d0e822b5b402500b15cbccc1deb50a96a4e8b75c88f7e68d38e696"
+ },
+ "integrity": {
+  "raw": "ops_poc/runs/2026-10-08-recorded",
+  "sha256sums": "evidence/runs/2026-10-08-recorded/SHA256SUMS"
+ },
+ "poc": "ops_poc",
+ "provenance": {
+  "fields": {
+   "benchmark": "recorded",
+   "execution_profile": "frozen",
+   "frozen_sha256": "recorded",
+   "python": "recorded",
+   "results": "aggregated from the raw run files (agentops.run.aggregate) and recomputed in tools/proof_facts.py",
+   "source_commit": "unknown",
+   "source_sha256": "recorded",
+   "started_at": "unknown"
+  },
+  "manifest_origin": "built by tools/proof_pack.py from ops_poc/runs/2026-10-08-recorded/manifest.json (recorded) and proof/manifest.toml (frozen words)"
+ },
+ "replay": {
+  "contract": "every file of the run except volatile/ (wall-clock timings) is byte-identical on a rerun from source into a scratch copy",
+  "level": "EXACT",
+  "record": "evidence/runs/2026-10-08-recorded/replay.json"
+ },
+ "run_id": "2026-10-08-recorded",
+ "runtime_mode": "deterministic discrete-event simulation; scripted agents; simulated providers, tools and clients; no model, no network",
+ "scenario": "Northwind Goods' shared agent platform on Black Friday (a support surge and a finance reconciliation run on the same slots) and on Cyber Monday (a release that changed no code), simulated deterministically in sim-ms and cost units",
+ "schema": "pae-proof/v1",
+ "series": "Production AI Engineering",
+ "source_commit": "unknown (not a git repository); source_sha256 lists every POC source file's hash",
+ "source_sha256": {
+  "agentops/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "agentops/agent.py": "65d3f540e5dd5dbb7864d079d06a49d69debb9e656dbf9876b9e5d4978b28d53",
+  "agentops/budget.py": "f8b6da9f22be49d09b3871ae13b4f64d89221df3bea316fac9895c4a1afa57b4",
+  "agentops/cli.py": "d9bce7539c5ec19123969c7e25a830527833bdd36f8ca8490f91e51271ce7c55",
+  "agentops/common.py": "6babca9454a7642e89aeb7ad5b1aa8c253d506586a767d8862b264e8fe145108",
+  "agentops/platform.py": "c8ed0f00abf81d09057f05bfe98a534a548b71f477fff01bc84aa8078767b828",
+  "agentops/release.py": "23820d9c45bf496bb64467538b4e209bdd8a48747ba36985da035482dc8582e3",
+  "agentops/retrieval.py": "e6d15d4c1365bcf7fee93b93cf88af5cf9d6e5b9f790ad1ee22ad112fa969d87",
+  "agentops/router.py": "b17b8d4a038863dc003bca6b256c2cb9f699b859ba4869c8751d4c6bc15833a6",
+  "agentops/run.py": "90eaf1f38aca7c3837c760b69407cee0279901e08b2b67c8486bbe1495559329",
+  "agentops/runtime.py": "765eddd67c7bd93ece98078c2154628a043873a879fd5f455149d6ce3f3a57bf",
+  "agentops/scenarios.py": "0e937aed5bb94f022fffcedda7d03825d153e4cce6d77652a8059ca0ba1d8498",
+  "agentops/sim.py": "bb87f3ab6615ffbb4ff3143d3eda241221838bd401e78f1c330a5b6c89d9fb0f",
+  "agentops/tools.py": "bb2a521cfe01d7181a5ed57364f0229f2025d8b38f092ad2594665d2d0138be0",
+  "agentops/workload.py": "77ea5ba302ae9e58ce2f79170d96908f58fc27f2555e5bcaed69777c3b89b443"
+ },
+ "started_at": "unknown (not recorded: a deterministic run records simulated time; wall times live in volatile/)"
+}

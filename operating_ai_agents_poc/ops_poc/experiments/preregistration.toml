@@ -1,0 +1,158 @@
+# O1 + O2 · Operating AI Agents at Scale · PREREGISTRATION.
+#
+# Written 2026-10-08 before the scenario code; frozen (experiments/FROZEN.sha256) before the recorded run. It fixes the
+# question, what is held constant, every hypothesis with its threshold, and how each metric is computed. A change after
+# the freeze is a deviation, logged in experiments/DEVIATIONS.md beside the as-recorded result, never instead of it.
+#
+# This is a SIMULATION. Its units are simulated milliseconds and cost units. Its claims are about mechanisms under a
+# declared workload, never about real providers, real models, real prices or any company's bill.
+
+schema = "o1o2-prereg/v1"
+question = "When usage becomes large and the system keeps changing, which platform controls keep an agent platform inside its operating envelope, and what do they cost?"
+thesis = "At production scale, cost and latency become architectural constraints, and every agent change becomes an operational event."
+
+[design]
+held_constant = [
+  "the seed (4917), the arrivals, the cases and the client behaviour of every arm of a scenario",
+  "the platform parameters (config/platform.toml), model profiles (config/models.toml), tools (config/tools.toml), workflows (config/workflows.toml)",
+  "the scripted agents (agentops/agent.py): no model is called; the platform is the only variable",
+  "release R41 everywhere except where the release is the variable (E8-E10)",
+]
+randomness = "none at run time: every draw is a hash of (seed, scenario, index, purpose)"
+replay = "EXACT: a rerun from source into a scratch copy must be byte-identical (volatile/ excluded)"
+
+[metrics]
+goodput_pct = "support requests with a SUCCESS attempt that finished while its client was still waiting, as a % of support requests"
+retry_amplification = "support attempts submitted / support requests"
+work_in_system = "queued + running attempts, maximum over every event of the run"
+within_deadline_pct = "support requests served within the client timeout (20 000 sim-ms per attempt), as a % of support requests"
+cost_per_success = "machine cost (model + retrieval + tool + platform cu, every attempt and re-run included) / successful workflows; escalation cost reported beside it, never folded in silently"
+wasted_cu_pct = "cu spent on attempts that finished after their client gave up, as a % of all cu"
+legit_cut = "blind-sample workflows (no injected pathology) stopped by the envelope"
+percentiles = "nearest rank over the attempts named"
+
+# ---- hypotheses: kind = invariant (a guarantee; FAIL = broken) · hypothesis (a prediction; FAIL = NOT SUPPORTED) ----
+# ---- measurement (an observation that must hold for the comparison to mean anything; FAIL = NOT OBSERVED) ------------
+
+[[hypotheses]]
+id = "H1"
+experiment = "E1"
+statements = [
+  "invariant: under bounded admission, work in system never exceeds slots + queue_bound (32 + 96 = 128)",
+  "measurement: with open admission the queue grows past 96",
+  "hypothesis: retry amplification (attempts / requests) is higher with open admission than with bounded admission",
+  "hypothesis: goodput with bounded admission is at least goodput with open admission",
+  "hypothesis: the p99 queue delay of admitted attempts under bounded admission is below the client timeout (20 000)",
+  "measurement: bounded admission refuses some requests explicitly (the cost of control)",
+]
+
+[[hypotheses]]
+id = "H2"
+experiment = "E2"
+statements = [
+  "hypothesis: with fair scheduling, at least 99 % of support requests are served within the client timeout",
+  "hypothesis: with one global FIFO, fewer support requests are served within the timeout than with fair scheduling",
+  "invariant: with fair scheduling, finance never runs more than its bulkhead (16) at once",
+  "hypothesis: with fair scheduling, every finance item completes within the batch deadline (900 000)",
+  "measurement: finance's makespan is longer with fair scheduling than with FIFO (the cost of control)",
+]
+
+[[hypotheses]]
+id = "H3"
+experiment = "E3"
+statements = [
+  "invariant: with bounded concurrency, running attempts never exceed the slots (32) at any event",
+  "measurement: with unbounded concurrency, running attempts exceed the runtime capacity (32)",
+  "invariant: with deadline-aware dequeue, no attempt starts after its client's deadline",
+  "hypothesis: the share of cost spent on attempts nobody was waiting for is lower with the controls",
+  "hypothesis: goodput is higher with the controls",
+]
+
+[[hypotheses]]
+id = "H4"
+experiment = "E4"
+statements = [
+  "invariant: with an envelope, the runaway refund workflow stops with BUDGET_EXCEEDED",
+  "measurement: with no budget, the runaway runs until the simulator's harness guard (400 steps)",
+  "invariant: with a propagated envelope, the coordinator's total model calls (children included) stay within its envelope",
+  "hypothesis: with per-agent budgets, the coordinator's total model calls exceed its envelope (per-agent budgets do not bound a workflow)",
+  "hypothesis: the envelope, calibrated on the development sample, stops no workflow of the blind sample (finding if not: LIMITATION OBSERVED)",
+]
+
+[[hypotheses]]
+id = "H5"
+experiment = "E5"
+note = "The success table is a declared assumption (config/models.toml [outcome]). E5 tests routing WITHIN that contract; it says nothing about the quality of any real model."
+statements = [
+  "hypothesis: routed cost per success is lower than all-large cost per success",
+  "invariant: routed never uses an ineligible profile (capability or data class), including during the provider throttle",
+  "hypothesis: routed success rate is within 1 percentage point of all-large",
+  "measurement: all-small costs less per request than routed",
+  "measurement: all-small succeeds less often than routed",
+  "measurement: routed-any-fallback sends payment data to a profile not allowed to process it during the throttle",
+  "measurement: routed defers work explicitly during the throttle instead of crossing the policy",
+]
+
+[[hypotheses]]
+id = "H6"
+experiment = "E6"
+statements = [
+  "hypothesis: bounded retrieval keeps every required evidence id declared in the fixture, for every query",
+  "hypothesis: bounded retrieval uses fewer context tokens per query than naive retrieval",
+  "invariant: the scoped cache serves no cached entry across principals and no entry from an older knowledge or policy version",
+  "measurement: the query-text cache does both (the hazard is real in the fixture)",
+  "measurement: the scoped cache still hits on shared questions",
+]
+
+[[hypotheses]]
+id = "H7"
+experiment = "E7"
+statements = [
+  "invariant: with the gateway, calls in flight at the payments-status API never exceed its capacity (8)",
+  "invariant: with the gateway, the payments-status API returns no 503",
+  "measurement: with direct calls, calls in flight reach the API's connection limit (16)",
+  "hypothesis: downstream attempts per logical tool call are higher with direct calls than with the gateway",
+  "hypothesis: at least as many workflows complete with the gateway as with direct calls",
+  "measurement: with the gateway on one FIFO queue, support goodput is lower than with direct calls (the wait moves into the runtime's slots) [added before the freeze, development run D1]",
+  "hypothesis: with the gateway and fair scheduling together (composed), support goodput is at least that of direct calls, the API sees no 503 and every finance item completes [added before the freeze, development run D1]",
+]
+
+[[hypotheses]]
+id = "H8"
+experiment = "E8"
+statements = [
+  "invariant: the image digest is identical for R41 and the six candidates",
+  "invariant: R41 and the six candidates have seven distinct release ids",
+  "invariant: each candidate's manifest differs from R41 in exactly one artifact",
+  "hypothesis: R42-a (a tool description, no code) changes tool calls per workflow on the same replayed workload",
+  "invariant: every telemetry row of the run carries a release id",
+]
+
+[[hypotheses]]
+id = "H9"
+experiment = "E9"
+gate = { task_success_min = 0.90, tool_selection_min = 0.95, cost_regression_max_pct = 10, p95_regression_max_pct = 15, invariant_violations_max = 0 }
+statements = [
+  "invariant: the gate blocks exactly R42-b, R42-c and R42-d (each breaks one invariant)",
+  "invariant: a blocked candidate receives no traffic (the registry refuses the weight)",
+  "measurement: R42-b's average task success is at or above the 0.90 threshold (the average looked fine)",
+  "invariant: R42-a and R42-e pass the gate",
+]
+
+[[hypotheses]]
+id = "H10"
+experiment = "E10"
+guardrails = { cost_per_success_delta_max_pct = 15, p95_delta_max_pct = 20, tool_calls_delta_max_pct = 25, error_rate_delta_max_pp = 1.0, success_delta_min_pp = -2.0, violations_max = 0 }
+statements = [
+  "hypothesis: the canary rolls R42-a back",
+  "measurement: R42-a's error rate stays within 1 percentage point of R41 (it looks healthy by HTTP status)",
+  "invariant: after the rollback, no request is served by R42-a",
+  "hypothesis: the canary promotes R42-e to production",
+  "measurement: replies committed by R42-a's canary workflows before the rollback remain committed after it",
+  "measurement: a controller that compares raw window averages (no adjustment for the workflow mix) rolls the clean R42-e back [added before the freeze, development run D1]",
+]
+
+[[hypotheses]]
+id = "NC"
+experiment = "NC"
+statements = ["control: E1's controlled arm with the admission bound removed breaks H1's invariant (expected failure)"]

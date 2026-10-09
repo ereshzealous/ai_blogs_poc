@@ -1,0 +1,37 @@
+# O1 + O2 · the shared agent platform at Northwind Goods (declared simulation parameters).
+# Units: simulated milliseconds (sim-ms) and cost units (cu). Nothing here is a measurement of a real system.
+
+[runtime]
+capacity = 32            # the shared resources behind the runtime (CPU, pools, provider concurrency) saturate beyond this
+slots = 32               # bounded concurrency: how many workflows orchestration lets run at once (controlled arms)
+step_overhead_ms = 25    # orchestration overhead per workflow step, at or below capacity
+harness_guard_steps = 400  # NOT a platform control: the simulator stops an unbounded workflow here so a run is finite
+
+[admission]
+queue_bound = 96         # work allowed to wait (all tenants); work in system = slots + queue_bound
+retry_after_ms = 4000    # Retry-After on an explicit capacity error
+
+[client]
+timeout_ms = 20000       # an interactive support client gives up on an attempt after this
+naive_retries = 2        # a naive client retries at once after giving up, up to this many times
+polite_retries = 1       # a well-behaved client retries once, after Retry-After
+
+[deadline]
+# deadline-aware dequeue (E3): a queued attempt is dropped when the time left before its client gives up is shorter
+# than the expected service time of its workflow type (expected_ms in workflows.toml)
+enabled_in = ["E3"]
+
+[tenants.support]
+weight = 3               # weighted fair scheduling (deficit round robin) quantum
+max_concurrency = 32
+priority = 1             # interactive
+[tenants.finance]
+weight = 1
+max_concurrency = 16     # a bulkhead: the batch never holds more than half the slots
+priority = 3             # batch
+batch_deadline_ms = 900000
+
+[costs]
+retrieval_query_cu = 0.02
+retrieval_chunk_cu = 0.002
+platform_step_cu = 0.01

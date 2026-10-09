@@ -1,0 +1,601 @@
+# O1 + O2 · experiments and their checks (pae-proof/v1). Every check compares a fact of the published run (or a fact
+# recomputed from its raw files by tools/proof_facts.py) with a value or another fact. Thresholds come from
+# ops_poc/experiments/preregistration.toml; no observed number is typed here.
+# kind: invariant (a guarantee; FAIL = broken) · hypothesis (a prediction; FAIL = NOT SUPPORTED) ·
+#       measurement (an observation the comparison needs; FAIL = NOT OBSERVED) · implementation · control (expect fail)
+
+[[experiments]]
+id = "OPS-E1"
+role = "core"
+title = "Admission before execution"
+question = "When offered demand exceeds capacity, does bounding work in system keep the overload out of the runtime?"
+claim = "Capacity should be enforced before unlimited work enters the runtime."
+hypothesis = "H1 (preregistration.toml)"
+setup = "Black Friday surge: support requests at a multiple of capacity for 120 s, then the evening; same clients in both arms (they give up after 20 s and retry)"
+variable = "admission: open (unbounded queue) vs bounded work in system with a capacity error and Retry-After"
+invariant = "work in system <= slots + queue bound"
+limitations = ["Simulated clients and providers; the bound protects the runtime, it does not create capacity: refused requests are the cost"]
+  [[experiments.checks]]
+  id = "OPS-E1-C01"
+  description = "Bounded admission: work in system never exceeded slots + queue bound"
+  kind = "invariant"
+  fact = "e1.controlled.max_work_in_system"
+  op = "<="
+  ref = "cfg.work_in_system_bound"
+  threshold_source = "preregistration.toml H1"
+  [[experiments.checks]]
+  id = "OPS-E1-C02"
+  description = "Open admission: the queue grew past the queue bound"
+  kind = "measurement"
+  fact = "e1.naive.max_queued"
+  op = ">"
+  ref = "cfg.queue_bound"
+  [[experiments.checks]]
+  id = "OPS-E1-C03"
+  description = "Retry amplification is higher with open admission"
+  kind = "hypothesis"
+  fact = "e1.naive.retry_amplification"
+  op = ">"
+  ref = "e1.controlled.retry_amplification"
+  [[experiments.checks]]
+  id = "OPS-E1-C04"
+  description = "Goodput with bounded admission is at least goodput with open admission"
+  kind = "hypothesis"
+  fact = "e1.controlled.goodput_pct"
+  op = ">="
+  ref = "e1.naive.goodput_pct"
+  [[experiments.checks]]
+  id = "OPS-E1-C05"
+  description = "Bounded admission: p99 queue delay of admitted attempts is below the client timeout"
+  kind = "hypothesis"
+  fact = "e1.controlled.queue_p99_ms"
+  op = "<"
+  value = 20000
+  threshold_source = "preregistration.toml H1"
+  [[experiments.checks]]
+  id = "OPS-E1-C06"
+  description = "Bounded admission refuses some requests explicitly (the cost of control)"
+  kind = "measurement"
+  fact = "e1.controlled.refused"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E1-C07"
+  description = "Recomputed from the raw rows: work in system under bounded admission stays within the bound"
+  kind = "invariant"
+  fact = "raw.e1.controlled.max_work_in_system"
+  op = "<="
+  ref = "cfg.work_in_system_bound"
+
+[[experiments]]
+id = "OPS-E2"
+role = "core"
+title = "Tenant fairness: the noisy neighbour is your own finance team"
+question = "When one tenant floods the shared platform, do global limits alone protect the other tenant?"
+claim = "Multi-tenant agent platforms need tenant-aware resource controls, not only global limits."
+hypothesis = "H2"
+setup = "support at a steady rate; finance submits its reconciliation run in ten seconds; same 32 slots"
+variable = "scheduling: one global FIFO vs weighted fair scheduling with a finance bulkhead"
+invariant = "finance never holds more than its bulkhead"
+limitations = ["Two tenants and one shared resource (slots); real platforms share more (providers, tools, caches)"]
+  [[experiments.checks]]
+  id = "OPS-E2-C01"
+  description = "Fair scheduling: at least 99 % of support requests served within the client timeout"
+  kind = "hypothesis"
+  fact = "e2.controlled.support.goodput_pct"
+  op = ">="
+  value = 99
+  threshold_source = "preregistration.toml H2"
+  [[experiments.checks]]
+  id = "OPS-E2-C02"
+  description = "Global FIFO serves fewer support requests within the timeout"
+  kind = "hypothesis"
+  fact = "e2.naive.support.goodput_pct"
+  op = "<"
+  ref = "e2.controlled.support.goodput_pct"
+  [[experiments.checks]]
+  id = "OPS-E2-C03"
+  description = "Fair scheduling: finance never ran more than its bulkhead at once"
+  kind = "invariant"
+  fact = "e2.controlled.finance.max_active"
+  op = "<="
+  ref = "cfg.finance_bulkhead"
+  [[experiments.checks]]
+  id = "OPS-E2-C04"
+  description = "Fair scheduling: every finance item still completed"
+  kind = "hypothesis"
+  fact = "e2.controlled.finance.completed"
+  op = "=="
+  ref = "cfg.e2_finance_items"
+  [[experiments.checks]]
+  id = "OPS-E2-C05"
+  description = "Fair scheduling: the finance batch finished within its deadline"
+  kind = "hypothesis"
+  fact = "e2.controlled.finance.makespan_s"
+  op = "<="
+  ref = "cfg.batch_deadline_s"
+  [[experiments.checks]]
+  id = "OPS-E2-C06"
+  description = "The batch took longer under fair scheduling (the cost of control)"
+  kind = "measurement"
+  fact = "e2.controlled.finance.makespan_s"
+  op = ">"
+  ref = "e2.naive.finance.makespan_s"
+
+[[experiments]]
+id = "OPS-E3"
+role = "core"
+title = "Bounded concurrency, backpressure and deadlines"
+question = "Does bounding concurrency, independently of demand, protect the work the runtime does?"
+claim = "Concurrency must be bounded independently of incoming request volume."
+hypothesis = "H3"
+setup = "overload at 1.5x capacity for 60 s, then light load; same clients"
+variable = "unbounded concurrency vs slots + bounded queue + deadline-aware dequeue + cancellation"
+invariant = "running attempts <= slots at every event; no attempt starts after its client's deadline"
+limitations = ["Contention is a declared processor-sharing model, not a measured runtime"]
+  [[experiments.checks]]
+  id = "OPS-E3-C01"
+  description = "Bounded: running attempts never exceeded the slots"
+  kind = "invariant"
+  fact = "e3.controlled.max_active"
+  op = "<="
+  ref = "cfg.slots"
+  [[experiments.checks]]
+  id = "OPS-E3-C02"
+  description = "Unbounded: running attempts exceeded the runtime's capacity"
+  kind = "measurement"
+  fact = "e3.naive.max_active"
+  op = ">"
+  ref = "cfg.capacity"
+  [[experiments.checks]]
+  id = "OPS-E3-C03"
+  description = "Deadline-aware dequeue: no attempt started after its client's deadline"
+  kind = "invariant"
+  fact = "e3.controlled.started_after_deadline"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E3-C04"
+  description = "Less cost spent on attempts nobody was waiting for"
+  kind = "hypothesis"
+  fact = "e3.controlled.wasted_cu_pct"
+  op = "<"
+  ref = "e3.naive.wasted_cu_pct"
+  [[experiments.checks]]
+  id = "OPS-E3-C05"
+  description = "Higher goodput with the controls"
+  kind = "hypothesis"
+  fact = "e3.controlled.goodput_pct"
+  op = ">"
+  ref = "e3.naive.goodput_pct"
+  [[experiments.checks]]
+  id = "OPS-E3-C06"
+  description = "Recomputed from the raw rows: running attempts never exceeded the slots"
+  kind = "invariant"
+  fact = "raw.e3.controlled.max_active"
+  op = "<="
+  ref = "cfg.slots"
+
+[[experiments]]
+id = "OPS-E4"
+role = "core"
+title = "Workflow resource envelopes, propagated to children"
+question = "Does an explicit envelope stop runaway execution, including across sub-agents, and what does it cut?"
+claim = "Production agents need explicit execution budgets, propagated to child workflows."
+hypothesis = "H4"
+setup = "a refund whose payment never settles; a coordinator with three sub-agents, one stuck, re-delegated; 350 calibrated normal workflows"
+variable = "budgets: none vs per-agent vs a propagated envelope"
+invariant = "the runaway stops on its envelope; the coordinator's total stays within its envelope"
+limitations = ["The envelope is calibrated on a 350-workflow development sample (max x 1.25); a larger sample or explicit retry allowance would cut fewer legitimate workflows"]
+  [[experiments.checks]]
+  id = "OPS-E4-C01"
+  description = "Envelope: the runaway refund stopped with BUDGET_EXCEEDED"
+  kind = "invariant"
+  fact = "e4.envelope.runaway.result"
+  op = "=="
+  value = "BUDGET_EXCEEDED"
+  [[experiments.checks]]
+  id = "OPS-E4-C02"
+  description = "No budget: the runaway ran until the simulator's harness guard"
+  kind = "measurement"
+  fact = "e4.none.runaway.steps"
+  op = ">="
+  ref = "cfg.harness_guard_steps"
+  [[experiments.checks]]
+  id = "OPS-E4-C03"
+  description = "Propagated envelope: the coordinator's model calls (children included) stayed within its envelope"
+  kind = "invariant"
+  fact = "e4.envelope.coord.model_calls"
+  op = "<="
+  ref = "e4.limit.dispute-investigation.model_calls"
+  [[experiments.checks]]
+  id = "OPS-E4-C04"
+  description = "Per-agent budgets: the coordinator's total model calls exceeded its envelope"
+  kind = "hypothesis"
+  fact = "e4.per-agent.coord.model_calls"
+  op = ">"
+  ref = "e4.limit.dispute-investigation.model_calls"
+  [[experiments.checks]]
+  id = "OPS-E4-C05"
+  description = "The calibrated envelope stopped no legitimate workflow of the blind sample"
+  kind = "hypothesis"
+  fact = "e4.envelope.legit_cut"
+  op = "=="
+  value = 0
+  finding = "LIMITATION OBSERVED"
+  threshold_source = "preregistration.toml H4"
+
+[[experiments]]
+id = "OPS-E5"
+role = "core"
+title = "Routing inside an eligibility contract"
+question = "Can routing reduce modelled cost without leaving a declared capability and data-policy contract, including during a provider throttle?"
+claim = "Model routing should optimise within a quality/policy boundary, not optimise cost alone."
+hypothesis = "H5"
+setup = "800 workflows (support mix + finance), the EU private deployment throttled for 30 s"
+variable = "all-large vs all-small vs routed vs routed with any fallback"
+invariant = "routed never uses an ineligible profile"
+limitations = ["The success table is declared, not measured: this tests routing within the contract, not any model's quality",
+               "A validator that catches every wrong answer is assumed; uncaught wrong answers would cost more than their tokens"]
+  [[experiments.checks]]
+  id = "OPS-E5-C01"
+  description = "Routed costs less per successful workflow than all-large"
+  kind = "hypothesis"
+  fact = "e5.routed.cost_per_success"
+  op = "<"
+  ref = "e5.all-large.cost_per_success"
+  [[experiments.checks]]
+  id = "OPS-E5-C02"
+  description = "Routed: no model call below the task's capability tier"
+  kind = "invariant"
+  fact = "e5.routed.capability_violations"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E5-C03"
+  description = "Routed: no payment data on a profile not allowed to process it, throttle included"
+  kind = "invariant"
+  fact = "e5.routed.data_violations"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E5-C04"
+  description = "Routed success rate within 1 percentage point of all-large (or better)"
+  kind = "hypothesis"
+  fact = "proof.e5.success_gap_pp"
+  op = ">="
+  value = -1
+  threshold_source = "preregistration.toml H5"
+  [[experiments.checks]]
+  id = "OPS-E5-C05"
+  description = "All-small costs less per request than routed"
+  kind = "measurement"
+  fact = "e5.all-small.cost_per_request"
+  op = "<"
+  ref = "e5.routed.cost_per_request"
+  [[experiments.checks]]
+  id = "OPS-E5-C06"
+  description = "All-small succeeds less often than routed"
+  kind = "measurement"
+  fact = "e5.all-small.success_pct"
+  op = "<"
+  ref = "e5.routed.success_pct"
+  [[experiments.checks]]
+  id = "OPS-E5-C07"
+  description = "Routed with any fallback put payment data on a global profile during the throttle"
+  kind = "measurement"
+  fact = "e5.routed-any-fallback.data_violations"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E5-C08"
+  description = "Routed deferred explicitly during the throttle instead of crossing the policy"
+  kind = "measurement"
+  fact = "e5.routed.deferred"
+  op = ">"
+  value = 0
+
+[[experiments]]
+id = "OPS-E6"
+role = "core"
+title = "Context budgets and cache scope"
+question = "Can retrieval be bounded without losing the evidence a query needs, and can a cache help without leaking or going stale?"
+claim = "Context and retrieval need resource controls just like model execution."
+hypothesis = "H6"
+setup = "12 fixture queries with declared required evidence ids; a 24-lookup cache sequence with a knowledge and a policy version change"
+variable = "naive vs bounded retrieval; query-text vs scoped cache key"
+invariant = "the scoped cache never serves across principals or versions"
+limitations = ["Relevance scores are a frozen fixture, not a retriever; required ids make the check mechanical, not a measure of retrieval quality"]
+  [[experiments.checks]]
+  id = "OPS-E6-C01"
+  description = "Bounded retrieval kept every required evidence id of every query"
+  kind = "hypothesis"
+  fact = "e6.bounded.missing_required"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E6-C02"
+  description = "Bounded retrieval used fewer context tokens per query"
+  kind = "hypothesis"
+  fact = "e6.bounded.context_tokens_mean"
+  op = "<"
+  ref = "e6.naive.context_tokens_mean"
+  [[experiments.checks]]
+  id = "OPS-E6-C03"
+  description = "Scoped cache: no personal answer served to another customer"
+  kind = "invariant"
+  fact = "e6.cache.scoped.cross_principal"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E6-C04"
+  description = "Scoped cache: no entry from an older knowledge or policy version served"
+  kind = "invariant"
+  fact = "e6.cache.scoped.stale"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E6-C05"
+  description = "Query-text cache served a personal answer to another customer"
+  kind = "measurement"
+  fact = "e6.cache.query-text.cross_principal"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E6-C06"
+  description = "Query-text cache served stale entries after a version change"
+  kind = "measurement"
+  fact = "e6.cache.query-text.stale"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E6-C07"
+  description = "The scoped cache still hit on shared questions"
+  kind = "measurement"
+  fact = "e6.cache.scoped.hits"
+  op = ">"
+  value = 0
+
+[[experiments]]
+id = "OPS-E7"
+role = "core"
+title = "A tool gateway in front of a constrained downstream"
+question = "Does governing a tool's capacity independently of the runtime protect the downstream, and what else does it need?"
+claim = "Tool capacity must be governed independently of model capacity."
+hypothesis = "H7"
+setup = "payments-status API (capacity 8, connection limit 16, 20 rps) behind a 64-slot runtime; a finance run and support traffic"
+variable = "direct calls with immediate retries vs the gateway vs the gateway composed with fair scheduling"
+invariant = "with the gateway, calls in flight <= the API's capacity and no 503"
+limitations = ["Read-only tool: idempotency of writes (R2) is not exercised", "One constrained downstream"]
+  [[experiments.checks]]
+  id = "OPS-E7-C01"
+  description = "Gateway: calls in flight never exceeded the API's capacity"
+  kind = "invariant"
+  fact = "e7.controlled.max_inflight"
+  op = "<="
+  ref = "cfg.payments_capacity"
+  [[experiments.checks]]
+  id = "OPS-E7-C02"
+  description = "Gateway: the API returned no 503"
+  kind = "invariant"
+  fact = "e7.controlled.http_503"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E7-C03"
+  description = "Direct calls reached the API's connection limit"
+  kind = "measurement"
+  fact = "e7.naive.max_inflight"
+  op = ">="
+  ref = "cfg.payments_hard_limit"
+  [[experiments.checks]]
+  id = "OPS-E7-C04"
+  description = "More downstream attempts per logical call with direct calls"
+  kind = "hypothesis"
+  fact = "e7.naive.attempts_per_call"
+  op = ">"
+  ref = "e7.controlled.attempts_per_call"
+  [[experiments.checks]]
+  id = "OPS-E7-C05"
+  description = "At least as many workflows completed with the gateway"
+  kind = "hypothesis"
+  fact = "e7.controlled.completed"
+  op = ">="
+  ref = "e7.naive.completed"
+  [[experiments.checks]]
+  id = "OPS-E7-C06"
+  description = "Gateway on one FIFO queue: support goodput fell below direct calls (the wait moved into the runtime's slots)"
+  kind = "measurement"
+  fact = "e7.controlled.support_goodput_pct"
+  op = "<"
+  ref = "e7.naive.support_goodput_pct"
+  [[experiments.checks]]
+  id = "OPS-E7-C07"
+  description = "Gateway + fair scheduling: support goodput at least that of direct calls"
+  kind = "hypothesis"
+  fact = "e7.composed.support_goodput_pct"
+  op = ">="
+  ref = "e7.naive.support_goodput_pct"
+  [[experiments.checks]]
+  id = "OPS-E7-C08"
+  description = "Gateway + fair scheduling: the API returned no 503"
+  kind = "invariant"
+  fact = "e7.composed.http_503"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E7-C09"
+  description = "Gateway + fair scheduling: every finance item completed"
+  kind = "hypothesis"
+  fact = "e7.composed.finance_completed"
+  op = "=="
+  ref = "cfg.e7_finance_items"
+
+[[experiments]]
+id = "OPS-E8"
+role = "core"
+title = "The behavioural release"
+question = "If no code changes, does the platform still see a new release?"
+claim = "Behaviourally relevant non-code changes must create a distinguishable agent release."
+hypothesis = "H8"
+setup = "R41 and six candidates, each changing one artifact; the same 300-workflow Cyber Monday sample replayed under each"
+variable = "one artifact per candidate"
+invariant = "one image digest; seven release ids; one artifact per diff; every row attributable"
+limitations = ["The behaviour a change causes is declared in the scripted agent: the size of R42-a's effect is a modelling assumption, not a measurement; what is tested is release identity, attribution, and (E9, E10) whether gates and canaries notice"]
+  [[experiments.checks]]
+  id = "OPS-E8-C01"
+  description = "The image digest is identical across the seven releases"
+  kind = "invariant"
+  fact = "e8.distinct_image_digests"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "OPS-E8-C02"
+  description = "Seven releases, seven release ids"
+  kind = "invariant"
+  fact = "e8.distinct_release_ids"
+  op = "=="
+  ref = "e8.releases"
+  [[experiments.checks]]
+  id = "OPS-E8-C03"
+  description = "Every candidate differs from R41 in exactly one artifact"
+  kind = "invariant"
+  fact = "e8.max_artifacts_changed"
+  op = "=="
+  value = 1
+  [[experiments.checks]]
+  id = "OPS-E8-C04"
+  description = "The declared behavioural model is wired: a tool description alone changes tool calls per workflow on the same workload (scripted, so it cannot fail; reclassified after the freeze, DEVIATIONS.md A2)"
+  kind = "implementation"
+  fact = "e8.R42-a.tool_calls_per_wf"
+  op = "!="
+  ref = "e8.R41.tool_calls_per_wf"
+  [[experiments.checks]]
+  id = "OPS-E8-C05"
+  description = "Every telemetry row of the run carries a release id"
+  kind = "invariant"
+  fact = "e8.rows_with_release_id"
+  op = "=="
+  ref = "e8.rows_total"
+
+[[experiments]]
+id = "OPS-E9"
+role = "core"
+title = "Offline evals and invariant gates"
+question = "Do machine-checkable gates stop a release whose averages look fine but which breaks an invariant?"
+claim = "Behavioural releases should pass machine-checkable gates before receiving production traffic."
+hypothesis = "H9"
+setup = "a 40-case offline suite (historical, adversarial, synthetic) under R41 and five candidates"
+variable = "the candidate release"
+invariant = "a blocked candidate gets no traffic"
+limitations = ["Task success comes from the declared outcome model; tool-call volume is not a gate criterion (an operational property, left to the canary)"]
+  [[experiments.checks]]
+  id = "OPS-E9-C01"
+  description = "The gate blocked exactly R42-b, R42-c and R42-d"
+  kind = "invariant"
+  fact = "proof.e9.blocked_set"
+  op = "=="
+  value = "R42-b, R42-c, R42-d"
+  [[experiments.checks]]
+  id = "OPS-E9-C02"
+  description = "No traffic was granted to a blocked candidate"
+  kind = "invariant"
+  fact = "e9.blocked_weight_granted"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E9-C03"
+  description = "R42-b's average task success met the threshold (the average looked fine)"
+  kind = "measurement"
+  fact = "e9.R42-b.task_success"
+  op = ">="
+  value = 0.90
+  threshold_source = "preregistration.toml H9 gate.task_success_min"
+  [[experiments.checks]]
+  id = "OPS-E9-C04"
+  description = "R42-a and R42-e passed the gate"
+  kind = "invariant"
+  fact = "proof.e9.passed_set"
+  op = "=="
+  value = "R42-a, R42-e"
+
+[[experiments]]
+id = "OPS-E10"
+role = "core"
+title = "A behavioural canary, promotion and rollback"
+question = "Does a canary that watches behaviour, not status codes, catch a release the offline gate passed, and leave a clean one alone?"
+claim = "Agent releases require behavioural canaries and rollback based on operational evidence, not merely process health."
+hypothesis = "H10"
+setup = "Cyber Monday support traffic; 10 / 50 / 100 % stages; windows of 60 candidate workflows; frozen guardrails"
+variable = "the candidate (R42-a, R42-e) and the comparison (mix-adjusted, raw)"
+invariant = "after a rollback, no request reaches the candidate"
+limitations = ["Canary effects are simulated replies; write-capable canaries need scoped or sandboxed execution or reconciliation (R2)"]
+  [[experiments.checks]]
+  id = "OPS-E10-C01"
+  description = "The canary rolled R42-a back"
+  kind = "hypothesis"
+  fact = "e10.R42-a.mix-adjusted.decision"
+  op = "=="
+  value = "ROLLBACK"
+  [[experiments.checks]]
+  id = "OPS-E10-C02"
+  description = "R42-a's error rate stayed within 1 pp of R41 in every window (healthy by status code)"
+  kind = "measurement"
+  fact = "e10.R42-a.mix-adjusted.error_pct_delta_max"
+  op = "<="
+  value = 1.0
+  [[experiments.checks]]
+  id = "OPS-E10-C03"
+  description = "After the rollback no request reached R42-a"
+  kind = "invariant"
+  fact = "e10.R42-a.mix-adjusted.candidate_after_decision"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E10-C04"
+  description = "The canary promoted the clean R42-e"
+  kind = "hypothesis"
+  fact = "e10.R42-e.mix-adjusted.decision"
+  op = "=="
+  value = "PROMOTE"
+  [[experiments.checks]]
+  id = "OPS-E10-C05"
+  description = "Replies sent by R42-a's canary workflows before the rollback"
+  kind = "measurement"
+  fact = "e10.R42-a.mix-adjusted.effects_before_decision"
+  op = ">"
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E10-C06"
+  description = "None of them was undone by the rollback"
+  kind = "measurement"
+  fact = "e10.R42-a.mix-adjusted.effects_reverted"
+  op = "=="
+  value = 0
+  [[experiments.checks]]
+  id = "OPS-E10-C07"
+  description = "A raw-average comparison rolled the clean R42-e back"
+  kind = "measurement"
+  fact = "e10.R42-e.raw.decision"
+  op = "=="
+  value = "ROLLBACK"
+
+[[experiments]]
+id = "OPS-NC"
+role = "negative-control"
+title = "Negative control: admission removed"
+question = "Can the proof fail? Remove the admission bound and the E1 invariant must break."
+claim = "The E1 invariant check detects a missing admission bound."
+hypothesis = "NC"
+setup = "E1's controlled arm, identical except that the admission bound is removed"
+variable = "the admission bound"
+invariant = "work in system <= slots + queue bound (expected to break)"
+limitations = []
+  [[experiments.checks]]
+  id = "OPS-NC-C01"
+  description = "Without the bound, work in system exceeds slots + queue bound"
+  kind = "control"
+  expect = "fail"
+  fact = "nc.max_work_in_system"
+  op = "<="
+  ref = "cfg.work_in_system_bound"

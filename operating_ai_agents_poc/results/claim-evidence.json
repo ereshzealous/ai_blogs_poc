@@ -1,0 +1,1129 @@
+{
+ "claims": [
+  {
+   "claim": "OPS-C01",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E1-C01",
+     "description": "Bounded admission: work in system never exceeded slots + queue bound",
+     "expected": "<= cfg.work_in_system_bound (128)",
+     "fact": "e1.controlled.max_work_in_system",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 128,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C02",
+     "description": "Open admission: the queue grew past the queue bound",
+     "expected": "> cfg.queue_bound (96)",
+     "fact": "e1.naive.max_queued",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 5759,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C03",
+     "description": "Retry amplification is higher with open admission",
+     "expected": "> e1.controlled.retry_amplification (1.73)",
+     "fact": "e1.naive.retry_amplification",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 2.81,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C04",
+     "description": "Goodput with bounded admission is at least goodput with open admission",
+     "expected": ">= e1.naive.goodput_pct (9.3)",
+     "fact": "e1.controlled.goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 45.5,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C05",
+     "description": "Bounded admission: p99 queue delay of admitted attempts is below the client timeout",
+     "expected": "< 20,000",
+     "fact": "e1.controlled.queue_p99_ms",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 14027,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C06",
+     "description": "Bounded admission refuses some requests explicitly (the cost of control)",
+     "expected": "> 0",
+     "fact": "e1.controlled.refused",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 1405,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E1-C07",
+     "description": "Recomputed from the raw rows: work in system under bounded admission stays within the bound",
+     "expected": "<= cfg.work_in_system_bound (128)",
+     "fact": "raw.e1.controlled.max_work_in_system",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E1/controlled/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 128,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "admission: open (unbounded queue) vs bounded work in system with a capacity error and Retry-After"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E1",
+     "setup": "Black Friday surge: support requests at a multiple of capacity for 120 s, then the evening; same clients in both arms (they give up after 20 s and retry)",
+     "title": "Admission before execution"
+    }
+   ],
+   "statement": "Capacity should be enforced before unlimited work enters the runtime: bounding work in system kept the surge out of the runtime, and open admission turned timeouts into retries and an unbounded queue."
+  },
+  {
+   "claim": "OPS-C02",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E2-C01",
+     "description": "Fair scheduling: at least 99 % of support requests served within the client timeout",
+     "expected": ">= 99",
+     "fact": "e2.controlled.support.goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 100.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E2-C02",
+     "description": "Global FIFO serves fewer support requests within the timeout",
+     "expected": "< e2.controlled.support.goodput_pct (100)",
+     "fact": "e2.naive.support.goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 3.6,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E2-C03",
+     "description": "Fair scheduling: finance never ran more than its bulkhead at once",
+     "expected": "<= cfg.finance_bulkhead (16)",
+     "fact": "e2.controlled.finance.max_active",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 16,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E2-C04",
+     "description": "Fair scheduling: every finance item still completed",
+     "expected": "== cfg.e2_finance_items (3,000)",
+     "fact": "e2.controlled.finance.completed",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 3000,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E2-C05",
+     "description": "Fair scheduling: the finance batch finished within its deadline",
+     "expected": "<= cfg.batch_deadline_s (900)",
+     "fact": "e2.controlled.finance.makespan_s",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 374.9,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E2-C06",
+     "description": "The batch took longer under fair scheduling (the cost of control)",
+     "expected": "> e2.naive.finance.makespan_s (168.1)",
+     "fact": "e2.controlled.finance.makespan_s",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/controlled/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E2/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 374.9,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "scheduling: one global FIFO vs weighted fair scheduling with a finance bulkhead"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E2",
+     "setup": "support at a steady rate; finance submits its reconciliation run in ten seconds; same 32 slots",
+     "title": "Tenant fairness: the noisy neighbour is your own finance team"
+    }
+   ],
+   "statement": "Multi-tenant agent platforms need tenant-aware resource controls, not only global limits: under one global FIFO the finance run starved support; with weighted fair scheduling and a bulkhead, support was served and the batch still completed, later."
+  },
+  {
+   "claim": "OPS-C03",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E3-C01",
+     "description": "Bounded: running attempts never exceeded the slots",
+     "expected": "<= cfg.slots (32)",
+     "fact": "e3.controlled.max_active",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 32,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E3-C02",
+     "description": "Unbounded: running attempts exceeded the runtime's capacity",
+     "expected": "> cfg.capacity (32)",
+     "fact": "e3.naive.max_active",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 1227,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E3-C03",
+     "description": "Deadline-aware dequeue: no attempt started after its client's deadline",
+     "expected": "== 0",
+     "fact": "e3.controlled.started_after_deadline",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E3-C04",
+     "description": "Less cost spent on attempts nobody was waiting for",
+     "expected": "< e3.naive.wasted_cu_pct (95.2)",
+     "fact": "e3.controlled.wasted_cu_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 7.8,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E3-C05",
+     "description": "Higher goodput with the controls",
+     "expected": "> e3.naive.goodput_pct (44.2)",
+     "fact": "e3.controlled.goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 84.4,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E3-C06",
+     "description": "Recomputed from the raw rows: running attempts never exceeded the slots",
+     "expected": "<= cfg.slots (32)",
+     "fact": "raw.e3.controlled.max_active",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E3/controlled/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 32,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "unbounded concurrency vs slots + bounded queue + deadline-aware dequeue + cancellation"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E3",
+     "setup": "overload at 1.5x capacity for 60 s, then light load; same clients",
+     "title": "Bounded concurrency, backpressure and deadlines"
+    }
+   ],
+   "statement": "Concurrency must be bounded independently of incoming request volume: unbounded concurrency slowed every workflow and spent most of its cost on attempts nobody was waiting for; slots, a bounded queue and deadline-aware dequeue kept goodput up."
+  },
+  {
+   "claim": "OPS-C04",
+   "class": "QUALIFIED",
+   "evidence": [
+    {
+     "check": "OPS-E4-C01",
+     "description": "Envelope: the runaway refund stopped with BUDGET_EXCEEDED",
+     "expected": "== BUDGET_EXCEEDED",
+     "fact": "e4.envelope.runaway.result",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": "BUDGET_EXCEEDED",
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E4-C02",
+     "description": "No budget: the runaway ran until the simulator's harness guard",
+     "expected": ">= cfg.harness_guard_steps (400)",
+     "fact": "e4.none.runaway.steps",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/none/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 400,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E4-C03",
+     "description": "Propagated envelope: the coordinator's model calls (children included) stayed within its envelope",
+     "expected": "<= e4.limit.dispute-investigation.model_calls (10)",
+     "fact": "e4.envelope.coord.model_calls",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 9,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E4-C04",
+     "description": "Per-agent budgets: the coordinator's total model calls exceeded its envelope",
+     "expected": "> e4.limit.dispute-investigation.model_calls (10)",
+     "fact": "e4.per-agent.coord.model_calls",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/limits.json",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/per-agent/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 11,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E4-C05",
+     "description": "The calibrated envelope stopped no legitimate workflow of the blind sample",
+     "expected": "== 0",
+     "fact": "e4.envelope.legit_cut",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E4/envelope/rows.jsonl"
+     ],
+     "finding": "LIMITATION OBSERVED",
+     "kind": "hypothesis",
+     "observed": 4,
+     "status": "FAIL"
+    }
+   ],
+   "mechanism": [
+    "budgets: none vs per-agent vs a propagated envelope"
+   ],
+   "rests_on": [],
+   "result": "QUALIFIED",
+   "scenario": [
+    {
+     "id": "OPS-E4",
+     "setup": "a refund whose payment never settles; a coordinator with three sub-agents, one stuck, re-delegated; 350 calibrated normal workflows",
+     "title": "Workflow resource envelopes, propagated to children"
+    }
+   ],
+   "statement": "Production agents need explicit execution budgets, propagated to child workflows: the envelope stopped a runaway loop and bounded a coordinator with sub-agents, where per-agent budgets did not; calibrated on a development sample, it also stopped some legitimate workflows of the blind sample."
+  },
+  {
+   "claim": "OPS-C05",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E5-C01",
+     "description": "Routed costs less per successful workflow than all-large",
+     "expected": "< e5.all-large.cost_per_success (24.92)",
+     "fact": "e5.routed.cost_per_success",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-large/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 10.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C02",
+     "description": "Routed: no model call below the task's capability tier",
+     "expected": "== 0",
+     "fact": "e5.routed.capability_violations",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C03",
+     "description": "Routed: no payment data on a profile not allowed to process it, throttle included",
+     "expected": "== 0",
+     "fact": "e5.routed.data_violations",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C04",
+     "description": "Routed success rate within 1 percentage point of all-large (or better)",
+     "expected": ">= -1",
+     "fact": "proof.e5.success_gap_pp",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/facts.json"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 2.7,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C05",
+     "description": "All-small costs less per request than routed",
+     "expected": "< e5.routed.cost_per_request (9.91)",
+     "fact": "e5.all-small.cost_per_request",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 2.51,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C06",
+     "description": "All-small succeeds less often than routed",
+     "expected": "< e5.routed.success_pct (99.1)",
+     "fact": "e5.all-small.success_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/all-small/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 98.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C07",
+     "description": "Routed with any fallback put payment data on a global profile during the throttle",
+     "expected": "> 0",
+     "fact": "e5.routed-any-fallback.data_violations",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed-any-fallback/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 18,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E5-C08",
+     "description": "Routed deferred explicitly during the throttle instead of crossing the policy",
+     "expected": "> 0",
+     "fact": "e5.routed.deferred",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E5/routed/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 7,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "all-large vs all-small vs routed vs routed with any fallback"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E5",
+     "setup": "800 workflows (support mix + finance), the EU private deployment throttled for 30 s",
+     "title": "Routing inside an eligibility contract"
+    }
+   ],
+   "statement": "Model routing should optimise within a declared quality/policy contract, not cost alone: inside the contract, routing cost less per successful workflow than all-large with no violation, deferring explicitly during a throttle; optimising cost alone (all-small, any fallback) left the contract."
+  },
+  {
+   "claim": "OPS-C06",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E6-C01",
+     "description": "Bounded retrieval kept every required evidence id of every query",
+     "expected": "== 0",
+     "fact": "e6.bounded.missing_required",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C02",
+     "description": "Bounded retrieval used fewer context tokens per query",
+     "expected": "< e6.naive.context_tokens_mean (34,716)",
+     "fact": "e6.bounded.context_tokens_mean",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/retrieval.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 5982,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C03",
+     "description": "Scoped cache: no personal answer served to another customer",
+     "expected": "== 0",
+     "fact": "e6.cache.scoped.cross_principal",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C04",
+     "description": "Scoped cache: no entry from an older knowledge or policy version served",
+     "expected": "== 0",
+     "fact": "e6.cache.scoped.stale",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C05",
+     "description": "Query-text cache served a personal answer to another customer",
+     "expected": "> 0",
+     "fact": "e6.cache.query-text.cross_principal",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 5,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C06",
+     "description": "Query-text cache served stale entries after a version change",
+     "expected": "> 0",
+     "fact": "e6.cache.query-text.stale",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 5,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E6-C07",
+     "description": "The scoped cache still hit on shared questions",
+     "expected": "> 0",
+     "fact": "e6.cache.scoped.hits",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E6/cache.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 7,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "naive vs bounded retrieval; query-text vs scoped cache key"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E6",
+     "setup": "12 fixture queries with declared required evidence ids; a 24-lookup cache sequence with a knowledge and a policy version change",
+     "title": "Context budgets and cache scope"
+    }
+   ],
+   "statement": "Context and retrieval need resource controls like model execution: bounded retrieval kept every declared required evidence id with far fewer tokens, and a cache keyed by tenant, principal scope and versions hit without leaking or going stale, unlike a query-text cache."
+  },
+  {
+   "claim": "OPS-C07",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E7-C01",
+     "description": "Gateway: calls in flight never exceeded the API's capacity",
+     "expected": "<= cfg.payments_capacity (8)",
+     "fact": "e7.controlled.max_inflight",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 8,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C02",
+     "description": "Gateway: the API returned no 503",
+     "expected": "== 0",
+     "fact": "e7.controlled.http_503",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C03",
+     "description": "Direct calls reached the API's connection limit",
+     "expected": ">= cfg.payments_hard_limit (16)",
+     "fact": "e7.naive.max_inflight",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/tools.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 16,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C04",
+     "description": "More downstream attempts per logical call with direct calls",
+     "expected": "> e7.controlled.attempts_per_call (1)",
+     "fact": "e7.naive.attempts_per_call",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 2.81,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C05",
+     "description": "At least as many workflows completed with the gateway",
+     "expected": ">= e7.naive.completed (911)",
+     "fact": "e7.controlled.completed",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/rows.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 3584,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C06",
+     "description": "Gateway on one FIFO queue: support goodput fell below direct calls (the wait moved into the runtime's slots)",
+     "expected": "< e7.naive.support_goodput_pct (99.2)",
+     "fact": "e7.controlled.support_goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/controlled/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 5.3,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C07",
+     "description": "Gateway + fair scheduling: support goodput at least that of direct calls",
+     "expected": ">= e7.naive.support_goodput_pct (99.2)",
+     "fact": "e7.composed.support_goodput_pct",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/naive/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 100.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C08",
+     "description": "Gateway + fair scheduling: the API returned no 503",
+     "expected": "== 0",
+     "fact": "e7.composed.http_503",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/stats.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E7-C09",
+     "description": "Gateway + fair scheduling: every finance item completed",
+     "expected": "== cfg.e7_finance_items (1,500)",
+     "fact": "e7.composed.finance_completed",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/experiments/scenarios.toml",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E7/composed/requests.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": 1500,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "direct calls with immediate retries vs the gateway vs the gateway composed with fair scheduling"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E7",
+     "setup": "payments-status API (capacity 8, connection limit 16, 20 rps) behind a 64-slot runtime; a finance run and support traffic",
+     "title": "A tool gateway in front of a constrained downstream"
+    }
+   ],
+   "statement": "Tool capacity must be governed independently of model capacity: the gateway held the payments API inside its capacity with no 503s and far fewer attempts; alone on a FIFO queue it moved the wait into the runtime's slots, and composed with fair scheduling it served support too."
+  },
+  {
+   "claim": "OPS-C08",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E8-C01",
+     "description": "The image digest is identical across the seven releases",
+     "expected": "== 1",
+     "fact": "e8.distinct_image_digests",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/*.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 1,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E8-C02",
+     "description": "Seven releases, seven release ids",
+     "expected": "== e8.releases (7)",
+     "fact": "e8.distinct_release_ids",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/releases/*.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 7,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E8-C03",
+     "description": "Every candidate differs from R41 in exactly one artifact",
+     "expected": "== 1",
+     "fact": "e8.max_artifacts_changed",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/diffs.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 1,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E8-C04",
+     "description": "The declared behavioural model is wired: a tool description alone changes tool calls per workflow on the same workload (scripted, so it cannot fail; reclassified after the freeze, DEVIATIONS.md A2)",
+     "expected": "!= e8.R41.tool_calls_per_wf (1.117)",
+     "fact": "e8.R42-a.tool_calls_per_wf",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R41.jsonl",
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E8/rows/R42-a.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "implementation",
+     "observed": 1.913,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E8-C05",
+     "description": "Every telemetry row of the run carries a release id",
+     "expected": "== e8.rows_total (58,573)",
+     "fact": "e8.rows_with_release_id",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/**/rows*.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 58573,
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "one artifact per candidate"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E8",
+     "setup": "R41 and six candidates, each changing one artifact; the same 300-workflow Cyber Monday sample replayed under each",
+     "title": "The behavioural release"
+    }
+   ],
+   "statement": "Behaviourally relevant non-code changes must create a distinguishable agent release: six single-artifact changes produced six new release ids under one unchanged image digest, and every telemetry row is attributable to its release. (The behaviour a tool description causes is declared in the scripted agent.)"
+  },
+  {
+   "claim": "OPS-C09",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E9-C01",
+     "description": "The gate blocked exactly R42-b, R42-c and R42-d",
+     "expected": "== R42-b, R42-c, R42-d",
+     "fact": "proof.e9.blocked_set",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/facts.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": "R42-b, R42-c, R42-d",
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E9-C02",
+     "description": "No traffic was granted to a blocked candidate",
+     "expected": "== 0",
+     "fact": "e9.blocked_weight_granted",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/*.json + registry.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E9-C03",
+     "description": "R42-b's average task success met the threshold (the average looked fine)",
+     "expected": ">= 0.9",
+     "fact": "e9.R42-b.task_success",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E9/evals/R42-b.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 1.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E9-C04",
+     "description": "R42-a and R42-e passed the gate",
+     "expected": "== R42-a, R42-e",
+     "fact": "proof.e9.passed_set",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/facts.json"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": "R42-a, R42-e",
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "the candidate release"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E9",
+     "setup": "a 40-case offline suite (historical, adversarial, synthetic) under R41 and five candidates",
+     "title": "Offline evals and invariant gates"
+    }
+   ],
+   "statement": "Behavioural releases should pass machine-checkable gates before receiving production traffic: three candidates with good averages and one broken invariant each were blocked and granted no traffic."
+  },
+  {
+   "claim": "OPS-C10",
+   "class": "SUPPORTED",
+   "evidence": [
+    {
+     "check": "OPS-E10-C01",
+     "description": "The canary rolled R42-a back",
+     "expected": "== ROLLBACK",
+     "fact": "e10.R42-a.mix-adjusted.decision",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": "ROLLBACK",
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C02",
+     "description": "R42-a's error rate stayed within 1 pp of R41 in every window (healthy by status code)",
+     "expected": "<= 1",
+     "fact": "e10.R42-a.mix-adjusted.error_pct_delta_max",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 0.0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C03",
+     "description": "After the rollback no request reached R42-a",
+     "expected": "== 0",
+     "fact": "e10.R42-a.mix-adjusted.candidate_after_decision",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/rows.jsonl"
+     ],
+     "finding": "PASS",
+     "kind": "invariant",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C04",
+     "description": "The canary promoted the clean R42-e",
+     "expected": "== PROMOTE",
+     "fact": "e10.R42-e.mix-adjusted.decision",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__mix-adjusted/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "hypothesis",
+     "observed": "PROMOTE",
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C05",
+     "description": "Replies sent by R42-a's canary workflows before the rollback",
+     "expected": "> 0",
+     "fact": "e10.R42-a.mix-adjusted.effects_before_decision",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 60,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C06",
+     "description": "None of them was undone by the rollback",
+     "expected": "== 0",
+     "fact": "e10.R42-a.mix-adjusted.effects_reverted",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-a__mix-adjusted/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": 0,
+     "status": "PASS"
+    },
+    {
+     "check": "OPS-E10-C07",
+     "description": "A raw-average comparison rolled the clean R42-e back",
+     "expected": "== ROLLBACK",
+     "fact": "e10.R42-e.raw.decision",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/scenarios/E10/R42-e__raw/canary.json"
+     ],
+     "finding": "PASS",
+     "kind": "measurement",
+     "observed": "ROLLBACK",
+     "status": "PASS"
+    }
+   ],
+   "mechanism": [
+    "the candidate (R42-a, R42-e) and the comparison (mix-adjusted, raw)"
+   ],
+   "rests_on": [],
+   "result": "SUPPORTED",
+   "scenario": [
+    {
+     "id": "OPS-E10",
+     "setup": "Cyber Monday support traffic; 10 / 50 / 100 % stages; windows of 60 candidate workflows; frozen guardrails",
+     "title": "A behavioural canary, promotion and rollback"
+    }
+   ],
+   "statement": "Agent releases require behavioural canaries and rollback on operational evidence, not process health: a release that passed the offline gate and kept its error rate rolled back on tool-call amplification; a clean one was promoted; a raw-average comparison would have rolled the clean one back; the rollback did not undo replies already sent."
+  },
+  {
+   "claim": "OPS-C11",
+   "class": "NEGATIVE CONTROL",
+   "evidence": [
+    {
+     "check": "OPS-NC-C01",
+     "description": "Without the bound, work in system exceeds slots + queue bound",
+     "expected": "<= cfg.work_in_system_bound (128)",
+     "fact": "nc.max_work_in_system",
+     "files": [
+      "ops_poc/runs/2026-10-08-recorded/config/platform.toml",
+      "ops_poc/runs/2026-10-08-recorded/negative-control/stats.json"
+     ],
+     "finding": "EXPECTED FAILURE",
+     "kind": "control",
+     "observed": 5791,
+     "status": "EXPECTED_FAILURE"
+    }
+   ],
+   "mechanism": [
+    "the admission bound"
+   ],
+   "rests_on": [],
+   "result": "NEGATIVE CONTROL",
+   "scenario": [
+    {
+     "id": "OPS-NC",
+     "setup": "E1's controlled arm, identical except that the admission bound is removed",
+     "title": "Negative control: admission removed"
+    }
+   ],
+   "statement": "The proof can fail: with the admission bound removed, the E1 invariant check breaks."
+  },
+  {
+   "claim": "OPS-C12",
+   "class": "ARGUED",
+   "evidence": [],
+   "mechanism": [],
+   "rests_on": [
+    "research/sources.md: k8s-hpa, sre-overload, aws-queue-backlogs, aws-load-shedding",
+    "OPS-E1 and OPS-E7 as illustrations, not tests of autoscaling"
+   ],
+   "result": "ARGUED",
+   "scenario": [],
+   "statement": "Autoscaling helps but does not remove provider quotas, downstream limits, budgets or tenant fairness; a queue absorbs imbalance, it does not create capacity."
+  },
+  {
+   "claim": "OPS-C13",
+   "class": "ARGUED",
+   "evidence": [],
+   "mechanism": [],
+   "rests_on": [
+    "research/sources.md: aws-rollback-safety, sre-release-engineering, flagger-strategies, istio-mirroring",
+    "OPS-E10-C06 shows only the side-effect half"
+   ],
+   "result": "ARGUED",
+   "scenario": [],
+   "statement": "Rollback across a stateful agent platform is harder than rolling back a stateless binary: indexes, memory, migrations and external side effects need compatible versions or reconciliation."
+  },
+  {
+   "claim": "OPS-C14",
+   "class": "NOT TESTED",
+   "evidence": [],
+   "mechanism": [],
+   "rests_on": [
+    "ops_poc/config/*.toml (declared parameters)",
+    "proof/manifest.toml [[reality]] ARCHITECTURE"
+   ],
+   "result": "NOT TESTED",
+   "scenario": [],
+   "statement": "Real provider latency, quotas and prices; real model quality; human approval capacity; shadow traffic; real tool limits. Every number in this POC is a simulation unit."
+  }
+ ],
+ "schema": "o1o2-claim-evidence/v1"
+}

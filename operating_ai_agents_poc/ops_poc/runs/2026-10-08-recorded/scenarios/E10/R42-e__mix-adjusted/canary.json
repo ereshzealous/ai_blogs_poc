@@ -1,0 +1,219 @@
+{
+ "baseline_id": "rel-c084dffaf6c9",
+ "candidate": "R42-e",
+ "candidate_id": "rel-0e00bddbbffb",
+ "comparison": "mix-adjusted",
+ "decided_at_ms": 320629,
+ "decision": "PROMOTE",
+ "effects": {
+  "by_candidate": 1651,
+  "by_candidate_before_decision": 242,
+  "note": "a rollback moves the release pointer; replies already sent under the candidate stay sent",
+  "reverted_by_rollback": 0
+ },
+ "offline_gate": {
+  "passed": true,
+  "reasons": []
+ },
+ "registry": [
+  {
+   "event": "production",
+   "release": "R41",
+   "release_id": "rel-c084dffaf6c9"
+  },
+  {
+   "event": "submitted",
+   "release": "R42-e",
+   "release_id": "rel-0e00bddbbffb"
+  },
+  {
+   "event": "gate",
+   "passed": true,
+   "reasons": [],
+   "release": "R42-e",
+   "release_id": "rel-0e00bddbbffb"
+  },
+  {
+   "event": "weight",
+   "reason": "canary stage 1",
+   "release": "R42-e",
+   "release_id": "rel-0e00bddbbffb",
+   "weight": 10
+  },
+  {
+   "event": "weight",
+   "reason": "canary stage 2",
+   "release": "R42-e",
+   "release_id": "rel-0e00bddbbffb",
+   "weight": 50
+  },
+  {
+   "event": "promoted",
+   "release": "R42-e",
+   "release_id": "rel-0e00bddbbffb",
+   "replaces": "rel-c084dffaf6c9"
+  }
+ ],
+ "windows": [
+  {
+   "at_ms": 132680,
+   "baseline": {
+    "cost_per_success": 13.147,
+    "error_pct": 0.0,
+    "n": 581,
+    "p95_ms": 11429,
+    "success_pct": 99.828,
+    "tool_calls_per_wf": 1.079,
+    "violations": 0
+   },
+   "breaches": [],
+   "candidate": {
+    "cost_per_success": 14.179,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11320,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 1.083,
+    "violations": 0
+   },
+   "deltas": {
+    "cost_per_success_pct": -11.063,
+    "error_pp": 0.0,
+    "p95_pct": -0.954,
+    "success_pp": 0.172,
+    "tool_calls_pct": -3.668,
+    "violations": 0
+   },
+   "mix_adjusted_deltas": {
+    "cost_per_success_pct": -11.063,
+    "tool_calls_pct": -3.668
+   },
+   "raw_deltas": {
+    "cost_per_success_pct": 7.85,
+    "tool_calls_pct": 0.385
+   },
+   "stage_pct": 10,
+   "window": 1
+  },
+  {
+   "at_ms": 268938,
+   "baseline": {
+    "cost_per_success": 13.187,
+    "error_pct": 0.0,
+    "n": 614,
+    "p95_ms": 11429,
+    "success_pct": 99.511,
+    "tool_calls_per_wf": 1.057,
+    "violations": 0
+   },
+   "breaches": [],
+   "candidate": {
+    "cost_per_success": 11.856,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11345,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 0.983,
+    "violations": 0
+   },
+   "deltas": {
+    "cost_per_success_pct": 0.076,
+    "error_pp": 0.0,
+    "p95_pct": -0.735,
+    "success_pp": 0.489,
+    "tool_calls_pct": 0.801,
+    "violations": 0
+   },
+   "mix_adjusted_deltas": {
+    "cost_per_success_pct": 0.076,
+    "tool_calls_pct": 0.801
+   },
+   "raw_deltas": {
+    "cost_per_success_pct": -10.093,
+    "tool_calls_pct": -6.97
+   },
+   "stage_pct": 10,
+   "window": 2
+  },
+  {
+   "at_ms": 297780,
+   "baseline": {
+    "cost_per_success": 10.718,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11404,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 0.95,
+    "violations": 0
+   },
+   "breaches": [],
+   "candidate": {
+    "cost_per_success": 12.97,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11320,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 1.033,
+    "violations": 0
+   },
+   "deltas": {
+    "cost_per_success_pct": -7.832,
+    "error_pp": 0.0,
+    "p95_pct": -0.737,
+    "success_pp": 0.0,
+    "tool_calls_pct": -1.754,
+    "violations": 0
+   },
+   "mix_adjusted_deltas": {
+    "cost_per_success_pct": -7.832,
+    "tool_calls_pct": -1.754
+   },
+   "raw_deltas": {
+    "cost_per_success_pct": 21.004,
+    "tool_calls_pct": 8.772
+   },
+   "stage_pct": 50,
+   "window": 3
+  },
+  {
+   "at_ms": 320629,
+   "baseline": {
+    "cost_per_success": 9.004,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 11404,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 0.9,
+    "violations": 0
+   },
+   "breaches": [],
+   "candidate": {
+    "cost_per_success": 8.988,
+    "error_pct": 0.0,
+    "n": 60,
+    "p95_ms": 6280,
+    "success_pct": 100.0,
+    "tool_calls_per_wf": 1.0,
+    "violations": 0
+   },
+   "deltas": {
+    "cost_per_success_pct": -5.867,
+    "error_pp": 0.0,
+    "p95_pct": -44.932,
+    "success_pp": 0.0,
+    "tool_calls_pct": 4.357,
+    "violations": 0
+   },
+   "mix_adjusted_deltas": {
+    "cost_per_success_pct": -5.867,
+    "tool_calls_pct": 4.357
+   },
+   "raw_deltas": {
+    "cost_per_success_pct": -0.175,
+    "tool_calls_pct": 11.111
+   },
+   "stage_pct": 50,
+   "window": 4
+  }
+ ]
+}

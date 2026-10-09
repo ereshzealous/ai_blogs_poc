@@ -1,0 +1,49 @@
+# O1 + O2 · tools and their downstream systems (declared). capacity: concurrent calls the downstream serves at its base
+# latency (above it every call slows by inflight / capacity); hard_limit: connection limit above which a call fails at
+# once with 503; rps: the downstream's own rate limit (over it: 429).
+
+[tools."orders.lookup"]
+base_ms = 150
+capacity = 64
+hard_limit = 256
+rps = 400
+cu = 0.05
+effect = "read"
+result_tokens = 220
+
+[tools."carrier.options"]
+base_ms = 200
+capacity = 48
+hard_limit = 192
+rps = 200
+cu = 0.05
+effect = "read"
+result_tokens = 260
+
+[tools."payments.status"]       # the payment processor's status API: far smaller than the agent runtime (E7)
+base_ms = 300
+capacity = 8
+hard_limit = 16
+rps = 20
+cu = 0.10
+effect = "read"
+result_tokens = 180
+
+# The tool gateway (Tools + Actions layer), used where a scenario turns it on (E7).
+[gateway]
+max_wait_ms = 3000          # a call waits at most this long for a gateway slot, then gets TOOL_BUSY
+queue_bound = 96            # calls allowed to wait at the gateway
+breaker_threshold = 5       # consecutive downstream 503s that open the circuit
+breaker_open_ms = 5000
+step_backoff_ms = [1000, 2000, 4000]   # the runtime re-tries a TOOL_BUSY step after these delays, then fails the step
+
+# A naive tool client (E7, naive arm): on 503 or 429, retry after a short pause.
+[naive]
+retry_pause_ms = 50
+retries = 3
+
+# Scenarios other than E7 hold tools constant and out of the way ("relaxed"): every tool gets this capacity.
+[relaxed]
+capacity = 100000
+hard_limit = 100000
+rps = 100000

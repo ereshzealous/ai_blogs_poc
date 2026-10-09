@@ -1,0 +1,74 @@
+{
+ "image_digest": "img-b07d496787c0",
+ "manifest": {
+  "agent_code": {
+   "module": "agentops/agent.py",
+   "sha256": "65d3f540e5dd5dbb7864d079d06a49d69debb9e656dbf9876b9e5d4978b28d53",
+   "version": "support-agent 1.4.0"
+  },
+  "approval_policy": {
+   "refund_approval_above_eur": 100,
+   "version": "approval v5"
+  },
+  "authz_policy": {
+   "delegated_refund_limit_eur": 100,
+   "version": "policy v19"
+  },
+  "evals": {
+   "suite": "ops-suite v1"
+  },
+  "image": {
+   "digest": "img-b07d496787c0",
+   "runtime": "agentops-runtime 2.3.1"
+  },
+  "knowledge": {
+   "embedding": "emb-v2",
+   "index": "kb-2026-11-26"
+  },
+  "memory_policy": {
+   "version": "memory v3"
+  },
+  "model": {
+   "max_output_tokens": 400,
+   "temperature": 0.2
+  },
+  "ops": {
+   "envelope": "envelope v4",
+   "envelope_enforced": true
+  },
+  "prompt": {
+   "system": "support-system v7",
+   "system_tokens": 1800
+  },
+  "retrieval": {
+   "context_cap_tokens": 6000,
+   "history": "last-3-turns+summary",
+   "max_sources": 2,
+   "top_k": 4
+  },
+  "routing": {
+   "overrides": {},
+   "strategy": "cheapest-eligible",
+   "version": "routing v9"
+  },
+  "tools": {
+   "carrier.options": {
+    "description": "Delivery options for an order, with cut-off times.",
+    "schema": "carrier.options v2"
+   },
+   "orders.lookup": {
+    "description": "Look up an order by id. Returns every shipment and its current status.",
+    "schema": "orders.lookup v3"
+   },
+   "payments.status": {
+    "description": "Capture and refund status for a payment.",
+    "schema": "payments.status v5"
+   }
+  },
+  "workflow": {
+   "version": "support-flows 12"
+  }
+ },
+ "name": "R42-policy",
+ "release_id": "rel-91e7d99815c9"
+}

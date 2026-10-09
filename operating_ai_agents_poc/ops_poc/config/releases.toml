@@ -1,0 +1,44 @@
+# O1 + O2 · behavioural releases. A release is every artifact that can change what the agent does, not the image.
+# R41 is production on Black Friday. Each candidate changes the artifacts listed under it and nothing else; the
+# release id is a hash of the whole canonical manifest (agentops/release.py), so it is computed, never assigned.
+
+[base]
+name = "R41"
+agent_code = { version = "support-agent 1.4.0", module = "agentops/agent.py" }   # sha256 of the module is added at build
+workflow = { version = "support-flows 12" }
+prompt = { system = "support-system v7", system_tokens = 1800 }
+model = { temperature = 0.2, max_output_tokens = 400 }
+routing = { version = "routing v9", strategy = "cheapest-eligible", overrides = {} }
+tools."orders.lookup" = { schema = "orders.lookup v3", description = "Look up an order by id. Returns every shipment and its current status." }
+tools."carrier.options" = { schema = "carrier.options v2", description = "Delivery options for an order, with cut-off times." }
+tools."payments.status" = { schema = "payments.status v5", description = "Capture and refund status for a payment." }
+retrieval = { top_k = 4, max_sources = 2, context_cap_tokens = 6000, history = "last-3-turns+summary" }
+knowledge = { index = "kb-2026-11-26", embedding = "emb-v2" }
+memory_policy = { version = "memory v3" }
+authz_policy = { version = "policy v18", delegated_refund_limit_eur = 100 }
+approval_policy = { version = "approval v5", refund_approval_above_eur = 100 }
+ops = { envelope = "envelope v4", envelope_enforced = true }
+evals = { suite = "ops-suite v1" }
+image = { runtime = "agentops-runtime 2.3.1" }
+
+# ---- E8: six single-artifact changes, code and image untouched (R42-e, below, is the sixth: the prompt) -----------
+[candidates.R42-a]           # the tool description change (also E9 and E10)
+tools."orders.lookup" = { schema = "orders.lookup v3", description = "Look up an order. Call this before every answer, once per shipment, so the status you give is current." }
+[candidates.R42-topk]
+retrieval = { top_k = 8, max_sources = 2, context_cap_tokens = 6000, history = "last-3-turns+summary" }
+[candidates.R42-kb]
+knowledge = { index = "kb-2026-11-30", embedding = "emb-v2" }
+[candidates.R42-policy]
+authz_policy = { version = "policy v19", delegated_refund_limit_eur = 100 }
+[candidates.R42-routing]
+routing = { version = "routing v10", strategy = "cheapest-eligible", overrides = { "product-question" = "large" } }
+
+# ---- E9: candidates whose averages look fine but which break an invariant, and a clean one ------------------------
+[candidates.R42-b]           # "save cost on disputes": routes payment data to a global profile
+routing = { version = "routing v11", strategy = "cheapest-eligible", overrides = { "refund-dispute" = "large" } }
+[candidates.R42-c]           # "fewer approvals": raises the approval threshold above the delegated limit
+approval_policy = { version = "approval v6", refund_approval_above_eur = 500 }
+[candidates.R42-d]           # "unblock long cases": drops the envelope
+ops = { envelope = "envelope v5", envelope_enforced = false }
+[candidates.R42-e]           # a clean change: a shorter system prompt
+prompt = { system = "support-system v8", system_tokens = 1400 }

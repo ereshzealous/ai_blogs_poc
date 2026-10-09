@@ -1,0 +1,160 @@
+# O1 + O2 · the article's claims -> experiments -> checks (pae-proof/v1). Written after the recorded run 2026-10-08-recorded.
+# class (what a reader sees): SUPPORTED · QUALIFIED (supported, with a limitation the run observed) · NEGATIVE CONTROL ·
+# ARGUED (design reasoning, sourced, not tested here) · NOT TESTED (outside what this POC can show).
+# verdict (what the checks must bear out): supported · control · limitation (+ rests_on).
+
+[[claims]]
+id = "OPS-C01"
+class = "SUPPORTED"
+statement = "Capacity should be enforced before unlimited work enters the runtime: bounding work in system kept the surge out of the runtime, and open admission turned timeouts into retries and an unbounded queue."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E1"]
+checks = ["OPS-E1-C01", "OPS-E1-C02", "OPS-E1-C03", "OPS-E1-C04", "OPS-E1-C05", "OPS-E1-C06", "OPS-E1-C07"]
+article = ["A Queue Is Not Capacity", "§7 Admission control comes before execution"]
+facts = ["e1.naive.max_work_in_system", "e1.controlled.max_work_in_system", "e1.naive.retry_amplification", "e1.controlled.goodput_pct", "e1.naive.goodput_pct", "e1.controlled.refused_pct"]
+
+[[claims]]
+id = "OPS-C02"
+class = "SUPPORTED"
+statement = "Multi-tenant agent platforms need tenant-aware resource controls, not only global limits: under one global FIFO the finance run starved support; with weighted fair scheduling and a bulkhead, support was served and the batch still completed, later."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E2"]
+checks = ["OPS-E2-C01", "OPS-E2-C02", "OPS-E2-C03", "OPS-E2-C04", "OPS-E2-C05", "OPS-E2-C06"]
+article = ["The Noisy Neighbour Is Your Own Finance Team", "§8 Orchestration owns concurrency, queues and backpressure"]
+facts = ["e2.naive.support.goodput_pct", "e2.controlled.support.goodput_pct", "e2.controlled.finance.makespan_s", "e2.naive.finance.makespan_s"]
+
+[[claims]]
+id = "OPS-C03"
+class = "SUPPORTED"
+statement = "Concurrency must be bounded independently of incoming request volume: unbounded concurrency slowed every workflow and spent most of its cost on attempts nobody was waiting for; slots, a bounded queue and deadline-aware dequeue kept goodput up."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E3"]
+checks = ["OPS-E3-C01", "OPS-E3-C02", "OPS-E3-C03", "OPS-E3-C04", "OPS-E3-C05", "OPS-E3-C06"]
+article = ["The Noisy Neighbour Is Your Own Finance Team", "§8 Orchestration owns concurrency, queues and backpressure"]
+facts = ["e3.naive.max_active", "e3.controlled.max_active", "e3.naive.goodput_pct", "e3.controlled.goodput_pct", "e3.naive.wasted_cu_pct", "e3.controlled.wasted_cu_pct"]
+
+[[claims]]
+id = "OPS-C04"
+class = "QUALIFIED"
+statement = "Production agents need explicit execution budgets, propagated to child workflows: the envelope stopped a runaway loop and bounded a coordinator with sub-agents, where per-agent budgets did not; calibrated on a development sample, it also stopped some legitimate workflows of the blind sample."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E4"]
+checks = ["OPS-E4-C01", "OPS-E4-C02", "OPS-E4-C03", "OPS-E4-C04"]
+bound_checks = ["OPS-E4-C05"]
+article = ["Unlimited Reasoning Is Not an Architecture", "§6 Give every workflow a resource envelope", "§31 The cost of control"]
+facts = ["e4.none.runaway.cost_cu", "e4.envelope.runaway.cost_cu", "e4.envelope.legit_cut", "e4.per-agent.coord.model_calls", "e4.envelope.coord.model_calls"]
+
+[[claims]]
+id = "OPS-C05"
+class = "SUPPORTED"
+statement = "Model routing should optimise within a declared quality/policy contract, not cost alone: inside the contract, routing cost less per successful workflow than all-large with no violation, deferring explicitly during a throttle; optimising cost alone (all-small, any fallback) left the contract."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E5"]
+checks = ["OPS-E5-C01", "OPS-E5-C02", "OPS-E5-C03", "OPS-E5-C04", "OPS-E5-C05", "OPS-E5-C06", "OPS-E5-C07", "OPS-E5-C08"]
+article = ["The Cheapest Model Is Not Always an Eligible One", "§9 Model services own routing economics"]
+facts = ["e5.routed.cost_per_success", "e5.all-large.cost_per_success", "e5.all-small.cost_per_success", "e5.all-small.capability_violations", "e5.routed-any-fallback.data_violations"]
+note = "Synthetic eligibility contract and success table: no statement about the quality of any real model."
+
+[[claims]]
+id = "OPS-C06"
+class = "SUPPORTED"
+statement = "Context and retrieval need resource controls like model execution: bounded retrieval kept every declared required evidence id with far fewer tokens, and a cache keyed by tenant, principal scope and versions hit without leaking or going stale, unlike a query-text cache."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E6"]
+checks = ["OPS-E6-C01", "OPS-E6-C02", "OPS-E6-C03", "OPS-E6-C04", "OPS-E6-C05", "OPS-E6-C06", "OPS-E6-C07"]
+article = ["Context and Tools Have Their Own Limits", "§10 Context and knowledge have operational cost"]
+facts = ["e6.naive.context_tokens_mean", "e6.bounded.context_tokens_mean", "e6.bounded.missing_required", "e6.cache.query-text.cross_principal", "e6.cache.query-text.stale"]
+
+[[claims]]
+id = "OPS-C07"
+class = "SUPPORTED"
+statement = "Tool capacity must be governed independently of model capacity: the gateway held the payments API inside its capacity with no 503s and far fewer attempts; alone on a FIFO queue it moved the wait into the runtime's slots, and composed with fair scheduling it served support too."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E7"]
+checks = ["OPS-E7-C01", "OPS-E7-C02", "OPS-E7-C03", "OPS-E7-C04", "OPS-E7-C05", "OPS-E7-C06", "OPS-E7-C07", "OPS-E7-C08", "OPS-E7-C09"]
+article = ["Context and Tools Have Their Own Limits", "§11 Tools have a different scaling limit"]
+facts = ["e7.naive.max_inflight", "e7.controlled.max_inflight", "e7.naive.http_503", "e7.controlled.support_goodput_pct", "e7.composed.support_goodput_pct"]
+
+[[claims]]
+id = "OPS-C08"
+class = "SUPPORTED"
+statement = "Behaviourally relevant non-code changes must create a distinguishable agent release: six single-artifact changes produced six new release ids under one unchanged image digest, and every telemetry row is attributable to its release. (The behaviour a tool description causes is declared in the scripted agent.)"
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E8"]
+checks = ["OPS-E8-C01", "OPS-E8-C02", "OPS-E8-C03", "OPS-E8-C04", "OPS-E8-C05"]
+article = ["Then Someone Changed the Prompt", "§20 The agent release unit"]
+facts = ["e8.distinct_release_ids", "e8.distinct_image_digests", "e8.R42-a.tool_calls_delta_pct"]
+
+[[claims]]
+id = "OPS-C09"
+class = "SUPPORTED"
+statement = "Behavioural releases should pass machine-checkable gates before receiving production traffic: three candidates with good averages and one broken invariant each were blocked and granted no traffic."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E9"]
+checks = ["OPS-E9-C01", "OPS-E9-C02", "OPS-E9-C03", "OPS-E9-C04"]
+article = ["Gates Are Binary. Averages Aren't.", "§22 Policy and invariant gates"]
+facts = ["e9.blocked", "e9.R42-b.task_success", "e9.blocked_weight_granted"]
+
+[[claims]]
+id = "OPS-C10"
+class = "SUPPORTED"
+statement = "Agent releases require behavioural canaries and rollback on operational evidence, not process health: a release that passed the offline gate and kept its error rate rolled back on tool-call amplification; a clean one was promoted; a raw-average comparison would have rolled the clean one back; the rollback did not undo replies already sent."
+type = "measured"
+verdict = "supported"
+experiments = ["OPS-E10"]
+checks = ["OPS-E10-C01", "OPS-E10-C02", "OPS-E10-C03", "OPS-E10-C04", "OPS-E10-C05", "OPS-E10-C06", "OPS-E10-C07"]
+article = ["HTTP 200 Is Not Health", "§22 Canary", "§22 Roll back"]
+facts = ["e10.R42-a.mix-adjusted.decision", "e10.R42-a.mix-adjusted.last.tool_calls_pct", "e10.R42-a.mix-adjusted.effects_before_decision", "e10.R42-e.raw.decision"]
+
+[[claims]]
+id = "OPS-C11"
+class = "NEGATIVE CONTROL"
+statement = "The proof can fail: with the admission bound removed, the E1 invariant check breaks."
+type = "control"
+verdict = "control"
+experiments = ["OPS-NC"]
+checks = ["OPS-NC-C01"]
+article = ["We Built the Overload on Purpose", "§25 Method"]
+facts = ["nc.max_work_in_system"]
+
+[[claims]]
+id = "OPS-C12"
+class = "ARGUED"
+statement = "Autoscaling helps but does not remove provider quotas, downstream limits, budgets or tenant fairness; a queue absorbs imbalance, it does not create capacity."
+type = "limitation"
+verdict = "limitation"
+experiments = []
+checks = []
+rests_on = ["research/sources.md: k8s-hpa, sre-overload, aws-queue-backlogs, aws-load-shedding", "OPS-E1 and OPS-E7 as illustrations, not tests of autoscaling"]
+article = ["§34 Anti-patterns"]
+
+[[claims]]
+id = "OPS-C13"
+class = "ARGUED"
+statement = "Rollback across a stateful agent platform is harder than rolling back a stateless binary: indexes, memory, migrations and external side effects need compatible versions or reconciliation."
+type = "limitation"
+verdict = "limitation"
+experiments = []
+checks = []
+rests_on = ["research/sources.md: aws-rollback-safety, sre-release-engineering, flagger-strategies, istio-mirroring", "OPS-E10-C06 shows only the side-effect half"]
+article = ["§22 Roll back"]
+
+[[claims]]
+id = "OPS-C14"
+class = "NOT TESTED"
+statement = "Real provider latency, quotas and prices; real model quality; human approval capacity; shadow traffic; real tool limits. Every number in this POC is a simulation unit."
+type = "limitation"
+verdict = "limitation"
+experiments = []
+checks = []
+rests_on = ["ops_poc/config/*.toml (declared parameters)", "proof/manifest.toml [[reality]] ARCHITECTURE"]
+article = ["What This POC Does Not Prove", "§39 Limitations"]

@@ -1,0 +1,29 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "operating_ai_agents_poc",
+ "redactions": [
+  {
+   "file": "verification/pytest.junit.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"(?!localhost\")[^\"<&]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "e9d64a949ffe3d329f10545314d73f8b720c4be515443e68934e2442be96e9f6",
+   "public_sha256": "038a07e6940f316f8b2ecd1c18f41c2f49f0b19499398ceacec8dd24d7846fbc",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

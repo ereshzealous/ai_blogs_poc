@@ -1,0 +1,25 @@
+{
+ "checks": {
+  "OPS-NC-C01": "EXPECTED_FAILURE"
+ },
+ "expected": "work in system grows past the bound under the same surge",
+ "experiment": "OPS-NC",
+ "governed": {
+  "max_work_in_system": 128
+ },
+ "harness_completed": true,
+ "invariant": "work in system <= slots + queue bound (OPS-E1-C01)",
+ "mutated": {
+  "goodput_pct": 9.3,
+  "max_work_in_system": 5791
+ },
+ "observed": "Without the bound, work in system exceeds slots + queue bound → 5791",
+ "result": "EXPECTED_FAILURE",
+ "safeguard_removed": "admission: the work-in-system bound (slots + queue bound) and the capacity error",
+ "scenarios": {
+  "governed": "E1 controlled (bounded admission)",
+  "mutated": "E1 controlled with the admission bound removed"
+ },
+ "schema": "pae-proof/v1",
+ "test_assertions": "every attempt of the mutated arm reached a recorded result"
+}

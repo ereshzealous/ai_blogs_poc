@@ -1,0 +1,67 @@
+# O1 + O2 · the workflow types the agents run (declared). The plans themselves are code (agentops/agent.py); this file
+# holds their shapes: which tenant, which retrieval sources, output tokens per model call, the expected service time
+# used by deadline-aware dequeue, and the long-tail shape of a Black Friday order.
+
+[common]
+history_tokens = 600          # conversation history carried into each model call (support)
+chunk_tokens = 350            # one retrieved chunk
+retrieval_base_ms = 120       # per source queried
+retrieval_ms_per_chunk = 2
+
+[workflows.order-status]
+tenant = "support"
+sources = ["policies"]
+out_tokens = { plan = 120, answer = 160, summarize = 140 }
+expected_ms = 2600
+# Black Friday gift orders ship in parts: P(shipments = n) for n = 1..4
+shipments = [0.65, 0.20, 0.10, 0.05]
+
+[workflows.product-question]
+tenant = "support"
+sources = ["catalog", "policies"]
+out_tokens = { answer = 180 }
+expected_ms = 1400
+
+[workflows.delivery-change]
+tenant = "support"
+sources = ["policies"]
+out_tokens = { plan = 140, answer = 180 }
+expected_ms = 6800
+
+[workflows.refund-dispute]
+tenant = "support"
+sources = ["policies", "tickets"]
+out_tokens = { plan = 160, assess = 140, answer = 200 }
+expected_ms = 11000
+# refund amount in EUR (deterministic draw): P(amount bucket)
+amounts = { "40" = 0.45, "120" = 0.35, "400" = 0.20 }
+
+[workflows.recon-check]
+tenant = "finance"
+sources = []
+out_tokens = { compare = 120 }
+expected_ms = 1800
+
+[workflows.dispute-investigation]
+tenant = "support"
+sources = ["policies"]
+out_tokens = { plan = 200, synthesize = 260 }
+children = ["orders-agent", "payments-agent", "carrier-agent"]
+child_out_tokens = { plan = 120, answer = 160 }
+expected_ms = 16000
+
+# The support traffic mix on Black Friday and on Cyber Monday (fractions of support requests).
+[mix.black-friday]
+order-status = 0.50
+product-question = 0.20
+delivery-change = 0.20
+refund-dispute = 0.10
+
+[mix.cyber-monday]
+order-status = 0.55
+product-question = 0.20
+delivery-change = 0.15
+refund-dispute = 0.10
+
+[mix.cyber-monday-shipments]   # the canary's live traffic ships in more parts than the quiet week the eval suite sampled
+shipments = [0.45, 0.30, 0.15, 0.10]

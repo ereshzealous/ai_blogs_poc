@@ -1,0 +1,99 @@
+{
+ "approval_attempts": {
+  "ic.dev": "approved",
+  "sre.maya": "sre.maya lacks role incident-commander or scope deploy:rollback"
+ },
+ "chain_intact": true,
+ "kubernetes_entry": {
+  "namespace": "payments",
+  "objectRef": "deployments/payment-service",
+  "responseStatus": 200,
+  "ts": 1790690940.0,
+  "user.username": "system:serviceaccount:payments:incident-remediator",
+  "verb": "patch"
+ },
+ "physical_rollbacks": 1,
+ "platform_record": {
+  "act_chain": [
+   "agent.incident-intel@1.3.0"
+  ],
+  "agent": "agent.incident-intel@1.3.0",
+  "approval_id": "apr-7847743f7b12",
+  "arguments": {
+   "environment": "production",
+   "service": "payment-service",
+   "to_version": "v4.17.2"
+  },
+  "authorized_by": "ic.dev",
+  "capability": "rollbackDeployment",
+  "credential_id": "cred-67885ad98132",
+  "event_id": "dd-evt-771204",
+  "event_rule": "monitor/payment-service-error-rate",
+  "event_source": "datadog/monitors",
+  "invoker": "svc.monitoring-webhook",
+  "on_behalf_of": null,
+  "revocation": {
+   "agent": "agent.incident-intel@1.3.0",
+   "delegation": null,
+   "invoker_credential": "cred-monitoring",
+   "tool_identity": "incident-remediator@production",
+   "workload": "spiffe://prod.company.internal/agent-runtime"
+  },
+  "scopes": [
+   "chat:post",
+   "deploy:read",
+   "incident:remediate",
+   "itsm:read",
+   "itsm:write",
+   "telemetry:read"
+  ],
+  "tool_principal": "system:serviceaccount:payments:incident-remediator",
+  "workload": "spiffe://prod.company.internal/agent-runtime"
+ },
+ "reads": [
+  {
+   "capability": "getErrorRate",
+   "effect": "EXECUTED",
+   "tool_principal": "app-key:incident-telemetry-read"
+  },
+  {
+   "capability": "getDeployments",
+   "effect": "EXECUTED",
+   "tool_principal": "system:serviceaccount:payments:release-reader"
+  },
+  {
+   "capability": "updateIncident",
+   "effect": "EXECUTED",
+   "tool_principal": "svc-incident-writer"
+  },
+  {
+   "capability": "postMessage",
+   "effect": "EXECUTED",
+   "tool_principal": "bot:incident-poster"
+  }
+ ],
+ "rollback": {
+  "effect": "EXECUTED",
+  "tool_principal": "system:serviceaccount:payments:incident-remediator"
+ },
+ "rollback_request": {
+  "effect": "REQUIRE_APPROVAL",
+  "reason": "needs incident-commander for deploy:rollback"
+ },
+ "token": {
+  "act": [
+   "agent.incident-intel@1.3.0"
+  ],
+  "cnf": "spiffe://prod.company.internal/agent-runtime",
+  "on_behalf_of": null,
+  "scopes": [
+   "chat:post",
+   "deploy:read",
+   "incident:remediate",
+   "itsm:read",
+   "itsm:write",
+   "telemetry:read"
+  ],
+  "sub": "svc.monitoring-webhook"
+ }
+}

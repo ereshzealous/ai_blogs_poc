@@ -1,0 +1,34 @@
+{
+ "checks": [
+  {
+   "check": "delegation: agent action distinguishable from Maya's own",
+   "passed": true
+  }
+ ],
+ "expected": "the agent's action is distinguishable from Maya's",
+ "experiment": "I5",
+ "id": "I5-chain-vs-manual",
+ "input": {
+  "agent": "agent.incident-intel",
+  "comparison": "Maya rolls back by hand a minute later",
+  "identity_model": "chain",
+  "invoker": "svc.web-portal (web console)",
+  "on_behalf_of": "sre.maya"
+ },
+ "measures": [
+  [
+   "Platform record fields",
+   26
+  ],
+  [
+   "Tool permissions behind the call",
+   3
+  ]
+ ],
+ "mode": "chain",
+ "observed": "agent recorded: yes \u00b7 actor chain recorded: yes \u00b7 indistinguishable in Kubernetes' log: no",
+ "outcome": "held",
+ "use_case": "Impersonation vs delegation: the agent's rollback beside Maya's own",
+ "variant": "C",
+ "where": null
+}

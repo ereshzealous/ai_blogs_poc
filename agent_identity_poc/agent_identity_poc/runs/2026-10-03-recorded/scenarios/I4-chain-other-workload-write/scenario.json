@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "privileged write replayed from another workload is rejected with no side effect",
+   "passed": true
+  }
+ ],
+ "expected": "rejected, no rollback",
+ "experiment": "I4",
+ "id": "I4-chain-other-workload-write",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "Maya's approved rollback, token and approval id copied to spiffe://\u2026/batch-runner",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "REJECTED"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "REJECTED: token bound to spiffe://prod.company.internal/agent-runtime, presented by spiffe://prod.company.internal/batch-runner \u00b7 rollbacks 0 \u00b7 then the real workload: EXECUTED",
+ "outcome": "held",
+ "use_case": "Replay: an approved rollback's execution token from another workload",
+ "variant": "C",
+ "where": null
+}

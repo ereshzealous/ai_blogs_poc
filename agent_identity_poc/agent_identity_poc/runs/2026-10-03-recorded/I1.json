@@ -1,0 +1,248 @@
+{
+ "modes": {
+  "chain": {
+   "executed": "EXECUTED",
+   "kubernetes_entry": {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690700.0,
+    "user.username": "system:serviceaccount:payments:incident-remediator",
+    "verb": "patch"
+   },
+   "multi_agent": {
+    "agents_acting": 3,
+    "agents_attributable_from_platform_audit": 3,
+    "distinct_kubernetes_principals": 2,
+    "impersonation_fallbacks": 0,
+    "kubernetes_actions": 5,
+    "kubernetes_principals": [
+     "system:serviceaccount:payments:incident-remediator",
+     "system:serviceaccount:payments:release-reader"
+    ]
+   },
+   "platform_answered": 9,
+   "platform_answers": {
+    "can_it_be_revoked": true,
+    "on_whose_behalf": true,
+    "what_action": true,
+    "what_authority": true,
+    "which_credential": true,
+    "which_runtime": true,
+    "who_approved": true,
+    "who_invoked": true,
+    "who_is_the_agent": true
+   },
+   "platform_record": {
+    "act_chain": [
+     "agent.incident-intel@1.3.0"
+    ],
+    "agent": "agent.incident-intel@1.3.0",
+    "approval_id": "apr-9c65e4af8917",
+    "arguments": {
+     "environment": "production",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "authorized_by": "ic.dev",
+    "capability": "rollbackDeployment",
+    "credential_exp": 1790691300.0,
+    "credential_id": "cred-7ec3c80bb2c7",
+    "effect": {
+     "object": {
+      "environment": "production",
+      "service": "payment-service",
+      "to_version": "v4.17.2"
+     },
+     "verb": "deployments:patch"
+    },
+    "event_id": null,
+    "event_rule": null,
+    "event_source": null,
+    "grant_id": "grant-e05c90f015e4",
+    "invoker": "svc.web-portal",
+    "invoker_credential": "cred-web",
+    "kind": "write",
+    "on_behalf_of": "sre.maya",
+    "revocation": {
+     "agent": "agent.incident-intel@1.3.0",
+     "delegation": "grant-e05c90f015e4",
+     "invoker_credential": "cred-web",
+     "tool_identity": "incident-remediator@production",
+     "workload": "spiffe://prod.company.internal/agent-runtime"
+    },
+    "rule": "P2-high-risk-production",
+    "scopes": [
+     "chat:post",
+     "deploy:read",
+     "incident:remediate",
+     "itsm:read",
+     "itsm:write",
+     "telemetry:read"
+    ],
+    "status": "ok",
+    "system": "kubernetes",
+    "token_id": "tok-70a6958275c2",
+    "tool_identity": "incident-remediator@production",
+    "tool_principal": "system:serviceaccount:payments:incident-remediator",
+    "workload": "spiffe://prod.company.internal/agent-runtime"
+   },
+   "tool_answered": 2,
+   "tool_answers": {
+    "can_it_be_revoked": false,
+    "on_whose_behalf": false,
+    "what_action": true,
+    "what_authority": false,
+    "which_credential": true,
+    "which_runtime": false,
+    "who_approved": false,
+    "who_invoked": false,
+    "who_is_the_agent": false
+   },
+   "tool_authorized_permissions": 3,
+   "tool_principal": "system:serviceaccount:payments:incident-remediator"
+  },
+  "impersonation": {
+   "executed": "EXECUTED",
+   "kubernetes_entry": {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690700.0,
+    "user.username": "maya@company.com",
+    "verb": "patch"
+   },
+   "multi_agent": {
+    "agents_acting": 3,
+    "agents_attributable_from_platform_audit": 0,
+    "distinct_kubernetes_principals": 2,
+    "impersonation_fallbacks": 3,
+    "kubernetes_actions": 5,
+    "kubernetes_principals": [
+     "maya@company.com",
+     "system:serviceaccount:platform:ai-automation"
+    ]
+   },
+   "platform_answered": 4,
+   "platform_answers": {
+    "can_it_be_revoked": false,
+    "on_whose_behalf": true,
+    "what_action": true,
+    "what_authority": false,
+    "which_credential": true,
+    "which_runtime": false,
+    "who_approved": true,
+    "who_invoked": false,
+    "who_is_the_agent": false
+   },
+   "platform_record": {
+    "approval_id": "apr-9c65e4af8917",
+    "arguments": {
+     "environment": "production",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "authorized_by": "ic.dev",
+    "capability": "rollbackDeployment",
+    "credential_id": "idt-maya-87f4b4",
+    "on_behalf_of": "sre.maya",
+    "status": "ok",
+    "subject": "sre.maya",
+    "tool_principal": "maya@company.com"
+   },
+   "tool_answered": 3,
+   "tool_answers": {
+    "can_it_be_revoked": false,
+    "on_whose_behalf": true,
+    "what_action": true,
+    "what_authority": false,
+    "which_credential": true,
+    "which_runtime": false,
+    "who_approved": false,
+    "who_invoked": false,
+    "who_is_the_agent": false
+   },
+   "tool_authorized_permissions": 5,
+   "tool_principal": "maya@company.com"
+  },
+  "shared_sa": {
+   "executed": "EXECUTED",
+   "kubernetes_entry": {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690700.0,
+    "user.username": "system:serviceaccount:platform:ai-automation",
+    "verb": "patch"
+   },
+   "multi_agent": {
+    "agents_acting": 3,
+    "agents_attributable_from_platform_audit": 0,
+    "distinct_kubernetes_principals": 1,
+    "impersonation_fallbacks": 0,
+    "kubernetes_actions": 5,
+    "kubernetes_principals": [
+     "system:serviceaccount:platform:ai-automation"
+    ]
+   },
+   "platform_answered": 3,
+   "platform_answers": {
+    "can_it_be_revoked": false,
+    "on_whose_behalf": false,
+    "what_action": true,
+    "what_authority": false,
+    "which_credential": true,
+    "which_runtime": false,
+    "who_approved": true,
+    "who_invoked": false,
+    "who_is_the_agent": false
+   },
+   "platform_record": {
+    "approval_id": "apr-9c65e4af8917",
+    "arguments": {
+     "environment": "production",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "authorized_by": "ic.dev",
+    "capability": "rollbackDeployment",
+    "credential_id": "sa-static-kubernetes-g0",
+    "status": "ok",
+    "tool_principal": "system:serviceaccount:platform:ai-automation"
+   },
+   "tool_answered": 2,
+   "tool_answers": {
+    "can_it_be_revoked": false,
+    "on_whose_behalf": false,
+    "what_action": true,
+    "what_authority": false,
+    "which_credential": true,
+    "which_runtime": false,
+    "who_approved": false,
+    "who_invoked": false,
+    "who_is_the_agent": false
+   },
+   "tool_authorized_permissions": 13,
+   "tool_principal": "system:serviceaccount:platform:ai-automation"
+  }
+ },
+ "questions": [
+  "who_is_the_agent",
+  "who_invoked",
+  "on_whose_behalf",
+  "what_authority",
+  "which_runtime",
+  "which_credential",
+  "what_action",
+  "who_approved",
+  "can_it_be_revoked"
+ ],
+ "tamper": {
+  "broken_at": 8,
+  "edited_row": 8,
+  "intact_after": false,
+  "intact_before": true,
+  "rows": 8
+ },
+ "tool_identities": 5
+}

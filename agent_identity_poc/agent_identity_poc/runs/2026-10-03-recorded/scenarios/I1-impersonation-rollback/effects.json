@@ -1,0 +1,56 @@
+{
+ "platform": {
+  "jira": [
+   {
+    "args": {
+     "incident": "INC-4102",
+     "note": "v4.18.0 suspected"
+    },
+    "principal": "maya@company.com",
+    "ts": 1790690520.0,
+    "verb": "issue:comment"
+   }
+  ],
+  "kubernetes": [
+   {
+    "args": {
+     "service": "payment-service"
+    },
+    "principal": "maya@company.com",
+    "ts": 1790690520.0,
+    "verb": "deployments:get"
+   },
+   {
+    "args": {
+     "environment": "production",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "principal": "maya@company.com",
+    "ts": 1790690700.0,
+    "verb": "deployments:patch"
+   }
+  ],
+  "slack": [
+   {
+    "args": {
+     "channel": "#inc-payments",
+     "text": "rollback proposed"
+    },
+    "principal": "maya@company.com",
+    "ts": 1790690520.0,
+    "verb": "chat:write"
+   }
+  ],
+  "telemetry": [
+   {
+    "args": {
+     "service": "payment-service"
+    },
+    "principal": "maya@company.com",
+    "ts": 1790690520.0,
+    "verb": "metrics:read"
+   }
+  ]
+ }
+}

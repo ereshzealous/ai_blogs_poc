@@ -1,0 +1,7 @@
+# Deliberately minimal. Authorization and policy are the next article; this POC needs only enough policy to show what
+# identity feeds it. Rules are evaluated in order; first match wins.
+rules:
+  - {id: P0-unregistered,          match: unregistered,                  effect: DENY}
+  - {id: P1-missing-scope,         match: scope_not_held,                effect: DENY}
+  - {id: P2-high-risk-production,  match: {risk: high, env: production}, effect: REQUIRE_APPROVAL, approver_role: incident-commander}
+  - {id: P9-allow,                 match: any,                           effect: ALLOW}

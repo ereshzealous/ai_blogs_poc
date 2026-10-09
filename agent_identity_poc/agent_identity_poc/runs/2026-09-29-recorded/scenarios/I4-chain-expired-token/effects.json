@@ -1,0 +1,31 @@
+{
+ "platform": {
+  "kubernetes": [
+   {
+    "args": {
+     "service": "payment-service"
+    },
+    "principal": "system:serviceaccount:payments:release-reader",
+    "ts": 1790690520.0,
+    "verb": "deployments:get"
+   },
+   {
+    "args": {
+     "environment": "production",
+     "service": "payment-service"
+    },
+    "principal": "system:serviceaccount:payments:incident-remediator",
+    "ts": 1790690520.0,
+    "verb": "pods:delete"
+   },
+   {
+    "args": {
+     "service": "payment-service"
+    },
+    "principal": "system:serviceaccount:payments:incident-remediator",
+    "ts": 1790690520.0,
+    "verb": "deployments:get"
+   }
+  ]
+ }
+}

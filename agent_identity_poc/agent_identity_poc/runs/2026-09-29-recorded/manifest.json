@@ -1,0 +1,27 @@
+{
+ "run_id": "2026-09-29-recorded",
+ "python": "3.12.13",
+ "config_sha256": {
+  "capabilities.yaml": "d846724b16c40702bf5ee3c8d91fafc7e6ff0ff75b51153c1b1e9112130a1f12",
+  "policies.yaml": "87fc40ea63965faf7ad83b903a8d48b0ebae3f5063e6c83c95e75952659363a7",
+  "principals.yaml": "47af27c0a6a641c8d2c3f4dc3a59807b2b03972dd86bd0a801735ac8f1532190",
+  "shared_sa.yaml": "1405668e90d3095184e183f39abd114132e3d21c2532d596d03b223fb87e2c21",
+  "tool_identities.yaml": "1804394fb40e1b0beec42b1717f3415c4d698ad0d42870825d5061bbf96ae598"
+ },
+ "agents": "deterministic plans (aid/agents.py); no model",
+ "simulated": [
+  "directory and identity provider (config/principals.yaml)",
+  "workload attestation (SVIDs)",
+  "Kubernetes, Jira, Slack, telemetry and their audit logs (aid/tools.py)",
+  "clock"
+ ],
+ "real": [
+  "token exchange, delegation and narrowing (aid/trust.py)",
+  "attestation checks at the gateway",
+  "token broker",
+  "capability gateway",
+  "approvals",
+  "hash-chained audit",
+  "revocation levers"
+ ]
+}

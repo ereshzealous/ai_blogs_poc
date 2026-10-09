@@ -1,0 +1,21 @@
+# Tool-facing identities: one per capability class and environment, each with only the permissions its class needs.
+# These are what the target systems authenticate and audit. Credentials for them are minted per call by the token
+# broker: audience-bound, 10 minutes (the Kubernetes TokenRequest API does not issue bound service-account tokens for
+# less than 10 minutes).
+credential_ttl_s: 600
+
+tool_identities:
+  telemetry-reader@production:   {system: telemetry,  principal: "app-key:incident-telemetry-read",                     permissions: [metrics:read]}
+  release-reader@production:     {system: kubernetes, principal: "system:serviceaccount:payments:release-reader",       permissions: [deployments:get]}
+  incident-remediator@production: {system: kubernetes, principal: "system:serviceaccount:payments:incident-remediator", permissions: [deployments:get, deployments:patch, pods:delete]}
+  incident-writer@production:    {system: jira,       principal: "svc-incident-writer",                                 permissions: [issue:comment]}
+  incident-poster@production:    {system: slack,      principal: "bot:incident-poster",                                 permissions: [chat:write]}
+
+# What each system grants human accounts directly: used only by the impersonation baseline, where the tool
+# authorizes the human and not the agent. On-call responders carry broad rights, as they usually do.
+human_grants:
+  kubernetes: {maya@company.com: [deployments:get, deployments:patch, pods:delete, secrets:get, configmaps:update],
+               dev@company.com:  [deployments:get, deployments:patch, pods:delete, secrets:get, configmaps:update, namespaces:delete]}
+  jira:       {maya@company.com: [issue:comment, issue:create, issue:delete], dev@company.com: [issue:comment, issue:create, issue:delete]}
+  slack:      {maya@company.com: [chat:write], dev@company.com: [chat:write]}
+  telemetry:  {maya@company.com: [metrics:read, dashboards:edit], dev@company.com: [metrics:read, dashboards:edit]}

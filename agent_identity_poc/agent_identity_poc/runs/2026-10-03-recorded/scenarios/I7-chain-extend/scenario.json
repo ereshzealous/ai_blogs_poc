@@ -1,0 +1,36 @@
+{
+ "checks": [
+  {
+   "check": "extending instead of re-exchanging lets the rollback through",
+   "passed": true
+  }
+ ],
+ "expected": "the rollback runs on stale authority",
+ "experiment": "I7",
+ "id": "I7-chain-extend",
+ "input": {
+  "agent": "agent.incident-intel",
+  "approval_wait_minutes": 37,
+  "identity_model": "chain",
+  "invoker": "svc.web-portal (web console)",
+  "on_behalf_of": "sre.maya",
+  "resume": "extend",
+  "revoked": "Maya's delegation at minute 10"
+ },
+ "measures": [
+  [
+   "Final",
+   "EXECUTED"
+  ],
+  [
+   "Rollbacks",
+   1
+  ]
+ ],
+ "mode": "chain",
+ "observed": "approval REQUIRE_APPROVAL \u00b7 approved yes \u00b7 final EXECUTED \u00b7 rollbacks 1",
+ "outcome": "broken",
+ "use_case": "The pause: extend the old token",
+ "variant": "C",
+ "where": "capability.call after the pause: executed on authority revoked at minute 10"
+}

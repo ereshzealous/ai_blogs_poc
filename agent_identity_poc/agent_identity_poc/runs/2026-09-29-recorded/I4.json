@@ -1,0 +1,28 @@
+{
+ "execution_token_from_other_workload": {
+  "effect": "REJECTED",
+  "reason": "token bound to spiffe://prod.company.internal/agent-runtime, presented by spiffe://prod.company.internal/batch-runner"
+ },
+ "expired_execution_token": {
+  "effect": "REJECTED",
+  "reason": "token expired"
+ },
+ "legitimate_call": "EXECUTED",
+ "shared_secret_from_anywhere_a_day_later": {
+  "reason": "ok",
+  "status": 200
+ },
+ "stolen_tool_credential_after_ttl": {
+  "reason": "credential expired or revoked",
+  "status": 401
+ },
+ "stolen_tool_credential_within_ttl": {
+  "reason": "ok",
+  "status": 200,
+  "ttl_min": 10.0
+ },
+ "tool_credential_wrong_audience": {
+  "reason": "credential audience is kubernetes, not jira",
+  "status": 401
+ }
+}

@@ -1,0 +1,18 @@
+# The anti-pattern baseline: one service account for "AI automation". Each grant records the agent it was added for.
+# Nothing is ever removed, because nobody can tell which agent still uses what. Agents marked retired no longer run.
+principal: "system:serviceaccount:platform:ai-automation"
+jira_account: automation@company.com
+slack_bot: "bot:ai-automation"
+telemetry_key: "app-key:ai-automation"
+grants:
+  - {for: agent.incident-intel,   system: kubernetes, permissions: [deployments:get, deployments:patch]}
+  - {for: agent.incident-intel,   system: jira,       permissions: [issue:comment, issue:create]}
+  - {for: agent.incident-intel,   system: slack,      permissions: [chat:write]}
+  - {for: agent.incident-intel,   system: telemetry,  permissions: [metrics:read]}
+  - {for: agent.remediation,      system: kubernetes, permissions: [pods:delete, pods:get]}
+  - {for: agent.release-guard,    system: kubernetes, permissions: [deployments:get, replicasets:list]}
+  - {for: agent.cost-optimizer,   system: kubernetes, permissions: [deployments:scale, nodes:list, hpa:update], retired: true}
+  - {for: agent.access-reviewer,  system: kubernetes, permissions: [secrets:get, serviceaccounts:list, rolebindings:list], retired: true}
+  - {for: agent.config-drift,     system: kubernetes, permissions: [configmaps:get, configmaps:update], retired: true}
+  - {for: agent.doc-writer,       system: jira,       permissions: [issue:create, project:admin], retired: true}
+  - {for: agent.standup-bot,      system: slack,      permissions: [chat:write, channels:manage, users:read], retired: true}

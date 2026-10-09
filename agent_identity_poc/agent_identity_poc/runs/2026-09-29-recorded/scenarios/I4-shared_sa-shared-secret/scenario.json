@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "shared secret still works from anywhere a day later",
+   "passed": true
+  }
+ ],
+ "expected": "still works",
+ "experiment": "I4",
+ "id": "I4-shared_sa-shared-secret",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "ai-automation secret used from anywhere after 24 hours",
+  "identity_model": "shared_sa",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "HTTP 200"
+  ]
+ ],
+ "mode": "shared_sa",
+ "observed": "HTTP 200: ok",
+ "outcome": "broken",
+ "use_case": "Theft: the shared account's secret a day later",
+ "variant": "A",
+ "where": "tool call: a long-lived shared secret works from anywhere"
+}

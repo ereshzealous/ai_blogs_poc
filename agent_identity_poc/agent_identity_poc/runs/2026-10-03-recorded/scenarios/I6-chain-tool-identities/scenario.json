@@ -1,0 +1,31 @@
+{
+ "checks": [
+  {
+   "check": "shared account holds more than any tool identity",
+   "passed": true
+  }
+ ],
+ "expected": "each tool identity holds only its capability class",
+ "experiment": "I6",
+ "id": "I6-chain-tool-identities",
+ "input": {
+  "identity_model": "chain",
+  "source": "config/shared_sa.yaml, config/tool_identities.yaml, config/capabilities.yaml (derived, not run)"
+ },
+ "measures": [
+  [
+   "Tool identities",
+   5
+  ],
+  [
+   "Most permissions on one identity",
+   3
+  ]
+ ],
+ "mode": "chain",
+ "observed": "5 tool identities, at most 3 permissions each",
+ "outcome": "held",
+ "use_case": "Privilege build-up: what each tool identity holds",
+ "variant": "C",
+ "where": null
+}

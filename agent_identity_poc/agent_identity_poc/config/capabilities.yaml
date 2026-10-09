@@ -1,0 +1,10 @@
+# Business capabilities. The gateway is the only path to a tool. Each capability maps to one capability class, and the
+# token broker mints one tool-facing identity per (class, environment).
+capabilities:
+  getErrorRate:       {system: telemetry,  kind: read,  risk: low,  scope: telemetry:read,     class: telemetry-reader,   verb: metrics:read}
+  getDeployments:     {system: kubernetes, kind: read,  risk: low,  scope: deploy:read,        class: release-reader,     verb: deployments:get}
+  restartPods:        {system: kubernetes, kind: write, risk: low,  scope: incident:remediate, class: incident-remediator, verb: pods:delete}
+  rollbackDeployment: {system: kubernetes, kind: write, risk: high, scope: incident:remediate, class: incident-remediator, verb: deployments:patch,
+                       grant: deploy:rollback}
+  updateIncident:     {system: jira,       kind: write, risk: low,  scope: itsm:write,         class: incident-writer,    verb: issue:comment}
+  postMessage:        {system: slack,      kind: write, risk: low,  scope: chat:post,          class: incident-poster,    verb: chat:write}

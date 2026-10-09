@@ -1,0 +1,6058 @@
+{
+ "kit": "4.1.0",
+ "schema": "evidence-kit/4",
+ "meta": {
+  "series": "Production AI Engineering",
+  "id": "T1",
+  "topic": "Agent identity",
+  "label": "T1 · Lab Console · run 2026-10-03-recorded",
+  "title": "Shared account, user token, delegation chain: scenario by scenario",
+  "question": "The same rollback under three identity models, attacked on purpose. For every scenario: what went in, what came out, where identity broke, and where each number came from.",
+  "claim": [
+   "Every scenario, its input and output.",
+   "Every broken identity, at the step it broke."
+  ],
+  "byline": "T1 · Production AI Engineering",
+  "filed": "2026-10-03",
+  "brand": "Production AI Engineering",
+  "tagline": "Build. Test. Learn. Ship responsibly.",
+  "note": "Generated from the run directories; rebuild after every run",
+  "state": "RECORDED",
+  "links": [
+   {
+    "label": "Evidence Check",
+    "href": "agent-identity-evidence.html"
+   },
+   {
+    "label": "Run report",
+    "href": "agent-identity-report.html"
+   },
+   {
+    "label": "Real vs simulated",
+    "href": "agent-identity-real-vs-simulated.html"
+   }
+  ]
+ },
+ "dimensions": {
+  "factor": {
+   "label": "Experiment",
+   "unit": "",
+   "all": "All experiments",
+   "values": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "primary": 1
+  },
+  "result": {
+   "pass": "As expected",
+   "fail": "Not as expected"
+  },
+  "severity": [
+   {
+    "id": "none",
+    "label": "Held",
+    "tone": "ok"
+   },
+   {
+    "id": "qualified",
+    "label": "Qualified",
+    "tone": "warn"
+   },
+   {
+    "id": "broken",
+    "label": "Broken",
+    "tone": "bad"
+   }
+  ],
+  "variants": [
+   {
+    "key": "A",
+    "name": "Shared account",
+    "color": "red",
+    "policy": "one automation account for every agent, head and runtime"
+   },
+   {
+    "key": "B",
+    "name": "User token",
+    "color": "orange",
+    "policy": "the agent is handed the human's own token (impersonation)"
+   },
+   {
+    "key": "C",
+    "name": "Delegation chain",
+    "color": "green",
+    "policy": "subject + actor chain, narrowed scopes, workload-bound token, minted tool credentials, hash-chained audit",
+    "governed": true
+   }
+  ],
+  "groups": {
+   "I1": "Attribution",
+   "I2": "Confused deputy",
+   "I3": "Revocation",
+   "I4": "Replay and theft",
+   "I5": "Impersonation vs delegation",
+   "I6": "Privilege build-up",
+   "I7": "The pause"
+  }
+ },
+ "facts": {
+  "A.broken": {
+   "value": 7,
+   "display": "7",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I1-shared_sa-rollback",
+     "I1-shared_sa-three-agents",
+     "I2-shared_sa-deputy",
+     "I3-shared_sa-rotate-shared-account",
+     "I4-shared_sa-shared-secret",
+     "I6-shared_sa-accumulation",
+     "I7-shared_sa-shared"
+    ]
+   },
+   "denominator": 7,
+   "derivation": "Shared account scenarios with outcome broken",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.broken.kn": {
+   "value": "7/7",
+   "display": "7/7",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.held": {
+   "value": 0,
+   "display": "0",
+   "denominator": 7,
+   "derivation": "Shared account scenarios with outcome held",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.held.kn": {
+   "value": "0/7",
+   "display": "0/7",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.qualified": {
+   "value": 0,
+   "display": "0",
+   "denominator": 7,
+   "derivation": "Shared account scenarios with outcome qualified",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.qualified.kn": {
+   "value": "0/7",
+   "display": "0/7",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "A.runs": {
+   "value": 7,
+   "display": "7",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.broken": {
+   "value": 4,
+   "display": "4",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I1-impersonation-rollback",
+     "I1-impersonation-three-agents",
+     "I2-impersonation-deputy",
+     "I5-impersonation-vs-manual"
+    ]
+   },
+   "denominator": 4,
+   "derivation": "User token scenarios with outcome broken",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.broken.kn": {
+   "value": "4/4",
+   "display": "4/4",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.held": {
+   "value": 0,
+   "display": "0",
+   "denominator": 4,
+   "derivation": "User token scenarios with outcome held",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.held.kn": {
+   "value": "0/4",
+   "display": "0/4",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.qualified": {
+   "value": 0,
+   "display": "0",
+   "denominator": 4,
+   "derivation": "User token scenarios with outcome qualified",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.qualified.kn": {
+   "value": "0/4",
+   "display": "0/4",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "B.runs": {
+   "value": 4,
+   "display": "4",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.broken": {
+   "value": 1,
+   "display": "1",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I7-chain-extend"
+    ]
+   },
+   "denominator": 20,
+   "derivation": "Delegation chain scenarios with outcome broken",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.broken.kn": {
+   "value": "1/20",
+   "display": "1/20",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.held": {
+   "value": 16,
+   "display": "16",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I1-chain-rollback",
+     "I1-chain-three-agents",
+     "I2-chain-deputy",
+     "I3-chain-agent",
+     "I3-chain-control",
+     "I3-chain-tool-identity",
+     "I3-chain-workload",
+     "I4-chain-expired-token",
+     "I4-chain-legitimate-call",
+     "I4-chain-other-workload",
+     "I4-chain-other-workload-write",
+     "I4-chain-stolen-after-ttl",
+     "I4-chain-wrong-audience",
+     "I5-chain-vs-manual",
+     "I6-chain-tool-identities",
+     "I7-chain-reexchange"
+    ]
+   },
+   "denominator": 20,
+   "derivation": "Delegation chain scenarios with outcome held",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.held.kn": {
+   "value": "16/20",
+   "display": "16/20",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.qualified": {
+   "value": 3,
+   "display": "3",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I3-chain-delegation",
+     "I3-chain-invoker-credential",
+     "I4-chain-stolen-within-ttl"
+    ]
+   },
+   "denominator": 20,
+   "derivation": "Delegation chain scenarios with outcome qualified",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.qualified.kn": {
+   "value": "3/20",
+   "display": "3/20",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "C.runs": {
+   "value": 20,
+   "display": "20",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.as_expected": {
+   "value": 31,
+   "display": "31",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → checks"
+  },
+  "all.broken": {
+   "value": 12,
+   "display": "12",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I1-shared_sa-rollback",
+     "I1-shared_sa-three-agents",
+     "I1-impersonation-rollback",
+     "I1-impersonation-three-agents",
+     "I2-shared_sa-deputy",
+     "I2-impersonation-deputy",
+     "I3-shared_sa-rotate-shared-account",
+     "I4-shared_sa-shared-secret",
+     "I5-impersonation-vs-manual",
+     "I6-shared_sa-accumulation",
+     "I7-shared_sa-shared",
+     "I7-chain-extend"
+    ]
+   },
+   "derivation": "scenarios with outcome broken",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.held": {
+   "value": 16,
+   "display": "16",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I1-chain-rollback",
+     "I1-chain-three-agents",
+     "I2-chain-deputy",
+     "I3-chain-agent",
+     "I3-chain-control",
+     "I3-chain-tool-identity",
+     "I3-chain-workload",
+     "I4-chain-expired-token",
+     "I4-chain-legitimate-call",
+     "I4-chain-other-workload",
+     "I4-chain-other-workload-write",
+     "I4-chain-stolen-after-ttl",
+     "I4-chain-wrong-audience",
+     "I5-chain-vs-manual",
+     "I6-chain-tool-identities",
+     "I7-chain-reexchange"
+    ]
+   },
+   "derivation": "scenarios with outcome held",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "all.qualified": {
+   "value": 3,
+   "display": "3",
+   "rows": {
+    "run": "2026-10-03-recorded",
+    "ids": [
+     "I3-chain-delegation",
+     "I3-chain-invoker-credential",
+     "I4-chain-stolen-within-ttl"
+    ]
+   },
+   "derivation": "scenarios with outcome qualified",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "checks.passed": {
+   "value": 41,
+   "display": "41",
+   "source": "checks.json"
+  },
+  "checks.total": {
+   "value": 41,
+   "display": "41",
+   "source": "checks.json"
+  },
+  "run.events": {
+   "value": 3779,
+   "display": "3,779",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json → audit.jsonl + tool-logs.json"
+  },
+  "run.experiments": {
+   "value": 7,
+   "display": "7",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "run.filed": {
+   "value": "2026-10-03",
+   "display": "2026-10-03",
+   "source": "the run id"
+  },
+  "run.id": {
+   "value": "2026-10-03-recorded",
+   "display": "2026-10-03-recorded",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded"
+  },
+  "run.python": {
+   "value": "3.12.13",
+   "display": "3.12.13",
+   "source": "manifest.json → python"
+  },
+  "run.scenarios": {
+   "value": 31,
+   "display": "31",
+   "unit": "scenarios",
+   "source": "agent_identity_poc/runs/2026-10-03-recorded/scenarios/*/scenario.json"
+  },
+  "run.sources": {
+   "value": 2,
+   "display": "2",
+   "source": "agent_identity_poc/runs/*"
+  },
+  "variant.A.name": {
+   "value": "Shared account",
+   "display": "Shared account",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.A.name_lower": {
+   "value": "shared account",
+   "display": "shared account",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.B.name": {
+   "value": "User token",
+   "display": "User token",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.B.name_lower": {
+   "value": "user token",
+   "display": "user token",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.C.name": {
+   "value": "Delegation chain",
+   "display": "Delegation chain",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.C.name_lower": {
+   "value": "delegation chain",
+   "display": "delegation chain",
+   "source": "learning.toml → dimensions.variants"
+  }
+ },
+ "provenance": {
+  "freeze": null
+ },
+ "claims": {
+  "title": ""
+ },
+ "hypotheses": [],
+ "failures": [],
+ "failure_classes": [],
+ "metrics": [
+  {
+   "id": "held-A",
+   "variant": "A",
+   "headline": "0/7 held",
+   "statement": "0 of 7 shared-account scenarios kept the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "A.held",
+   "rows": [],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I7",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  },
+  {
+   "id": "broken-A",
+   "variant": "A",
+   "headline": "7/7 broken",
+   "statement": "7 of 7 shared-account scenarios lost the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "A.broken",
+   "rows": [
+    "I1-shared_sa-rollback",
+    "I1-shared_sa-three-agents",
+    "I2-shared_sa-deputy",
+    "I3-shared_sa-rotate-shared-account",
+    "I4-shared_sa-shared-secret",
+    "I6-shared_sa-accumulation",
+    "I7-shared_sa-shared"
+   ],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 2,
+     "rows": [
+      "I1-shared_sa-rollback",
+      "I1-shared_sa-three-agents"
+     ]
+    },
+    {
+     "label": "I2",
+     "count": 1,
+     "rows": [
+      "I2-shared_sa-deputy"
+     ]
+    },
+    {
+     "label": "I3",
+     "count": 1,
+     "rows": [
+      "I3-shared_sa-rotate-shared-account"
+     ]
+    },
+    {
+     "label": "I4",
+     "count": 1,
+     "rows": [
+      "I4-shared_sa-shared-secret"
+     ]
+    },
+    {
+     "label": "I5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I6",
+     "count": 1,
+     "rows": [
+      "I6-shared_sa-accumulation"
+     ]
+    },
+    {
+     "label": "I7",
+     "count": 1,
+     "rows": [
+      "I7-shared_sa-shared"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "held-B",
+   "variant": "B",
+   "headline": "0/4 held",
+   "statement": "0 of 4 user-token scenarios kept the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "B.held",
+   "rows": [],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I7",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  },
+  {
+   "id": "broken-B",
+   "variant": "B",
+   "headline": "4/4 broken",
+   "statement": "4 of 4 user-token scenarios lost the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "B.broken",
+   "rows": [
+    "I1-impersonation-rollback",
+    "I1-impersonation-three-agents",
+    "I2-impersonation-deputy",
+    "I5-impersonation-vs-manual"
+   ],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 2,
+     "rows": [
+      "I1-impersonation-rollback",
+      "I1-impersonation-three-agents"
+     ]
+    },
+    {
+     "label": "I2",
+     "count": 1,
+     "rows": [
+      "I2-impersonation-deputy"
+     ]
+    },
+    {
+     "label": "I3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I5",
+     "count": 1,
+     "rows": [
+      "I5-impersonation-vs-manual"
+     ]
+    },
+    {
+     "label": "I6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I7",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  },
+  {
+   "id": "held-C",
+   "variant": "C",
+   "headline": "16/20 held",
+   "statement": "16 of 20 delegation-chain scenarios kept the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "C.held",
+   "rows": [
+    "I1-chain-rollback",
+    "I1-chain-three-agents",
+    "I2-chain-deputy",
+    "I3-chain-agent",
+    "I3-chain-control",
+    "I3-chain-tool-identity",
+    "I3-chain-workload",
+    "I4-chain-expired-token",
+    "I4-chain-legitimate-call",
+    "I4-chain-other-workload",
+    "I4-chain-other-workload-write",
+    "I4-chain-stolen-after-ttl",
+    "I4-chain-wrong-audience",
+    "I5-chain-vs-manual",
+    "I6-chain-tool-identities",
+    "I7-chain-reexchange"
+   ],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 2,
+     "rows": [
+      "I1-chain-rollback",
+      "I1-chain-three-agents"
+     ]
+    },
+    {
+     "label": "I2",
+     "count": 1,
+     "rows": [
+      "I2-chain-deputy"
+     ]
+    },
+    {
+     "label": "I3",
+     "count": 4,
+     "rows": [
+      "I3-chain-agent",
+      "I3-chain-control",
+      "I3-chain-tool-identity",
+      "I3-chain-workload"
+     ]
+    },
+    {
+     "label": "I4",
+     "count": 6,
+     "rows": [
+      "I4-chain-expired-token",
+      "I4-chain-legitimate-call",
+      "I4-chain-other-workload",
+      "I4-chain-other-workload-write",
+      "I4-chain-stolen-after-ttl",
+      "I4-chain-wrong-audience"
+     ]
+    },
+    {
+     "label": "I5",
+     "count": 1,
+     "rows": [
+      "I5-chain-vs-manual"
+     ]
+    },
+    {
+     "label": "I6",
+     "count": 1,
+     "rows": [
+      "I6-chain-tool-identities"
+     ]
+    },
+    {
+     "label": "I7",
+     "count": 1,
+     "rows": [
+      "I7-chain-reexchange"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qualified-C",
+   "variant": "C",
+   "headline": "3/20 qualified",
+   "statement": "3 of 20 delegation-chain scenarios held only within a stated bound",
+   "breakdown_title": "By experiment",
+   "source": "C.qualified",
+   "rows": [
+    "I3-chain-delegation",
+    "I3-chain-invoker-credential",
+    "I4-chain-stolen-within-ttl"
+   ],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I3",
+     "count": 2,
+     "rows": [
+      "I3-chain-delegation",
+      "I3-chain-invoker-credential"
+     ]
+    },
+    {
+     "label": "I4",
+     "count": 1,
+     "rows": [
+      "I4-chain-stolen-within-ttl"
+     ]
+    },
+    {
+     "label": "I5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I7",
+     "count": 0,
+     "rows": []
+    }
+   ]
+  },
+  {
+   "id": "broken-C",
+   "variant": "C",
+   "headline": "1/20 broken",
+   "statement": "1 of 20 delegation-chain scenarios lost the identity property they test",
+   "breakdown_title": "By experiment",
+   "source": "C.broken",
+   "rows": [
+    "I7-chain-extend"
+   ],
+   "breakdown": [
+    {
+     "label": "I1",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I2",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I3",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I4",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I5",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I6",
+     "count": 0,
+     "rows": []
+    },
+    {
+     "label": "I7",
+     "count": 1,
+     "rows": [
+      "I7-chain-extend"
+     ]
+    }
+   ]
+  }
+ ],
+ "datasets": {
+  "matrix": {
+   "head": [
+    "Exp",
+    "Use case",
+    "A · Shared account",
+    "B · User token",
+    "C · Delegation chain"
+   ],
+   "rows": [
+    [
+     "**I1**",
+     "Attribution",
+     "✕ `rollback` · ✕ `three-agents`",
+     "✕ `rollback` · ✕ `three-agents`",
+     "✓ `rollback` · ✓ `three-agents`"
+    ],
+    [
+     "**I2**",
+     "Confused deputy",
+     "✕ `deputy`",
+     "✕ `deputy`",
+     "✓ `deputy`"
+    ],
+    [
+     "**I3**",
+     "Revocation",
+     "✕ `rotate-shared-account`",
+     "—",
+     "✓ `agent` · ✓ `control` · ~ `delegation` · ~ `invoker-credential` · ✓ `tool-identity` · ✓ `workload`"
+    ],
+    [
+     "**I4**",
+     "Replay and theft",
+     "✕ `shared-secret`",
+     "—",
+     "✓ `expired-token` · ✓ `legitimate-call` · ✓ `other-workload` · ✓ `other-workload-write` · ✓ `stolen-after-ttl` · ~ `stolen-within-ttl` · ✓ `wrong-audience`"
+    ],
+    [
+     "**I5**",
+     "Impersonation vs delegation",
+     "—",
+     "✕ `vs-manual`",
+     "✓ `vs-manual`"
+    ],
+    [
+     "**I6**",
+     "Privilege build-up",
+     "✕ `accumulation`",
+     "—",
+     "✓ `tool-identities`"
+    ],
+    [
+     "**I7**",
+     "The pause",
+     "✕ `shared`",
+     "—",
+     "✕ `extend` · ✓ `reexchange`"
+    ]
+   ]
+  },
+  "problems": {
+   "head": [
+    "Scenario",
+    "Identity model",
+    "Outcome",
+    "Step",
+    "What the record shows"
+   ],
+   "rows": [
+    {
+     "row": "I1-shared_sa-rollback",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-shared_sa-rollback`",
+      "Shared account",
+      "**BROKEN**",
+      "`capability.call rollbackDeployment`",
+      "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, on whose behalf, what authority, which runtime, can it be revoked"
+     ]
+    },
+    {
+     "row": "I1-shared_sa-three-agents",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-shared_sa-three-agents`",
+      "Shared account",
+      "**BROKEN**",
+      "`capability.call`",
+      "capability.call: the records name no agent"
+     ]
+    },
+    {
+     "row": "I1-impersonation-rollback",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-impersonation-rollback`",
+      "User token",
+      "**BROKEN**",
+      "`capability.call rollbackDeployment`",
+      "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, what authority, which runtime, can it be revoked"
+     ]
+    },
+    {
+     "row": "I1-impersonation-three-agents",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-impersonation-three-agents`",
+      "User token",
+      "**BROKEN**",
+      "`capability.call`",
+      "capability.call: the records name no agent"
+     ]
+    },
+    {
+     "row": "I2-shared_sa-deputy",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I2-shared_sa-deputy`",
+      "Shared account",
+      "**BROKEN**",
+      "`approval.requested`",
+      "approval.requested: the approver saw agent.incident-intel, not release-guard"
+     ]
+    },
+    {
+     "row": "I2-impersonation-deputy",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I2-impersonation-deputy`",
+      "User token",
+      "**BROKEN**",
+      "`approval.requested`",
+      "approval.requested: the approver saw agent.incident-intel, not release-guard"
+     ]
+    },
+    {
+     "row": "I3-shared_sa-rotate-shared-account",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-shared_sa-rotate-shared-account`",
+      "Shared account",
+      "**BROKEN**",
+      "`revoked`",
+      "revoked: one lever stops every execution"
+     ]
+    },
+    {
+     "row": "I3-chain-delegation",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-delegation`",
+      "Delegation chain",
+      "**QUALIFIED**",
+      "`token.refreshed`",
+      "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min"
+     ]
+    },
+    {
+     "row": "I3-chain-invoker-credential",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-invoker-credential`",
+      "Delegation chain",
+      "**QUALIFIED**",
+      "`token.refreshed`",
+      "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min"
+     ]
+    },
+    {
+     "row": "I4-shared_sa-shared-secret",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-shared_sa-shared-secret`",
+      "Shared account",
+      "**BROKEN**",
+      "`tool call`",
+      "tool call: a long-lived shared secret works from anywhere"
+     ]
+    },
+    {
+     "row": "I4-chain-stolen-within-ttl",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-stolen-within-ttl`",
+      "Delegation chain",
+      "**QUALIFIED**",
+      "`tool call`",
+      "tool call: a bearer credential works for its remaining 10 minutes"
+     ]
+    },
+    {
+     "row": "I5-impersonation-vs-manual",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I5-impersonation-vs-manual`",
+      "User token",
+      "**BROKEN**",
+      "`Kubernetes log`",
+      "Kubernetes log: the agent's patch is identical to Maya's manual patch"
+     ]
+    },
+    {
+     "row": "I6-shared_sa-accumulation",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I6-shared_sa-accumulation`",
+      "Shared account",
+      "**BROKEN**",
+      "`config/shared_sa.yaml`",
+      "config/shared_sa.yaml: grants added for agents and never removed"
+     ]
+    },
+    {
+     "row": "I7-shared_sa-shared",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I7-shared_sa-shared`",
+      "Shared account",
+      "**BROKEN**",
+      "`capability.call after the pause`",
+      "capability.call after the pause: executed on authority revoked at minute 10"
+     ]
+    },
+    {
+     "row": "I7-chain-extend",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I7-chain-extend`",
+      "Delegation chain",
+      "**BROKEN**",
+      "`capability.call after the pause`",
+      "capability.call after the pause: executed on authority revoked at minute 10"
+     ]
+    }
+   ]
+  },
+  "every": {
+   "head": [
+    "Scenario",
+    "Use case",
+    "Identity model",
+    "Outcome",
+    "Checks",
+    "Recorded events"
+   ],
+   "rows": [
+    {
+     "row": "I1-shared_sa-rollback",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-shared_sa-rollback`",
+      "Attribution: one rollback, nine questions",
+      "Shared account",
+      "✕ **BROKEN**",
+      "2/2",
+      "13"
+     ]
+    },
+    {
+     "row": "I1-shared_sa-three-agents",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-shared_sa-three-agents`",
+      "Attribution: three agents touch Kubernetes",
+      "Shared account",
+      "✕ **BROKEN**",
+      "2/2",
+      "15"
+     ]
+    },
+    {
+     "row": "I1-impersonation-rollback",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-impersonation-rollback`",
+      "Attribution: one rollback, nine questions",
+      "User token",
+      "✕ **BROKEN**",
+      "2/2",
+      "13"
+     ]
+    },
+    {
+     "row": "I1-impersonation-three-agents",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-impersonation-three-agents`",
+      "Attribution: three agents touch Kubernetes",
+      "User token",
+      "✕ **BROKEN**",
+      "0/0",
+      "15"
+     ]
+    },
+    {
+     "row": "I1-chain-rollback",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-chain-rollback`",
+      "Attribution: one rollback, nine questions",
+      "Delegation chain",
+      "✓ **HELD**",
+      "4/4",
+      "13"
+     ]
+    },
+    {
+     "row": "I1-chain-three-agents",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I1-chain-three-agents`",
+      "Attribution: three agents touch Kubernetes",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "16"
+     ]
+    },
+    {
+     "row": "I2-shared_sa-deputy",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I2-shared_sa-deputy`",
+      "Confused deputy: a read-only agent asks for a rollback",
+      "Shared account",
+      "✕ **BROKEN**",
+      "1/1",
+      "5"
+     ]
+    },
+    {
+     "row": "I2-impersonation-deputy",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I2-impersonation-deputy`",
+      "Confused deputy: a read-only agent asks for a rollback",
+      "User token",
+      "✕ **BROKEN**",
+      "0/0",
+      "5"
+     ]
+    },
+    {
+     "row": "I2-chain-deputy",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I2-chain-deputy`",
+      "Confused deputy: a read-only agent asks for a rollback",
+      "Delegation chain",
+      "✓ **HELD**",
+      "3/3",
+      "6"
+     ]
+    },
+    {
+     "row": "I3-shared_sa-rotate-shared-account",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-shared_sa-rotate-shared-account`",
+      "Revocation: pull the rotate shared account lever",
+      "Shared account",
+      "✕ **BROKEN**",
+      "1/1",
+      "606"
+     ]
+    },
+    {
+     "row": "I3-chain-agent",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-agent`",
+      "Revocation: pull the agent lever",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "276"
+     ]
+    },
+    {
+     "row": "I3-chain-control",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-control`",
+      "Revocation: no lever pulled (control)",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "615"
+     ]
+    },
+    {
+     "row": "I3-chain-delegation",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-delegation`",
+      "Revocation: pull the delegation lever",
+      "Delegation chain",
+      "~ **QUALIFIED**",
+      "1/1",
+      "487"
+     ]
+    },
+    {
+     "row": "I3-chain-invoker-credential",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-invoker-credential`",
+      "Revocation: pull the invoker credential lever",
+      "Delegation chain",
+      "~ **QUALIFIED**",
+      "1/1",
+      "551"
+     ]
+    },
+    {
+     "row": "I3-chain-tool-identity",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-tool-identity`",
+      "Revocation: pull the tool identity lever",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "591"
+     ]
+    },
+    {
+     "row": "I3-chain-workload",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I3-chain-workload`",
+      "Revocation: pull the workload lever",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "409"
+     ]
+    },
+    {
+     "row": "I4-shared_sa-shared-secret",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-shared_sa-shared-secret`",
+      "Theft: the shared account's secret a day later",
+      "Shared account",
+      "✕ **BROKEN**",
+      "1/1",
+      "1"
+     ]
+    },
+    {
+     "row": "I4-chain-expired-token",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-expired-token`",
+      "Replay: expired execution token",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "11"
+     ]
+    },
+    {
+     "row": "I4-chain-legitimate-call",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-legitimate-call`",
+      "Replay: the legitimate call",
+      "Delegation chain",
+      "✓ **HELD**",
+      "0/0",
+      "11"
+     ]
+    },
+    {
+     "row": "I4-chain-other-workload",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-other-workload`",
+      "Replay: execution token from another workload",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "11"
+     ]
+    },
+    {
+     "row": "I4-chain-other-workload-write",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-other-workload-write`",
+      "Replay: an approved rollback's execution token from another workload",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "6"
+     ]
+    },
+    {
+     "row": "I4-chain-stolen-after-ttl",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-stolen-after-ttl`",
+      "Theft: stolen tool credential after expiry",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "11"
+     ]
+    },
+    {
+     "row": "I4-chain-stolen-within-ttl",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-stolen-within-ttl`",
+      "Theft: stolen tool credential inside its lifetime",
+      "Delegation chain",
+      "~ **QUALIFIED**",
+      "0/0",
+      "11"
+     ]
+    },
+    {
+     "row": "I4-chain-wrong-audience",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I4-chain-wrong-audience`",
+      "Theft: tool credential at the wrong system",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "11"
+     ]
+    },
+    {
+     "row": "I5-impersonation-vs-manual",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I5-impersonation-vs-manual`",
+      "Impersonation vs delegation: the agent's rollback beside Maya's own",
+      "User token",
+      "✕ **BROKEN**",
+      "2/2",
+      "14"
+     ]
+    },
+    {
+     "row": "I5-chain-vs-manual",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I5-chain-vs-manual`",
+      "Impersonation vs delegation: the agent's rollback beside Maya's own",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "14"
+     ]
+    },
+    {
+     "row": "I6-shared_sa-accumulation",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I6-shared_sa-accumulation`",
+      "Privilege build-up: what the shared account holds",
+      "Shared account",
+      "✕ **BROKEN**",
+      "1/1",
+      "0"
+     ]
+    },
+    {
+     "row": "I6-chain-tool-identities",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I6-chain-tool-identities`",
+      "Privilege build-up: what each tool identity holds",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "0"
+     ]
+    },
+    {
+     "row": "I7-shared_sa-shared",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I7-shared_sa-shared`",
+      "The pause: shared account",
+      "Shared account",
+      "✕ **BROKEN**",
+      "0/0",
+      "14"
+     ]
+    },
+    {
+     "row": "I7-chain-extend",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I7-chain-extend`",
+      "The pause: extend the old token",
+      "Delegation chain",
+      "✕ **BROKEN**",
+      "1/1",
+      "15"
+     ]
+    },
+    {
+     "row": "I7-chain-reexchange",
+     "run": "2026-10-03-recorded",
+     "cells": [
+      "`I7-chain-reexchange`",
+      "The pause: re-exchange after approval",
+      "Delegation chain",
+      "✓ **HELD**",
+      "1/1",
+      "13"
+     ]
+    }
+   ]
+  },
+  "allruns": {
+   "head": [
+    "Run",
+    "Kind",
+    "Scenarios",
+    "Held",
+    "Qualified",
+    "Broken",
+    "Directory"
+   ],
+   "rows": [
+    [
+     "`2026-10-03-recorded`",
+     "recorded",
+     "31",
+     "16",
+     "3",
+     "12",
+     "`agent_identity_poc/runs/2026-10-03-recorded/scenarios`"
+    ],
+    [
+     "`2026-09-29-recorded`",
+     "recorded",
+     "30",
+     "15",
+     "3",
+     "12",
+     "`agent_identity_poc/runs/2026-09-29-recorded/scenarios`"
+    ]
+   ]
+  },
+  "lineage": {
+   "head": [
+    "Stage",
+    "Where (per scenario, in the run)",
+    "Carries"
+   ],
+   "rows": [
+    [
+     "Input · identities and grants",
+     "`agent_identity_poc/config/*.yaml`",
+     "principals, capabilities, policies, tool identities, the shared account (hashes in manifest.json)"
+    ],
+    [
+     "Input · scenario",
+     "`agent_identity_poc/aid/experiments.py → i1()`",
+     "the heads, agents, calls and attack the scenario runs"
+    ],
+    [
+     "Platform record",
+     "`scenarios/‹scenario›/audit.jsonl`",
+     "every start, delegation, decision, approval and revocation, hash-chained"
+    ],
+    [
+     "Tool logs",
+     "`scenarios/‹scenario›/tool-logs.json`",
+     "what each simulated system was shown, in its own log"
+    ],
+    [
+     "Side effects",
+     "`scenarios/‹scenario›/effects.json`",
+     "what the systems physically changed"
+    ],
+    [
+     "Scenario record",
+     "`scenarios/‹scenario›/scenario.json`",
+     "input, expected, observed, outcome, the checks it answers"
+    ],
+    [
+     "Experiment aggregate",
+     "`I1.json`",
+     "this scenario rolled up with its siblings"
+    ],
+    [
+     "Checks",
+     "`checks.json`",
+     "every pass/fail check of the run"
+    ],
+    [
+     "Published numbers",
+     "`facts.json`",
+     "the values both editions and the evidence documents substitute"
+    ]
+   ]
+  },
+  "systems": {
+   "items": [
+    [
+     "user",
+     "Heads",
+     "web · event · CI · workflow"
+    ],
+    [
+     "lock",
+     "Trust layer",
+     "exchange · delegation · attestation"
+    ],
+    [
+     "server",
+     "Gateway + broker",
+     "policy · approval · mint"
+    ],
+    [
+     "box",
+     "Simulated tools",
+     "Kubernetes · Jira · Slack · telemetry"
+    ],
+    [
+     "check",
+     "Checks",
+     "checks.json"
+    ]
+   ],
+   "label": "What every scenario touches"
+  },
+  "checks": {
+   "head": [
+    "Exp",
+    "Check",
+    "Result",
+    "Scenarios that answer it"
+   ],
+   "rows": [
+    [
+     "I1",
+     "the rollback executed once in every mode",
+     "✓ pass",
+     "`I1-shared_sa-rollback` `I1-impersonation-rollback` `I1-chain-rollback`"
+    ],
+    [
+     "I1",
+     "chain: the platform record answers all nine questions",
+     "✓ pass",
+     "`I1-chain-rollback`"
+    ],
+    [
+     "I1",
+     "every mode: the tool log answers at most three",
+     "✓ pass",
+     "`I1-shared_sa-rollback` `I1-impersonation-rollback` `I1-chain-rollback`"
+    ],
+    [
+     "I1",
+     "shared account: Kubernetes sees one principal for three agents",
+     "✓ pass",
+     "`I1-shared_sa-three-agents`"
+    ],
+    [
+     "I1",
+     "shared account: no agent attributable from the platform record",
+     "✓ pass",
+     "`I1-shared_sa-three-agents`"
+    ],
+    [
+     "I1",
+     "chain: all three agents attributable from the platform record",
+     "✓ pass",
+     "`I1-chain-three-agents`"
+    ],
+    [
+     "I1",
+     "audit chain intact; an edited approver breaks it at that row",
+     "✓ pass",
+     "`I1-chain-rollback`"
+    ],
+    [
+     "I2",
+     "chain: the deputy request is denied before any approval",
+     "✓ pass",
+     "`I2-chain-deputy`"
+    ],
+    [
+     "I2",
+     "chain: the callee's scopes narrowed",
+     "✓ pass",
+     "`I2-chain-deputy`"
+    ],
+    [
+     "I2",
+     "chain: an undeclared agent -> agent edge is refused",
+     "✓ pass",
+     "`I2-chain-deputy`"
+    ],
+    [
+     "I2",
+     "shared account: the deputy rollback executes and hides its originator",
+     "✓ pass",
+     "`I2-shared_sa-deputy`"
+    ],
+    [
+     "I3",
+     "control: nothing stops without a revocation",
+     "✓ pass",
+     "`I3-chain-control`"
+    ],
+    [
+     "I3",
+     "delegation: only Maya's executions stop, within one token lifetime",
+     "✓ pass",
+     "`I3-chain-delegation`"
+    ],
+    [
+     "I3",
+     "invoker credential: new executions from that head refused",
+     "✓ pass",
+     "`I3-chain-invoker-credential`"
+    ],
+    [
+     "I3",
+     "agent: every execution running that agent stops at its next call",
+     "✓ pass",
+     "`I3-chain-agent`"
+    ],
+    [
+     "I3",
+     "workload: executions on the other runtime keep running",
+     "✓ pass",
+     "`I3-chain-workload`"
+    ],
+    [
+     "I3",
+     "tool identity: one capability of one execution stops",
+     "✓ pass",
+     "`I3-chain-tool-identity`"
+    ],
+    [
+     "I3",
+     "shared account rotation stops all five executions",
+     "✓ pass",
+     "`I3-shared_sa-rotate-shared-account`"
+    ],
+    [
+     "I4",
+     "execution token replayed from another workload is rejected",
+     "✓ pass",
+     "`I4-chain-other-workload`"
+    ],
+    [
+     "I4",
+     "privileged write replayed from another workload is rejected with no side effect",
+     "✓ pass",
+     "`I4-chain-other-workload-write`"
+    ],
+    [
+     "I4",
+     "expired execution token is rejected",
+     "✓ pass",
+     "`I4-chain-expired-token`"
+    ],
+    [
+     "I4",
+     "tool credential rejected by a system it was not minted for",
+     "✓ pass",
+     "`I4-chain-wrong-audience`"
+    ],
+    [
+     "I4",
+     "stolen tool credential dies with its ten minutes",
+     "✓ pass",
+     "`I4-chain-stolen-after-ttl`"
+    ],
+    [
+     "I4",
+     "shared secret still works from anywhere a day later",
+     "✓ pass",
+     "`I4-shared_sa-shared-secret`"
+    ],
+    [
+     "I5",
+     "impersonation: agent action identical to Maya's own in Kubernetes' log",
+     "✓ pass",
+     "`I5-impersonation-vs-manual`"
+    ],
+    [
+     "I5",
+     "delegation: agent action distinguishable from Maya's own",
+     "✓ pass",
+     "`I5-chain-vs-manual`"
+    ],
+    [
+     "I5",
+     "impersonation loses the agent and the actor chain",
+     "✓ pass",
+     "`I5-impersonation-vs-manual`"
+    ],
+    [
+     "I6",
+     "shared account holds more than any tool identity",
+     "✓ pass",
+     "`I6-shared_sa-accumulation` `I6-chain-tool-identities`"
+    ],
+    [
+     "I7",
+     "re-exchange after the pause: revoked delegation stays revoked",
+     "✓ pass",
+     "`I7-chain-reexchange`"
+    ],
+    [
+     "I7",
+     "extending instead of re-exchanging lets the rollback through",
+     "✓ pass",
+     "`I7-chain-extend`"
+    ],
+    [
+     "GA",
+     "delegation never widens authority (the callee's scopes are within the caller's after every hop)",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "a delegated write whose originator lacks the authority is denied, not silently executed",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "a credential replayed from the wrong workload causes no privileged side effect",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "a revoked identity cannot mint new execution authority",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "unrelated executions survive every targeted revocation",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "rotating the shared account stops more executions than any targeted lever",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "agent identity and runtime identity stay distinct in the record",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "impersonation does not pass for delegation provenance",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "no tool log is complete upstream provenance (every tool log answers fewer than nine questions)",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "the platform record reconstructs the whole identity chain (nine of nine)",
+     "✓ pass",
+     "—"
+    ],
+    [
+     "GA",
+     "tampering with the platform audit is detected at the edited row",
+     "✓ pass",
+     "—"
+    ]
+   ]
+  }
+ },
+ "runs": [
+  {
+   "id": "2026-10-03-recorded",
+   "label": "2026-10-03-recorded · recorded run",
+   "kind": "recorded",
+   "path": "agent_identity_poc/runs/2026-10-03-recorded/scenarios",
+   "note": "deterministic: simulated directory, workloads, tools and clock; real identity code",
+   "rows": [
+    {
+     "id": "I1-shared_sa-rollback",
+     "case": "I1-rollback",
+     "key": "A",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, on whose behalf, what authority, which runtime, can it be revoked",
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "3/9"
+      ],
+      [
+       "Tool log answers",
+       "2/9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "13"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call rollbackDeployment"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I1-shared_sa-three-agents",
+     "case": "I1-three-agents",
+     "key": "A",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call: the records name no agent",
+     "flags": [
+      [
+       "shared account: Kubernetes sees one principal for three agents",
+       true
+      ],
+      [
+       "shared account: no agent attributable from the platform record",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "0"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I1-impersonation-rollback",
+     "case": "I1-rollback",
+     "key": "B",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, what authority, which runtime, can it be revoked",
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "4/9"
+      ],
+      [
+       "Tool log answers",
+       "3/9"
+      ],
+      [
+       "Kubernetes saw",
+       "maya@company.com"
+      ],
+      [
+       "Tool permissions behind the call",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call rollbackDeployment"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I1-impersonation-three-agents",
+     "case": "I1-three-agents",
+     "key": "B",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call: the records name no agent",
+     "flags": [],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "0"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I1-chain-rollback",
+     "case": "I1-rollback",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ],
+      [
+       "chain: the platform record answers all nine questions",
+       true
+      ],
+      [
+       "audit chain intact; an edited approver breaks it at that row",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "9/9"
+      ],
+      [
+       "Tool log answers",
+       "2/9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "4/4"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I1-chain-three-agents",
+     "case": "I1-three-agents",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "chain: all three agents attributable from the platform record",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "3"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "16"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I2-shared_sa-deputy",
+     "case": "I2-deputy",
+     "key": "A",
+     "x": 2,
+     "pass": true,
+     "sev": "broken",
+     "note": "approval.requested: the approver saw agent.incident-intel, not release-guard",
+     "flags": [
+      [
+       "shared account: the deputy rollback executes and hides its originator",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "First decision",
+       "REQUIRE_APPROVAL"
+      ],
+      [
+       "Rule",
+       "P2-high-risk-production"
+      ],
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Originator visible",
+       "no"
+      ],
+      [
+       "Recorded events",
+       "5"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "approval.requested"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I2-impersonation-deputy",
+     "case": "I2-deputy",
+     "key": "B",
+     "x": 2,
+     "pass": true,
+     "sev": "broken",
+     "note": "approval.requested: the approver saw agent.incident-intel, not release-guard",
+     "flags": [],
+     "metrics": [
+      [
+       "First decision",
+       "REQUIRE_APPROVAL"
+      ],
+      [
+       "Rule",
+       "P2-high-risk-production"
+      ],
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Originator visible",
+       "no"
+      ],
+      [
+       "Recorded events",
+       "5"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "approval.requested"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I2-chain-deputy",
+     "case": "I2-deputy",
+     "key": "C",
+     "x": 2,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "chain: the deputy request is denied before any approval",
+       true
+      ],
+      [
+       "chain: the callee's scopes narrowed",
+       true
+      ],
+      [
+       "chain: an undeclared agent -> agent edge is refused",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "First decision",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "P1-missing-scope"
+      ],
+      [
+       "Final",
+       "DENY"
+      ],
+      [
+       "Rollbacks",
+       "0"
+      ],
+      [
+       "Originator visible",
+       "yes"
+      ],
+      [
+       "Recorded events",
+       "6"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-shared_sa-rotate-shared-account",
+     "case": "I3-rotate-shared-account",
+     "key": "A",
+     "x": 3,
+     "pass": true,
+     "sev": "broken",
+     "note": "revoked: one lever stops every execution",
+     "flags": [
+      [
+       "shared account rotation stops all five executions",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "5"
+      ],
+      [
+       "Kept running",
+       "0"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "606"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "revoked"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-agent",
+     "case": "I3-agent",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "agent: every execution running that agent stops at its next call",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "4"
+      ],
+      [
+       "Kept running",
+       "1"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "276"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-control",
+     "case": "I3-control",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "control: nothing stops without a revocation",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "0"
+      ],
+      [
+       "Kept running",
+       "5"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "-"
+      ],
+      [
+       "Recorded events",
+       "615"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-delegation",
+     "case": "I3-delegation",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "qualified",
+     "note": "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min",
+     "flags": [
+      [
+       "delegation: only Maya's executions stop, within one token lifetime",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "2"
+      ],
+      [
+       "Kept running",
+       "3"
+      ],
+      [
+       "Slowest effect (min)",
+       "10"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "487"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "token.refreshed"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-invoker-credential",
+     "case": "I3-invoker-credential",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "qualified",
+     "note": "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min",
+     "flags": [
+      [
+       "invoker credential: new executions from that head refused",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "1"
+      ],
+      [
+       "Kept running",
+       "4"
+      ],
+      [
+       "Slowest effect (min)",
+       "10"
+      ],
+      [
+       "Recorded events",
+       "551"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "token.refreshed"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-tool-identity",
+     "case": "I3-tool-identity",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "tool identity: one capability of one execution stops",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "1"
+      ],
+      [
+       "Kept running",
+       "4"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "591"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-workload",
+     "case": "I3-workload",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "workload: executions on the other runtime keep running",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "4"
+      ],
+      [
+       "Kept running",
+       "1"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "409"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-shared_sa-shared-secret",
+     "case": "I4-shared-secret",
+     "key": "A",
+     "x": 4,
+     "pass": true,
+     "sev": "broken",
+     "note": "tool call: a long-lived shared secret works from anywhere",
+     "flags": [
+      [
+       "shared secret still works from anywhere a day later",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 200"
+      ],
+      [
+       "Recorded events",
+       "1"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "tool call"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-expired-token",
+     "case": "I4-expired-token",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "expired execution token is rejected",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "REJECTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-legitimate-call",
+     "case": "I4-legitimate-call",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [],
+     "metrics": [
+      [
+       "Outcome",
+       "EXECUTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-other-workload",
+     "case": "I4-other-workload",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "execution token replayed from another workload is rejected",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "REJECTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-other-workload-write",
+     "case": "I4-other-workload-write",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "privileged write replayed from another workload is rejected with no side effect",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "REJECTED"
+      ],
+      [
+       "Recorded events",
+       "6"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-stolen-after-ttl",
+     "case": "I4-stolen-after-ttl",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "stolen tool credential dies with its ten minutes",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 401"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-stolen-within-ttl",
+     "case": "I4-stolen-within-ttl",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "qualified",
+     "note": "tool call: a bearer credential works for its remaining 10 minutes",
+     "flags": [],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 200"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "tool call"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-wrong-audience",
+     "case": "I4-wrong-audience",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "tool credential rejected by a system it was not minted for",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 401"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I5-impersonation-vs-manual",
+     "case": "I5-vs-manual",
+     "key": "B",
+     "x": 5,
+     "pass": true,
+     "sev": "broken",
+     "note": "Kubernetes log: the agent's patch is identical to Maya's manual patch",
+     "flags": [
+      [
+       "impersonation: agent action identical to Maya's own in Kubernetes' log",
+       true
+      ],
+      [
+       "impersonation loses the agent and the actor chain",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record fields",
+       "9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "Kubernetes log"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I5"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I5-chain-vs-manual",
+     "case": "I5-vs-manual",
+     "key": "C",
+     "x": 5,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "delegation: agent action distinguishable from Maya's own",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record fields",
+       "26"
+      ],
+      [
+       "Tool permissions behind the call",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I5"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I6-shared_sa-accumulation",
+     "case": "I6-accumulation",
+     "key": "A",
+     "x": 6,
+     "pass": true,
+     "sev": "broken",
+     "note": "config/shared_sa.yaml: grants added for agents and never removed",
+     "flags": [
+      [
+       "shared account holds more than any tool identity",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Permissions held",
+       "20"
+      ],
+      [
+       "Needed",
+       "6"
+      ],
+      [
+       "Excess",
+       "14"
+      ],
+      [
+       "Grants for retired agents",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "0"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "config/shared_sa.yaml"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I6"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I6-chain-tool-identities",
+     "case": "I6-tool-identities",
+     "key": "C",
+     "x": 6,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "shared account holds more than any tool identity",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Tool identities",
+       "5"
+      ],
+      [
+       "Most permissions on one identity",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "0"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I6"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I7-shared_sa-shared",
+     "case": "I7-shared",
+     "key": "A",
+     "x": 7,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call after the pause: executed on authority revoked at minute 10",
+     "flags": [],
+     "metrics": [
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call after the pause"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I7-chain-extend",
+     "case": "I7-extend",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call after the pause: executed on authority revoked at minute 10",
+     "flags": [
+      [
+       "extending instead of re-exchanging lets the rollback through",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call after the pause"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I7-chain-reexchange",
+     "case": "I7-reexchange",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "re-exchange after the pause: revoked delegation stays revoked",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Final",
+       "REJECTED"
+      ],
+      [
+       "Rollbacks",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2026-09-29-recorded",
+   "label": "2026-09-29-recorded · recorded run",
+   "kind": "recorded",
+   "path": "agent_identity_poc/runs/2026-09-29-recorded/scenarios",
+   "note": "deterministic: simulated directory, workloads, tools and clock; real identity code",
+   "rows": [
+    {
+     "id": "I1-shared_sa-rollback",
+     "case": "I1-rollback",
+     "key": "A",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, on whose behalf, what authority, which runtime, can it be revoked",
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "3/9"
+      ],
+      [
+       "Tool log answers",
+       "2/9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "13"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call rollbackDeployment"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I1-shared_sa-three-agents",
+     "case": "I1-three-agents",
+     "key": "A",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call: the records name no agent",
+     "flags": [
+      [
+       "shared account: Kubernetes sees one principal for three agents",
+       true
+      ],
+      [
+       "shared account: no agent attributable from the platform record",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "0"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I1-impersonation-rollback",
+     "case": "I1-rollback",
+     "key": "B",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, what authority, which runtime, can it be revoked",
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "4/9"
+      ],
+      [
+       "Tool log answers",
+       "3/9"
+      ],
+      [
+       "Kubernetes saw",
+       "maya@company.com"
+      ],
+      [
+       "Tool permissions behind the call",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call rollbackDeployment"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I1-impersonation-three-agents",
+     "case": "I1-three-agents",
+     "key": "B",
+     "x": 1,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call: the records name no agent",
+     "flags": [],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "0"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I1-chain-rollback",
+     "case": "I1-rollback",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "the rollback executed once in every mode",
+       true
+      ],
+      [
+       "every mode: the tool log answers at most three",
+       true
+      ],
+      [
+       "chain: the platform record answers all nine questions",
+       true
+      ],
+      [
+       "audit chain intact; an edited approver breaks it at that row",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record answers",
+       "9/9"
+      ],
+      [
+       "Tool log answers",
+       "2/9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "4/4"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I1-chain-three-agents",
+     "case": "I1-three-agents",
+     "key": "C",
+     "x": 1,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "chain: all three agents attributable from the platform record",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Agents acting",
+       "3"
+      ],
+      [
+       "Attributable from the platform record",
+       "3"
+      ],
+      [
+       "Kubernetes actions",
+       "5"
+      ],
+      [
+       "Distinct Kubernetes principals",
+       "2"
+      ],
+      [
+       "Recorded events",
+       "16"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I1"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I2-shared_sa-deputy",
+     "case": "I2-deputy",
+     "key": "A",
+     "x": 2,
+     "pass": true,
+     "sev": "broken",
+     "note": "approval.requested: the approver saw agent.incident-intel, not release-guard",
+     "flags": [
+      [
+       "shared account: the deputy rollback executes and hides its originator",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "First decision",
+       "REQUIRE_APPROVAL"
+      ],
+      [
+       "Rule",
+       "P2-high-risk-production"
+      ],
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Originator visible",
+       "no"
+      ],
+      [
+       "Recorded events",
+       "5"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "approval.requested"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I2-impersonation-deputy",
+     "case": "I2-deputy",
+     "key": "B",
+     "x": 2,
+     "pass": true,
+     "sev": "broken",
+     "note": "approval.requested: the approver saw agent.incident-intel, not release-guard",
+     "flags": [],
+     "metrics": [
+      [
+       "First decision",
+       "REQUIRE_APPROVAL"
+      ],
+      [
+       "Rule",
+       "P2-high-risk-production"
+      ],
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Originator visible",
+       "no"
+      ],
+      [
+       "Recorded events",
+       "5"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "approval.requested"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I2-chain-deputy",
+     "case": "I2-deputy",
+     "key": "C",
+     "x": 2,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "chain: the deputy request is denied before any approval",
+       true
+      ],
+      [
+       "chain: the callee's scopes narrowed",
+       true
+      ],
+      [
+       "chain: an undeclared agent -> agent edge is refused",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "First decision",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "P1-missing-scope"
+      ],
+      [
+       "Final",
+       "DENY"
+      ],
+      [
+       "Rollbacks",
+       "0"
+      ],
+      [
+       "Originator visible",
+       "yes"
+      ],
+      [
+       "Recorded events",
+       "6"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "3/3"
+      ],
+      [
+       "Exp",
+       "I2"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-shared_sa-rotate-shared-account",
+     "case": "I3-rotate-shared-account",
+     "key": "A",
+     "x": 3,
+     "pass": true,
+     "sev": "broken",
+     "note": "revoked: one lever stops every execution",
+     "flags": [
+      [
+       "shared account rotation stops all five executions",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "5"
+      ],
+      [
+       "Kept running",
+       "0"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "606"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "revoked"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-agent",
+     "case": "I3-agent",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "agent: every execution running that agent stops at its next call",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "4"
+      ],
+      [
+       "Kept running",
+       "1"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "276"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-control",
+     "case": "I3-control",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "control: nothing stops without a revocation",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "0"
+      ],
+      [
+       "Kept running",
+       "5"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "-"
+      ],
+      [
+       "Recorded events",
+       "615"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-delegation",
+     "case": "I3-delegation",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "qualified",
+     "note": "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min",
+     "flags": [
+      [
+       "delegation: only Maya's executions stop, within one token lifetime",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "2"
+      ],
+      [
+       "Kept running",
+       "3"
+      ],
+      [
+       "Slowest effect (min)",
+       "10"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "487"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "token.refreshed"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-invoker-credential",
+     "case": "I3-invoker-credential",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "qualified",
+     "note": "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min",
+     "flags": [
+      [
+       "invoker credential: new executions from that head refused",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "1"
+      ],
+      [
+       "Kept running",
+       "4"
+      ],
+      [
+       "Slowest effect (min)",
+       "10"
+      ],
+      [
+       "Recorded events",
+       "551"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "token.refreshed"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-tool-identity",
+     "case": "I3-tool-identity",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "tool identity: one capability of one execution stops",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "1"
+      ],
+      [
+       "Kept running",
+       "4"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "591"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I3-chain-workload",
+     "case": "I3-workload",
+     "key": "C",
+     "x": 3,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "workload: executions on the other runtime keep running",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Stopped",
+       "4"
+      ],
+      [
+       "Kept running",
+       "1"
+      ],
+      [
+       "Slowest effect (min)",
+       "0"
+      ],
+      [
+       "New start afterwards",
+       "accepted"
+      ],
+      [
+       "Recorded events",
+       "409"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I3"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-shared_sa-shared-secret",
+     "case": "I4-shared-secret",
+     "key": "A",
+     "x": 4,
+     "pass": true,
+     "sev": "broken",
+     "note": "tool call: a long-lived shared secret works from anywhere",
+     "flags": [
+      [
+       "shared secret still works from anywhere a day later",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 200"
+      ],
+      [
+       "Recorded events",
+       "1"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "tool call"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-expired-token",
+     "case": "I4-expired-token",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "expired execution token is rejected",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "REJECTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-legitimate-call",
+     "case": "I4-legitimate-call",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [],
+     "metrics": [
+      [
+       "Outcome",
+       "EXECUTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-other-workload",
+     "case": "I4-other-workload",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "execution token replayed from another workload is rejected",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "REJECTED"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-stolen-after-ttl",
+     "case": "I4-stolen-after-ttl",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "stolen tool credential dies with its ten minutes",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 401"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-stolen-within-ttl",
+     "case": "I4-stolen-within-ttl",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "qualified",
+     "note": "tool call: a bearer credential works for its remaining 10 minutes",
+     "flags": [],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 200"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "QUALIFIED"
+      ],
+      [
+       "Where it broke",
+       "tool call"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I4-chain-wrong-audience",
+     "case": "I4-wrong-audience",
+     "key": "C",
+     "x": 4,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "tool credential rejected by a system it was not minted for",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Outcome",
+       "HTTP 401"
+      ],
+      [
+       "Recorded events",
+       "11"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I4"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I5-impersonation-vs-manual",
+     "case": "I5-vs-manual",
+     "key": "B",
+     "x": 5,
+     "pass": true,
+     "sev": "broken",
+     "note": "Kubernetes log: the agent's patch is identical to Maya's manual patch",
+     "flags": [
+      [
+       "impersonation: agent action identical to Maya's own in Kubernetes' log",
+       true
+      ],
+      [
+       "impersonation loses the agent and the actor chain",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record fields",
+       "9"
+      ],
+      [
+       "Tool permissions behind the call",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "Kubernetes log"
+      ],
+      [
+       "Checks",
+       "2/2"
+      ],
+      [
+       "Exp",
+       "I5"
+      ],
+      [
+       "Identity model",
+       "User token"
+      ]
+     ]
+    },
+    {
+     "id": "I5-chain-vs-manual",
+     "case": "I5-vs-manual",
+     "key": "C",
+     "x": 5,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "delegation: agent action distinguishable from Maya's own",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Platform record fields",
+       "26"
+      ],
+      [
+       "Tool permissions behind the call",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I5"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I6-shared_sa-accumulation",
+     "case": "I6-accumulation",
+     "key": "A",
+     "x": 6,
+     "pass": true,
+     "sev": "broken",
+     "note": "config/shared_sa.yaml: grants added for agents and never removed",
+     "flags": [
+      [
+       "shared account holds more than any tool identity",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Permissions held",
+       "20"
+      ],
+      [
+       "Needed",
+       "6"
+      ],
+      [
+       "Excess",
+       "14"
+      ],
+      [
+       "Grants for retired agents",
+       "5"
+      ],
+      [
+       "Recorded events",
+       "0"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "config/shared_sa.yaml"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I6"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I6-chain-tool-identities",
+     "case": "I6-tool-identities",
+     "key": "C",
+     "x": 6,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "shared account holds more than any tool identity",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Tool identities",
+       "5"
+      ],
+      [
+       "Most permissions on one identity",
+       "3"
+      ],
+      [
+       "Recorded events",
+       "0"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I6"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I7-shared_sa-shared",
+     "case": "I7-shared",
+     "key": "A",
+     "x": 7,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call after the pause: executed on authority revoked at minute 10",
+     "flags": [],
+     "metrics": [
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "14"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call after the pause"
+      ],
+      [
+       "Checks",
+       "0/0"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Shared account"
+      ]
+     ]
+    },
+    {
+     "id": "I7-chain-extend",
+     "case": "I7-extend",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "broken",
+     "note": "capability.call after the pause: executed on authority revoked at minute 10",
+     "flags": [
+      [
+       "extending instead of re-exchanging lets the rollback through",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Final",
+       "EXECUTED"
+      ],
+      [
+       "Rollbacks",
+       "1"
+      ],
+      [
+       "Recorded events",
+       "15"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "BROKEN"
+      ],
+      [
+       "Where it broke",
+       "capability.call after the pause"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    },
+    {
+     "id": "I7-chain-reexchange",
+     "case": "I7-reexchange",
+     "key": "C",
+     "x": 7,
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "re-exchange after the pause: revoked delegation stays revoked",
+       true
+      ]
+     ],
+     "metrics": [
+      [
+       "Final",
+       "REJECTED"
+      ],
+      [
+       "Rollbacks",
+       "0"
+      ],
+      [
+       "Recorded events",
+       "13"
+      ]
+     ],
+     "kv": [
+      [
+       "Outcome",
+       "HELD"
+      ],
+      [
+       "Where it broke",
+       "—"
+      ],
+      [
+       "Checks",
+       "1/1"
+      ],
+      [
+       "Exp",
+       "I7"
+      ],
+      [
+       "Identity model",
+       "Delegation chain"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "cases": {
+  "I1-rollback": {
+   "group": "I1",
+   "title": "Attribution: one rollback, nine questions",
+   "who": "agent: agent.incident-intel@1.3.0, invoker: svc.web-portal (web console), on_behalf_of: sre.maya",
+   "facts": [
+    [
+     "Experiment",
+     "I1 · Attribution"
+    ],
+    [
+     "Question",
+     "Can each record say who acted, on whose behalf, with what authority?"
+    ]
+   ],
+   "chips": []
+  },
+  "I1-three-agents": {
+   "group": "I1",
+   "title": "Attribution: three agents touch Kubernetes",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I1 · Attribution"
+    ],
+    [
+     "Question",
+     "Can each record say who acted, on whose behalf, with what authority?"
+    ]
+   ],
+   "chips": []
+  },
+  "I2-deputy": {
+   "group": "I2",
+   "title": "Confused deputy: a read-only agent asks for a rollback",
+   "who": "invoker: svc.ci-pipeline (CI)",
+   "facts": [
+    [
+     "Experiment",
+     "I2 · Confused deputy"
+    ],
+    [
+     "Question",
+     "Can a read-only agent get a rollback done by asking a privileged one?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-rotate-shared-account": {
+   "group": "I3",
+   "title": "Revocation: pull the rotate shared account lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-agent": {
+   "group": "I3",
+   "title": "Revocation: pull the agent lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-control": {
+   "group": "I3",
+   "title": "Revocation: no lever pulled (control)",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-delegation": {
+   "group": "I3",
+   "title": "Revocation: pull the delegation lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-invoker-credential": {
+   "group": "I3",
+   "title": "Revocation: pull the invoker credential lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-tool-identity": {
+   "group": "I3",
+   "title": "Revocation: pull the tool identity lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I3-workload": {
+   "group": "I3",
+   "title": "Revocation: pull the workload lever",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I3 · Revocation"
+    ],
+    [
+     "Question",
+     "What does each revocation lever stop, and how fast?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-shared-secret": {
+   "group": "I4",
+   "title": "Theft: the shared account's secret a day later",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-expired-token": {
+   "group": "I4",
+   "title": "Replay: expired execution token",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-legitimate-call": {
+   "group": "I4",
+   "title": "Replay: the legitimate call",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-other-workload": {
+   "group": "I4",
+   "title": "Replay: execution token from another workload",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-other-workload-write": {
+   "group": "I4",
+   "title": "Replay: an approved rollback's execution token from another workload",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-stolen-after-ttl": {
+   "group": "I4",
+   "title": "Theft: stolen tool credential after expiry",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-stolen-within-ttl": {
+   "group": "I4",
+   "title": "Theft: stolen tool credential inside its lifetime",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I4-wrong-audience": {
+   "group": "I4",
+   "title": "Theft: tool credential at the wrong system",
+   "who": "agent: agent.incident-intel, invoker: svc.monitoring-webhook (Datadog event)",
+   "facts": [
+    [
+     "Experiment",
+     "I4 · Replay and theft"
+    ],
+    [
+     "Question",
+     "Is a copied or stolen token useful to someone else?"
+    ]
+   ],
+   "chips": []
+  },
+  "I5-vs-manual": {
+   "group": "I5",
+   "title": "Impersonation vs delegation: the agent's rollback beside Maya's own",
+   "who": "agent: agent.incident-intel, invoker: svc.web-portal (web console), on_behalf_of: sre.maya",
+   "facts": [
+    [
+     "Experiment",
+     "I5 · Impersonation vs delegation"
+    ],
+    [
+     "Question",
+     "Can the agent's action be told apart from the human's own?"
+    ]
+   ],
+   "chips": []
+  },
+  "I6-accumulation": {
+   "group": "I6",
+   "title": "Privilege build-up: what the shared account holds",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I6 · Privilege build-up"
+    ],
+    [
+     "Question",
+     "What does each identity end up holding? (derived from configuration)"
+    ]
+   ],
+   "chips": []
+  },
+  "I6-tool-identities": {
+   "group": "I6",
+   "title": "Privilege build-up: what each tool identity holds",
+   "who": "configuration",
+   "facts": [
+    [
+     "Experiment",
+     "I6 · Privilege build-up"
+    ],
+    [
+     "Question",
+     "What does each identity end up holding? (derived from configuration)"
+    ]
+   ],
+   "chips": []
+  },
+  "I7-shared": {
+   "group": "I7",
+   "title": "The pause: shared account",
+   "who": "agent: agent.incident-intel, invoker: svc.web-portal (web console), on_behalf_of: sre.maya",
+   "facts": [
+    [
+     "Experiment",
+     "I7 · The pause"
+    ],
+    [
+     "Question",
+     "If authority is revoked while a rollback waits for approval, does the rollback still run?"
+    ]
+   ],
+   "chips": []
+  },
+  "I7-extend": {
+   "group": "I7",
+   "title": "The pause: extend the old token",
+   "who": "agent: agent.incident-intel, invoker: svc.web-portal (web console), on_behalf_of: sre.maya",
+   "facts": [
+    [
+     "Experiment",
+     "I7 · The pause"
+    ],
+    [
+     "Question",
+     "If authority is revoked while a rollback waits for approval, does the rollback still run?"
+    ]
+   ],
+   "chips": []
+  },
+  "I7-reexchange": {
+   "group": "I7",
+   "title": "The pause: re-exchange after approval",
+   "who": "agent: agent.incident-intel, invoker: svc.web-portal (web console), on_behalf_of: sre.maya",
+   "facts": [
+    [
+     "Experiment",
+     "I7 · The pause"
+    ],
+    [
+     "Question",
+     "If authority is revoked while a rollback waits for approval, does the rollback still run?"
+    ]
+   ],
+   "chips": []
+  }
+ },
+ "default_row": null,
+ "artifacts": {
+  "frozen": [
+   [
+    "config/capabilities.yaml",
+    "d846724b16c40702bf5ee3c8d91fafc7e6ff0ff75b51153c1b1e9112130a1f12",
+    true
+   ],
+   [
+    "config/policies.yaml",
+    "87fc40ea63965faf7ad83b903a8d48b0ebae3f5063e6c83c95e75952659363a7",
+    true
+   ],
+   [
+    "config/principals.yaml",
+    "47af27c0a6a641c8d2c3f4dc3a59807b2b03972dd86bd0a801735ac8f1532190",
+    true
+   ],
+   [
+    "config/shared_sa.yaml",
+    "1405668e90d3095184e183f39abd114132e3d21c2532d596d03b223fb87e2c21",
+    true
+   ],
+   [
+    "config/tool_identities.yaml",
+    "1804394fb40e1b0beec42b1717f3415c4d698ad0d42870825d5061bbf96ae598",
+    true
+   ]
+  ],
+  "models": [
+   [
+    "agents",
+    "deterministic plans (aid/agents.py); no model"
+   ]
+  ],
+  "run_meta": [
+   [
+    "Run",
+    "2026-10-03-recorded"
+   ],
+   [
+    "Python",
+    "3.12.13"
+   ],
+   [
+    "Agents",
+    "deterministic plans (aid/agents.py); no model"
+   ],
+   [
+    "Simulated",
+    "directory and identity provider (config/principals.yaml); workload attestation (SVIDs); Kubernetes, Jira, Slack, telemetry and their audit logs (aid/tools.py); clock"
+   ],
+   [
+    "Real",
+    "token exchange, delegation and narrowing (aid/trust.py); attestation checks at the gateway; token broker; capability gateway; approvals; hash-chained audit; revocation levers"
+   ]
+  ],
+  "checks": [
+   "the rollback executed once in every mode",
+   "chain: the platform record answers all nine questions",
+   "every mode: the tool log answers at most three",
+   "shared account: Kubernetes sees one principal for three agents",
+   "shared account: no agent attributable from the platform record",
+   "chain: all three agents attributable from the platform record",
+   "audit chain intact; an edited approver breaks it at that row",
+   "chain: the deputy request is denied before any approval",
+   "chain: the callee's scopes narrowed",
+   "chain: an undeclared agent -> agent edge is refused",
+   "shared account: the deputy rollback executes and hides its originator",
+   "control: nothing stops without a revocation",
+   "delegation: only Maya's executions stop, within one token lifetime",
+   "invoker credential: new executions from that head refused",
+   "agent: every execution running that agent stops at its next call",
+   "workload: executions on the other runtime keep running",
+   "tool identity: one capability of one execution stops",
+   "shared account rotation stops all five executions",
+   "execution token replayed from another workload is rejected",
+   "privileged write replayed from another workload is rejected with no side effect",
+   "expired execution token is rejected",
+   "tool credential rejected by a system it was not minted for",
+   "stolen tool credential dies with its ten minutes",
+   "shared secret still works from anywhere a day later",
+   "impersonation: agent action identical to Maya's own in Kubernetes' log",
+   "delegation: agent action distinguishable from Maya's own",
+   "impersonation loses the agent and the actor chain",
+   "shared account holds more than any tool identity",
+   "re-exchange after the pause: revoked delegation stays revoked",
+   "extending instead of re-exchanging lets the rollback through",
+   "delegation never widens authority (the callee's scopes are within the caller's after every hop)",
+   "a delegated write whose originator lacks the authority is denied, not silently executed",
+   "a credential replayed from the wrong workload causes no privileged side effect",
+   "a revoked identity cannot mint new execution authority",
+   "unrelated executions survive every targeted revocation",
+   "rotating the shared account stops more executions than any targeted lever",
+   "agent identity and runtime identity stay distinct in the record",
+   "impersonation does not pass for delegation provenance",
+   "no tool log is complete upstream provenance (every tool log answers fewer than nine questions)",
+   "the platform record reconstructs the whole identity chain (nine of nine)",
+   "tampering with the platform audit is detected at the edited row",
+   "every scenario's outcome is read from its audit record and tool logs (aid/experiments.py)"
+  ]
+ },
+ "pages": [
+  {
+   "id": "overview",
+   "title": "Overview",
+   "icon": "home",
+   "blocks": [
+    {
+     "type": "run_card",
+     "kpis": [
+      [
+       "31",
+       "Scenarios"
+      ],
+      [
+       "16",
+       "Held"
+      ],
+      [
+       "3",
+       "Qualified"
+      ],
+      [
+       "12",
+       "Broken"
+      ],
+      [
+       "41/41",
+       "Checks passed"
+      ],
+      [
+       "3,779",
+       "Recorded events"
+      ]
+     ],
+     "flow_title": "What every scenario records",
+     "flow": [
+      {
+       "icon": "user",
+       "title": "Head",
+       "sub": "who invoked, for whom",
+       "tone": "purple"
+      },
+      {
+       "icon": "lock",
+       "title": "Trust layer",
+       "sub": "exchange, delegation, narrowing",
+       "tone": "blue"
+      },
+      {
+       "icon": "cpu",
+       "title": "Agent",
+       "sub": "a fixed plan; holds no tokens",
+       "tone": "blue"
+      },
+      {
+       "icon": "server",
+       "title": "Gateway",
+       "sub": "policy, approval, broker",
+       "tone": "orange"
+      },
+      {
+       "icon": "box",
+       "title": "Tool",
+       "sub": "its own log of what it saw",
+       "tone": "gray"
+      },
+      {
+       "icon": "check",
+       "title": "Checks",
+       "sub": "read from the record and the logs",
+       "tone": "green"
+      }
+     ],
+     "systems": "systems",
+     "badges": [
+      [
+       "flask",
+       "Run 2026-10-03-recorded"
+      ],
+      [
+       "check",
+       "Checks 41/41"
+      ],
+      [
+       "refresh",
+       "Deterministic: a rerun is byte-identical (make verify)"
+      ],
+      [
+       "cpu",
+       "No model: fixed agent plans"
+      ]
+     ]
+    },
+    {
+     "type": "metric_grid",
+     "style": "margin-top:16px",
+     "items": [
+      {
+       "value": "0/7",
+       "label": "Shared account · held",
+       "metric": "held-A"
+      },
+      {
+       "value": "7/7",
+       "label": "Shared account · broken",
+       "metric": "broken-A"
+      },
+      {
+       "value": "0/4",
+       "label": "User token · held",
+       "metric": "held-B"
+      },
+      {
+       "value": "4/4",
+       "label": "User token · broken",
+       "metric": "broken-B"
+      },
+      {
+       "value": "16/20",
+       "label": "Delegation chain · held",
+       "metric": "held-C"
+      },
+      {
+       "value": "3/20",
+       "label": "Delegation chain · qualified",
+       "metric": "qualified-C"
+      },
+      {
+       "value": "1/20",
+       "label": "Delegation chain · broken",
+       "metric": "broken-C"
+      }
+     ]
+    },
+    {
+     "type": "table",
+     "data": "matrix",
+     "title": "Every experiment, every identity model",
+     "sub": "✓ held · ~ qualified (held within a stated bound) · ✕ broken. One mark per scenario; select a scenario on the Scenarios page for its detail."
+    },
+    {
+     "type": "callout",
+     "icon": "bulb",
+     "title": "How a scenario's outcome is decided",
+     "text": "Held means the identity property the scenario tests held. Qualified means it held only within a stated bound, such as a credential's lifetime. Broken means the identity model lost it: the anti-pattern scenarios exist to show exactly that. Outcomes are read from the platform's audit record and each tool's own log. Separately, the run's own checks confirm each scenario behaved as expected: 31 of 31 did."
+    }
+   ]
+  },
+  {
+   "id": "runs",
+   "title": "Scenarios",
+   "icon": "list",
+   "count": "rows",
+   "blocks": [
+    {
+     "type": "case_explorer",
+     "heading": "Scenarios",
+     "flag_tab": "Qualified and broken",
+     "search": "Search scenario ids, use cases, where identity broke…",
+     "csv_head": "scenario,use_case,identity_model,{factor},as_expected,outcome,where_it_broke",
+     "columns": [
+      {
+       "label": "Outcome",
+       "show": "severity"
+      },
+      {
+       "label": "Where it broke",
+       "kv": "Where it broke"
+      },
+      {
+       "label": "Checks",
+       "kv": "Checks"
+      },
+      {
+       "label": "Identity model",
+       "kv": "Identity model"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "problems",
+   "title": "Broken & qualified",
+   "icon": "alert",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "Where identity broke",
+     "sub": "Every scenario whose identity property did not simply hold, the step where it broke, and what the record shows. Select a row for its steps."
+    },
+    {
+     "type": "table",
+     "data": "problems",
+     "title": "Broken and qualified · run 2026-10-03-recorded",
+     "sub": "12 broken and 3 qualified, out of 31 scenarios."
+    },
+    {
+     "type": "table",
+     "data": "every",
+     "title": "All scenarios",
+     "sub": "31 scenarios across 7 experiments. Select a row for its input, output, steps and lineage."
+    }
+   ]
+  },
+  {
+   "id": "checks",
+   "title": "Checks",
+   "icon": "check",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "The run's checks, and the scenarios that answer them",
+     "sub": "Written into the POC's code and evaluated by the run into checks.json: 41 of 41 passed."
+    },
+    {
+     "type": "table",
+     "data": "checks",
+     "title": "Checks · run 2026-10-03-recorded",
+     "sub": "A failing check fails the run and the evidence documents refuse to build."
+    }
+   ]
+  },
+  {
+   "id": "lineage",
+   "title": "Data lineage",
+   "icon": "layers",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "From the scenario's inputs to the published number",
+     "sub": "The files that carry each scenario's data, in order. Every scenario's Data lineage tab lists its own files with record counts."
+    },
+    {
+     "type": "table",
+     "data": "lineage",
+     "title": "Per-scenario lineage",
+     "sub": "Paths inside the run directory; ‹scenario› is the scenario id, for example the first row on the Scenarios page."
+    },
+    {
+     "type": "table",
+     "data": "allruns",
+     "title": "Runs found",
+     "sub": "Every run directory with recorded scenarios is listed here and selectable on the Scenarios page (2 found). A new run appears after the page is rebuilt."
+    }
+   ]
+  },
+  {
+   "id": "raw",
+   "title": "Raw evidence",
+   "icon": "folder",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "artifacts",
+     "sub": "Where every value on these pages comes from.",
+     "files": [
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/scenario.json",
+       "each scenario's input, expected and observed result, outcome and checks"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/audit.jsonl",
+       "each scenario's platform record: starts, delegations, decisions, approvals, revocations (hash-chained)"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/tool-logs.json",
+       "what each simulated system was shown, in its own log"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/scenarios/‹scenario›/effects.json",
+       "what the systems physically changed"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/checks.json",
+       "the run's checks (41/41)"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/facts.json",
+       "every number the editions and evidence documents substitute"
+      ],
+      [
+       "agent_identity_poc/runs/2026-10-03-recorded/manifest.json",
+       "environment, config hashes, what is real and what is simulated"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reproduce",
+   "title": "Reproduce",
+   "icon": "terminal",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "reproduce",
+     "quick_sub": "From the agent_identity folder.",
+     "quickstart": [
+      [
+       "Set up the POC (Python, uv)",
+       "make setup"
+      ],
+      [
+       "Run the tests",
+       "make test"
+      ],
+      [
+       "Run the experiments and rebuild this page",
+       "make run"
+      ],
+      [
+       "Verify the published run, byte for byte",
+       "make verify"
+      ],
+      [
+       "Rebuild this page only",
+       "make console"
+      ]
+     ],
+     "environment": [
+      [
+       "Python",
+       "3.12.13",
+       "uv sync --group dev"
+      ],
+      [
+       "Scenarios",
+       "31 per run",
+       "make run"
+      ]
+     ],
+     "replay_title": "Determinism",
+     "replay_sub": "The run is deterministic: make verify reruns every experiment into a fresh copy and compares it with the published run.",
+     "reproduced_as": "byte-identical"
+    }
+   ]
+  }
+ ],
+ "case_tabs": [
+  {
+   "id": "io",
+   "label": "Input & output"
+  },
+  {
+   "id": "steps",
+   "label": "Steps"
+  },
+  {
+   "id": "lineage",
+   "label": "Data lineage"
+  },
+  {
+   "id": "logs",
+   "label": "Tool logs"
+  }
+ ],
+ "statements": {},
+ "svg": {},
+ "charts": {},
+ "figures": {},
+ "sections": {},
+ "generated": {
+  "at": "2026-10-04 00:33 IST",
+  "by": "tools/build_lab_console.py",
+  "runs": [
+   "2026-10-03-recorded",
+   "2026-09-29-recorded"
+  ],
+  "primary": "2026-10-03-recorded"
+ }
+}

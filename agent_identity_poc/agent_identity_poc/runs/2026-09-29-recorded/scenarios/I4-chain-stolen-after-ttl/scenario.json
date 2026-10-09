@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "stolen tool credential dies with its ten minutes",
+   "passed": true
+  }
+ ],
+ "expected": "rejected",
+ "experiment": "I4",
+ "id": "I4-chain-stolen-after-ttl",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "the same credential after 16 minutes",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "HTTP 401"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "HTTP 401: credential expired or revoked",
+ "outcome": "held",
+ "use_case": "Theft: stolen tool credential after expiry",
+ "variant": "C",
+ "where": null
+}

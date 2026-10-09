@@ -1,0 +1,34 @@
+{
+ "checks": [],
+ "expected": "the agents cannot be told apart afterwards",
+ "experiment": "I1",
+ "id": "I1-impersonation-three-agents",
+ "input": {
+  "executions": "event -> incident-intel (rollback) \u00b7 ci -> release-guard (read) \u00b7 maya -> incident-intel -> remediation (restart plan)",
+  "identity_model": "impersonation"
+ },
+ "measures": [
+  [
+   "Agents acting",
+   3
+  ],
+  [
+   "Attributable from the platform record",
+   0
+  ],
+  [
+   "Kubernetes actions",
+   5
+  ],
+  [
+   "Distinct Kubernetes principals",
+   2
+  ]
+ ],
+ "mode": "impersonation",
+ "observed": "0 of 3 agents attributable \u00b7 Kubernetes saw 2 principal(s)",
+ "outcome": "broken",
+ "use_case": "Attribution: three agents touch Kubernetes",
+ "variant": "B",
+ "where": "capability.call: the records name no agent"
+}

@@ -1,0 +1,57 @@
+{
+ "platform": {
+  "jira": [
+   {
+    "action": "issue:comment",
+    "actor": "svc-incident-writer",
+    "issue": "INC-4102",
+    "status": 200,
+    "ts": 1790690520.0
+   }
+  ],
+  "kubernetes": [
+   {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690520.0,
+    "user.username": "system:serviceaccount:payments:release-reader",
+    "verb": "get"
+   },
+   {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690700.0,
+    "user.username": "system:serviceaccount:payments:incident-remediator",
+    "verb": "patch"
+   },
+   {
+    "namespace": "payments",
+    "objectRef": "deployments/payment-service",
+    "responseStatus": 200,
+    "ts": 1790690760.0,
+    "user.username": "maya@company.com",
+    "verb": "patch"
+   }
+  ],
+  "slack": [
+   {
+    "action": "chat:write",
+    "bot_user": "bot:incident-poster",
+    "channel": "#inc-payments",
+    "status": 200,
+    "ts": 1790690520.0
+   }
+  ],
+  "telemetry": [
+   {
+    "action": "metrics:read",
+    "key": "app-key:incident-telemetry-read",
+    "query": "payment-service.errors",
+    "status": 200,
+    "ts": 1790690520.0
+   }
+  ]
+ }
+}

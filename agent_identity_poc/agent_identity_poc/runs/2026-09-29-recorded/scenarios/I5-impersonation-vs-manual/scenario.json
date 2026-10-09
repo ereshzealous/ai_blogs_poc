@@ -1,0 +1,38 @@
+{
+ "checks": [
+  {
+   "check": "impersonation: agent action identical to Maya's own in Kubernetes' log",
+   "passed": true
+  },
+  {
+   "check": "impersonation loses the agent and the actor chain",
+   "passed": true
+  }
+ ],
+ "expected": "the agent's action looks exactly like Maya's",
+ "experiment": "I5",
+ "id": "I5-impersonation-vs-manual",
+ "input": {
+  "agent": "agent.incident-intel",
+  "comparison": "Maya rolls back by hand a minute later",
+  "identity_model": "impersonation",
+  "invoker": "svc.web-portal (web console)",
+  "on_behalf_of": "sre.maya"
+ },
+ "measures": [
+  [
+   "Platform record fields",
+   9
+  ],
+  [
+   "Tool permissions behind the call",
+   5
+  ]
+ ],
+ "mode": "impersonation",
+ "observed": "agent recorded: no \u00b7 actor chain recorded: no \u00b7 indistinguishable in Kubernetes' log: yes",
+ "outcome": "broken",
+ "use_case": "Impersonation vs delegation: the agent's rollback beside Maya's own",
+ "variant": "B",
+ "where": "Kubernetes log: the agent's patch is identical to Maya's manual patch"
+}

@@ -1,0 +1,39 @@
+{
+ "checks": [
+  {
+   "check": "shared account holds more than any tool identity",
+   "passed": true
+  }
+ ],
+ "expected": "holds only what the platform needs",
+ "experiment": "I6",
+ "id": "I6-shared_sa-accumulation",
+ "input": {
+  "identity_model": "shared_sa",
+  "source": "config/shared_sa.yaml, config/tool_identities.yaml, config/capabilities.yaml (derived, not run)"
+ },
+ "measures": [
+  [
+   "Permissions held",
+   20
+  ],
+  [
+   "Needed",
+   6
+  ],
+  [
+   "Excess",
+   14
+  ],
+  [
+   "Grants for retired agents",
+   5
+  ]
+ ],
+ "mode": "shared_sa",
+ "observed": "20 permissions held, 6 needed, 14 excess",
+ "outcome": "broken",
+ "use_case": "Privilege build-up: what the shared account holds",
+ "variant": "A",
+ "where": "config/shared_sa.yaml: grants added for agents and never removed"
+}

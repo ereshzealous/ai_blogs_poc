@@ -1,0 +1,42 @@
+{
+ "checks": [
+  {
+   "check": "shared account rotation stops all five executions",
+   "passed": true
+  }
+ ],
+ "expected": "everything stops",
+ "experiment": "I3",
+ "id": "I3-shared_sa-rotate-shared-account",
+ "input": {
+  "executions": "E1 event -> incident-intel \u00b7 E2 maya (web) -> incident-intel \u00b7 E3 ci -> release-guard (release-runtime) \u00b7 E4 workflow -> incident-intel \u00b7 E5 maya (web) -> incident-intel -> remediation",
+  "identity_model": "shared_sa",
+  "lever": "rotate shared account",
+  "pulled_at_minute": 5,
+  "window_minutes": 30
+ },
+ "measures": [
+  [
+   "Stopped",
+   5
+  ],
+  [
+   "Kept running",
+   0
+  ],
+  [
+   "Slowest effect (min)",
+   0
+  ],
+  [
+   "New start afterwards",
+   "accepted"
+  ]
+ ],
+ "mode": "shared_sa",
+ "observed": "stopped E1, E2, E3, E4, E5 \u00b7 kept running none \u00b7 slowest effect 0 min",
+ "outcome": "broken",
+ "use_case": "Revocation: pull the rotate shared account lever",
+ "variant": "A",
+ "where": "revoked: one lever stops every execution"
+}

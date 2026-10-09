@@ -1,0 +1,291 @@
+{
+ "chain": {
+  "agent": {
+   "affected": [
+    "E1",
+    "E2",
+    "E4",
+    "E5"
+   ],
+   "affected_labels": [
+    "event -> incident-intel",
+    "maya (web) -> incident-intel",
+    "workflow -> incident-intel",
+    "maya (web) -> incident-intel -> remediation"
+   ],
+   "layer": "agent",
+   "minutes_to_effect": {
+    "E1": 0,
+    "E2": 0,
+    "E4": 0,
+    "E5": 0
+   },
+   "new_event_execution_after_revocation": "refused: agent agent.incident-intel@1.3.0 is disabled",
+   "partially_working": [],
+   "reasons": {
+    "E1": "agent agent.incident-intel@1.3.0 is disabled",
+    "E2": "agent agent.incident-intel@1.3.0 is disabled",
+    "E4": "agent agent.incident-intel@1.3.0 is disabled",
+    "E5": "agent agent.incident-intel@1.3.0 is disabled"
+   },
+   "refused_capabilities": {
+    "E1": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E2": [
+     "getErrorRate",
+     "updateIncident"
+    ],
+    "E4": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E5": [
+     "getErrorRate",
+     "restartPods"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": [
+    "E3"
+   ]
+  },
+  "delegation": {
+   "affected": [
+    "E2",
+    "E5"
+   ],
+   "affected_labels": [
+    "maya (web) -> incident-intel",
+    "maya (web) -> incident-intel -> remediation"
+   ],
+   "layer": "delegation",
+   "minutes_to_effect": {
+    "E2": 10,
+    "E5": 10
+   },
+   "new_event_execution_after_revocation": "accepted",
+   "partially_working": [],
+   "reasons": {
+    "E2": "re-exchange refused: delegation from sre.maya revoked",
+    "E5": "re-exchange refused: delegation from sre.maya revoked"
+   },
+   "refused_capabilities": {
+    "E2": [
+     "getErrorRate",
+     "updateIncident"
+    ],
+    "E5": [
+     "getErrorRate",
+     "restartPods"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": [
+    "E1",
+    "E3",
+    "E4"
+   ]
+  },
+  "invoker_credential": {
+   "affected": [
+    "E1"
+   ],
+   "affected_labels": [
+    "event -> incident-intel"
+   ],
+   "layer": "invoker_credential",
+   "minutes_to_effect": {
+    "E1": 10
+   },
+   "new_event_execution_after_revocation": "refused: unknown or revoked credential",
+   "partially_working": [],
+   "reasons": {
+    "E1": "re-exchange refused: invoker credential revoked"
+   },
+   "refused_capabilities": {
+    "E1": [
+     "getErrorRate",
+     "postMessage"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": [
+    "E2",
+    "E3",
+    "E4",
+    "E5"
+   ]
+  },
+  "tool_identity": {
+   "affected": [
+    "E5"
+   ],
+   "affected_labels": [
+    "maya (web) -> incident-intel -> remediation"
+   ],
+   "layer": "tool_identity",
+   "minutes_to_effect": {
+    "E5": 0
+   },
+   "new_event_execution_after_revocation": "accepted",
+   "partially_working": [
+    "E5"
+   ],
+   "reasons": {
+    "E5": "tool identity incident-remediator@production is disabled"
+   },
+   "refused_capabilities": {
+    "E5": [
+     "restartPods"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": [
+    "E1",
+    "E2",
+    "E3",
+    "E4"
+   ]
+  },
+  "workload": {
+   "affected": [
+    "E1",
+    "E2",
+    "E4",
+    "E5"
+   ],
+   "affected_labels": [
+    "event -> incident-intel",
+    "maya (web) -> incident-intel",
+    "workflow -> incident-intel",
+    "maya (web) -> incident-intel -> remediation"
+   ],
+   "layer": "workload",
+   "minutes_to_effect": {
+    "E1": 0,
+    "E2": 0,
+    "E4": 0,
+    "E5": 0
+   },
+   "new_event_execution_after_revocation": "accepted",
+   "partially_working": [],
+   "reasons": {
+    "E1": "presenter failed attestation",
+    "E2": "presenter failed attestation",
+    "E4": "presenter failed attestation",
+    "E5": "presenter failed attestation"
+   },
+   "refused_capabilities": {
+    "E1": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E2": [
+     "getErrorRate",
+     "updateIncident"
+    ],
+    "E4": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E5": [
+     "getErrorRate",
+     "restartPods"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": [
+    "E3"
+   ]
+  }
+ },
+ "control": {
+  "affected": [],
+  "affected_labels": [],
+  "layer": null,
+  "minutes_to_effect": {},
+  "new_event_execution_after_revocation": null,
+  "partially_working": [],
+  "reasons": {},
+  "refused_capabilities": {},
+  "t0": 1790690520.0,
+  "unaffected": [
+   "E1",
+   "E2",
+   "E3",
+   "E4",
+   "E5"
+  ]
+ },
+ "executions": {
+  "E1": "event -> incident-intel",
+  "E2": "maya (web) -> incident-intel",
+  "E3": "ci -> release-guard (release-runtime)",
+  "E4": "workflow -> incident-intel",
+  "E5": "maya (web) -> incident-intel -> remediation"
+ },
+ "minutes": 30,
+ "revoke_at_minute": 5,
+ "shared_sa": {
+  "rotate_shared_account": {
+   "affected": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5"
+   ],
+   "affected_labels": [
+    "event -> incident-intel",
+    "maya (web) -> incident-intel",
+    "ci -> release-guard (release-runtime)",
+    "workflow -> incident-intel",
+    "maya (web) -> incident-intel -> remediation"
+   ],
+   "layer": "shared_account",
+   "minutes_to_effect": {
+    "E1": 0,
+    "E2": 0,
+    "E3": 0,
+    "E4": 0,
+    "E5": 0
+   },
+   "new_event_execution_after_revocation": "accepted",
+   "partially_working": [],
+   "reasons": {
+    "E1": "credential expired or revoked",
+    "E2": "credential expired or revoked",
+    "E3": "credential expired or revoked",
+    "E4": "credential expired or revoked",
+    "E5": "credential expired or revoked"
+   },
+   "refused_capabilities": {
+    "E1": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E2": [
+     "getErrorRate",
+     "updateIncident"
+    ],
+    "E3": [
+     "getDeployments",
+     "getErrorRate"
+    ],
+    "E4": [
+     "getErrorRate",
+     "postMessage"
+    ],
+    "E5": [
+     "getErrorRate",
+     "restartPods"
+    ]
+   },
+   "t0": 1790690520.0,
+   "unaffected": []
+  }
+ },
+ "token_ttl_min": 15.0
+}

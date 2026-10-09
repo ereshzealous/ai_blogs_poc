@@ -1,0 +1,42 @@
+{
+ "checks": [
+  {
+   "check": "delegation: only Maya's executions stop, within one token lifetime",
+   "passed": true
+  }
+ ],
+ "expected": "only the executions that depend on the lever stop",
+ "experiment": "I3",
+ "id": "I3-chain-delegation",
+ "input": {
+  "executions": "E1 event -> incident-intel \u00b7 E2 maya (web) -> incident-intel \u00b7 E3 ci -> release-guard (release-runtime) \u00b7 E4 workflow -> incident-intel \u00b7 E5 maya (web) -> incident-intel -> remediation",
+  "identity_model": "chain",
+  "lever": "delegation",
+  "pulled_at_minute": 5,
+  "window_minutes": 30
+ },
+ "measures": [
+  [
+   "Stopped",
+   2
+  ],
+  [
+   "Kept running",
+   3
+  ],
+  [
+   "Slowest effect (min)",
+   10
+  ],
+  [
+   "New start afterwards",
+   "accepted"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "stopped E2, E5 \u00b7 kept running E1, E3, E4 \u00b7 slowest effect 10 min",
+ "outcome": "qualified",
+ "use_case": "Revocation: pull the delegation lever",
+ "variant": "C",
+ "where": "token.refreshed: effect waits for the next re-exchange, up to 10 of 15 min"
+}

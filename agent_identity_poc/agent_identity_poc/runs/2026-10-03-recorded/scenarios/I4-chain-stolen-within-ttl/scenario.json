@@ -1,0 +1,24 @@
+{
+ "checks": [],
+ "expected": "works until it expires, at its one audience",
+ "experiment": "I4",
+ "id": "I4-chain-stolen-within-ttl",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "incident-remediator credential used at Kubernetes within its minutes",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "HTTP 200"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "HTTP 200: ok",
+ "outcome": "qualified",
+ "use_case": "Theft: stolen tool credential inside its lifetime",
+ "variant": "C",
+ "where": "tool call: a bearer credential works for its remaining 10 minutes"
+}

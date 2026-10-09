@@ -1,0 +1,385 @@
+# T1 · Agent Identity · PREREGISTRATION (declared criteria) for the final recorded run.
+#
+# History, stated plainly: the POC and its first 29 checks were written when T1 was built, and run 2026-09-29-recorded
+# showed their results. This standardization pass keeps those checks unchanged (same wording, now with ids, kinds and
+# arms), adds one I4 check (a privileged write replayed from the wrong workload) and eleven global assertions (G01–G11),
+# declares them all here, and freezes this file, every config file and the criteria code (`uv run aid freeze`) BEFORE the
+# final recorded run. `aid experiments` refuses to run if a guarded file changed, or if the checks it evaluates differ
+# from the list below. A change after the freeze is recorded in proof/DEVIATIONS.md.
+
+schema = "aid-prereg/v1"
+question = "If the same privileged rollback is executed through different identity models, what identity, authority, attribution, revocation and replay properties survive?"
+
+[design]
+arms = { A = "shared service account (system:serviceaccount:platform:ai-automation)", B = "user token handed to the agent (impersonation: the user's (iss, sub) reaches the tool)", C = "explicit delegation chain (subject + actor chain + intersected scopes + workload-bound execution token + broker-minted edge credential)" }
+held_constant = ["the incident (payment-service, 14% errors, the Datadog event dd-evt-771204)", "the proposed rollback (payment-service, production, v4.18.0 → v4.17.2)",
+  "the logical agents and their deterministic plans", "the policy fixture (config/policies.yaml)", "the approval fixture (ic.dev approves the exact call)",
+  "the tool simulators and their logs (aid/tools.py)", "the run configuration", "the nine attribution questions", "the scenarios"]
+variable = "identity propagation and credential architecture"
+randomness = "none: simulated clock, directory, attestation and tools; deterministic agent plans"
+
+# The nine attribution questions: the POC's existing canonical definitions (aid/experiments.py QUESTIONS), labelled A1–A9.
+# A question counts as answered only when the record states the true value.
+[[questions]]
+id = "A1"
+key = "who_is_the_agent"
+text = "Which logical agent acted?"
+[[questions]]
+id = "A2"
+key = "who_invoked"
+text = "Who or what invoked it (the trigger's head: the event webhook or the human's channel)?"
+[[questions]]
+id = "A3"
+key = "on_whose_behalf"
+text = "On whose behalf did it act (the accountable subject)?"
+[[questions]]
+id = "A4"
+key = "what_authority"
+text = "With what delegated authority (the scopes the execution held)?"
+[[questions]]
+id = "A5"
+key = "which_runtime"
+text = "On which runtime workload did it execute?"
+[[questions]]
+id = "A6"
+key = "which_credential"
+text = "Which edge credential reached the tool (tool principal and credential id)?"
+[[questions]]
+id = "A7"
+key = "what_action"
+text = "What exact action, with which arguments, on which resource?"
+[[questions]]
+id = "A8"
+key = "who_approved"
+text = "Who approved it (the policy and approval context)?"
+[[questions]]
+id = "A9"
+key = "can_it_be_revoked"
+text = "Can each part of the chain be revoked independently (the revocation handles)?"
+
+[[experiments]]
+id = "I1"
+title = "Attribution completeness"
+question = "How much of the identity chain can the platform record, and the tool's own log, reconstruct after the same rollback?"
+invariant = "Under the delegation chain the platform record answers all nine questions; no tool log is complete provenance."
+[[experiments]]
+id = "I2"
+title = "Confused deputy"
+question = "Can a read-only agent (release-guard) make a rollback-capable agent (incident-intel) roll back production?"
+invariant = "Delegation never widens authority: the chain is evaluated with the originator's authority and denied before any approval."
+[[experiments]]
+id = "I3"
+title = "Revocation granularity and blast radius"
+question = "What can we stop without stopping unrelated work?"
+invariant = "Each targeted lever stops only the executions that depend on it; the shared account can only stop everything."
+[[experiments]]
+id = "I4"
+title = "Replay and workload binding"
+question = "Can a copied execution token, or a stolen tool credential, be used from another workload, another system or later?"
+invariant = "A credential from the wrong workload causes no privileged side effect; a tool credential works only at its audience, until it expires."
+[[experiments]]
+id = "I5"
+title = "Impersonation provenance loss"
+question = "What disappears when the agent simply acts as the user?"
+invariant = "A visible user is not a visible actor chain: delegation keeps the agent distinguishable from the human."
+[[experiments]]
+id = "I6"
+title = "Privilege build-up"
+question = "What authority accumulates when independent agents share one technical identity? (derived from configuration)"
+invariant = "Identity boundaries align with privilege boundaries: no tool identity holds as much as the shared account."
+[[experiments]]
+id = "I7"
+title = "Long approval pause"
+question = "What happens when execution pauses long enough for authority to change?"
+invariant = "Resume by re-deriving authority; never merely extend stale authority."
+
+
+# The declared checks (kind: invariant · control: the weak model is predicted to lose the property; passing means it did ·
+# qualified: holds within a stated bound). Extracted statically from aid/experiments.py by aid/freeze.py, then frozen.
+
+[[checks]]
+id = "I1-01"
+experiment = "I1"
+arm = "ABC"
+kind = "invariant"
+check = "the rollback executed once in every mode"
+
+[[checks]]
+id = "I1-02"
+experiment = "I1"
+arm = "C"
+kind = "invariant"
+check = "chain: the platform record answers all nine questions"
+
+[[checks]]
+id = "I1-03"
+experiment = "I1"
+arm = "ABC"
+kind = "invariant"
+check = "every mode: the tool log answers at most three"
+
+[[checks]]
+id = "I1-04"
+experiment = "I1"
+arm = "A"
+kind = "control"
+check = "shared account: Kubernetes sees one principal for three agents"
+
+[[checks]]
+id = "I1-05"
+experiment = "I1"
+arm = "A"
+kind = "control"
+check = "shared account: no agent attributable from the platform record"
+
+[[checks]]
+id = "I1-06"
+experiment = "I1"
+arm = "C"
+kind = "invariant"
+check = "chain: all three agents attributable from the platform record"
+
+[[checks]]
+id = "I1-07"
+experiment = "I1"
+arm = "C"
+kind = "invariant"
+check = "audit chain intact; an edited approver breaks it at that row"
+
+[[checks]]
+id = "I2-01"
+experiment = "I2"
+arm = "C"
+kind = "invariant"
+check = "chain: the deputy request is denied before any approval"
+
+[[checks]]
+id = "I2-02"
+experiment = "I2"
+arm = "C"
+kind = "invariant"
+check = "chain: the callee's scopes narrowed"
+
+[[checks]]
+id = "I2-03"
+experiment = "I2"
+arm = "C"
+kind = "invariant"
+check = "chain: an undeclared agent -> agent edge is refused"
+
+[[checks]]
+id = "I2-04"
+experiment = "I2"
+arm = "A"
+kind = "control"
+check = "shared account: the deputy rollback executes and hides its originator"
+
+[[checks]]
+id = "I3-01"
+experiment = "I3"
+arm = "C"
+kind = "invariant"
+check = "control: nothing stops without a revocation"
+
+[[checks]]
+id = "I3-02"
+experiment = "I3"
+arm = "C"
+kind = "qualified"
+check = "delegation: only Maya's executions stop, within one token lifetime"
+
+[[checks]]
+id = "I3-03"
+experiment = "I3"
+arm = "C"
+kind = "invariant"
+check = "invoker credential: new executions from that head refused"
+
+[[checks]]
+id = "I3-04"
+experiment = "I3"
+arm = "C"
+kind = "invariant"
+check = "agent: every execution running that agent stops at its next call"
+
+[[checks]]
+id = "I3-05"
+experiment = "I3"
+arm = "C"
+kind = "invariant"
+check = "workload: executions on the other runtime keep running"
+
+[[checks]]
+id = "I3-06"
+experiment = "I3"
+arm = "C"
+kind = "invariant"
+check = "tool identity: one capability of one execution stops"
+
+[[checks]]
+id = "I3-07"
+experiment = "I3"
+arm = "A"
+kind = "control"
+check = "shared account rotation stops all five executions"
+
+[[checks]]
+id = "I4-01"
+experiment = "I4"
+arm = "C"
+kind = "invariant"
+check = "execution token replayed from another workload is rejected"
+
+[[checks]]
+id = "I4-02"
+experiment = "I4"
+arm = "C"
+kind = "invariant"
+check = "privileged write replayed from another workload is rejected with no side effect"
+
+[[checks]]
+id = "I4-03"
+experiment = "I4"
+arm = "C"
+kind = "invariant"
+check = "expired execution token is rejected"
+
+[[checks]]
+id = "I4-04"
+experiment = "I4"
+arm = "C"
+kind = "invariant"
+check = "tool credential rejected by a system it was not minted for"
+
+[[checks]]
+id = "I4-05"
+experiment = "I4"
+arm = "C"
+kind = "qualified"
+check = "stolen tool credential dies with its ten minutes"
+
+[[checks]]
+id = "I4-06"
+experiment = "I4"
+arm = "A"
+kind = "control"
+check = "shared secret still works from anywhere a day later"
+
+[[checks]]
+id = "I5-01"
+experiment = "I5"
+arm = "B"
+kind = "control"
+check = "impersonation: agent action identical to Maya's own in Kubernetes' log"
+
+[[checks]]
+id = "I5-02"
+experiment = "I5"
+arm = "C"
+kind = "invariant"
+check = "delegation: agent action distinguishable from Maya's own"
+
+[[checks]]
+id = "I5-03"
+experiment = "I5"
+arm = "BC"
+kind = "invariant"
+check = "impersonation loses the agent and the actor chain"
+
+[[checks]]
+id = "I6-01"
+experiment = "I6"
+arm = "AC"
+kind = "invariant"
+check = "shared account holds more than any tool identity"
+
+[[checks]]
+id = "I7-01"
+experiment = "I7"
+arm = "C"
+kind = "invariant"
+check = "re-exchange after the pause: revoked delegation stays revoked"
+
+[[checks]]
+id = "I7-02"
+experiment = "I7"
+arm = "C"
+kind = "control"
+check = "extending instead of re-exchanging lets the rollback through"
+
+[[checks]]
+id = "G01"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "delegation never widens authority (the callee's scopes are within the caller's after every hop)"
+
+[[checks]]
+id = "G02"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "a delegated write whose originator lacks the authority is denied, not silently executed"
+
+[[checks]]
+id = "G03"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "a credential replayed from the wrong workload causes no privileged side effect"
+
+[[checks]]
+id = "G04"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "a revoked identity cannot mint new execution authority"
+
+[[checks]]
+id = "G05"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "unrelated executions survive every targeted revocation"
+
+[[checks]]
+id = "G06"
+experiment = "GA"
+arm = "AC"
+kind = "invariant"
+check = "rotating the shared account stops more executions than any targeted lever"
+
+[[checks]]
+id = "G07"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "agent identity and runtime identity stay distinct in the record"
+
+[[checks]]
+id = "G08"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "impersonation does not pass for delegation provenance"
+
+[[checks]]
+id = "G09"
+experiment = "GA"
+arm = "ABC"
+kind = "invariant"
+check = "no tool log is complete upstream provenance (every tool log answers fewer than nine questions)"
+
+[[checks]]
+id = "G10"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "the platform record reconstructs the whole identity chain (nine of nine)"
+
+[[checks]]
+id = "G11"
+experiment = "GA"
+arm = "C"
+kind = "invariant"
+check = "tampering with the platform audit is detected at the edited row"

@@ -1,0 +1,42 @@
+{
+ "checks": [],
+ "expected": "the rollback runs and the originator disappears",
+ "experiment": "I2",
+ "id": "I2-impersonation-deputy",
+ "input": {
+  "approver": "ic.dev",
+  "callee": "agent.incident-intel",
+  "caller": "agent.release-guard (read only)",
+  "identity_model": "impersonation",
+  "invoker": "svc.ci-pipeline (CI)",
+  "request": "roll back payment-service in production"
+ },
+ "measures": [
+  [
+   "First decision",
+   "REQUIRE_APPROVAL"
+  ],
+  [
+   "Rule",
+   "P2-high-risk-production"
+  ],
+  [
+   "Final",
+   "EXECUTED"
+  ],
+  [
+   "Rollbacks",
+   1
+  ],
+  [
+   "Originator visible",
+   "no"
+  ]
+ ],
+ "mode": "impersonation",
+ "observed": "first decision REQUIRE_APPROVAL (P2-high-risk-production) \u00b7 final EXECUTED \u00b7 rollbacks 1 \u00b7 originator not in the record",
+ "outcome": "broken",
+ "use_case": "Confused deputy: a read-only agent asks for a rollback",
+ "variant": "B",
+ "where": "approval.requested: the approver saw agent.incident-intel, not release-guard"
+}

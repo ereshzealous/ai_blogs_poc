@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "execution token replayed from another workload is rejected",
+   "passed": true
+  }
+ ],
+ "expected": "rejected",
+ "experiment": "I4",
+ "id": "I4-chain-other-workload",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "token copied to spiffe://\u2026/batch-runner",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "REJECTED"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "REJECTED: token bound to spiffe://prod.company.internal/agent-runtime, presented by spiffe://prod.company.internal/batch-runner",
+ "outcome": "held",
+ "use_case": "Replay: execution token from another workload",
+ "variant": "C",
+ "where": null
+}

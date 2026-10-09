@@ -1,0 +1,135 @@
+{
+ "chain": {
+  "actor_chain_recorded": true,
+  "agent_indistinguishable_from_human_in_tool_log": false,
+  "agent_recorded": true,
+  "kubernetes_entry": {
+   "namespace": "payments",
+   "objectRef": "deployments/payment-service",
+   "responseStatus": 200,
+   "ts": 1790690700.0,
+   "user.username": "system:serviceaccount:payments:incident-remediator",
+   "verb": "patch"
+  },
+  "manual_entry": {
+   "namespace": "payments",
+   "objectRef": "deployments/payment-service",
+   "responseStatus": 200,
+   "ts": 1790690760.0,
+   "user.username": "maya@company.com",
+   "verb": "patch"
+  },
+  "platform_record_fields": [
+   "act_chain",
+   "agent",
+   "approval_id",
+   "arguments",
+   "authorized_by",
+   "capability",
+   "credential_exp",
+   "credential_id",
+   "effect",
+   "event_id",
+   "event_rule",
+   "event_source",
+   "grant_id",
+   "invoker",
+   "invoker_credential",
+   "kind",
+   "on_behalf_of",
+   "revocation",
+   "rule",
+   "scopes",
+   "status",
+   "system",
+   "token_id",
+   "tool_identity",
+   "tool_principal",
+   "workload"
+  ],
+  "tool_permissions_behind_the_call": [
+   "deployments:get",
+   "deployments:patch",
+   "pods:delete"
+  ]
+ },
+ "fields_lost_by_impersonation": [
+  "act_chain",
+  "agent",
+  "event_id",
+  "event_rule",
+  "event_source",
+  "grant_id",
+  "invoker",
+  "invoker_credential",
+  "revocation",
+  "scopes",
+  "token_id",
+  "tool_identity",
+  "workload"
+ ],
+ "identity_fields_recorded": {
+  "chain": [
+   "act_chain",
+   "agent",
+   "credential_id",
+   "event_id",
+   "event_rule",
+   "event_source",
+   "grant_id",
+   "invoker",
+   "invoker_credential",
+   "on_behalf_of",
+   "revocation",
+   "scopes",
+   "token_id",
+   "tool_identity",
+   "tool_principal",
+   "workload"
+  ],
+  "impersonation": [
+   "credential_id",
+   "on_behalf_of",
+   "tool_principal"
+  ]
+ },
+ "impersonation": {
+  "actor_chain_recorded": false,
+  "agent_indistinguishable_from_human_in_tool_log": true,
+  "agent_recorded": false,
+  "kubernetes_entry": {
+   "namespace": "payments",
+   "objectRef": "deployments/payment-service",
+   "responseStatus": 200,
+   "ts": 1790690700.0,
+   "user.username": "maya@company.com",
+   "verb": "patch"
+  },
+  "manual_entry": {
+   "namespace": "payments",
+   "objectRef": "deployments/payment-service",
+   "responseStatus": 200,
+   "ts": 1790690760.0,
+   "user.username": "maya@company.com",
+   "verb": "patch"
+  },
+  "platform_record_fields": [
+   "approval_id",
+   "arguments",
+   "authorized_by",
+   "capability",
+   "credential_id",
+   "on_behalf_of",
+   "status",
+   "subject",
+   "tool_principal"
+  ],
+  "tool_permissions_behind_the_call": [
+   "configmaps:update",
+   "deployments:get",
+   "deployments:patch",
+   "pods:delete",
+   "secrets:get"
+  ]
+ }
+}

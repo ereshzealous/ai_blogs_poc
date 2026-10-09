@@ -1,0 +1,330 @@
+[
+ {
+  "id": "I1-01",
+  "experiment": "I1",
+  "arm": "ABC",
+  "kind": "invariant",
+  "check": "the rollback executed once in every mode",
+  "passed": true
+ },
+ {
+  "id": "I1-02",
+  "experiment": "I1",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "chain: the platform record answers all nine questions",
+  "passed": true
+ },
+ {
+  "id": "I1-03",
+  "experiment": "I1",
+  "arm": "ABC",
+  "kind": "invariant",
+  "check": "every mode: the tool log answers at most three",
+  "passed": true
+ },
+ {
+  "id": "I1-04",
+  "experiment": "I1",
+  "arm": "A",
+  "kind": "control",
+  "check": "shared account: Kubernetes sees one principal for three agents",
+  "passed": true
+ },
+ {
+  "id": "I1-05",
+  "experiment": "I1",
+  "arm": "A",
+  "kind": "control",
+  "check": "shared account: no agent attributable from the platform record",
+  "passed": true
+ },
+ {
+  "id": "I1-06",
+  "experiment": "I1",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "chain: all three agents attributable from the platform record",
+  "passed": true
+ },
+ {
+  "id": "I1-07",
+  "experiment": "I1",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "audit chain intact; an edited approver breaks it at that row",
+  "passed": true
+ },
+ {
+  "id": "I2-01",
+  "experiment": "I2",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "chain: the deputy request is denied before any approval",
+  "passed": true
+ },
+ {
+  "id": "I2-02",
+  "experiment": "I2",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "chain: the callee's scopes narrowed",
+  "passed": true
+ },
+ {
+  "id": "I2-03",
+  "experiment": "I2",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "chain: an undeclared agent -> agent edge is refused",
+  "passed": true
+ },
+ {
+  "id": "I2-04",
+  "experiment": "I2",
+  "arm": "A",
+  "kind": "control",
+  "check": "shared account: the deputy rollback executes and hides its originator",
+  "passed": true
+ },
+ {
+  "id": "I3-01",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "control: nothing stops without a revocation",
+  "passed": true
+ },
+ {
+  "id": "I3-02",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "qualified",
+  "check": "delegation: only Maya's executions stop, within one token lifetime",
+  "passed": true
+ },
+ {
+  "id": "I3-03",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "invoker credential: new executions from that head refused",
+  "passed": true
+ },
+ {
+  "id": "I3-04",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "agent: every execution running that agent stops at its next call",
+  "passed": true
+ },
+ {
+  "id": "I3-05",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "workload: executions on the other runtime keep running",
+  "passed": true
+ },
+ {
+  "id": "I3-06",
+  "experiment": "I3",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "tool identity: one capability of one execution stops",
+  "passed": true
+ },
+ {
+  "id": "I3-07",
+  "experiment": "I3",
+  "arm": "A",
+  "kind": "control",
+  "check": "shared account rotation stops all five executions",
+  "passed": true
+ },
+ {
+  "id": "I4-01",
+  "experiment": "I4",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "execution token replayed from another workload is rejected",
+  "passed": true
+ },
+ {
+  "id": "I4-02",
+  "experiment": "I4",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "privileged write replayed from another workload is rejected with no side effect",
+  "passed": true
+ },
+ {
+  "id": "I4-03",
+  "experiment": "I4",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "expired execution token is rejected",
+  "passed": true
+ },
+ {
+  "id": "I4-04",
+  "experiment": "I4",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "tool credential rejected by a system it was not minted for",
+  "passed": true
+ },
+ {
+  "id": "I4-05",
+  "experiment": "I4",
+  "arm": "C",
+  "kind": "qualified",
+  "check": "stolen tool credential dies with its ten minutes",
+  "passed": true
+ },
+ {
+  "id": "I4-06",
+  "experiment": "I4",
+  "arm": "A",
+  "kind": "control",
+  "check": "shared secret still works from anywhere a day later",
+  "passed": true
+ },
+ {
+  "id": "I5-01",
+  "experiment": "I5",
+  "arm": "B",
+  "kind": "control",
+  "check": "impersonation: agent action identical to Maya's own in Kubernetes' log",
+  "passed": true
+ },
+ {
+  "id": "I5-02",
+  "experiment": "I5",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "delegation: agent action distinguishable from Maya's own",
+  "passed": true
+ },
+ {
+  "id": "I5-03",
+  "experiment": "I5",
+  "arm": "BC",
+  "kind": "invariant",
+  "check": "impersonation loses the agent and the actor chain",
+  "passed": true
+ },
+ {
+  "id": "I6-01",
+  "experiment": "I6",
+  "arm": "AC",
+  "kind": "invariant",
+  "check": "shared account holds more than any tool identity",
+  "passed": true
+ },
+ {
+  "id": "I7-01",
+  "experiment": "I7",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "re-exchange after the pause: revoked delegation stays revoked",
+  "passed": true
+ },
+ {
+  "id": "I7-02",
+  "experiment": "I7",
+  "arm": "C",
+  "kind": "control",
+  "check": "extending instead of re-exchanging lets the rollback through",
+  "passed": true
+ },
+ {
+  "id": "G01",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "delegation never widens authority (the callee's scopes are within the caller's after every hop)",
+  "passed": true
+ },
+ {
+  "id": "G02",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "a delegated write whose originator lacks the authority is denied, not silently executed",
+  "passed": true
+ },
+ {
+  "id": "G03",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "a credential replayed from the wrong workload causes no privileged side effect",
+  "passed": true
+ },
+ {
+  "id": "G04",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "a revoked identity cannot mint new execution authority",
+  "passed": true
+ },
+ {
+  "id": "G05",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "unrelated executions survive every targeted revocation",
+  "passed": true
+ },
+ {
+  "id": "G06",
+  "experiment": "GA",
+  "arm": "AC",
+  "kind": "invariant",
+  "check": "rotating the shared account stops more executions than any targeted lever",
+  "passed": true
+ },
+ {
+  "id": "G07",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "agent identity and runtime identity stay distinct in the record",
+  "passed": true
+ },
+ {
+  "id": "G08",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "impersonation does not pass for delegation provenance",
+  "passed": true
+ },
+ {
+  "id": "G09",
+  "experiment": "GA",
+  "arm": "ABC",
+  "kind": "invariant",
+  "check": "no tool log is complete upstream provenance (every tool log answers fewer than nine questions)",
+  "passed": true
+ },
+ {
+  "id": "G10",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "the platform record reconstructs the whole identity chain (nine of nine)",
+  "passed": true
+ },
+ {
+  "id": "G11",
+  "experiment": "GA",
+  "arm": "C",
+  "kind": "invariant",
+  "check": "tampering with the platform audit is detected at the edited row",
+  "passed": true
+ }
+]

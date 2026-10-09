@@ -1,0 +1,39 @@
+{
+ "checks": [
+  {
+   "check": "chain: all three agents attributable from the platform record",
+   "passed": true
+  }
+ ],
+ "expected": "every agent attributable from the platform record",
+ "experiment": "I1",
+ "id": "I1-chain-three-agents",
+ "input": {
+  "executions": "event -> incident-intel (rollback) \u00b7 ci -> release-guard (read) \u00b7 maya -> incident-intel -> remediation (restart plan)",
+  "identity_model": "chain"
+ },
+ "measures": [
+  [
+   "Agents acting",
+   3
+  ],
+  [
+   "Attributable from the platform record",
+   3
+  ],
+  [
+   "Kubernetes actions",
+   5
+  ],
+  [
+   "Distinct Kubernetes principals",
+   2
+  ]
+ ],
+ "mode": "chain",
+ "observed": "3 of 3 agents attributable \u00b7 Kubernetes saw 2 principal(s)",
+ "outcome": "held",
+ "use_case": "Attribution: three agents touch Kubernetes",
+ "variant": "C",
+ "where": null
+}

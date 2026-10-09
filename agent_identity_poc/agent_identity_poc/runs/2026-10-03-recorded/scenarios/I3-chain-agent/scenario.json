@@ -1,0 +1,42 @@
+{
+ "checks": [
+  {
+   "check": "agent: every execution running that agent stops at its next call",
+   "passed": true
+  }
+ ],
+ "expected": "only the executions that depend on the lever stop",
+ "experiment": "I3",
+ "id": "I3-chain-agent",
+ "input": {
+  "executions": "E1 event -> incident-intel \u00b7 E2 maya (web) -> incident-intel \u00b7 E3 ci -> release-guard (release-runtime) \u00b7 E4 workflow -> incident-intel \u00b7 E5 maya (web) -> incident-intel -> remediation",
+  "identity_model": "chain",
+  "lever": "agent",
+  "pulled_at_minute": 5,
+  "window_minutes": 30
+ },
+ "measures": [
+  [
+   "Stopped",
+   4
+  ],
+  [
+   "Kept running",
+   1
+  ],
+  [
+   "Slowest effect (min)",
+   0
+  ],
+  [
+   "New start afterwards",
+   "refused: agent agent.incident-intel@1.3.0 is disabled"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "stopped E1, E2, E4, E5 \u00b7 kept running E3 \u00b7 slowest effect 0 min",
+ "outcome": "held",
+ "use_case": "Revocation: pull the agent lever",
+ "variant": "C",
+ "where": null
+}

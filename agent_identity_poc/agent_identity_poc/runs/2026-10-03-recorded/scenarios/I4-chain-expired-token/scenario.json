@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "expired execution token is rejected",
+   "passed": true
+  }
+ ],
+ "expected": "rejected",
+ "experiment": "I4",
+ "id": "I4-chain-expired-token",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "token presented after 16 minutes",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "REJECTED"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "REJECTED: token expired",
+ "outcome": "held",
+ "use_case": "Replay: expired execution token",
+ "variant": "C",
+ "where": null
+}

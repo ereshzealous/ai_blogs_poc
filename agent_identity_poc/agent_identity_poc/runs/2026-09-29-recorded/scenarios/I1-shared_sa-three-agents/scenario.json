@@ -1,0 +1,43 @@
+{
+ "checks": [
+  {
+   "check": "shared account: Kubernetes sees one principal for three agents",
+   "passed": true
+  },
+  {
+   "check": "shared account: no agent attributable from the platform record",
+   "passed": true
+  }
+ ],
+ "expected": "the agents cannot be told apart afterwards",
+ "experiment": "I1",
+ "id": "I1-shared_sa-three-agents",
+ "input": {
+  "executions": "event -> incident-intel (rollback) \u00b7 ci -> release-guard (read) \u00b7 maya -> incident-intel -> remediation (restart plan)",
+  "identity_model": "shared_sa"
+ },
+ "measures": [
+  [
+   "Agents acting",
+   3
+  ],
+  [
+   "Attributable from the platform record",
+   0
+  ],
+  [
+   "Kubernetes actions",
+   5
+  ],
+  [
+   "Distinct Kubernetes principals",
+   1
+  ]
+ ],
+ "mode": "shared_sa",
+ "observed": "0 of 3 agents attributable \u00b7 Kubernetes saw 1 principal(s)",
+ "outcome": "broken",
+ "use_case": "Attribution: three agents touch Kubernetes",
+ "variant": "A",
+ "where": "capability.call: the records name no agent"
+}

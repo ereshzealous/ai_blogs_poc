@@ -1,0 +1,47 @@
+{
+ "checks": [
+  {
+   "check": "the rollback executed once in every mode",
+   "passed": true
+  },
+  {
+   "check": "every mode: the tool log answers at most three",
+   "passed": true
+  }
+ ],
+ "expected": "the platform record cannot answer the identity questions",
+ "experiment": "I1",
+ "id": "I1-impersonation-rollback",
+ "input": {
+  "agent": "agent.incident-intel@1.3.0",
+  "approver": "ic.dev",
+  "identity_model": "impersonation",
+  "invoker": "svc.web-portal (web console)",
+  "on_behalf_of": "sre.maya",
+  "request": "roll back payment-service to v4.17.2 in production"
+ },
+ "measures": [
+  [
+   "Platform record answers",
+   "4/9"
+  ],
+  [
+   "Tool log answers",
+   "3/9"
+  ],
+  [
+   "Kubernetes saw",
+   "maya@company.com"
+  ],
+  [
+   "Tool permissions behind the call",
+   5
+  ]
+ ],
+ "mode": "impersonation",
+ "observed": "platform record 4/9 \u00b7 tool log 3/9 \u00b7 Kubernetes saw maya@company.com",
+ "outcome": "broken",
+ "use_case": "Attribution: one rollback, nine questions",
+ "variant": "B",
+ "where": "capability.call rollbackDeployment: the record cannot answer who is the agent, who invoked, what authority, which runtime, can it be revoked"
+}

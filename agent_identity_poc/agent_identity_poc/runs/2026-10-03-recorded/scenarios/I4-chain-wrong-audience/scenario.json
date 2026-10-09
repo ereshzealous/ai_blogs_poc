@@ -1,0 +1,29 @@
+{
+ "checks": [
+  {
+   "check": "tool credential rejected by a system it was not minted for",
+   "passed": true
+  }
+ ],
+ "expected": "rejected",
+ "experiment": "I4",
+ "id": "I4-chain-wrong-audience",
+ "input": {
+  "agent": "agent.incident-intel",
+  "attack": "incident-remediator credential presented to Jira",
+  "identity_model": "chain",
+  "invoker": "svc.monitoring-webhook (Datadog event)"
+ },
+ "measures": [
+  [
+   "Outcome",
+   "HTTP 401"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "HTTP 401: credential audience is kubernetes, not jira",
+ "outcome": "held",
+ "use_case": "Theft: tool credential at the wrong system",
+ "variant": "C",
+ "where": null
+}

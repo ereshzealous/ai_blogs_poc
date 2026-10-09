@@ -1,0 +1,61 @@
+{
+ "run_id": "2026-10-03-recorded",
+ "python": "3.12.13",
+ "source_commit": "unknown (not a git repository)",
+ "randomness": "none: simulated clock, directory, attestation and tools; deterministic agent plans",
+ "identity_models": {
+  "A": "shared service account",
+  "B": "user token (impersonation)",
+  "C": "delegation chain"
+ },
+ "variable": "identity propagation and credential architecture",
+ "tests": 34,
+ "checks": 41,
+ "experiment_checks": 30,
+ "global_assertions": 11,
+ "scenarios": 31,
+ "preregistration": {
+  "file": "proof/preregistration.toml",
+  "freeze": "proof/FREEZE.json",
+  "deviations": "proof/DEVIATIONS.md",
+  "guarded_sha256": {
+   "config/capabilities.yaml": "d846724b16c40702bf5ee3c8d91fafc7e6ff0ff75b51153c1b1e9112130a1f12",
+   "config/policies.yaml": "87fc40ea63965faf7ad83b903a8d48b0ebae3f5063e6c83c95e75952659363a7",
+   "config/principals.yaml": "47af27c0a6a641c8d2c3f4dc3a59807b2b03972dd86bd0a801735ac8f1532190",
+   "config/shared_sa.yaml": "1405668e90d3095184e183f39abd114132e3d21c2532d596d03b223fb87e2c21",
+   "config/tool_identities.yaml": "1804394fb40e1b0beec42b1717f3415c4d698ad0d42870825d5061bbf96ae598",
+   "criteria (checks_for + global_assertions)": "139f529874bd8fe48fda28703dc886d07dc89dacb5074e499c2464d8e4064923",
+   "proof/preregistration.toml": "1facdf0cb93023c61e5d9f0a2162df43e77a0e1ed9013f46f5465dea760d031f"
+  }
+ },
+ "policy_fixture_sha256": "87fc40ea63965faf7ad83b903a8d48b0ebae3f5063e6c83c95e75952659363a7",
+ "identity_fixture_sha256": {
+  "principals.yaml": "47af27c0a6a641c8d2c3f4dc3a59807b2b03972dd86bd0a801735ac8f1532190",
+  "tool_identities.yaml": "1804394fb40e1b0beec42b1717f3415c4d698ad0d42870825d5061bbf96ae598",
+  "shared_sa.yaml": "1405668e90d3095184e183f39abd114132e3d21c2532d596d03b223fb87e2c21"
+ },
+ "scenario_fixture_sha256": "256c20009786395fe0582632985810f84c066e436c44ea3f6bceff09422696f4",
+ "config_sha256": {
+  "capabilities.yaml": "d846724b16c40702bf5ee3c8d91fafc7e6ff0ff75b51153c1b1e9112130a1f12",
+  "policies.yaml": "87fc40ea63965faf7ad83b903a8d48b0ebae3f5063e6c83c95e75952659363a7",
+  "principals.yaml": "47af27c0a6a641c8d2c3f4dc3a59807b2b03972dd86bd0a801735ac8f1532190",
+  "shared_sa.yaml": "1405668e90d3095184e183f39abd114132e3d21c2532d596d03b223fb87e2c21",
+  "tool_identities.yaml": "1804394fb40e1b0beec42b1717f3415c4d698ad0d42870825d5061bbf96ae598"
+ },
+ "agents": "deterministic plans (aid/agents.py); no model",
+ "simulated": [
+  "directory and identity provider (config/principals.yaml)",
+  "workload attestation (SVIDs)",
+  "Kubernetes, Jira, Slack, telemetry and their audit logs (aid/tools.py)",
+  "clock"
+ ],
+ "real": [
+  "token exchange, delegation and narrowing (aid/trust.py)",
+  "attestation checks at the gateway",
+  "token broker",
+  "capability gateway",
+  "approvals",
+  "hash-chained audit",
+  "revocation levers"
+ ]
+}

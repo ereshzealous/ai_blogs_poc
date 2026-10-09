@@ -1,0 +1,55 @@
+{
+ "checks": [
+  {
+   "check": "chain: the deputy request is denied before any approval",
+   "passed": true
+  },
+  {
+   "check": "chain: the callee's scopes narrowed",
+   "passed": true
+  },
+  {
+   "check": "chain: an undeclared agent -> agent edge is refused",
+   "passed": true
+  }
+ ],
+ "expected": "denied before any approval; no rollback",
+ "experiment": "I2",
+ "id": "I2-chain-deputy",
+ "input": {
+  "approver": "ic.dev",
+  "callee": "agent.incident-intel",
+  "caller": "agent.release-guard (read only)",
+  "identity_model": "chain",
+  "invoker": "svc.ci-pipeline (CI)",
+  "request": "roll back payment-service in production"
+ },
+ "measures": [
+  [
+   "First decision",
+   "DENY"
+  ],
+  [
+   "Rule",
+   "P1-missing-scope"
+  ],
+  [
+   "Final",
+   "DENY"
+  ],
+  [
+   "Rollbacks",
+   0
+  ],
+  [
+   "Originator visible",
+   "yes"
+  ]
+ ],
+ "mode": "chain",
+ "observed": "first decision DENY (P1-missing-scope) \u00b7 final DENY \u00b7 rollbacks 0",
+ "outcome": "held",
+ "use_case": "Confused deputy: a read-only agent asks for a rollback",
+ "variant": "C",
+ "where": null
+}

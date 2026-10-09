@@ -12,6 +12,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SCRIPT="$PWD/scripts/publish-poc.sh"
+# The script runs under the same bash as these tests: `/bin/bash scripts/test-publish-poc.sh` tests bash 3.2.
+echo "bash: $BASH ($BASH_VERSION)"
 pass=0
 fail=0
 
@@ -47,7 +49,7 @@ scaffold() {
 run_publish() {           # run_publish <dir> [extra args...]; prints the exit code
   local dir=$1; shift
   local code=0
-  ( cd "$dir/repo" && mkdir -p poc && bash scripts/publish-poc.sh poc \
+  ( cd "$dir/repo" && mkdir -p poc && "$BASH" scripts/publish-poc.sh poc \
       --from "$dir/work" --message "poc: evidence" --checks "true" "$@" >"$dir/out.log" 2>&1 ) || code=$?
   printf '%s\n' "$code"
 }
@@ -111,7 +113,7 @@ rm -rf "$dir"
 echo "a failing check still fails the publish"
 dir=$(scaffold 3)
 code=0
-( cd "$dir/repo" && mkdir -p poc && bash scripts/publish-poc.sh poc --from "$dir/work" \
+( cd "$dir/repo" && mkdir -p poc && "$BASH" scripts/publish-poc.sh poc --from "$dir/work" \
     --message "poc: evidence" --checks "false" --allow-frozen --dry-run >"$dir/out.log" 2>&1 ) || code=$?
 if [ "$code" -ne 0 ]; then ok "a failing --checks command fails the publish"; else bad "a failing --checks command was ignored"; fi
 rm -rf "$dir"
@@ -130,6 +132,22 @@ printf '/Users/jane/\n' > "$dir/work/.publish-hygiene-allow"
 printf '{"doc": "an example path /Users/jane/ in a tutorial"}\n' > "$dir/work/runs/example.json"
 code=$(run_publish "$dir" --allow-frozen --dry-run)
 check 0 "$code" "an intended match listed in .publish-hygiene-allow passes"
+rm -rf "$dir"
+
+dir=$(scaffold 2)
+printf '{"command": "/Users/jane/ws/run.py"}\n' > "$dir/repo/poc-old.json"
+mkdir -p "$dir/repo/poc/runs" && mv "$dir/repo/poc-old.json" "$dir/repo/poc/runs/old.json"
+git -C "$dir/repo" -c user.email=t@local -c user.name=test add -A
+git -C "$dir/repo" -c user.email=t@local -c user.name=test commit -q -m "a leak from before the gate"
+cp "$dir/repo/poc/runs/old.json" "$dir/work/runs/renamed.json"
+code=$(run_publish "$dir" --allow-frozen --dry-run)
+check 1 "$code" "a renamed file with a home path is refused"
+rm -rf "$dir"
+
+dir=$(scaffold 2)
+printf '{"command": "/Users/jane/ws/run.py"}\n' > "$dir/work/runs/r\303\251sum\303\251.json"
+code=$(run_publish "$dir" --allow-frozen --dry-run)
+check 1 "$code" "a non-ASCII file name with a home path is refused"
 rm -rf "$dir"
 
 printf '\n%s passed, %s failed\n' "$pass" "$fail"

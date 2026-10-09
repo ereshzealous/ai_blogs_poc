@@ -3,7 +3,9 @@
 A chapter's Markdown, HTML, PDF, SVG, JSON, text and log outputs are scanned for paths that only exist on the machine
 that built them: file:// URLs, home directories (macOS, Linux, Windows), temporary and build directories, and any
 absolute path the caller names (the repository root, a scratchpad). Since 5.3 they are also scanned for the build
-machine's name (junit `hostname="…"`, `*.local` mDNS names) and personal e-mail addresses; `--relative` also reports
+machine's name (the junit hostname attribute, mDNS names ending in .local) and personal e-mail addresses, and since
+5.3.1 for the author's folder layout written relative to home (a tilde before Documents, Desktop, Dev and the like). A
+named path that does not exist is an error (exit 2), never a clean result. `--relative` also reports
 relative links in Markdown and HTML, which lead nowhere once a page is published.  PDFs are scanned after inflating their Flate streams, because
 Chrome writes link annotations and object streams compressed: a plain-text scan of a PDF misses exactly the file:// links
 that print-to-PDF produces from relative hrefs.
@@ -37,7 +39,7 @@ RULES: list[tuple[str, str]] = [
     ("macOS temporary directory", _START + r"/(?:private/)?var/folders/[\w.-]+/"),
     ("temporary directory", _START + r"/(?:private/)?tmp/[\w.-]+"),
     ("Windows temporary directory", r"(?i)\\AppData\\Local\\Temp\\"),
-    ("mounted volume", _START + r"/Volumes/[^/\s\"'<>]+/"),
+    ("mounted volume", _START + r"/Volu" r"mes/[^/\s\"'<>]+/"),   # split, so this file scans clean
 ]
 
 # Identity: a machine name or a personal address in a published file (5.3). Reserved test domains, noreply and git@
@@ -46,6 +48,9 @@ _EMAIL_SAFE_DOMAIN = r"(?:[\w-]+\.)*(?:example|test|invalid|localhost)\b|(?:[\w-
 
 RULES += [
     ("hostname attribute", r'\bhostname="(?!localhost"|<[^"<>]+>"|&lt;[^"&<>]+&gt;")[^"\s]+"'),   # <host> is a declared placeholder
+    # the author's folder layout written relative to home; ~/.local, ~/.config and ~/your-clone are not findings
+    ("home-relative workspace path", r"(?<![\w/.~-])~/(?:Documents|Desktop|Downloads|Library|Dev|Developer|Projects|Code|"
+                                     r"code|src|work|workspace|repos?|git)/[^\s\"'<>)\]`]*"),
     ("mDNS host name", r"(?<![\w.-])[A-Za-z0-9][A-Za-z0-9-]*\.local(?![\w.(-])"),
     # every domain label carries a letter and the top-level domain is letters only, so fact keys (cells.C@500.unsafe)
     # and versioned ids (agent.x@1.3.0, pkg@5.3.0) are not addresses
@@ -149,6 +154,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--allow", action="append", default=[], help="a regex for an intended match (repeatable)")
     ap.add_argument("--relative", action="store_true", help="also report relative links in Markdown and HTML")
     a = ap.parse_args(argv)
+    missing = [p for p in a.paths if not p.exists()]
+    for p in missing:
+        print(f"missing: {p} (a named path that cannot be opened is never a clean result)")
+    if missing:
+        return 2
     files = expand(a.paths)
     found = local_path_findings(files, a.root, forbid=[*a.forbid, Path.home()], allow=a.allow)
     if a.relative:

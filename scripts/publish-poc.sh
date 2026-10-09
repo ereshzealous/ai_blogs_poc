@@ -71,15 +71,17 @@ outside=$(git status --porcelain | grep -v -E "^.. ?\"?$folder/" || true)
 $outside"
 
 step "3b/6 hygiene (no local path, host name or personal address)"
-scanner="$(dirname "$0")/vendor/evidence_kit_publication.py"
+scanner="$repo/scripts/vendor/evidence_kit_publication.py"
 [ -f "$scanner" ] || die "the hygiene scanner is missing: $scanner"
 # Portable to macOS /bin/bash 3.2 under set -u: no mapfile, and empty arrays expanded with the ${a[@]+...} idiom.
 allow_args=()
 if [ -f "$folder/.publish-hygiene-allow" ]; then
   while IFS= read -r rx || [ -n "$rx" ]; do [ -n "$rx" ] && allow_args+=(--allow "$rx"); done < "$folder/.publish-hygiene-allow"
 fi
+# Every staged file except deletions, renames included (--no-renames lists a moved file as added), NUL-separated so a
+# non-ASCII or spaced name reaches the scanner as it is on disk. A name the scanner cannot open fails the gate.
 staged_files=()
-while IFS= read -r f; do staged_files+=("$f"); done < <(git diff --cached --name-only --diff-filter=AM)
+while IFS= read -r -d '' f; do staged_files+=("$f"); done < <(git diff --cached --name-only -z --no-renames --diff-filter=d)
 if [ "${#staged_files[@]}" -gt 0 ]; then
   hygiene_log=$(mktemp)
   if ! python3 -I "$scanner" "${staged_files[@]}" --root . ${allow_args[@]+"${allow_args[@]}"} >"$hygiene_log" 2>&1; then

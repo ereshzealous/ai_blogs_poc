@@ -130,11 +130,4 @@ make docs    # both editions and the run report as Markdown, standalone HTML and
 make qa    # rendered checks of the pages at desktop, tablet and mobile widths -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/context_eng_rag_poc/technical/enterprise-knowledge-rag-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/context_eng_rag_poc/results/enterprise-knowledge-rag-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/context_eng_rag_poc/results/enterprise-knowledge-rag-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/context_eng_rag_poc/results/enterprise-knowledge-rag-real-vs-simulated.md)
-
 *Built by `series-start-here/tools/series_edition.py results S2` from the files named above. It computes nothing new.*

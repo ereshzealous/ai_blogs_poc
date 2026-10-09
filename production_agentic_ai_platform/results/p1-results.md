@@ -206,9 +206,4 @@ make docs    # both editions as Markdown, standalone HTML and PDF, and the Mediu
 make qa    # rendered checks at desktop/tablet/mobile + screenshots -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/production_agentic_ai_platform/technical/production-agentic-ai-platform-final-reference-architecture.pdf)
-- [Lab (an HTML page: open results/production-agentic-ai-platform-lab.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/production_agentic_ai_platform/results/production-agentic-ai-platform-lab.html)
-
 *Built by `series-start-here/tools/series_edition.py results P1` from the files named above. It computes nothing new.*

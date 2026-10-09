@@ -8,42 +8,42 @@
 component into several autonomous ones produce a better production system? And what does an A2A boundary cost on its
 own?
 
-## Results (blind set, recorded run `2026-10-08-blind`)
+## Results (blind set, recorded run `{{run.id}}`)
 
-Eight blind incidents × three architectures × three repeats = 72 runs, local `gpt-oss:20b`, strictly serial.
+Eight blind incidents × three architectures × three repeats = {{e1.runs}} runs, local `gpt-oss:20b`, strictly serial.
 
 | | A · One agent | B · Workflow + selective agents | C · Multi-agent over A2A |
 |---|---|---|---|
-| task success (of 24) | **9** (21–57%) | **16** (47–82%) | **12** (31–69%) |
-| · simple incidents (of 9) | 6 | 5 | 4 |
-| · complex incidents (of 9) | 0 | 6 | 4 |
-| median latency | 30.2 s | 11.3 s | 141.2 s |
-| median tokens | 25536.5 | 5253.0 | 63108.0 |
-| median model calls | 10.0 | 2.0 | 35.0 |
-| median tool calls | 8.0 | 9.0 | 16.0 |
-| median duplicate tool calls | 0.0 | 0.0 | 5.0 |
-| median handoffs | 0.0 | 2.0 | 5.0 |
-| state conflicts (claims the ledger contradicts) | 2 | 0 | 0 |
-| prohibited actions requested | 0 | 0 | 0 |
+| task success (of {{e1.A.n}}) | **{{e1.A.success}}** ({{e1.A.success_ci}}) | **{{e1.B.success}}** ({{e1.B.success_ci}}) | **{{e1.C.success}}** ({{e1.C.success_ci}}) |
+| · simple incidents (of {{e1.A.simple.n}}) | {{e1.A.simple.success}} | {{e1.B.simple.success}} | {{e1.C.simple.success}} |
+| · complex incidents (of {{e1.A.complex.n}}) | {{e1.A.complex.success}} | {{e1.B.complex.success}} | {{e1.C.complex.success}} |
+| median latency | {{e1.A.latency_median_s}} s | {{e1.B.latency_median_s}} s | {{e1.C.latency_median_s}} s |
+| median tokens | {{e1.A.tokens_total_median}} | {{e1.B.tokens_total_median}} | {{e1.C.tokens_total_median}} |
+| median model calls | {{e1.A.llm_calls_median}} | {{e1.B.llm_calls_median}} | {{e1.C.llm_calls_median}} |
+| median tool calls | {{e1.A.tool_calls_median}} | {{e1.B.tool_calls_median}} | {{e1.C.tool_calls_median}} |
+| median duplicate tool calls | {{e1.A.duplicate_tool_calls_median}} | {{e1.B.duplicate_tool_calls_median}} | {{e1.C.duplicate_tool_calls_median}} |
+| median handoffs | {{e1.A.handoffs_median}} | {{e1.B.handoffs_median}} | {{e1.C.handoffs_median}} |
+| state conflicts (claims the ledger contradicts) | {{e1.A.state_conflicts}} | {{e1.B.state_conflicts}} | {{e1.C.state_conflicts}} |
+| prohibited actions requested | {{e1.A.prohibited_attempts}} | {{e1.B.prohibited_attempts}} | {{e1.C.prohibited_attempts}} |
 
-Preregistered hypotheses: H1 SUPPORTED · H2 NOT SUPPORTED · H3 SUPPORTED · H4 SUPPORTED · H5 SUPPORTED · H6 SUPPORTED · H7 SUPPORTED · H8 SUPPORTED · H9 NOT SUPPORTED
+Preregistered hypotheses: H1 {{H1}} · H2 {{H2}} · H3 {{H3}} · H4 {{H4}} · H5 {{H5}} · H6 {{H6}} · H7 {{H7}} · H8 {{H8}} · H9 {{H9}}
 (definitions in [`experiments/preregistration.toml`](experiments/preregistration.toml)).
 
-Per incident: B had more successes than C on 3 of 8 incidents, fewer on 1, the
-same on 4; C used more tokens than B on 8 and more time on 8. The Wilson intervals above are
+Per incident: B had more successes than C on {{inc.B_gt_C}} of {{e1.incidents}} incidents, fewer on {{inc.C_gt_B}}, the
+same on {{inc.B_eq_C}}; C used more tokens than B on {{inc.C_tokens_gt_B}} and more time on {{inc.C_latency_gt_B}}. The Wilson intervals above are
 over runs; the three repeats of an incident share its fixture and are not independent incident samples.
 
 A2A boundary on its own (E7, scripted model, same agent code, loopback HTTP on one machine, no TLS):
-3.81 ms in-process vs 9.17 ms over A2A per delegation (median).
+{{e7.inproc.median_ms}} ms in-process vs {{e7.a2a.median_ms}} ms over A2A per delegation (median).
 
 Post-run fix (DEVIATIONS D3): the blind run found a fail-open fallback in C's execute delegations (an authorized
-execution without a proposal got every eligible write scope, 1 of 16);
+execution without a proposal got every eligible write scope, {{c.execute_all_writes}} of {{c.execute_delegations}});
 the post-run correction changed it to fail closed. Published numbers come from the code as it ran
 (`experiments/as-run/`, still matching `FROZEN.sha256`); `coord.freeze check` lists the two changed files.
 
-Replay: all 72 blind workflows re-executed from the model tape, with no model: **REPLAY IDENTICAL**.
+Replay: all {{replay.workflows}} blind workflows re-executed from the model tape, with no model: **{{replay.verdict}}**.
 
-No number in this README is typed by hand: each is substituted from `runs/2026-10-08-blind/facts.json`, which
+No number in this README is typed by hand: each is substituted from `runs/{{run.id}}/facts.json`, which
 `coord/analysis.py` computes from the recorded rows.
 
 ## What is in here

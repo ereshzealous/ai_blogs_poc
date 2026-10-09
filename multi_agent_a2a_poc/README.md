@@ -1,89 +1,54 @@
-# C1 POC · Do you actually need multiple agents?
+# C1 · Multi-Agent & A2A
 
-*Production AI Engineering · Coordination track · C1.* The proof of concept behind the article *Do You Actually Need
-Multiple Agents?* (Medium and technical editions).
+*When does one agent become several, and when does an agent deserve A2A?*
 
-One headless capability, F3's `investigate_incident`, implemented three ways and run on the same eight blind incidents
-with the same local model (`gpt-oss:20b`), the same thirteen MCP tools, one policy, one approval rule and one token
-budget:
+Production AI Engineering · C1 · Coordination · chapter 13 of 15
 
-- **A · one agent** with every tool, deciding everything;
-- **B · a deterministic workflow** that collects evidence by a fixed recipe and calls tool-less agents only for
-  diagnosis, remediation planning and (conditionally) review;
-- **C · a coordinator agent** that delegates over A2A v1.0 (official `a2a-sdk` 1.2.2) to four agent processes
-  (evidence, diagnosis, remediation, review), each with its own context and narrowed authority.
+## Read it
 
-## Results (recorded run `2026-10-08-blind`)
+- **Medium edition:** [`medium/multi-agent-a2a-medium.md`](medium/multi-agent-a2a-medium.md), and the paste-ready page [`medium/multi-agent-a2a-medium.html`](medium/multi-agent-a2a-medium.html)
+- **Technical deep dive:** [`technical/multi-agent-a2a-technical.pdf`](technical/multi-agent-a2a-technical.pdf)
+- **Results:** [`results/c1-results.md`](results/c1-results.md), every number the Medium edition uses with its source file, the checks and the two verdicts ([HTML](results/c1-results.html))
+- **Series:** [Start Here](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), the map of all 15 chapters
 
-Eight blind incidents × three architectures × three repeats = 72 workflows, strictly serial, every model call
-tape-recorded. Every number on this page is substituted from
-[`coordination_poc/runs/2026-10-08-blind/facts.json`](coordination_poc/runs/2026-10-08-blind/facts.json).
+## What the run showed
 
-| | A · One agent | B · Workflow + agents | C · Multi-agent over A2A |
-|---|---|---|---|
-| task success (of 24 runs) | **9** (21–57%) | **16** (47–82%) | **12** (31–69%) |
-| complex incidents (of 9) | 0 | 6 | 4 |
-| median latency | 30.2 s | 11.3 s | 141.2 s |
-| median tokens | 25536.5 | 5253.0 | 63108.0 |
+- **Published run:** `2026-10-08-blind`, declared in `coordination_poc/runs/PUBLISHED`; live local model, recorded tape.
+- **Evidence integrity:** VERIFIED. REPLAY IDENTICAL: 72 of 72 workflows; FROZEN CHECK OK (51 files, frozen at 2026-10-08T01:38:01+0530; 49 unchanged, 2 changed after the run and recorded in DEVIATIONS.md).
+- **Findings:** 9 preregistered hypotheses: 7 SUPPORTED, 2 NOT SUPPORTED.
+- **Checks:** SUPPORTED 7, NOT SUPPORTED 2 (`coordination_poc/runs/2026-10-08-blind/facts.json (H1–H9)`).
 
-How to read it:
+## Run it yourself
 
-- **The intervals are over runs, not incidents.** The three repeats of an incident share its fixture and differ only in
-  the seed, so they are not independent samples. Incident by incident, B had more successes than C on 3 of
-  8 incidents, fewer on 1 and the same on 4: the success gap rests on a few
-  incidents. The cost gap does not: C used more tokens than B on 8 of 8 incidents
-  and more time on 8, never less than 7.1× B's tokens.
-- **The A2A boundary was cheap here.** 19.0 ms per delegation on average,
-  0.07% of C's time; the same agent code in-process vs over A2A, with the reasoning held
-  constant: 3.81 ms vs 9.17 ms (E7). These are loopback numbers, every process on one
-  machine without TLS: a floor, not a production figure. C's extra cost was coordination.
-- **The A2A task lost on a crash is the POC's choice.** The agents keep tasks in the SDK's in-memory `TaskStore`, so a
-  killed agent forgets its task (E6). The workflow store, not the protocol, owns workflow truth.
+From this folder. None of these commands changes the published run; `make verify` and `make test` write their own reports (the verification files), which is how they report.
 
-Preregistered hypotheses: H1 SUPPORTED · H2 NOT SUPPORTED · H3 SUPPORTED · H4 SUPPORTED · H5 SUPPORTED · H6 SUPPORTED · H7 SUPPORTED · H8 SUPPORTED
-· H9 NOT SUPPORTED ([`preregistration.toml`](coordination_poc/experiments/preregistration.toml)).
+| Command | What it does |
+|---|---|
+| `make setup` | the POC environment (Python 3.12 via uv; pytest) |
+| `make test` | the POC's unit and end-to-end tests (real A2A and MCP processes, no model) -> verification/pytest.* |
+| `make verify` | frozen inputs unchanged, replay identical and the tests, in a throwaway copy of the POC (the published run is not written) -> verification/ |
+| `make replay` | the same as make verify: the published run's replay check runs in a throwaway copy |
+| `make demo` | one benchmark case (B1) through architecture C with a scripted model, in a throwaway copy of the POC |
+| `make docs` | both editions and the evidence documents as Markdown, standalone HTML and PDF (figures pending -> placeholders) |
+| `make qa` | the Medium edition's checks: what Medium cannot show, relative links, stale wording |
 
-## One change after the run
+## Layout
 
-The blind run found a fail-open fallback: when C's coordinator authorized an execution without handing over a
-remediation proposal, the runtime granted every eligible write scope (1 of
-16 execute delegations). The post-run correction changed it to fail closed, with two regression
-tests ([DEVIATIONS D3](coordination_poc/experiments/DEVIATIONS.md)). Every number above comes from the code as it ran:
-the two files as they ran are in [`experiments/as-run/`](coordination_poc/experiments/as-run) and still match
-[`FROZEN.sha256`](coordination_poc/experiments/FROZEN.sha256), and the published run replays identically under the
-fixed code with the as-run behaviour switched back on. The affected run was one of C's successes; under the fix its
-outcome was not measured.
+| Path | What is there |
+|---|---|
+| `coordination_poc/` | the proof of concept and its recorded runs |
+| `diagrams/` | figures and the cover (Excalidraw sources, SVG, PNG) |
+| `docs/` | edition sources and build notes; docs/archive/ keeps replaced originals |
+| `medium/` | the Medium edition: Markdown, and the paste-ready standalone page |
+| `research/` | sources and reading notes |
+| `results/` | the common results page and the detailed evidence pages |
+| `technical/` | the technical deep dive (Markdown, HTML, PDF) |
+| `tools/` | the chapter's build tools |
+| `vendor/` | vendored libraries (evidence-kit) |
+| `verification/` | the latest verification outputs |
+| `Makefile` | the standard commands (`make help` lists them) |
+| `QA.md` | publication checks |
 
-## Verify it yourself
+## Provenance
 
-Requirements: [`uv`](https://docs.astral.sh/uv/) (it installs Python 3.12 and the pinned dependencies) and `make`. No
-model and no network beyond loopback.
-
-```bash
-git clone https://github.com/ereshzealous/ai_blogs_poc.git
-cd ai_blogs_poc/multi_agent_a2a_poc
-make setup     # Python 3.12 + the locked dependencies
-make verify    # frozen inputs, the replay check of all 72 blind workflows, the tests
-make replay    # optional: re-execute every blind workflow from the model tape (no model), then compare
-```
-
-`make verify` prints `FROZEN CHECK OK` (with the two post-run changes and their deviation), `REPLAY IDENTICAL` and the
-test count. Live runs need [Ollama](https://ollama.com) with `gpt-oss:20b`; the commands are in
-[`coordination_poc/README.md`](coordination_poc/README.md).
-
-## What is here
-
-```text
-coordination_poc/   the system, its config, the 12 incidents, ground truth, the preregistration, the tests and every
-                    recorded run (README inside)
-verification/       what `make verify` printed at publication, and the D3 positive control
-results/            the run report (every workflow, per incident, every execute delegation) and what is real vs simulated
-research/           the A2A v1.0.1 notes every protocol claim was checked against, and the sources
-diagrams/           the article's figures (PNG); every measured value in them comes from facts.json
-```
-
-Real: model inference (local Ollama), MCP stdio servers, A2A between OS processes, SIGKILL and restart, retries,
-OpenTelemetry traces across processes, token counts, wall-clock latency on one machine. Simulated: the enterprise
-systems and every remediation, the token service, the human approver.
-
-Licence: MIT ([LICENSE](LICENSE)).
+Every measured number in the editions comes from `coordination_poc/runs/2026-10-08-blind/facts.json` of run `2026-10-08-blind`. This README, the results page and the Medium edition's top and end are written by `series-start-here/tools/series_edition.py` from `series-start-here/series.json` and the chapter's own files; the previous README is kept in `docs/archive/README-original.md`.

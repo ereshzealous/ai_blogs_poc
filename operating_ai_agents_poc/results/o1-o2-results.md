@@ -174,10 +174,4 @@ make docs    # both editions and the evidence documents as Markdown, standalone 
 make qa    # rendered checks of every page (desktop/tablet/mobile) -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/operating_ai_agents_poc/technical/operating-ai-agents-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/operating_ai_agents_poc/results/operating-ai-agents-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/operating_ai_agents_poc/results/operating-ai-agents-report.md)
-
 *Built by `series-start-here/tools/series_edition.py results O1+O2` from the files named above. It computes nothing new.*

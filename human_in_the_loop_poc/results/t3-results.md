@@ -156,11 +156,4 @@ make docs    # both editions and the three results documents as Markdown, standa
 make qa    # rendered checks at desktop/tablet/mobile + screenshots -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/human_in_the_loop_poc/technical/human-in-the-loop-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/human_in_the_loop_poc/results/human-in-the-loop-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/human_in_the_loop_poc/results/human-in-the-loop-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/human_in_the_loop_poc/results/human-in-the-loop-real-vs-simulated.md)
-
 *Built by `series-start-here/tools/series_edition.py results T3` from the files named above. It computes nothing new.*

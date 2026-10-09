@@ -1,124 +1,59 @@
-# T4 POC · AI Control Plane: change the control plane, not the agent
+# T4 · AI Control Plane
 
-*Production AI Engineering · Trust & Security track · T4*
+*How do you change what many agents may do without editing or redeploying any of them?*
 
-**Agents should contain business reasoning, not enterprise governance.** This POC tests one architectural claim: when
-the **control plane** changes and the **agent** does not, the governed behaviour changes, everywhere, at the next step,
-and on the record. Three agents (incident, support, finance) run in one long-lived runtime process. A separate control
-plane declares, versions, signs and distributes their desired state: registry, tool and MCP permissions, model profiles,
-approvals, budgets, secret *references*, rollouts and emergency switches. Enforcement stays local to the runtime; the
-agents keep only their business plans.
+Production AI Engineering · T4 · Trust & Security · chapter 9 of 15
 
-It continues the series' payment-service incident: the incident agent restarts `payment-service` in production.
+## Read it
 
-## The core proof (P2)
+- **Medium edition:** [`medium/ai-control-plane-medium.md`](medium/ai-control-plane-medium.md), and the paste-ready page [`medium/ai-control-plane-medium.html`](medium/ai-control-plane-medium.html)
+- **Technical deep dive:** [`technical/ai-control-plane-technical.pdf`](technical/ai-control-plane-technical.pdf)
+- **Results:** [`results/t4-results.md`](results/t4-results.md), every number the Medium edition uses with its source file, the checks and the two verdicts ([HTML](results/t4-results.html))
+- **Series:** [Start Here](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), the map of all 15 chapters
 
-One central change (production restarts now need approval), and nothing else:
+## What the run showed
 
-| | Before (control plane v1) | After (control plane v2) |
-|---|---|---|
-| Agent code | sha256 `677bca2acd66` | sha256 `677bca2acd66` (agent edits: 0) |
-| Runtime process | `rt-a/pid-1` | `rt-a/pid-1` (the same process; redeploys: 0) |
-| Request | hash `cb0531217710` | hash `cb0531217710` |
-| Decision | `ALLOW` | `APPROVAL_REQUIRED` |
-| Production restart | executed | not executed: the deploy system still shows 1 restart |
+- **Published run:** `2026-10-03-recorded`, declared in `control_plane_poc/runs/PUBLISHED`; deterministic: agents follow fixed plans, no model.
+- **Evidence integrity:** VERIFIED. 10 of 10 verification sections pass.
+- **Findings:** 21 claims: 13 supported, 4 limitation, 2 contradicted, 1 control, 1 implementation; check findings: 4 EXPECTED FAILURE, 2 LIMITATION OBSERVED.
+- **Checks:** PASS 73, EXPECTED_FAILURE 4, FAIL 2 (`evidence/runs/2026-10-03-recorded/checks.jsonl`).
 
-The restart count comes from the simulated deploy system's own side-effect log, not from what the agent reports. P2 is
-built to fail: `tests/test_cheating.py` reruns it with the agent code edited, the process restarted and the request
-altered, and it fails each time. Record: `control_plane_poc/runs/2026-10-03-recorded/P2.json`; proof card in `proof.txt`.
+## Run it yourself
 
-## The twelve proofs
+From this folder. None of these commands changes the published run; `make verify` and `make test` write their own reports (the verification files), which is how they report.
 
-| Proofs | Role | Result in run `2026-10-03-recorded` |
-|---|---|---|
-| **P2** (P1 its baseline) | **The core proof**: one central change, same agent, same process, same request | HELD |
-| P3–P8 | Capabilities: approval, suspension, budgets, MCP revocation, model governance, rollout | HELD |
-| P9–P10 | Boundary tests: outage, tampered bundle, broker down, stale policy, drift | QUALIFIED where the guarantee stops (see below) |
-| P11 | Negative control: the same rules embedded in each agent | the property broken by design, as intended |
-| P12 | Governing the governor: who may change the control plane | HELD |
-
-100 of 100 test assertions held across 15 scenarios. In words:
-
-- **P11, the negative control.** The same four changes, embedded in the agents, took 7 file edits and 7 redeploys, left
-  8 static credential literals in agent code, and the process that was not redeployed still restarted production. Its
-  assertions pass because they assert that the break was observed.
-- **P12.** Of 10 change attempts, 3 were accepted and 7 rejected (an agent granting itself a tool, widenings without a
-  second approver, break-glass trying to widen, a plaintext credential), all on one hash chain that verifies.
-- **P9–P10, qualified, not hidden.** When the control plane is unreachable, reads continue on the last-known-good
-  bundle and mutations fail closed, but a suspension published during the partition reached that runtime only after it
-  reconnected: 3 calls ran after it was published (P9). Drift is detected, with what ran under the stale version, not
-  prevented (P10).
-
-## Reproduce it
-
-Requirements: [`uv`](https://docs.astral.sh/uv/) (it installs Python 3.12 and the dependencies) and `make`. No model,
-no API key, no network, no Docker.
-
-```bash
-git clone https://github.com/ereshzealous/ai_blogs_poc.git
-cd ai_blogs_poc/ai_control_plane_poc
-make setup       # the POC environment
-make test        # 44 tests: architecture invariants, cheating detection, decisions, every proof, the live path
-make demo        # P2: one central change, same process, same agent code, different behaviour
-make verify      # rerun all twelve proofs in a fresh copy; identical to the published run (raw process ids masked)
-make evidence    # PROOF VERIFICATION of the published run (Production AI Engineering Proof Contract, pae-proof/v1)
-make all         # lint, tests, replay, proof pack recomputed byte for byte, PROOF VERIFICATION
-```
-
-`make help` lists every target. `make proof P="P4 P9"` prints any proof's card from a scratch run.
-
-**With a self-hosted LLM in the loop (optional).** `ollama pull qwen3:8b`, then `make live` (L1–L3: the model plans the
-incident agent's steps; the runtime still decides every step), or `make live-dry` for the same path with a scripted
-stand-in model. Live runs vary, so they are illustrative, not part of the published evidence. The one recorded live run,
-`control_plane_poc/runs/live/ollama-2026-09-30T100218Z/`, is described in [`control_plane_poc/README.md`](control_plane_poc/README.md#live-mode-an-llm-in-the-loop).
-
-## The evidence
-
-| What | Where |
+| Command | What it does |
 |---|---|
-| The raw run: every scenario's input, transcript, outcome and full end state | [`control_plane_poc/runs/2026-10-03-recorded/`](control_plane_poc/runs/2026-10-03-recorded/) (`summary.md`, `proof.txt`, `checks.json`, `facts.json`, `P1–P12.json`, `scenarios/`) |
-| The proof pack (pae-proof/v1): manifest, results, checks, step ledger, negative control, replay record, SHA256SUMS | [`evidence/runs/2026-10-03-recorded/`](evidence/runs/2026-10-03-recorded/), named by [`evidence/published.json`](evidence/published.json) |
-| The last PROOF VERIFICATION report | [`evidence/verification/verification.txt`](evidence/verification/verification.txt) |
-| Experiments and claims (each claim → proof → checks, with its status) | [`proof/experiments.toml`](proof/experiments.toml), [`proof/claims.toml`](proof/claims.toml) |
-| The Evidence Check: every claim, supported, qualified, negative control, not supported, argued or not tested | [`results/ai-control-plane-evidence.md`](results/ai-control-plane-evidence.md) |
-| The Run Report: every observed value and every check | [`results/ai-control-plane-report.md`](results/ai-control-plane-report.md) |
-| Real vs simulated | [`results/ai-control-plane-real-vs-simulated.md`](results/ai-control-plane-real-vs-simulated.md) |
-| The Lab Console: every scenario's question, input, output, steps, lineage and outcome | [`results/lab-console.html`](results/lab-console.html) (a standalone page: download it and open it in a browser) |
-| Every value the articles print, as the build substituted it | [`docs/evidence-uses.json`](docs/evidence-uses.json) (`make evidence` checks each against the run) |
+| `make setup` | the POC environment (Python 3.12, pyyaml, pytest, ruff) |
+| `make test` | POC tests: architecture (agents hold no governance), decisions, every proof (no model, no network) |
+| `make verify` | rerun every proof into a fresh copy of the POC and compare with the published run (pids masked, nothing else) |
+| `make replay` | the same as make verify: every proof rerun in a fresh copy of the POC and compared |
+| `make demo` | P2 only: one central change, same agent code, same runtime process, different behaviour |
+| `make docs` | both editions and the three evidence documents (results/) as Markdown, standalone HTML and PDF |
+| `make qa` | rendered checks at desktop/tablet/mobile (editions, evidence documents, Lab Console) + screenshots -> qa/ |
 
-The first edition's run, `2026-09-30-recorded`, is kept unchanged as lineage (`evidence/published.json` → history).
-
-## Real and simulated
-
-**Real code:** bundle versioning, signing and verification, the rollout pointer and buckets, the hash-chained change log
-and audit, change authorization and validation, the decision point, the runtime SDK with its cache and failure policy,
-the credential broker's minting, approvals, the spend meter, and the separate long-lived runtime process.
-
-**Simulated:** the MCP servers, enterprise systems and models (`control_plane_poc/acp/systems.py`; live mode uses a real
-local model); the network (fault flags); time (logical ticks); the agents' plans (fixed in the recorded run); and the
-signing key, a demo HMAC key in `control_plane_poc/config/signing.key`, never a production pattern. The full table is
-in [Real vs simulated](results/ai-control-plane-real-vs-simulated.md).
-
-## What this POC does not prove
-
-- That a production control plane was built. It proves the architectural reason to have one.
-- That a kill switch stops every runtime instantly, or that drift detection prevents stale enforcement: the run
-  measures both limits (P9, P10) and supports neither claim.
-- Anything about model quality: the recorded agents follow fixed plans; live mode is illustrative.
-- Production-grade cryptography and storage: asymmetric signing with keys in a KMS or HSM, a secret manager, a durable
-  approval workflow and an atomic budget service are what a production control plane would use instead.
+Author only: `make run`, `make pack` rewrite published evidence, so they refuse unless run with `REWRITE_PUBLISHED=yes`.
 
 ## Layout
 
-```text
-control_plane_poc/   the POC (uv project): acp/ (control plane, runtime, agents, systems, experiments), config/, tests/,
-                     runs/ (2026-10-03-recorded, 2026-09-30-recorded, live/ollama-2026-09-30T100218Z, PUBLISHED)
-proof/               experiments.toml, claims.toml, manifest.toml
-evidence/            published.json, runs/<run>/ (the proof pack), verification/
-tools/               verify_run.py (replay), proof_pack.py, proof_facts.py, ledger.py, verify_evidence.py (PROOF VERIFICATION)
-vendor/kit5/         evidence-kit 5.2.0, pinned ("copy, don't link"): the Proof Contract implementation the tools use
-results/             the Evidence Check, the Run Report, Real vs simulated, the Lab Console
-docs/                evidence-uses.json
-```
+| Path | What is there |
+|---|---|
+| `control_plane_poc/` | the proof of concept and its recorded runs |
+| `diagrams/` | figures and the cover (Excalidraw sources, SVG, PNG) |
+| `docs/` | edition sources and build notes; docs/archive/ keeps replaced originals |
+| `evidence/` | the proof pack of the published run |
+| `medium/` | the Medium edition: Markdown, and the paste-ready standalone page |
+| `proof/` | preregistration, freeze and claim definitions |
+| `qa/` | rendered-page checks and screenshots |
+| `research/` | sources and reading notes |
+| `results/` | the common results page and the detailed evidence pages |
+| `technical/` | the technical deep dive (Markdown, HTML, PDF) |
+| `tools/` | the chapter's build tools |
+| `vendor/` | vendored libraries (evidence-kit) |
+| `verification/` | the latest verification outputs |
+| `Makefile` | the standard commands (`make help` lists them) |
+| `QA.md` | publication checks |
 
-Licence: MIT.
+## Provenance
+
+Every measured number in the editions comes from `control_plane_poc/runs/2026-10-03-recorded/facts.json` of run `2026-10-03-recorded`. This README, the results page and the Medium edition's top and end are written by `series-start-here/tools/series_edition.py` from `series-start-here/series.json` and the chapter's own files; the previous README is kept in `docs/archive/README-original.md`.

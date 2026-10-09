@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
-# The checks scripts/publish-poc.sh runs before a publish: lint, the tests, the replay of every proof, the proof pack
-# recomputed byte for byte, and PROOF VERIFICATION (no model, no network). PROOF VERIFICATION rewrites
-# evidence/verification/ with the same bytes when the evidence holds.
+# The checks scripts/publish-poc.sh runs before a publish, the same in every chapter: the reader's three commands, with
+# no model reachable. None of them writes to the published run.
 set -e
 export PYTHONDONTWRITEBYTECODE=1
-make all
+export OLLAMA_URL=http://127.0.0.1:1 OLLAMA_HOST=127.0.0.1:1
+make setup
+make test
+make verify

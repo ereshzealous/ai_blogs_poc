@@ -1,0 +1,202 @@
+# T4's Lab Console: the words and the layout.  Every number is a {{fact}} registered by tools/build_lab_console.py from
+# the run directories; the kit refuses a hand-typed number.  No architecture diagrams: this page is the POC's output,
+# scenario by scenario: use case, input, output, steps, data lineage, and whether the governed property held.
+
+case_tabs = [{ id = "io", label = "Input & output" }, { id = "steps", label = "Steps" }, { id = "lineage", label = "Data lineage" }, { id = "logs", label = "Systems" }]
+
+[kit]
+version = "4"
+
+[lint]
+allow = ['\bT4\b', '\bT[123]\b', '\bF[123]\b', '\bP\d{1,2}\b', '\bv\d+\b', '\b\d{4}-\d{2}-\d{2}\b', '(?m)^\d\. ']
+
+[learning]
+series = "Production AI Engineering"
+id = "T4"
+topic = "AI control plane"
+label = "T4 · Lab Console · run {{run.id}}"
+title = "One control plane, three agents, twelve proofs: scenario by scenario"
+question = "Change the control plane, never the agents, and read the effect from the systems of record. For every scenario: what went in, what came out, where a property was qualified or broke, and where each number came from."
+claim = ["Every scenario, its input and output.", "Every central change, and what the runtime did next."]
+byline = "T4 · Production AI Engineering"
+filed = "{{run.filed}}"
+brand = "Production AI Engineering"
+tagline = "Build. Test. Learn. Ship responsibly."
+note = "Generated from the run directories; rebuild after every run"
+state = "RECORDED"
+links = [{ label = "Evidence Check", href = "ai-control-plane-evidence.html" }, { label = "Run report", href = "ai-control-plane-report.html" }, { label = "Real vs simulated", href = "ai-control-plane-real-vs-simulated.html" }]
+
+[dimensions]
+factor = { label = "Proof", unit = "", all = "All proofs" }
+result = { pass = "As expected", fail = "Not as expected" }
+severity = [{ id = "none", label = "Held", tone = "ok" }, { id = "qualified", label = "Qualified", tone = "warn" }, { id = "broken", label = "Negative control", tone = "bad" }]
+[[dimensions.variants]]
+key = "E"
+name = "Embedded governance"
+color = "red"
+policy = "each agent carries its own model, allowlist, approval rule, budget and static credentials (P11 baseline)"
+[[dimensions.variants]]
+key = "C"
+name = "Control plane"
+color = "green"
+policy = "signed, versioned desired state distributed to a long-lived runtime that enforces it at every call"
+governed = true
+
+[[pages]]
+id = "overview"
+title = "Overview"
+icon = "home"
+  [[pages.blocks]]
+  type = "run_card"
+  kpis = [["{{run.scenarios}}", "Scenarios"], ["{{all.held}}", "Held"], ["{{all.qualified}}", "Qualified"], ["{{all.broken}}", "Negative control (by design)"], ["{{checks.passed}}/{{checks.total}}", "Test assertions passed"], ["{{run.events}}", "Recorded events"]]
+  flow_title = "What every scenario records"
+  flow = [{ icon = "layers", title = "Control plane", sub = "validate, authorize, version, sign", tone = "purple" }, { icon = "refresh", title = "Distribution", sub = "pointer + signed bundle", tone = "blue" },
+          { icon = "cpu", title = "Runtime", sub = "long-lived; enforces every call", tone = "blue" }, { icon = "server", title = "Services", sub = "approvals, broker, spend", tone = "orange" },
+          { icon = "box", title = "Systems", sub = "their own log of what they saw", tone = "gray" }, { icon = "check", title = "Checks", sub = "read from the systems of record", tone = "green" }]
+  systems = "systems"
+  badges = [["flask", "Run {{run.id}}"], ["check", "Test assertions {{checks.passed}}/{{checks.total}}"], ["refresh", "Deterministic: a rerun is byte-identical (make verify)"], ["cpu", "Recorded run: fixed agent plans (make live: a local LLM)"]]
+  [[pages.blocks]]
+  type = "metric_grid"
+  style = "margin-top:16px"
+  items = [{ value = "{{C.held.kn}}", label = "Control plane · held", metric = "held-C" }, { value = "{{C.qualified.kn}}", label = "Control plane · qualified", metric = "qualified-C" },
+           { value = "{{E.broken.kn}}", label = "Negative control · broke by design", metric = "broken-E" }]
+  [[pages.blocks]]
+  type = "table"
+  data = "matrix"
+  title = "Every proof, grouped: core, capability, boundaries, negative control, govern the governor"
+  sub = "✓ held · ~ qualified (held within a stated bound) · ✕ negative control (the embedded baseline: property broken by design). One mark per scenario; select a scenario on the Scenarios page for its contract, steps and lineage."
+  [[pages.blocks]]
+  type = "callout"
+  icon = "bulb"
+  title = "How a scenario's outcome is decided"
+  text = "CORE: P1 is the baseline and P2 the core proof (one central change; agent code, runtime process and request held fixed). CAPABILITY: P3–P8. BOUNDARIES: P9–P10, qualified by design. NEGATIVE CONTROL: P11. GOVERN THE GOVERNOR: P12. Held means the governed property the scenario tests held. Qualified means it held only within a stated bound: a kill switch cannot reach a partitioned runtime (P9), and drift was detected rather than prevented (P10). Negative control: the embedded baseline (P11) lost the property, which is exactly what it exists to show; it is not a failed test. Outcomes are read from each scenario's state directory, never from an agent's own account. Separately, the run's test assertions confirm every scenario behaved as expected: {{all.as_expected}} of {{run.scenarios}} did."
+
+[[pages]]
+id = "runs"
+title = "Scenarios"
+icon = "list"
+count = "rows"
+  [[pages.blocks]]
+  type = "case_explorer"
+  heading = "Scenarios"
+  flag_tab = "Qualified and negative control"
+  search = "Search scenario ids, use cases, where a property was qualified or broke…"
+  csv_head = "scenario,use_case,design,{factor},as_expected,outcome,where"
+  columns = [{ label = "Outcome", show = "severity" }, { label = "Where it broke", kv = "Where it broke" }, { label = "Checks", kv = "Checks" }, { label = "Design", kv = "Design" }]
+
+[[pages]]
+id = "problems"
+title = "Qualified & negative control"
+icon = "alert"
+  [[pages.blocks]]
+  type = "head"
+  title = "Where a property was qualified, and the negative control"
+  sub = "Every scenario whose governed property did not simply hold, the step where it was qualified or broke, and what the record shows. Select a row for its steps."
+  [[pages.blocks]]
+  type = "table"
+  data = "problems"
+  title = "Qualified and negative control · run {{run.id}}"
+  sub = "{{all.qualified}} qualified and {{all.broken}} negative control (broken by design), out of {{run.scenarios}} scenarios."
+  [[pages.blocks]]
+  type = "table"
+  data = "every"
+  title = "All scenarios"
+  sub = "{{run.scenarios}} scenarios across {{run.experiments}} proofs. Select a row for its input, output, steps and lineage."
+
+[[pages]]
+id = "checks"
+title = "Checks"
+icon = "check"
+  [[pages.blocks]]
+  type = "head"
+  title = "Proof checks and test assertions"
+  sub = "Two counts, never merged. Proof checks (pae-proof/v1) compare facts read from the run: {{proof.checks}} checks, {{proof.pass}} pass, {{proof.limitation}} limitation observed (the qualified boundaries), {{proof.expected_failure}} expected failure (the negative control). Test assertions are each scenario's own checks: {{checks.passed}} of {{checks.total}} passed."
+  [[pages.blocks]]
+  type = "table"
+  data = "proof"
+  title = "Proof checks · run {{run.id}}"
+  sub = "From evidence/runs/{{run.id}}/checks.jsonl. A LIMITATION OBSERVED is a result the articles print as a qualification, not a broken proof; an EXPECTED FAILURE is the negative control breaking as designed."
+  [[pages.blocks]]
+  type = "table"
+  data = "checks"
+  title = "Test assertions · run {{run.id}}"
+  sub = "Written into the POC's code and evaluated by the run into checks.json. A failing assertion fails the run and the evidence documents refuse to build."
+
+[[pages]]
+id = "lineage"
+title = "Data lineage"
+icon = "layers"
+  [[pages.blocks]]
+  type = "head"
+  title = "From the scenario's inputs to the published number"
+  sub = "The files that carry each scenario's data, in order. Every scenario's Data lineage tab lists its own files with record counts."
+  [[pages.blocks]]
+  type = "table"
+  data = "lineage"
+  title = "Per-scenario lineage"
+  sub = "Paths inside the run directory; ‹scenario› is the scenario id, for example the first row on the Scenarios page."
+  [[pages.blocks]]
+  type = "table"
+  data = "allruns"
+  title = "Runs found"
+  sub = "Every run directory with recorded scenarios is listed here and selectable on the Scenarios page ({{run.sources}} found). A new run appears after the page is rebuilt."
+
+[[pages]]
+id = "raw"
+title = "Raw evidence"
+icon = "folder"
+footer = true
+  [[pages.blocks]]
+  type = "artifacts"
+  sub = "Where every value on these pages comes from."
+  files = [["control_plane_poc/runs/{{run.id}}/scenarios/‹scenario›/scenario.json", "each scenario's input, expected and observed result, outcome, checks and proof card"],
+           ["control_plane_poc/runs/{{run.id}}/scenarios/‹scenario›/state/controlplane/", "every signed bundle version and the hash-chained change log"],
+           ["control_plane_poc/runs/{{run.id}}/scenarios/‹scenario›/state/runtime/‹instance›/audit.jsonl", "every runtime decision with its config version, source and rule (hash-chained)"],
+           ["control_plane_poc/runs/{{run.id}}/scenarios/‹scenario›/state/systems/", "what each simulated system and model endpoint saw, and the side effects"],
+           ["control_plane_poc/runs/{{run.id}}/proof.txt", "every proof card, as acp proof prints it"],
+           ["control_plane_poc/runs/{{run.id}}/checks.json", "the run's checks ({{checks.passed}}/{{checks.total}})"],
+           ["control_plane_poc/runs/{{run.id}}/facts.json", "every number the editions and evidence documents substitute"],
+           ["control_plane_poc/runs/{{run.id}}/manifest.json", "environment, config hashes, what is real and what is simulated"]]
+
+[[pages]]
+id = "reproduce"
+title = "Reproduce"
+icon = "terminal"
+footer = true
+  [[pages.blocks]]
+  type = "reproduce"
+  quick_sub = "From the ai_control_plane folder."
+  quickstart = [["Set up the POC (Python, uv)", "make setup"], ["Run the tests", "make test"], ["Run every proof and rebuild this page", "make run"],
+                ["Rerun every proof and compare with the published run", "make verify"], ["Proof verification", "make evidence"], ["The final gate", "make verify-all"],
+                ["Rebuild this page only", "make console"]]
+  environment = [["Python", "{{run.python}}", "uv sync --group dev"], ["Scenarios", "{{run.scenarios}} per run", "make run"]]
+  replay_title = "Determinism"
+  replay_sub = "The run is deterministic: make verify reruns every proof into a fresh copy and compares it with the published run. One explicit normalization: raw process ids (volatile.json) are masked."
+  reproduced_as = "identical (process ids masked)"
+
+[claims]
+title = ""
+
+[[metrics]]
+id = "held-C"
+variant = "C"
+headline = "{{C.held.kn}} held"
+statement = "{{C.held}} of {{C.runs}} control-plane scenarios kept the governed property they test"
+breakdown_title = "By proof"
+source = "C.held"
+
+[[metrics]]
+id = "qualified-C"
+variant = "C"
+headline = "{{C.qualified.kn}} qualified"
+statement = "{{C.qualified}} of {{C.runs}} control-plane scenarios held only within a stated bound"
+breakdown_title = "By proof"
+source = "C.qualified"
+
+[[metrics]]
+id = "broken-E"
+variant = "E"
+headline = "{{E.broken.kn}} negative control"
+statement = "{{E.broken}} of {{E.runs}} embedded-baseline scenarios lost the governed property, as the baseline is meant to show"
+breakdown_title = "By proof"
+source = "E.broken"

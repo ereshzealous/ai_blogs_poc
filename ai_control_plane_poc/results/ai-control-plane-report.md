@@ -72,8 +72,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Under v1, does the incident agent's production restart run, and is it attributed to v1?
 
-**Expected.** ALLOW, executed once, attributed to v1\
-**Observed.** executed under v1; restarts=1\
+**Expected.** ALLOW, executed once, attributed to v1  
+**Observed.** executed under v1; restarts=1  
 **Outcome.** HELD
 
 **Step ledger** (9 rows)
@@ -142,8 +142,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Change only the control plane. Does the same process, with the same code and request, now stop for approval?
 
-**Expected.** same process, same code, same request: v1 executes, v2 holds for approval\
-**Observed.** v1 executed → v2 pending_approval; restarts=1\
+**Expected.** same process, same code, same request: v1 executes, v2 holds for approval  
+**Observed.** v1 executed → v2 pending_approval; restarts=1  
 **Outcome.** HELD
 
 **Step ledger** (18 rows)
@@ -255,8 +255,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Does the held action stay unexecuted until an eligible human approves, and then run exactly once?
 
-**Expected.** 0 restarts until ic.dev approves; then exactly 1\
-**Observed.** before approval 0; after 1; duplicate resume ALREADY_EXECUTED\
+**Expected.** 0 restarts until ic.dev approves; then exactly 1  
+**Observed.** before approval 0; after 1; duplicate resume ALREADY_EXECUTED  
 **Outcome.** HELD
 
 **Step ledger** (13 rows)
@@ -339,8 +339,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Does a central suspension stop new runs and a run already in flight, and only that agent?
 
-**Expected.** every later call of the in-flight run denied; new runs denied; other agents untouched; restore needs two people\
-**Observed.** 0 of 2 in-flight calls executed after suspension; new run AGENT_SUSPENDED\
+**Expected.** every later call of the in-flight run denied; new runs denied; other agents untouched; restore needs two people  
+**Observed.** 0 of 2 in-flight calls executed after suspension; new run AGENT_SUSPENDED  
 **Outcome.** HELD
 
 **Step ledger** (29 rows)
@@ -436,8 +436,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Does a central quota stop the third tool call, and an exhausted budget stop the next run?
 
-**Expected.** call 3 denied with TOOL_CALL_BUDGET_EXCEEDED; next run denied with DAILY_BUDGET_EXHAUSTED\
-**Observed.** call 3 TOOL_CALL_BUDGET_EXCEEDED; run-003 DAILY_BUDGET_EXHAUSTED\
+**Expected.** call 3 denied with TOOL_CALL_BUDGET_EXCEEDED; next run denied with DAILY_BUDGET_EXHAUSTED  
+**Observed.** call 3 TOOL_CALL_BUDGET_EXCEEDED; run-003 DAILY_BUDGET_EXHAUSTED  
 **Outcome.** HELD
 
 **Step ledger** (22 rows)
@@ -524,8 +524,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Does disabling one server centrally stop every agent that uses it, and no other?
 
-**Expected.** both dependent agents denied, finance untouched, 0 calls reach the server\
-**Observed.** 0 observability calls after revoke; 3 calls denied\
+**Expected.** both dependent agents denied, finance untouched, 0 calls reach the server  
+**Observed.** 0 observability calls after revoke; 3 calls denied  
 **Outcome.** HELD
 
 **Step ledger** (41 rows; the first 40 shown, all in `ledger.jsonl`)
@@ -630,8 +630,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Can the control plane move the default model and withdraw a model without an agent naming one?
 
-**Expected.** default moves with no agent change; confidential data never falls back to an uncleared model\
-**Observed.** fast-model → large-model; confidential under v3: DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS\
+**Expected.** default moves with no agent change; confidential data never falls back to an uncleared model  
+**Observed.** fast-model → large-model; confidential under v3: DENIED NO_ALLOWED_MODEL_FOR_DATA_CLASS  
 **Outcome.** HELD
 
 **Step ledger** (45 rows; the first 40 shown, all in `ledger.jsonl`)
@@ -736,8 +736,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Does a canary reach only its bucket of runs, and does rollback return every run to the stable version?
 
-**Expected.** a deterministic ~quarter of runs on the canary; none after rollback; all after promotion\
-**Observed.** canary 4/20; rollback 0/20; promoted 10/10\
+**Expected.** a deterministic ~quarter of runs on the canary; none after rollback; all after promotion  
+**Observed.** canary 4/20; rollback 0/20; promoted 10/10  
 **Outcome.** HELD
 
 **Step ledger** (312 rows; the first 40 shown, all in `ledger.jsonl`)
@@ -837,8 +837,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?
 
-**Expected.** reads on last-known-good, mutations fail closed, everything denied past the staleness bound\
-**Observed.** mutation CONTROL_PLANE_UNREACHABLE; 3 calls ran after the suspension was published\
+**Expected.** reads on last-known-good, mutations fail closed, everything denied past the staleness bound  
+**Observed.** mutation CONTROL_PLANE_UNREACHABLE; 3 calls ran after the suspension was published  
 **Outcome.** QUALIFIED · config.unreachable: a suspension cannot reach a partitioned runtime; exposure bounded by max_staleness and fail-closed mutations
 
 **Step ledger** (40 rows)
@@ -942,8 +942,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?
 
-**Expected.** rejected; last-known-good kept; mutation fails closed\
-**Observed.** 5 rejections; applied v1\
+**Expected.** rejected; last-known-good kept; mutation fails closed  
+**Observed.** 5 rejections; applied v1  
 **Outcome.** HELD
 
 **Step ledger** (22 rows)
@@ -1015,8 +1015,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** What does the runtime do without its control plane: for reads, mutations, stale policy, tampered bundles?
 
-**Expected.** no credential, no call\
-**Observed.** all tool calls denied CREDENTIAL_UNAVAILABLE\
+**Expected.** no credential, no call  
+**Observed.** all tool calls denied CREDENTIAL_UNAVAILABLE  
 **Outcome.** HELD
 
 **Step ledger** (8 rows)
@@ -1071,8 +1071,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Can the control plane see a runtime that is quietly running an old version, and what it did meanwhile?
 
-**Expected.** the control plane detects rt-b's stale version and the action it executed under it\
-**Observed.** 2 drift findings; 1 mutation under a superseded version\
+**Expected.** the control plane detects rt-b's stale version and the action it executed under it  
+**Observed.** 2 drift findings; 1 mutation under a superseded version  
 **Outcome.** QUALIFIED · distribution: a lagging replica served v1 without error; policy did not prevent the restart, observation caught it
 
 **Step ledger** (41 rows; the first 40 shown, all in `ledger.jsonl`)
@@ -1175,8 +1175,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Without a control plane, what does the same set of governance changes cost, and when do they take effect?
 
-**Expected.** a governance change is a code edit that takes effect only after a redeploy\
-**Observed.** 7 edits, 7 redeploys; old process still restarted\
+**Expected.** a governance change is a code edit that takes effect only after a redeploy  
+**Observed.** 7 edits, 7 redeploys; old process still restarted  
 **Outcome.** BROKEN — expected negative control · agent code: the running process kept its embedded rule until redeployed
 
 **Step ledger** (12 rows)
@@ -1249,8 +1249,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Without a control plane, what does the same set of governance changes cost, and when do they take effect?
 
-**Expected.** each change takes effect at the next run with no code change\
-**Observed.** 4 versions; 0 edits; 0 redeploys\
+**Expected.** each change takes effect at the next run with no code change  
+**Observed.** 4 versions; 0 edits; 0 redeploys  
 **Outcome.** HELD
 
 **Step ledger** (30 rows)
@@ -1336,8 +1336,8 @@ The core proof, with the three things it holds fixed. P2 fails if any of them ch
 
 **Question.** Who may change the control plane, and is every change, accepted or rejected, on the record?
 
-**Expected.** illegitimate changes rejected and logged; legitimate ones versioned and signed\
-**Observed.** 3 accepted, 7 rejected, all 11 on a verifying chain\
+**Expected.** illegitimate changes rejected and logged; legitimate ones versioned and signed  
+**Observed.** 3 accepted, 7 rejected, all 11 on a verifying chain  
 **Outcome.** HELD
 
 **Step ledger** (11 rows)
@@ -1452,4 +1452,4 @@ make console      # the Lab Console
 
 ---
 
-**Series.** Foundation: F1 · MCP Tool Sprawl · F2 · Layered Architecture · F3 · Headless AI · Trust: T1 · Agent Identity · T2 · Authorization & Policy · Previous: T3 · Human-in-the-Loop · Current: T4 · AI Control Plane · Next: T5 · Observability & Governance. Companions: Medium edition · Technical deep dive · [Evidence Check](../results/ai-control-plane-evidence.md). Every measured number is substituted from `control_plane_poc/runs/2026-10-03-recorded/facts.json`.
+**Series.** Foundation: [F1 · MCP Tool Sprawl](../../tool-sprawl-mcp/medium/mcp-tool-sprawl-medium.html) · [F2 · Layered Architecture](../../f2_layer_architecture/docs/publish/medium/layered-production-ai-architecture-medium.html) · [F3 · Headless AI](../../headless_ai/medium/headless-ai-medium.html) · Trust: [T1 · Agent Identity](../../agent_identity/medium/agent-identity-medium.html) · [T2 · Authorization & Policy](../../auth_and_policy/medium/authorization-and-policy-for-ai-agents-medium.html) · Previous: [T3 · Human-in-the-Loop](../../human_in_the_loop/medium/human-in-the-loop-medium.html) · Current: T4 · AI Control Plane · Next: [T5 · Observability & Governance](../../governance_for_ai_agents/medium/observability-governance-medium.html). Companions: [Medium edition](../medium/ai-control-plane-medium.md) · [Technical deep dive](../technical/ai-control-plane-technical.md) · [Evidence Check](../results/ai-control-plane-evidence.md). Every measured number is substituted from `control_plane_poc/runs/2026-10-03-recorded/facts.json`.

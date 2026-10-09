@@ -51,7 +51,7 @@ of live model runs that §25 and §26 explicitly discourage.
 ### Ownership and safety
 
 B's owning session has ended (it left `HANDOFF.md`; no file under it has changed in over 24 hours, and the only live
-peer session is unrelated). Neither tree is under version control: `~/Documents/Dev/Knowledge-Blogs` has no git
+peer session is unrelated). Neither tree is under version control: `<workspace>` has no git
 repository, no Time Machine destination and no APFS snapshot, so **any deletion or overwrite there is permanent**.
 Nothing in B has been modified, moved or deleted to produce this audit.
 

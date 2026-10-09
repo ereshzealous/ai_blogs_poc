@@ -8,7 +8,7 @@ Proof that the standardization pass (evidence revision `r3`) did not alter the r
 ## Method
 
 The baseline is the archive taken **before** the pass began:
-`~/Documents/Dev/_f2-snapshots/2026-10-04/f2_layer_architecture.tar.gz`. Every file of the run was hashed with
+`<snapshots>/2026-10-04/f2_layer_architecture.tar.gz`. Every file of the run was hashed with
 sha256 in both trees and compared by path. `worktrees/` is excluded from both sides: it holds the throwaway git
 checkouts the E2, E3 and E9 change experiments build to apply a patch and run the tests in isolation. They are
 disposable by design and are not published, because each experiment survives without them — the patch is in
@@ -79,3 +79,5 @@ Two consequences:
   four-way verdict; and no measured number in a publication is typed by hand.
 
 `r3` is not a new model run. No model was called during the pass.
+
+**Public-copy note (2026-10-09).** In this public folder, the junit XML files and two monolith logs under `runs/2026-09-28-recorded/` (and its replay) have the author's home path rewritten to `<poc>/` or `~/` and the build machine's name to `<host>`, and three audit documents name the workspace and snapshot folders as `<workspace>` and `<snapshots>/`. Nothing else changed: no number, verdict, row id or timestamp. Every rewritten file is listed in `public-redactions.json` with the SHA-256 of the original and of this copy, and `python -m evidence_kit.public_copy verify` re-derives the copy from the original. The original bytes are unchanged in the author's workspace and in this repository's history.

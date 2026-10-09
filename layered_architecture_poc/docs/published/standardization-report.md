@@ -20,7 +20,7 @@ matrix, the bundle), and the regeneration is declared as evidence revision `r3` 
 | Frozen inputs | 98 entries in `source_hashes.json`; source-tree digest `ac36bff9273c` |
 | Models | `gpt-oss:20b` (A) and `qwen3:8b` (B), temperature 0, seeds 7/11/13, MCP SDK 2.2.0 |
 | Scenarios | 32 of 32 preregistered present; 7 real SIGKILLs; 0 tape misses |
-| Source commit | **none for the engineering workspace**: `claude/ai/f2_layer_architecture/` is a working directory on disk, not a git checkout, so the pass had no commit to cite while it ran. The *published* copy is version-controlled — `layered_architecture_poc_r3/` in `github.com/ereshzealous/ai_blogs_poc`, commit `1985252`. Both F2 workspaces were archived to `~/Documents/Dev/_f2-snapshots/2026-10-04/` before any edit |
+| Source commit | **none for the engineering workspace**: `claude/ai/f2_layer_architecture/` is a working directory on disk, not a git checkout, so the pass had no commit to cite while it ran. The *published* copy is version-controlled — `layered_architecture_poc_r3/` in `github.com/ereshzealous/ai_blogs_poc`, commit `1985252`. Both F2 workspaces were archived to `<snapshots>/2026-10-04/` before any edit |
 | Supplementary runs | one, `supplementary/E7-monolith-s7`, recorded with the original run; the pass added none |
 
 ## Test accounting, reported four ways
@@ -215,8 +215,8 @@ crash discussions state their exposure, E9's contradiction is kept, and every fi
 2. **Repository visibility.** `ai_blogs_poc` is private: every POC link in the articles 404s for readers. A
    publishing blocker to report, not to fix automatically.
 3. **The engineering workspaces are not git checkouts.** `claude/ai/f2_layer_architecture/` and
-   `claude/ai/layered_architecture/` are working directories under `~/Documents/Dev/Knowledge-Blogs`, which contains
-   no git repository; the archives in `~/Documents/Dev/_f2-snapshots/2026-10-04/` are their only safety net. This is
+   `claude/ai/layered_architecture/` are working directories under `<workspace>`, which contains
+   no git repository; the archives in `<snapshots>/2026-10-04/` are their only safety net. This is
    **not** a statement about the published POC: `layered_architecture_poc_r3/` and `layered_architecture_poc/` are both tracked in
    `github.com/ereshzealous/ai_blogs_poc`, and publishing copies files from the workspace into a clone of that
    repository. Two separate things, and only the workspace is unversioned.

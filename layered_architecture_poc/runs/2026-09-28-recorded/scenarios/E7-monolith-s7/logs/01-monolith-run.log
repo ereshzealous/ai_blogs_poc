@@ -1,9 +1,9 @@
   + Exception Group Traceback (most recent call last):
   |   File "<frozen runpy>", line 198, in _run_module_as_main
   |   File "<frozen runpy>", line 88, in _run_code
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/experiments/runners/scenario.py", line 87, in <module>
+  |   File "<poc>/experiments/runners/scenario.py", line 87, in <module>
   |     main()
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/experiments/runners/scenario.py", line 81, in main
+  |   File "<poc>/experiments/runners/scenario.py", line 81, in main
   |     out = asyncio.run(monolith(d, a.prompt, a.dry_run) if a.arch == "monolith" else layered(d, a.phase, a.prompt, a.dry_run))
   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py", line 195, in run
@@ -15,10 +15,10 @@
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
   |     return future.result()
   |            ^^^^^^^^^^^^^^^
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/experiments/runners/scenario.py", line 45, in monolith
+  |   File "<poc>/experiments/runners/scenario.py", line 45, in monolith
   |     report = await agent.run(PROMPTS[prompt], **kwargs)
   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/monolith/incident_agent.py", line 112, in run
+  |   File "<poc>/monolith/incident_agent.py", line 112, in run
   |     async with AsyncExitStack() as stack:
   |                ^^^^^^^^^^^^^^^^
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 754, in __aexit__
@@ -26,7 +26,7 @@
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
   |     cb_suppress = await cb(*exc_details)
   |                   ^^^^^^^^^^^^^^^^^^^^^^
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
+  |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
   |     await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 754, in __aexit__
   |     raise exc_details[1]
@@ -35,23 +35,23 @@
   |                   ^^^^^^^^^^^^^^^^^^^^^^
   |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 231, in __aexit__
   |     await self.gen.athrow(value)
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
+  |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
   |     async with anyio.create_task_group() as tg:
   |                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+  |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
   |     raise BaseExceptionGroup(
   | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
   +-+---------------- 1 ----------------
     | Exception Group Traceback (most recent call last):
-    |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
+    |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
     |     yield read_stream, write_stream
     |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
     |     cb_suppress = await cb(*exc_details)
     |                   ^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
+    |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
     |     result = await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+    |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
     |     raise BaseExceptionGroup(
     | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
     +-+---------------- 1 ----------------
@@ -59,7 +59,7 @@
       |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
       |     cb_suppress = await cb(*exc_details)
       |                   ^^^^^^^^^^^^^^^^^^^^^^
-      |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
+      |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
       |     await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
       |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 754, in __aexit__
       |     raise exc_details[1]
@@ -68,23 +68,23 @@
       |                   ^^^^^^^^^^^^^^^^^^^^^^
       |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 231, in __aexit__
       |     await self.gen.athrow(value)
-      |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
+      |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
       |     async with anyio.create_task_group() as tg:
       |                ^^^^^^^^^^^^^^^^^^^^^^^^^
-      |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+      |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
       |     raise BaseExceptionGroup(
       | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
       +-+---------------- 1 ----------------
         | Exception Group Traceback (most recent call last):
-        |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
+        |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
         |     yield read_stream, write_stream
         |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
         |     cb_suppress = await cb(*exc_details)
         |                   ^^^^^^^^^^^^^^^^^^^^^^
-        |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
+        |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
         |     result = await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
         |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+        |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
         |     raise BaseExceptionGroup(
         | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
         +-+---------------- 1 ----------------
@@ -92,7 +92,7 @@
           |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
           |     cb_suppress = await cb(*exc_details)
           |                   ^^^^^^^^^^^^^^^^^^^^^^
-          |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
+          |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
           |     await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
           |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 754, in __aexit__
           |     raise exc_details[1]
@@ -101,33 +101,33 @@
           |                   ^^^^^^^^^^^^^^^^^^^^^^
           |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 231, in __aexit__
           |     await self.gen.athrow(value)
-          |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
+          |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 200, in stdio_client
           |     async with anyio.create_task_group() as tg:
           |                ^^^^^^^^^^^^^^^^^^^^^^^^^
-          |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+          |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
           |     raise BaseExceptionGroup(
           | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
           +-+---------------- 1 ----------------
             | Exception Group Traceback (most recent call last):
-            |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
+            |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/stdio.py", line 204, in stdio_client
             |     yield read_stream, write_stream
             |   File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 737, in __aexit__
             |     cb_suppress = await cb(*exc_details)
             |                   ^^^^^^^^^^^^^^^^^^^^^^
-            |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
+            |   File "<poc>/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
             |     result = await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
             |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-            |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+            |   File "<poc>/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
             |     raise BaseExceptionGroup(
             | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
             +-+---------------- 1 ----------------
               | Traceback (most recent call last):
-              |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/monolith/incident_agent.py", line 119, in run
+              |   File "<poc>/monolith/incident_agent.py", line 119, in run
               |     reply = await self._chat(messages)
               |             ^^^^^^^^^^^^^^^^^^^^^^^^^^
-              |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/monolith/incident_agent.py", line 149, in _chat
+              |   File "<poc>/monolith/incident_agent.py", line 149, in _chat
               |     resp.raise_for_status()
-              |   File "/Users/ereshgorantla/Documents/Dev/Knowledge-Blogs/claude/ai/f2_layer_architecture/layered_agent_poc/.venv/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
+              |   File "<poc>/.venv/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
               |     raise HTTPStatusError(message, request=request, response=self)
               | httpx.HTTPStatusError: Server error '500 Internal Server Error' for url 'http://localhost:11434/api/chat'
 For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500

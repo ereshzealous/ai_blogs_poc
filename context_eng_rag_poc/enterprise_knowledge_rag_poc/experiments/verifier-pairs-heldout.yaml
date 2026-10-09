@@ -1,0 +1,413 @@
+# Held-out claim-citation pairs, authored blind to the verifier. Gold labels by an independent author.
+pairs:
+  # ------------------------------------------------------------------------------------------ supported-verbatim (8)
+  - id: V-H01
+    principal: ananya.iyer
+    environment: production
+    service: cart-api
+    claim: {text: "For cart-api latency after a deploy, turn on pool autotuning with the flag cart.redis_pool_autotune=on in the flag service; no approval is needed.", kind: procedure}
+    citations: [{unit_id: "RB-CART-003@v3#remediation", quote: "Turn on pool autotuning with the flag cart.redis_pool_autotune=on in the flag service; no approval is needed."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "RB-CART-003 v3, published at the source at 03:20 after the watermark, is cart-api's current runbook of record and says exactly this."
+
+  - id: V-H02
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "If the incident commander cannot be reached within 15 minutes, the SRE on-call lead may approve the checkout-api rollback; the approval is recorded in the incident and reviewed within 24 hours.", kind: approval}
+    citations: [{unit_id: "CP-12@v3#emergencies", quote: "If the incident commander cannot be reached within 15 minutes, the SRE on-call lead may approve. The approval is recorded in the incident and reviewed within 24 hours."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "CP-12 is acme's change policy for every acme service, so it can decide approval, and its Emergencies section states the fallback approver."
+
+  - id: V-H03
+    principal: rohan.verma
+    environment: production
+    service: checkout-api
+    claim: {text: "Traffic switches back to the previous stack within 30 minutes of a deploy are pre-approved for globex checkout-api.", kind: approval}
+    citations: [{unit_id: "GX-CP-02@v1#pre-approved-changes", quote: "Traffic switches back to the previous stack within 30 minutes of a deploy are pre-approved."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "GX-CP-02 is globex's own change policy, and it pre-approves exactly this change."
+
+  - id: V-H04
+    principal: ananya.iyer
+    environment: production
+    service: inventory-worker
+    claim: {text: "Do not scale inventory-worker above 8 consumers, because inventory-db write locks contend beyond that, and never purge the reservation queue.", kind: procedure}
+    citations: [{unit_id: "RB-INVW-001@v1#limits", quote: "Do not go above 8 consumers: inventory-db write locks contend beyond that. Never purge the reservation queue; purged reservations are lost orders."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "RB-INVW-001 is the runbook of record for inventory-worker queue lag, and its Limits section states both rules."
+
+  - id: V-H05
+    principal: kavita.nair
+    environment: production
+    service: orders-db
+    claim: {text: "The 30 August orders-db saturation was caused by a leaked partner API token driving a credential-stuffing burst against /v1/orders; each request opened a database transaction, and the orders-db pool saturated.", kind: cause}
+    citations: [{unit_id: "SEC-PM-2207@v1#root-cause", quote: "A leaked partner API token (partner P-1182, token prefix mrd_live_7731) drove a credential-stuffing burst against /v1/orders. Each request opened a database transaction, and the orders-db pool saturated."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "The postmortem is restricted to security-ir, which includes kavita.nair, and it states the root cause directly."
+
+  - id: V-H06
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "In acme production, checkout-api 4.17.0 changed datasource.maxPoolSize 50 -> 10 and datasource.minimumIdle 10 -> 2.", kind: fact}
+    citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "config_diff: datasource.maxPoolSize 50 -> 10; datasource.minimumIdle 10 -> 2"}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "The live deployment record for 4.17.0 lists both config changes with these exact values."
+
+  - id: V-H07
+    principal: ananya.iyer
+    environment: production
+    service: search-api
+    claim: {text: "The search on-call approves the products alias rollback, and the bad build is kept for 48 hours for analysis.", kind: approval}
+    citations: [{unit_id: "RB-SRCH-004@v2#approval", quote: "The search on-call approves the alias rollback. Keep the bad build for 48 hours for analysis."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "RB-SRCH-004 is the runbook of record for search-api relevance after an index build, and it names the approver and the retention period."
+
+  - id: V-H08
+    principal: ananya.iyer
+    environment: production
+    service: notification-service
+    claim: {text: "For the email bounce spike, pause marketing sends (flag notify.marketing=off) and keep transactional email on the primary domain; the comms lead approves the pause.", kind: procedure}
+    citations: [{unit_id: "RB-NOT-004@v2#remediation", quote: "Pause marketing sends (flag notify.marketing=off) and keep transactional email on the primary domain. The comms lead approves the pause."}]
+    gold_supported: true
+    category: supported-verbatim
+    rationale: "RB-NOT-004 v2, published at the source at 04:10 after the watermark, supersedes v1 and is the current runbook of record."
+
+  # ------------------------------------------------------------------------------------------ supported-paraphrase (7)
+  - id: V-H09
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "If the release record for the checkout-api deploy shows a schema migration, don't roll it back; escalate to the on-call DBA instead.", kind: procedure}
+    citations: [{unit_id: "RB-CHK-007@v4#approval-and-exceptions", quote: "Exception: if the release record shows migration: true, do not roll back; escalate to the DBA on-call."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "This is a faithful restatement of the runbook of record's migration exception, with the condition and polarity kept."
+
+  - id: V-H10
+    principal: rohan.verma
+    environment: production
+    service: checkout-api
+    claim: {text: "On globex, the fix is to flip production traffic back to the blue stack in Traffic Manager; pool saturation and the latency regression should clear within about a minute of switching.", kind: procedure}
+    citations: [{unit_id: "GX-RB-CHK-003@v2#remediation", quote: "Switch production traffic back to the blue stack in Traffic Manager (traffic-manager switch checkout-api --to blue). Pool saturation and latency regressions clear within a minute of the switch."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "GX-RB-CHK-003 is the globex CMDB's runbook of record for this procedure, and the paraphrase keeps the action and the one-minute recovery."
+
+  - id: V-H11
+    principal: ananya.iyer
+    environment: production
+    service: inventory-api
+    claim: {text: "Avoid flushing inventory-api's SKU cache during trading hours (06:00-22:00 UTC); a flush then stampedes inventory-db.", kind: procedure}
+    citations: [{unit_id: "RB-INV-004@v5#cache-caution", quote: "Do not flush the SKU cache between 06:00 and 22:00 UTC: a flush during trading hours causes a cache stampede on inventory-db"}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "The current runbook of record (v5) says the same with the same hours."
+
+  - id: V-H12
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "According to the INC-4820 follow-up, RB-PAY-002 is being audited, and until its replacement is published, card network timeouts should be paged to the payments on-call rather than failed over.", kind: history}
+    citations: [{unit_id: "INC-4820@v1#follow-up", quote: "RB-PAY-002 is under audit. Until a replacement is published, page the payments on-call for card network timeouts instead of failing over."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "This is a history claim about what the readable, current incident ticket records, and the ticket says it."
+
+  - id: V-H13
+    principal: ananya.iyer
+    environment: production
+    service: order-history-api
+    claim: {text: "In INC-4801, order reads (GET /v1/orders) slowed to a 3 s p95 following a page-size change, and turning on oha.read_replica fixed it within a minute.", kind: history}
+    citations: [{unit_id: "INC-4801@v1#summary", quote: "GET /v1/orders p95 at 3 s after a page-size change. Turned on oha.read_replica; recovered in a minute."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "The ticket states the same latency, trigger, flag and recovery time."
+
+  - id: V-H14
+    principal: meera.kapoor
+    environment: production
+    service: orders-db
+    claim: {text: "Restarting orders-db is off the table for pool saturation: it would drop every connection and escalate a slowdown into an outage.", kind: procedure}
+    citations: [{unit_id: "RB-DB-003@v2#remediation", quote: "Do not restart orders-db: a restart drops every connection and turns a slowdown into an outage."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "RB-DB-003 is the runbook of record for orders-db pool saturation, and it forbids the restart for this reason."
+
+  - id: V-H15
+    principal: rohan.verma
+    environment: production
+    service: search-api
+    claim: {text: "For a globex relevance drop after an index build, re-point the catalog alias to the standby build in the globex search console; during business hours that needs no sign-off.", kind: procedure}
+    citations: [{unit_id: "GX-RB-SRCH-001@v1#recovery", quote: "Re-point the catalog alias to the standby build in the globex search console. No approval is needed during business hours."}]
+    gold_supported: true
+    category: supported-paraphrase
+    rationale: "GX-RB-SRCH-001 is the globex runbook of record, and the paraphrase keeps the business-hours condition."
+
+  # ------------------------------------------------------------------------------------------ relevant-not-supporting (5)
+  - id: V-H16
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "The checkout-api latency after this morning's deploy is caused by the 4.17.0 connection pool change.", kind: cause}
+    citations: [{unit_id: "RN-CHK-4.17.0@v1#changes", quote: "Cost efficiency release. Tuned the orders-db connection pool to cut idle connections. ORM upgrade. No schema migration."}]
+    gold_supported: false
+    category: relevant-not-supporting
+    rationale: "The release notes describe the pool tuning but say nothing about latency or what caused it."
+
+  - id: V-H17
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "A checkout-api production rollback needs no approval if the alert started within 60 minutes of the deploy.", kind: approval}
+    citations: [{unit_id: "RB-CHK-007@v4#diagnose", quote: "If the alert started within 60 minutes of the deploy and the diff touches the datasource, treat it as a release regression."}]
+    gold_supported: false
+    category: relevant-not-supporting
+    rationale: "The 60-minute window decides whether this is a regression, not whether approval is needed; the same runbook requires incident-commander approval."
+
+  - id: V-H18
+    principal: ananya.iyer
+    environment: production
+    service: search-api
+    claim: {text: "Today's search-api relevance drop is caused by a synonyms change in the nightly build.", kind: cause}
+    citations: [{unit_id: "INC-4733@v1#summary", quote: "A synonyms change in the nightly build made shoe searches return socks."}]
+    gold_supported: false
+    category: relevant-not-supporting
+    rationale: "The ticket describes an August incident and says nothing about today's build, even though the wording matches."
+
+  - id: V-H19
+    principal: ananya.iyer
+    environment: production
+    service: orders-db
+    claim: {text: "The 30 August orders-db connection saturation was caused by a client service release that changed its pool size.", kind: cause}
+    citations: [{unit_id: "INC-4790@v1#summary", quote: "orders-db connections saturated from 14:05 to 14:40 UTC. Mitigated by security incident response."}]
+    gold_supported: false
+    category: relevant-not-supporting
+    rationale: "The ticket gives the time window and who mitigated it but no cause; the cause is in a restricted postmortem and was not a client release."
+
+  - id: V-H20
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "The 3DS2 challenge failures were caused by payment-gateway 5.2.1 turning on threeds2.eu.", kind: cause}
+    citations: [{unit_id: "RN-PAY-5.2.1@v1#changes", quote: "3DS2 challenge flow for more card types, behind feature flags."}]
+    gold_supported: false
+    category: relevant-not-supporting
+    rationale: "The release notes mention 3DS2 flags but neither name threeds2.eu nor say it caused the failures."
+
+  # ------------------------------------------------------------------------------------------ wrong-number-or-id (5)
+  - id: V-H21
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "checkout-api 4.17.0 cut datasource.maxPoolSize from 50 to 20 in acme production.", kind: fact}
+    citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "config_diff: datasource.maxPoolSize 50 -> 10"}]
+    gold_supported: false
+    category: wrong-number-or-id
+    rationale: "The record says 50 -> 10, not 20; 20 is globex 7.3.0's value."
+
+  - id: V-H22
+    principal: ananya.iyer
+    environment: production
+    service: inventory-worker
+    claim: {text: "Scale the inventory-worker reservation consumers to 12 replicas through the autoscaler override (autoscaler set inventory-worker --min 12).", kind: procedure}
+    citations: [{unit_id: "RB-INVW-001@v1#remediation", quote: "Scale the reservation consumers to 8 replicas through the autoscaler override (autoscaler set inventory-worker --min 8)."}]
+    gold_supported: false
+    category: wrong-number-or-id
+    rationale: "The runbook says 8 replicas, and its Limits section forbids going above 8."
+
+  - id: V-H23
+    principal: rohan.verma
+    environment: production
+    service: checkout-api
+    claim: {text: "Globex checkout-api 7.4.0 lowered http.client.timeout from 2s to 500ms.", kind: fact}
+    citations: [{unit_id: "dep:globex/production/checkout-api/7.4.0", quote: "config_diff: http.client.timeout 2s -> 800ms"}]
+    gold_supported: false
+    category: wrong-number-or-id
+    rationale: "The new timeout is 800ms, not 500ms."
+
+  - id: V-H24
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "In INC-4630, checkout-api p95 latency rose to 1.6 s after release 4.17.0, and on-call restarted the pods.", kind: history}
+    citations: [{unit_id: "INC-4630@v1#timeline", quote: "13:20 p95 latency rose to 1.6 s after checkout-api 4.12.0. 13:31 on-call restarted the checkout-api pods (kubectl rollout restart)."}]
+    gold_supported: false
+    category: wrong-number-or-id
+    rationale: "INC-4630 followed release 4.12.0, not 4.17.0."
+
+  - id: V-H25
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "During INC-4820, authorization calls to the card network were timing out at 2%, and the failover produced 312 duplicate authorizations.", kind: history}
+    citations: [{unit_id: "INC-4820@v1#summary", quote: "Authorization calls to the card network timed out at 4%. On-call failed over to the secondary provider per RB-PAY-002. The failover ran without fraud-scoring sync and produced 312 duplicate authorizations."}]
+    gold_supported: false
+    category: wrong-number-or-id
+    rationale: "The ticket says 4%; 2% is RB-PAY-002's failover threshold, not the observed rate."
+
+  # ------------------------------------------------------------------------------------------ negation-or-condition-flip (5)
+  - id: V-H26
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "If the pipeline is slow, running kubectl rollout undo on checkout-api is an acceptable alternative to a pipeline rollback.", kind: procedure}
+    citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Do not restart pods or run kubectl rollout undo: a restart does not fix a regressed release, and the GitOps controller reverts direct changes."}]
+    gold_supported: false
+    category: negation-or-condition-flip
+    rationale: "The runbook of record explicitly forbids kubectl rollout undo."
+
+  - id: V-H27
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "checkout-api is running 4.16.2 in production.", kind: fact}
+    citations: [{unit_id: "WIKI-REL-LOG-38@v1#production-versions", quote: "Current production versions as of Saturday 20 September: checkout-api 4.16.2 (deployed 19 Sep), inventory-api 3.8.4, payment-gateway 5.2.0, search-api 2.31.0."}]
+    gold_supported: false
+    category: negation-or-condition-flip
+    rationale: "The wiki's statement is limited to 20 September; dropping that date makes the claim false at as_of, when 4.17.0 is live."
+
+  - id: V-H28
+    principal: ananya.iyer
+    environment: production
+    service: notification-service
+    claim: {text: "Replaying the notification-service dead-letter queue needs comms-lead approval first.", kind: approval}
+    citations: [{unit_id: "RB-NOT-002@v3#replay", quote: "Replays above 10,000 messages reach customers in bulk and need comms-lead approval first."}]
+    gold_supported: false
+    category: negation-or-condition-flip
+    rationale: "Approval is required only for replays above 10,000 messages; the claim drops that condition."
+
+  - id: V-H29
+    principal: ananya.iyer
+    environment: production
+    service: search-indexer
+    claim: {text: "During a catalogue import, pause the bulk reindex job so search-indexer's incremental updates can catch up.", kind: procedure}
+    citations: [{unit_id: "RB-SIX-005@v1#remediation", quote: "Never pause the bulk reindex during a catalogue import: it leaves products half-indexed."}]
+    gold_supported: false
+    category: negation-or-condition-flip
+    rationale: "The cited runbook says the opposite: never pause during a catalogue import."
+
+  - id: V-H30
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "If 3DS2 challenge completions drop while the card network is degraded, turn threeds2.eu off in the flag service.", kind: procedure}
+    citations: [{unit_id: "RB-PAY-007@v2#before-you-change-the-flag", quote: "Only change the flag after confirming the card network status page is green; if the network is degraded, leave the flag on and follow the network incident instead."}]
+    gold_supported: false
+    category: negation-or-condition-flip
+    rationale: "When the network is degraded, the runbook says to leave the flag on."
+
+  # ------------------------------------------------------------------------------------------ wrong-authority-or-scope (5)
+  - id: V-H31
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "For HikariCP pool saturation on checkout-api, raise maxPoolSize to 80 with a hotfix ConfigMap change; a rollback is usually unnecessary.", kind: procedure}
+    citations: [{unit_id: "GUIDE-PERF-031@v1#pool-saturation", quote: "the fastest fix is to raise maxPoolSize to 80 with a hotfix ConfigMap change; a rollback is slower and usually unnecessary."}]
+    gold_supported: false
+    category: wrong-authority-or-scope
+    rationale: "A perf-guild guide has no authority over procedure, and in-place config edits in production contradict RB-GEN-012 and the runbook of record."
+
+  - id: V-H32
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "To relieve checkout-api pool pressure, edit maxPoolSize in the checkout-api ConfigMap in place and restart the pods; no approval is needed.", kind: procedure}
+    citations: [{unit_id: "STG-OPS-004@v3#pool-and-connection-settings", quote: "You may change datasource settings in place: edit maxPoolSize in the checkout-api ConfigMap and restart the pods. For orders-db, max_connections can be raised directly with ALTER SYSTEM. No approval is needed."}]
+    gold_supported: false
+    category: wrong-authority-or-scope
+    rationale: "STG-OPS-004 covers staging only, and the question is about production."
+
+  - id: V-H33
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "When card-network authorization timeouts exceed 2%, fail payment-gateway over to the secondary provider (payments-ctl failover --to secondary) and page payments on-call.", kind: procedure}
+    citations: [{unit_id: "RB-PAY-002@v3#remediation", quote: "When authorization calls to the card network time out above 2%, fail over to the secondary payment provider (payments-ctl failover --to secondary) and page the payments on-call."}]
+    gold_supported: false
+    category: wrong-authority-or-scope
+    rationale: "RB-PAY-002 v3 was withdrawn at 07:40, after the watermark, so it is not current at as_of even though the index still shows it as active."
+
+  - id: V-H34
+    principal: ananya.iyer
+    environment: production
+    service: payment-gateway
+    claim: {text: "The acme-card-network 24/7 escalation hotline is +1-555-0142, and quoting account code ACN-ESC-5520 skips the first-line queue.", kind: fact}
+    citations: [{unit_id: "VENDOR-ACN-01@v1#escalation", quote: "acme-card-network 24/7 escalation hotline +1-555-0142, account code ACN-ESC-5520. Quote the account code to skip the first-line queue."}]
+    gold_supported: false
+    category: wrong-authority-or-scope
+    rationale: "Access was narrowed to vendor-mgmt at 08:15, so ananya.iyer can no longer read this document."
+
+  - id: V-H35
+    principal: rohan.verma
+    environment: production
+    service: checkout-api
+    claim: {text: "For checkout-api latency after a deploy, roll the release back through the release pipeline to the last good version named in the deployment record.", kind: procedure}
+    citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline (release-pipeline rollback checkout-api --to <previous-version>) to the last good version named in the deployment record."}]
+    gold_supported: false
+    category: wrong-authority-or-scope
+    rationale: "RB-CHK-007 is acme's runbook; globex's runbook of record is GX-RB-CHK-003, which prescribes a blue/green traffic switch."
+
+  # ------------------------------------------------------------------------------------------ fabricated-quote (3)
+  - id: V-H36
+    principal: meera.kapoor
+    environment: production
+    service: orders-db
+    claim: {text: "Raising orders-db max_connections needs DBA approval, and the increase has to be recorded in the incident.", kind: approval}
+    citations: [{unit_id: "RB-DB-003@v2#max-connections", quote: "Raising max_connections needs DBA approval, and the increase must be recorded in the incident."}]
+    gold_supported: false
+    category: fabricated-quote
+    rationale: "The quote is reworded; the unit actually says 'is a last resort and needs DBA approval; every increase must be recorded', so the quote does not appear in it."
+
+  - id: V-H37
+    principal: ananya.iyer
+    environment: production
+    service: cart-api
+    claim: {text: "If cart-api p95 is still above SLO 10 minutes after the autotune flag change, roll the release back through the pipeline with incident-commander approval.", kind: procedure}
+    citations: [{unit_id: "RB-CART-003@v3#remediation", quote: "Roll the release back through the pipeline only if p95 is still above SLO 10 minutes after the flag change, with incident-commander approval."}]
+    gold_supported: false
+    category: fabricated-quote
+    rationale: "The quote splices v2's incident-commander approval into v3's wording; v3 contains no such sentence."
+
+  - id: V-H38
+    principal: ananya.iyer
+    environment: production
+    service: inventory-api
+    claim: {text: "To fix stale stock in inventory-api, flush the SKU cache (inv-admin cache flush --all).", kind: procedure}
+    citations: [{unit_id: "RB-INV-004@v5#remediation", quote: "Flush the SKU cache (inv-admin cache flush --all)."}]
+    gold_supported: false
+    category: fabricated-quote
+    rationale: "The quoted text comes from superseded v4; v5's Remediation says to run the resync job instead."
+
+  # ------------------------------------------------------------------------------------------ multi-citation (2)
+  - id: V-H39
+    principal: ananya.iyer
+    environment: production
+    service: checkout-api
+    claim: {text: "Roll checkout-api back through the release pipeline to 4.16.2, the last good version in the 4.17.0 deployment record.", kind: procedure}
+    citations:
+      - {unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline (release-pipeline rollback checkout-api --to <previous-version>) to the last good version named in the deployment record."}
+      - {unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "version: 4.17.0 · previous_version: 4.16.2"}
+    gold_supported: true
+    category: multi-citation
+    rationale: "The runbook of record gives the procedure, and the live deployment record supplies the target version 4.16.2."
+
+  - id: V-H40
+    principal: ananya.iyer
+    environment: production
+    service: cart-api
+    claim: {text: "Turning on cart.redis_pool_autotune for cart-api needs no incident-commander approval: CP-12 lets runbook-prescribed flag changes follow the runbook's own approval rule, and the cart-api runbook says no approval is needed.", kind: approval}
+    citations:
+      - {unit_id: "CP-12@v3#runbook-prescribed-operational-changes", quote: "Feature-flag changes, autoscaler policies, index alias changes, job runs and traffic switches that a runbook of record prescribes follow that runbook's approval rule instead."}
+      - {unit_id: "RB-CART-003@v3#remediation", quote: "Turn on pool autotuning with the flag cart.redis_pool_autotune=on in the flag service; no approval is needed."}
+    gold_supported: true
+    category: multi-citation
+    rationale: "CP-12 hands approval for flag changes to the runbook of record, and the current RB-CART-003 v3 says no approval is needed."

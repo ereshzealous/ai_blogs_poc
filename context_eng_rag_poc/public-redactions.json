@@ -1,0 +1,197 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "context_eng_rag_poc",
+ "redactions": [
+  {
+   "file": "Makefile",
+   "rules": [
+    {
+     "pattern": "hostname=\"(?!localhost\")[^\"<&]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      23
+     ]
+    }
+   ],
+   "original_sha256": "9980bc6c5bb212b86863129d14265bd16ac0d4f4fd0fdf71b9bff45e79300571",
+   "public_sha256": "177ac260594f0facf3fe1d111e6ff9d3fa2768cf5e7dcb331bd0c9499d6f0077",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/2026-10-08-heldout/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "3c70583d672db66bcbf61b503f2ab8121e54c9d281fe5ca01c18067114066ab6",
+   "public_sha256": "1bd56f394cb9cde46c0ce93fba3678c8b6eb0c8e151215d63ef4b2636626031f",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/2026-10-08-heldout-replay/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "fb23ec56ed463207cb64c6d6a3e2dd838ab9830aaca8dfda392fde6067b3a07c",
+   "public_sha256": "ed6f8648e300c77855d846c1bd95e2c5dd34a574acf5d5500ff8a4cb6ed58eef",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/2026-10-08-heldout.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "99cd026b4b350fef22231fc4f59bbdcabd9e32f1f752d358001dced9ae120057",
+   "public_sha256": "61add33201f2032f5e8a562ba37433be3dcf0e1c8550828969295d4d83558431",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-live-1/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "9a7569650f1551044a66209d94d0c85c0c48e14c126ef629a56719eef4cd55ae",
+   "public_sha256": "ca03957cc5e37687d1eda0c2ef286ade70c36d2176911ab99cd69162df733b59",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-live-1-rescore/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "52c6d6ebe96c30896a2cc2e6ba9d0df39cd592ccaa2c3c3791d83c6827b85631",
+   "public_sha256": "229d7c207cb97134fe453d7667e0954d76e3a55f83d441547916cac7df6353b0",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-live-1.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "4e32f1fcd75b33e7be704e5669a1c66d49957253b1d4c74e81cfc425ce63ac2a",
+   "public_sha256": "456083533cdc39f0b00d3123b6d833339a26d297f4d23bda3775ea61e45a1280",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-smoke-1/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "d371ef7017a7feef86c604a1d44fc0028228a91f730a8ed5bd280ed821cd042b",
+   "public_sha256": "30d72c13fa0944b82230735bf128af7d27bdd19ba341099b3f298baa9366c2b4",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-smoke-2/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "592c39935b50083f9ed2518eacbb10ac908062c1d557fae0d40e41b6a670be6c",
+   "public_sha256": "7ce7cec7f12564fa591046da65a8c4475e589a52e2bbc96132243e7d8bb4e5d4",
+   "semantic_changes": false
+  },
+  {
+   "file": "enterprise_knowledge_rag_poc/runs/dev-smoke-3/manifest.json",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/context_eng_rag/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "original_sha256": "eef01987eb5f00821a72968bd90286b66d65807a0b09fe5867f083253fdff187",
+   "public_sha256": "73d647fd93f35499b2bed0f156cfb46602483341e145ef013cc350a7f4d256f2",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [
+  "enterprise_knowledge_rag_poc/runs/2026-10-08-heldout/PUBLIC-SHA256SUMS",
+  "enterprise_knowledge_rag_poc/runs/dev-live-1/PUBLIC-SHA256SUMS",
+  "enterprise_knowledge_rag_poc/runs/dev-smoke-1/PUBLIC-SHA256SUMS",
+  "enterprise_knowledge_rag_poc/runs/dev-smoke-2/PUBLIC-SHA256SUMS",
+  "enterprise_knowledge_rag_poc/runs/dev-smoke-3/PUBLIC-SHA256SUMS"
+ ],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

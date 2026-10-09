@@ -1,0 +1,24 @@
+# Retrieval and context configuration. Frozen with the code; identical for every arm unless an experiment says otherwise.
+
+embedding:
+  model: nomic-embed-text            # Ollama, F16, 768 dimensions; real embeddings, recorded to index/embeddings.jsonl
+  digest: 0a109f422b47e3a3           # first 16 hex of the Ollama model digest the tape was recorded with
+  document_prefix: "search_document: "   # the model's required task prefixes
+  query_prefix: "search_query: "
+
+bm25: {k1: 1.2, b: 0.75}             # Robertson-Sparck Jones BM25 over the same chunk text the embeddings see
+
+fusion:
+  method: rrf                        # Reciprocal Rank Fusion of the vector and BM25 rankings
+  k: 60
+  depth: 50                          # each ranking contributes its top 50
+
+candidates: 20                       # governed candidate pool: hybrid top 20 after the index pre-filter
+naive_k: 8                           # naive pipeline: vector top 8 over the unfiltered index
+experiment_a_k: [5, 10, 20]          # cut-offs for Recall@k in experiment A
+
+budget:
+  tokens: 600                        # evidence budget (estimated tokens) for every arm in B, C, D, E
+  sweep: [300, 450, 600, 900]        # experiment C only
+
+recency_window_hours: 72             # deployment records fetched for a service: the last 72 h before as_of

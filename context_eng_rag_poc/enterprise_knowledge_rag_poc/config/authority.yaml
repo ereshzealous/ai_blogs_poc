@@ -1,0 +1,31 @@
+# The source-authority policy. Who may decide what. Applied by knowledge_rag/gates.py; no model is consulted.
+#
+# A document's ROLE comes from what kind of source it is. Its TIER (1 strongest) says how strongly it may decide that
+# role for THIS request (tenant, environment, service), and is computed from the CMDB, never from similarity.
+
+roles:
+  runbook: procedure        # how to remediate
+  policy: approval          # who must approve
+  ticket: history           # what happened before
+  postmortem: history
+  release_notes: change_summary
+  wiki: advisory
+  guide: advisory
+  vendor: reference
+  deployment: change_fact   # structured: release system
+  cmdb: ownership           # structured: CMDB
+
+procedure_tiers:
+  1: "named by the CMDB as runbook of record for the request's (tenant, environment, service), or an estate-wide runbook (services ['*']) owned by the platform team"
+  2: "owned by the service's CMDB owner but not named by the CMDB"
+  3: "any other runbook (another team's service, or no CMDB record)"
+platform_owner: platform-team
+
+rules:
+  - "procedure evidence: tier 1 or 2 only; a tier-2 runbook that disagrees with an admitted tier-1 runbook for the same procedure key is outranked and excluded"
+  - "two admitted tier-2 runbooks (no tier 1) for the same procedure key that disagree on action or approval are an UNRESOLVED CONFLICT: both stay, the packet says so, the answer must escalate"
+  - "approval evidence: change policies of the request's tenant"
+  - "history (tickets, postmortems): admitted only when the question asks about history or root cause, or when no tier-1/2 procedure exists for the question's procedure key; labelled history, never procedure"
+  - "advisory (wiki, guides): admitted only when no tier-1/2 procedure and no policy evidence is admitted; never procedure"
+  - "change facts and ownership: structured records from the release system and the CMDB; release notes are summaries"
+  - "reference (vendor documents): admitted when authorized and in scope"

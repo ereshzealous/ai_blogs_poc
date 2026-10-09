@@ -1,0 +1,10 @@
+# Deviations from the preregistration
+
+Every change made after the freeze (experiments/FROZEN.at) is listed here, with why, and with what it did or did not change
+in the recorded numbers. A deviation never replaces an as-recorded number; it sits beside it.
+
+| ID | When | What changed | Why | Effect on recorded numbers |
+|---|---|---|---|---|
+| D1 | 2026-10-08, after the freeze | `s2_eval/analysis.py`, which derives facts from the rows and is not in `FROZEN.sha256`, was extended with presentation facts: the flagship case's failed check and needed units in context (`flag.*`), the hypothesis tallies (`hyp.*`), and end-to-end ablation counts at the ablation seed for the governed and naive arms (`el.governed.*`, `el.naive.*`). | The editions and figures print these, and a printed number must be a fact, never typed. | None. They are counts over the recorded rows; no scoring rule, label or hypothesis test changed (`score.py` and `hypotheses.py` are frozen and unchanged). Recomputing from the rows with the current `analysis.py` reproduces the published `facts.json` and `invariants.json` byte for byte. |
+| D2 | 2026-10-08, after the run | Post-hoc assembler variants v2 and v3 on experiment C's admitted pools (`s2_eval/exploratory.py`, `make exploratory`). | To test whether the two packing defects behind H7 explain the result. | None. Outputs in `runs/2026-10-08-heldout-exploratory/summary.json`, keys prefixed `x.` and labelled post-hoc; H7 stays NOT SUPPORTED. Neither variant beat truncation on both measures at every budget. |
+| O1 | 2026-10-08, after the run | Observation, no code change: the scorer's fact patterns do not match typographic characters the model writes (non-breaking hyphen U+2011, narrow no-break space U+202F), so completeness is understated. | Found by reading recorded answers. | None to the recorded numbers: `score.py` is frozen and unchanged. A post-hoc re-score with those characters folded (`exploratory.py --typography` → `d_rescore_typography.json`) changes no correctness, leak or forbidden-action result; completeness rises in both arms. The editions report both (technical §15.7). |

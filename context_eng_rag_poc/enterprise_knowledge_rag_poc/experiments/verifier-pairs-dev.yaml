@@ -1,0 +1,119 @@
+# Development claim-citation pairs for the citation verifier (experiment D2). Authored by the system's author while
+# building the verifier, so they are NOT an unbiased test: the held-out pairs (verifier-pairs-heldout.yaml) were written
+# by an independent author blind to the verifier and are the only D2 headline.
+pairs:
+  # ---- supported, verbatim
+  - {id: V-D01, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "Roll the release back through the release pipeline to the last good version.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline"}]}
+  - {id: V-D02, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "A production rollback of checkout-api requires incident-commander approval under CP-12.", kind: approval},
+     citations: [{unit_id: "RB-CHK-007@v4#approval-and-exceptions", quote: "A production rollback requires incident-commander approval under change policy CP-12"}]}
+  - {id: V-D03, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "Release 4.17.0 changed datasource.maxPoolSize from 50 to 10.", kind: cause},
+     citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "datasource.maxPoolSize 50 -> 10"}]}
+  - {id: V-D04, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "The previous checkout-api version was 4.16.2.", kind: fact},
+     citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "previous_version: 4.16.2"}]}
+  - {id: V-D05, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "The CMDB names RB-CHK-007 as the runbook of record for checkout-api latency after a deploy.", kind: fact},
+     citations: [{unit_id: "cmdb:acme/production/checkout-api", quote: "checkout-api/latency-after-deploy -> RB-CHK-007"}]}
+  - {id: V-D06, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "During INC-4630 on-call restarted the checkout-api pods.", kind: history},
+     citations: [{unit_id: "INC-4630@v1#timeline", quote: "on-call restarted the checkout-api pods"}]}
+  - {id: V-D07, principal: ananya.iyer, environment: production, service: inventory-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "Do not flush the SKU cache between 06:00 and 22:00 UTC.", kind: procedure},
+     citations: [{unit_id: "RB-INV-004@v5#cache-caution", quote: "Do not flush the SKU cache between 06:00 and 22:00 UTC"}]}
+  - {id: V-D08, principal: ananya.iyer, environment: production, service: search-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "search-q-burst caps the cluster at 12 query nodes.", kind: fact},
+     citations: [{unit_id: "RB-SRCH-040@v1#limits", quote: "search-q-burst caps the cluster at 12 query nodes"}]}
+  - {id: V-D09, principal: ananya.iyer, environment: production, service: order-history-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "Turn on read-replica routing with oha.read_replica=on; no approval is needed.", kind: procedure},
+     citations: [{unit_id: "RB-OHA-001@v2#remediation", quote: "Turn on read-replica routing with the feature flag oha.read_replica=on in the flag service. No approval is needed."}]}
+  - {id: V-D10, principal: ananya.iyer, environment: production, service: inventory-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "If the release record shows migration: true, do not roll back; escalate to the DBA on-call.", kind: procedure},
+     citations: [{unit_id: "RB-GEN-012@v1#exceptions", quote: "Do not roll back. Escalate to the DBA on-call"}]}
+  # ---- supported, paraphrased
+  - {id: V-D11, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-paraphrase, gold_supported: true,
+     claim: {text: "The fix is to revert the release using the deployment pipeline.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline"}]}
+  - {id: V-D12, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-paraphrase, gold_supported: true,
+     claim: {text: "4.17.0 cut the pool to a fifth of its size.", kind: cause},
+     citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "datasource.maxPoolSize 50 -> 10"}]}
+  - {id: V-D13, principal: ananya.iyer, environment: production, service: checkout-api, category: supported-paraphrase, gold_supported: true,
+     claim: {text: "Restarting the pods does not fix a regressed release.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "a restart does not fix a regressed release"}]}
+  - {id: V-D14, principal: ananya.iyer, environment: production, service: payment-gateway, category: supported-paraphrase, gold_supported: true,
+     claim: {text: "Approval for the flag change comes from payments on-call.", kind: approval},
+     citations: [{unit_id: "RB-PAY-007@v2#remediation", quote: "Payments on-call must approve the flag change"}]}
+  - {id: V-D15, principal: ananya.iyer, environment: production, service: inventory-api, category: supported-paraphrase, gold_supported: true,
+     claim: {text: "A cache flush during trading hours can cause a stampede on inventory-db.", kind: fact},
+     citations: [{unit_id: "RB-INV-004@v5#cache-caution", quote: "a flush during trading hours causes a cache stampede on inventory-db"}]}
+  # ---- relevant, not supporting (laundering)
+  - {id: V-D16, principal: ananya.iyer, environment: production, service: checkout-api, category: relevant-not-supporting, gold_supported: false,
+     claim: {text: "Restarting the pods is the approved fix for checkout-api latency.", kind: procedure},
+     citations: [{unit_id: "INC-4630@v1#timeline", quote: "on-call restarted the checkout-api pods"}]}
+  - {id: V-D17, principal: ananya.iyer, environment: production, service: checkout-api, category: relevant-not-supporting, gold_supported: false,
+     claim: {text: "Rolling back to 4.16.2 is approved by the change advisory board.", kind: approval},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline"}]}
+  - {id: V-D18, principal: ananya.iyer, environment: production, service: checkout-api, category: relevant-not-supporting, gold_supported: false,
+     claim: {text: "INC-4630 shows a rollback is unnecessary.", kind: fact},
+     citations: [{unit_id: "INC-4630@v1#resolution", quote: "Latency recovered about 20 minutes after the restart"}]}
+  - {id: V-D19, principal: ananya.iyer, environment: production, service: checkout-api, category: relevant-not-supporting, gold_supported: false,
+     claim: {text: "The SRE on-call lead approves checkout-api production rollbacks.", kind: approval},
+     citations: [{unit_id: "CP-12@v3#emergencies", quote: "the SRE on-call lead may approve"}]}
+  # ---- wrong number or identifier
+  - {id: V-D20, principal: ananya.iyer, environment: production, service: checkout-api, category: wrong-number-or-id, gold_supported: false,
+     claim: {text: "Release 4.17.0 changed maxPoolSize from 50 to 20.", kind: cause},
+     citations: [{unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "datasource.maxPoolSize 50 -> 10"}]}
+  - {id: V-D21, principal: ananya.iyer, environment: production, service: search-api, category: wrong-number-or-id, gold_supported: false,
+     claim: {text: "search-q-burst caps the cluster at 16 query nodes.", kind: fact},
+     citations: [{unit_id: "RB-SRCH-040@v1#limits", quote: "caps the cluster at 12 query nodes"}]}
+  - {id: V-D22, principal: ananya.iyer, environment: production, service: inventory-api, category: wrong-number-or-id, gold_supported: false,
+     claim: {text: "Do not flush the SKU cache between 08:00 and 20:00 UTC.", kind: procedure},
+     citations: [{unit_id: "RB-INV-004@v5#cache-caution", quote: "Do not flush the SKU cache between 06:00 and 22:00 UTC"}]}
+  - {id: V-D23, principal: ananya.iyer, environment: production, service: notification-service, category: wrong-number-or-id, gold_supported: false,
+     claim: {text: "Replays above 50,000 messages need comms-lead approval.", kind: approval},
+     citations: [{unit_id: "RB-NOT-002@v3#replay", quote: "Replays above 10,000 messages reach customers in bulk and need comms-lead approval first"}]}
+  # ---- negation or condition flip
+  - {id: V-D24, principal: ananya.iyer, environment: production, service: checkout-api, category: negation-or-condition-flip, gold_supported: false,
+     claim: {text: "Restart the checkout-api pods to fix the latency.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Do not restart pods or run kubectl rollout undo"}]}
+  - {id: V-D25, principal: ananya.iyer, environment: production, service: inventory-worker, category: negation-or-condition-flip, gold_supported: false,
+     claim: {text: "Purge the reservation queue to clear the lag.", kind: procedure},
+     citations: [{unit_id: "RB-INVW-001@v1#limits", quote: "Never purge the reservation queue"}]}
+  # ---- wrong authority or scope
+  - {id: V-D26, principal: ananya.iyer, environment: production, service: checkout-api, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "Raising maxPoolSize to 80 with a hotfix ConfigMap change is the current procedure.", kind: procedure},
+     citations: [{unit_id: "GUIDE-PERF-031@v1#pool-saturation", quote: "raise maxPoolSize to 80 with a hotfix ConfigMap change"}]}
+  - {id: V-D27, principal: ananya.iyer, environment: production, service: checkout-api, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "Switch production traffic back to the blue stack.", kind: procedure},
+     citations: [{unit_id: "GX-RB-CHK-003@v2#remediation", quote: "Switch production traffic back to the blue stack in Traffic Manager"}]}
+  - {id: V-D28, principal: ananya.iyer, environment: production, service: checkout-api, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "Edit maxPoolSize in the checkout-api ConfigMap and restart the pods.", kind: procedure},
+     citations: [{unit_id: "STG-OPS-004@v3#pool-and-connection-settings", quote: "edit maxPoolSize in the checkout-api ConfigMap and restart the pods"}]}
+  - {id: V-D29, principal: ananya.iyer, environment: production, service: checkout-api, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "Restart the checkout-api pods and scale to 10 replicas.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v3#remediation", quote: "Restart the checkout-api pods (kubectl rollout restart deployment/checkout-api) and scale to 10 replicas"}]}
+  - {id: V-D30, principal: ananya.iyer, environment: production, service: orders-db, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "The 30 August saturation came from a leaked partner API token.", kind: cause},
+     citations: [{unit_id: "SEC-PM-2207@v1#root-cause", quote: "A leaked partner API token"}]}
+  - {id: V-D31, principal: ananya.iyer, environment: production, service: payment-gateway, category: wrong-authority-or-scope, gold_supported: false,
+     claim: {text: "Fail over to the secondary payment provider and page payments on-call.", kind: procedure},
+     citations: [{unit_id: "RB-PAY-002@v3#remediation", quote: "fail over to the secondary payment provider"}]}
+  # ---- fabricated quote
+  - {id: V-D32, principal: ananya.iyer, environment: production, service: checkout-api, category: fabricated-quote, gold_supported: false,
+     claim: {text: "Roll back through the pipeline.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll back immediately without approval"}]}
+  - {id: V-D33, principal: ananya.iyer, environment: production, service: search-indexer, category: fabricated-quote, gold_supported: false,
+     claim: {text: "Pause the bulk reindex job.", kind: procedure},
+     citations: [{unit_id: "RB-SIX-099@v1#remediation", quote: "Pause the bulk reindex job"}]}
+  # ---- multi-citation
+  - {id: V-D34, principal: ananya.iyer, environment: production, service: checkout-api, category: multi-citation, gold_supported: true,
+     claim: {text: "Roll checkout-api back to 4.16.2 through the release pipeline.", kind: procedure},
+     citations: [{unit_id: "RB-CHK-007@v4#remediation", quote: "Roll the release back through the release pipeline"},
+                 {unit_id: "dep:acme/production/checkout-api/4.17.0", quote: "previous_version: 4.16.2"}]}
+  - {id: V-D35, principal: rohan.verma, environment: production, service: checkout-api, category: supported-verbatim, gold_supported: true,
+     claim: {text: "globex can switch checkout-api traffic back to the blue stack without approval within 30 minutes of the deploy.", kind: procedure},
+     citations: [{unit_id: "GX-RB-CHK-003@v2#remediation", quote: "Switch production traffic back to the blue stack in Traffic Manager"},
+                 {unit_id: "GX-RB-CHK-003@v2#approval", quote: "No approval is needed for a traffic switch within 30 minutes of the deploy"}]}

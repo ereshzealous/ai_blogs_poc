@@ -1,0 +1,281 @@
+# Background estate: runbooks and tickets for services no case asks about directly. SIMULATED.
+# They exist so retrieval works over a realistic mix of near-miss documents, not a corpus built around the questions.
+
+sources:
+  - source: runbooks
+    documents:
+      - doc_id: RB-CART-003
+        version: v2
+        title: "cart-api: latency after a deploy"
+        doc_type: runbook
+        owner: cart-team
+        tenant: acme
+        environments: [production]
+        services: [cart-api]
+        status: active
+        valid_from: "2026-05-18T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: RB-CART-003@v1
+        procedure_key: cart-api/latency-after-deploy
+        action: rollback_release
+        approval: incident-commander
+        acl: [eng-all]
+        updated_at: "2026-05-18T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              cart-api latency after a deploy is usually the Redis client pool. Roll the release back through the
+              release pipeline; the incident commander approves production rollbacks.
+          - heading: Diagnose
+            text: >-
+              Check redis.pool.wait in the cart-api dashboard and compare with the previous release's baseline.
+
+      - doc_id: RB-PRC-002
+        version: v1
+        title: "pricing-api: stale promotions"
+        doc_type: runbook
+        owner: pricing-team
+        tenant: acme
+        environments: [production]
+        services: [pricing-api]
+        status: active
+        valid_from: "2026-04-11T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: null
+        procedure_key: pricing-api/stale-promotions
+        action: resync_job
+        approval: none
+        acl: [eng-all]
+        updated_at: "2026-04-11T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              Run the promotion sync job (jobs run promo-sync --tenant acme). Do not edit prices in the database by hand.
+
+      - doc_id: RB-AUTH-006
+        version: v3
+        title: "auth-service: token validation errors"
+        doc_type: runbook
+        owner: identity-team
+        tenant: acme
+        environments: [production]
+        services: [auth-service]
+        status: active
+        valid_from: "2026-06-30T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: RB-AUTH-006@v2
+        procedure_key: auth-service/token-validation
+        action: restart_pods
+        approval: none
+        acl: [eng-all]
+        updated_at: "2026-06-30T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              If token validation fails after a signing-key rotation, restart the auth-service pods so they reload the
+              JWKS cache (kubectl rollout restart deployment/auth-service). This is the one service where a restart is
+              the documented fix.
+
+      - doc_id: RB-CDN-011
+        version: v2
+        title: "cdn-edge: stale assets after a frontend release"
+        doc_type: runbook
+        owner: web-platform
+        tenant: acme
+        environments: [production]
+        services: [cdn-edge]
+        status: active
+        valid_from: "2026-03-22T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: RB-CDN-011@v1
+        procedure_key: cdn-edge/stale-assets
+        action: flush_cache
+        approval: none
+        acl: [eng-all]
+        updated_at: "2026-03-22T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              Purge the CDN cache for /static/* (cdn-ctl purge --path '/static/*'). Purges are safe at any hour.
+
+      - doc_id: RB-FRD-001
+        version: v2
+        title: "fraud-scoring: model latency"
+        doc_type: runbook
+        owner: risk-engineering
+        tenant: acme
+        environments: [production]
+        services: [fraud-scoring]
+        status: active
+        valid_from: "2026-07-03T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: RB-FRD-001@v1
+        procedure_key: fraud-scoring/model-latency
+        action: switch_traffic
+        approval: risk-oncall
+        acl: [eng-all]
+        updated_at: "2026-07-03T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              Switch scoring to the fallback rules engine (fraud-ctl mode --rules) and page risk on-call, who approves
+              the switch. Payments continue with slightly higher manual review.
+
+      - doc_id: RB-IDB-002
+        version: v1
+        title: "inventory-db: replication lag"
+        doc_type: runbook
+        owner: data-platform
+        tenant: acme
+        environments: [production]
+        services: [inventory-db]
+        status: active
+        valid_from: "2026-05-05T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: null
+        procedure_key: inventory-db/replication-lag
+        action: escalate
+        approval: dba
+        acl: [eng-all]
+        updated_at: "2026-05-05T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              Replication lag above 60 seconds: page the DBA on-call. Do not fail over the primary without a DBA.
+
+      - doc_id: RB-CHKW-002
+        version: v1
+        title: "checkout-web: slow page loads after a frontend release"
+        doc_type: runbook
+        owner: web-platform
+        tenant: acme
+        environments: [production]
+        services: [checkout-web]
+        status: active
+        valid_from: "2026-06-09T00:00:00Z"
+        valid_to: null
+        superseded_by: null
+        supersedes: null
+        procedure_key: checkout-web/slow-page-loads
+        action: rollback_release
+        approval: none
+        acl: [eng-all]
+        updated_at: "2026-06-09T10:00:00Z"
+        sections:
+          - heading: Remediation
+            text: >-
+              Roll the frontend bundle back in the web release console (web-release rollback checkout-web). Frontend
+              rollbacks are pre-approved.
+
+  - source: tickets
+    documents:
+      - doc_id: INC-4512
+        version: v1
+        title: "INC-4512 cart-api latency after 3.4.0"
+        doc_type: ticket
+        owner: incident-management
+        tenant: acme
+        environments: [production]
+        services: [cart-api]
+        status: active
+        ticket_state: resolved
+        valid_from: "2026-05-02T10:00:00Z"
+        valid_to: null
+        superseded_by: null
+        acl: [eng-all]
+        updated_at: "2026-05-02T13:00:00Z"
+        sections:
+          - heading: Summary
+            text: >-
+              cart-api p95 rose to 900 ms after 3.4.0 shrank the Redis pool. Rolled back to 3.3.9 through the pipeline
+              with incident-commander approval; recovered in 6 minutes.
+
+      - doc_id: INC-4677
+        version: v1
+        title: "INC-4677 auth-service token errors after key rotation"
+        doc_type: ticket
+        owner: incident-management
+        tenant: acme
+        environments: [production]
+        services: [auth-service]
+        status: active
+        ticket_state: resolved
+        valid_from: "2026-08-04T08:00:00Z"
+        valid_to: null
+        superseded_by: null
+        acl: [eng-all]
+        updated_at: "2026-08-04T09:00:00Z"
+        sections:
+          - heading: Summary
+            text: >-
+              Token validation errors after the monthly signing-key rotation. Restarted auth-service pods per RB-AUTH-006;
+              errors stopped within two minutes.
+
+      - doc_id: INC-4733
+        version: v1
+        title: "INC-4733 search-api relevance after products build"
+        doc_type: ticket
+        owner: incident-management
+        tenant: acme
+        environments: [production]
+        services: [search-api]
+        status: active
+        ticket_state: resolved
+        valid_from: "2026-08-12T09:30:00Z"
+        valid_to: null
+        superseded_by: null
+        acl: [eng-all]
+        updated_at: "2026-08-12T11:00:00Z"
+        sections:
+          - heading: Summary
+            text: >-
+              A synonyms change in the nightly build made shoe searches return socks. Search on-call approved an alias
+              rollback to the previous build; relevance recovered immediately.
+
+      - doc_id: INC-4801
+        version: v1
+        title: "INC-4801 order-history-api slow reads"
+        doc_type: ticket
+        owner: incident-management
+        tenant: acme
+        environments: [production]
+        services: [order-history-api]
+        status: active
+        ticket_state: resolved
+        valid_from: "2026-09-10T16:00:00Z"
+        valid_to: null
+        superseded_by: null
+        acl: [eng-all]
+        updated_at: "2026-09-10T17:00:00Z"
+        sections:
+          - heading: Summary
+            text: >-
+              GET /v1/orders p95 at 3 s after a page-size change. Turned on oha.read_replica; recovered in a minute.
+
+  - source: wiki
+    documents:
+      - doc_id: WIKI-ONCALL-101
+        version: v1
+        title: "On-call basics for new SREs"
+        doc_type: wiki
+        owner: sre-enablement
+        tenant: acme
+        environments: [production]
+        services: ["*"]
+        status: active
+        valid_from: "2026-01-20T10:00:00Z"
+        valid_to: null
+        superseded_by: null
+        acl: [eng-all]
+        updated_at: "2026-01-20T10:00:00Z"
+        sections:
+          - heading: First five minutes
+            text: >-
+              Acknowledge the page, open an incident, find the service's runbook of record in the CMDB, and post what you
+              know in the incident channel. When in doubt, ask the incident commander.

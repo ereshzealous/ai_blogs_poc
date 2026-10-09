@@ -1,0 +1,96 @@
+# Structured systems of record, queried live (never copied into the text index). SIMULATED.
+#
+# deployments: Meridian's release system. One record per release (or search index build) per tenant and environment.
+# cmdb:        the configuration management database. One record per (tenant, environment, service). `runbooks` maps a
+#              procedure key to the runbook of record; a missing key means the CMDB names no runbook of record for it.
+
+deployments:
+  - {record_id: "dep:acme/production/checkout-api/4.16.2", tenant: acme, environment: production, service: checkout-api, version: "4.16.2", previous_version: "4.16.1",
+     deployed_at: "2026-09-19T14:05:00Z", kind: release, migration: false, status: superseded-in-production, author: priya.s,
+     config_diff: ["orm.version 6.4.2 -> 6.4.3"]}
+  - {record_id: "dep:acme/production/checkout-api/4.17.0", tenant: acme, environment: production, service: checkout-api, version: "4.17.0", previous_version: "4.16.2",
+     deployed_at: "2026-09-22T10:02:00Z", kind: release, migration: false, status: live, author: leo.m,
+     config_diff: ["datasource.maxPoolSize 50 -> 10", "datasource.minimumIdle 10 -> 2", "orm.version 6.4.3 -> 6.5.0"]}
+  - {record_id: "dep:acme/staging/checkout-api/4.17.1", tenant: acme, environment: staging, service: checkout-api, version: "4.17.1", previous_version: "4.17.0",
+     deployed_at: "2026-09-22T10:15:00Z", kind: release, migration: false, status: live, author: leo.m,
+     config_diff: ["datasource.maxPoolSize 10 -> 30 (staging only, not promoted)"]}
+  - {record_id: "dep:globex/production/checkout-api/7.3.0", tenant: globex, environment: production, service: checkout-api, version: "7.3.0", previous_version: "7.2.4",
+     deployed_at: "2026-09-18T14:54:00Z", kind: release, migration: false, status: superseded-in-production, author: globex.ci,
+     config_diff: ["datasource.maximumPoolSize 40 -> 20"]}
+  - {record_id: "dep:globex/production/checkout-api/7.4.0", tenant: globex, environment: production, service: checkout-api, version: "7.4.0", previous_version: "7.3.1",
+     deployed_at: "2026-09-22T10:10:00Z", kind: release, migration: false, status: live, author: globex.ci,
+     config_diff: ["http.client.timeout 2s -> 800ms"]}
+  - {record_id: "dep:acme/production/inventory-api/3.9.0", tenant: acme, environment: production, service: inventory-api, version: "3.9.0", previous_version: "3.8.4",
+     deployed_at: "2026-09-22T09:40:00Z", kind: release, migration: true, migration_id: "0042_reservations", status: live, author: sam.o,
+     config_diff: ["reservations.enabled false -> true"]}
+  - {record_id: "dep:acme/production/payment-gateway/5.2.1", tenant: acme, environment: production, service: payment-gateway, version: "5.2.1", previous_version: "5.2.0",
+     deployed_at: "2026-09-22T09:48:00Z", kind: release, migration: false, status: live, author: ana.r,
+     config_diff: ["flag threeds2.eu off -> on"]}
+  - {record_id: "dep:acme/production/order-history-api/2.8.0", tenant: acme, environment: production, service: order-history-api, version: "2.8.0", previous_version: "2.7.6",
+     deployed_at: "2026-09-22T08:30:00Z", kind: release, migration: false, status: live, author: nina.k,
+     config_diff: ["orders.page_size 20 -> 50"]}
+  - {record_id: "dep:acme/production/search-api/products-2026.09.22-1", tenant: acme, environment: production, service: search-api, version: "products-2026.09.22-1", previous_version: "products-2026.09.21-1",
+     deployed_at: "2026-09-22T09:05:00Z", kind: index_build, migration: false, status: live, author: search-ci,
+     config_diff: ["synonyms.set catalog-v14 -> catalog-v15"]}
+  - {record_id: "dep:globex/production/search-api/catalog-2026.09.22-2", tenant: globex, environment: production, service: search-api, version: "catalog-2026.09.22-2", previous_version: "catalog-2026.09.22-1",
+     deployed_at: "2026-09-22T08:45:00Z", kind: index_build, migration: false, status: live, author: globex.search-ci,
+     config_diff: ["analyzer en-stem -> en-light"]}
+  - {record_id: "dep:acme/production/cart-api/3.6.0", tenant: acme, environment: production, service: cart-api, version: "3.6.0", previous_version: "3.5.2",
+     deployed_at: "2026-09-22T08:55:00Z", kind: release, migration: false, status: live, author: cart.ci,
+     config_diff: ["redis.pool.max 64 -> 16"]}
+  - {record_id: "dep:acme/production/notification-service/1.14.0", tenant: acme, environment: production, service: notification-service, version: "1.14.0", previous_version: "1.13.2",
+     deployed_at: "2026-09-21T11:00:00Z", kind: release, migration: false, status: live, author: ops.ci,
+     config_diff: ["smtp.pool 8 -> 12"]}
+
+cmdb:
+  - {record_id: "cmdb:acme/production/checkout-api", tenant: acme, environment: production, service: checkout-api, owner: checkout-engineering, tier: 1,
+     oncall: checkout-oncall, approver: incident-commander, depends_on: [payment-gateway, inventory-api, orders-db],
+     runbooks: {"checkout-api/latency-after-deploy": RB-CHK-007}}
+  - {record_id: "cmdb:acme/staging/checkout-api", tenant: acme, environment: staging, service: checkout-api, owner: checkout-engineering, tier: 3,
+     oncall: checkout-oncall, approver: none, depends_on: [orders-db],
+     runbooks: {"*/staging-config-change": STG-OPS-004, "checkout-api/latency-after-deploy": RB-CHK-007}}
+  - {record_id: "cmdb:acme/production/order-history-api", tenant: acme, environment: production, service: order-history-api, owner: orders-team, tier: 2,
+     oncall: orders-oncall, approver: none, depends_on: [orders-db],
+     runbooks: {"order-history-api/slow-reads": RB-OHA-001}}
+  - {record_id: "cmdb:acme/production/orders-db", tenant: acme, environment: production, service: orders-db, owner: data-platform, tier: 1,
+     oncall: dba-oncall, approver: dba, depends_on: [],
+     runbooks: {"orders-db/pool-saturation": RB-DB-003, "orders-db/backup-verification": RB-DB-020}}
+  - {record_id: "cmdb:acme/staging/orders-db", tenant: acme, environment: staging, service: orders-db, owner: data-platform, tier: 3,
+     oncall: dba-oncall, approver: none, depends_on: [],
+     runbooks: {"*/staging-config-change": STG-OPS-004}}
+  - {record_id: "cmdb:acme/production/payment-gateway", tenant: acme, environment: production, service: payment-gateway, owner: payments-platform, tier: 1,
+     oncall: payments-oncall, approver: payments-oncall, depends_on: [fraud-scoring],
+     runbooks: {"payment-gateway/card-network-timeouts": RB-PAY-002, "payment-gateway/3ds2-failures": RB-PAY-007}}
+  - {record_id: "cmdb:acme/production/inventory-api", tenant: acme, environment: production, service: inventory-api, owner: fulfilment, tier: 1,
+     oncall: fulfilment-oncall, approver: incident-commander, depends_on: [inventory-db],
+     runbooks: {"inventory-api/stale-stock": RB-INV-004}}
+  - {record_id: "cmdb:acme/production/inventory-worker", tenant: acme, environment: production, service: inventory-worker, owner: fulfilment, tier: 2,
+     oncall: fulfilment-oncall, approver: none, depends_on: [inventory-db],
+     runbooks: {"inventory-worker/queue-lag": RB-INVW-001}}
+  - {record_id: "cmdb:acme/production/search-api", tenant: acme, environment: production, service: search-api, owner: search-platform, tier: 2,
+     oncall: search-oncall, approver: search-oncall, depends_on: [search-cluster],
+     runbooks: {"search-api/relevance-after-index-build": RB-SRCH-004, "search-api/query-latency": RB-SRCH-040}}
+  - {record_id: "cmdb:acme/staging/search-api", tenant: acme, environment: staging, service: search-api, owner: search-platform, tier: 3,
+     oncall: search-oncall, approver: none, depends_on: [search-cluster],
+     runbooks: {"*/staging-config-change": STG-OPS-004}}
+  - {record_id: "cmdb:acme/production/search-indexer", tenant: acme, environment: production, service: search-indexer, owner: search-platform, tier: 2,
+     oncall: search-oncall, approver: search-oncall, depends_on: [search-cluster],
+     runbooks: {}}
+  - {record_id: "cmdb:acme/production/notification-service", tenant: acme, environment: production, service: notification-service, owner: messaging-infra, tier: 2,
+     oncall: messaging-oncall, approver: comms-lead, depends_on: [email-provider],
+     runbooks: {"notification-service/bounce-spike": RB-NOT-004}}
+  - {record_id: "cmdb:acme/production/recommendation-service", tenant: acme, environment: production, service: recommendation-service, owner: personalization, tier: 2,
+     oncall: personalization-oncall, approver: none, depends_on: [feature-store],
+     runbooks: {}}
+  - {record_id: "cmdb:globex/production/checkout-api", tenant: globex, environment: production, service: checkout-api, owner: globex-checkout, tier: 1,
+     oncall: globex-checkout-oncall, approver: globex-incident-commander, depends_on: [globex-payments],
+     runbooks: {"checkout-api/latency-after-deploy": GX-RB-CHK-003}}
+  - {record_id: "cmdb:globex/production/search-api", tenant: globex, environment: production, service: search-api, owner: globex-search, tier: 2,
+     oncall: globex-search-oncall, approver: none, depends_on: [],
+     runbooks: {"search-api/relevance-after-index-build": GX-RB-SRCH-001}}
+  - {record_id: "cmdb:acme/production/cart-api", tenant: acme, environment: production, service: cart-api, owner: cart-team, tier: 1,
+     oncall: cart-oncall, approver: incident-commander, depends_on: [cart-redis],
+     runbooks: {"cart-api/latency-after-deploy": RB-CART-003}}
+  - {record_id: "cmdb:globex/production/inventory-api", tenant: globex, environment: production, service: inventory-api, owner: globex-fulfilment, tier: 2,
+     oncall: globex-fulfilment-oncall, approver: none, depends_on: [],
+     runbooks: {"inventory-api/stale-stock": GX-RB-INV-002}}

@@ -1,0 +1,39 @@
+# The closed vocabularies the answer schema, the gates and the citation verifier share.
+
+actions:
+  rollback_release:     ["roll back", "rollback", "roll the release back", "rolled back", "rolling back", "roll it back", "roll that release back", "roll the release"]
+  restart_pods:         ["restart", "rollout restart", "delete pods", "kubectl delete"]
+  raise_pool_size:      ["raise maxpoolsize", "raise the pool", "increase the pool", "maxpoolsize to", "raise max_connections", "raising max_connections", "max_connections can be raised", "raise the pool size", "increase maxpoolsize", "bump maxpoolsize", "edit maxpoolsize"]
+  switch_traffic:       ["switch traffic", "blue stack", "traffic switch", "switch production traffic", "backup sending domain", "domain switch"]
+  enable_read_replica:  ["read-replica", "read replica", "read_replica"]
+  scale_out:            ["scale out", "scale the", "autoscaler", "scale up", "add query nodes", "consumers to", "kubectl scale", "scale search"]
+  resync_job:           ["resync"]
+  flush_cache:          ["flush", "purge the cdn"]
+  rollback_index_alias: ["alias"]
+  replay_dlq:           ["replay"]
+  failover_provider:    ["fail over", "failover", "secondary provider"]
+  disable_flag:         ["flag off", "=off", "turn the affected flag off", "pause marketing", "turn off the flag", "disable the flag", "flag to off"]
+  enable_flag:          ["autotune=on", "flag on", "turn on the flag", "turn on pool autotuning", "enable the flag", "autotuning"]
+  pause_job:            ["pause the bulk", "pause bulk", "pause the reindex"]
+  escalate:             ["escalate", "page the"]
+  none:                 []
+
+# Verbs whose polarity the verifier also checks when they appear in both a claim and its cited evidence.
+polarity_terms: ["purge", "flush", "restart", "roll back", "pause", "fail over", "delete", "raise", "replay", "edit", "switch", "scale"]
+
+negations: ["do not", "don't", "never", "not ", "no ", "avoid", "instead of", "rather than", "isn't", "is not", "cannot", "can't", "shouldn't", "should not", "must not"]
+
+# A section is a qualifier of the procedure it sits beside when its heading or opening matches one of these.
+qualifier_headings: ["approval", "exception", "caution", "limit", "when not to", "before you", "warning", "prerequisite"]
+qualifier_openings: ["do not", "never", "only ", "exception"]
+
+# Words that make a claim normative (a recommendation), so it is held to procedure authority.
+normative: ["should", "recommend", "approved", "procedure", "the fix", "must", "need to", "needs to", "documented", "runbook says", "next step"]
+
+# Question cues for the task classifier (knowledge_rag.query): rule-based, no model.
+task_cues:
+  history:    ["last time", "before", "previously", "has this happened", "what happened", "what fixed", "worked last time", "what did on-call do"]
+  root_cause: ["root cause", "why did", "what caused"]
+  change:     ["what changed", "what exactly changed", "since its", "since the", "after the", "diff"]
+  ownership:  ["who owns", "owner", "runbook of record"]
+  procedure:  ["what should we do", "what is the", "procedure", "remediation", "fix", "recovery", "how do", "how should", "can i", "can we", "should we", "should i", "roll it back", "roll back", "restart", "replay", "runbook"]

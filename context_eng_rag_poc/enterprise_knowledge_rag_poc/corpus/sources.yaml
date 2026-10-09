@@ -1,0 +1,100 @@
+# Connector configuration and the frozen clock. SIMULATED.
+#
+# The index is built once, at the nightly watermark. Everything the sources did after it is in `events` and reaches the
+# system only through the source APIs (the authoritative recheck), never through the index.
+
+as_of: "2026-09-22T10:30:00Z"          # the question time for every case
+watermark: "2026-09-22T02:00:00Z"      # when the nightly connectors copied each prose source into the index
+
+connectors:
+  runbooks:      {kind: prose, file: runbooks.yaml,  read_path: index+source-api, system: "runbook repository (docs-as-code)"}
+  policies:      {kind: prose, file: documents.yaml, read_path: index+source-api, system: "policy repository"}
+  tickets:       {kind: prose, file: documents.yaml, read_path: index+source-api, system: "incident management"}
+  release_notes: {kind: prose, file: documents.yaml, read_path: index+source-api, system: "release notes"}
+  wiki:          {kind: prose, file: documents.yaml, read_path: index+source-api, system: "team wiki"}
+  restricted:    {kind: prose, file: documents.yaml, read_path: index+source-api, system: "restricted document store"}
+  deployments:   {kind: structured, file: structured.yaml, read_path: live-query, system: "release system"}
+  cmdb:          {kind: structured, file: structured.yaml, read_path: live-query, system: "CMDB"}
+
+# Source-side changes after the watermark, in time order. The index copy does not know about any of them.
+events:
+  - at: "2026-09-22T03:20:00Z"
+    source: runbooks
+    doc_id: RB-CART-003
+    change: superseded
+    from_version: v2
+    new_version: v3
+    note: "v3 published in the runbook repository after the nightly index build"
+  - at: "2026-09-22T04:10:00Z"
+    source: runbooks
+    doc_id: RB-NOT-004
+    change: superseded
+    from_version: v1
+    new_version: v2
+    note: "v2 published in the runbook repository after the nightly index build"
+  - at: "2026-09-22T07:40:00Z"
+    source: runbooks
+    doc_id: RB-PAY-002
+    change: withdrawn
+    from_version: v3
+    note: "withdrawn after the INC-4820 audit (duplicate authorizations); replacement not yet published"
+  - at: "2026-09-22T08:15:00Z"
+    source: restricted
+    doc_id: VENDOR-ACN-01
+    change: acl
+    from_version: v1
+    acl: [vendor-mgmt]
+    note: "access narrowed to vendor management"
+
+# Documents that exist only at the source (published after the watermark): reachable by the source API, not the index.
+source_only:
+  - doc_id: RB-NOT-004
+    version: v2
+    title: "notification-service: email bounce spike"
+    doc_type: runbook
+    owner: messaging-infra
+    tenant: acme
+    environments: [production]
+    services: [notification-service]
+    status: active
+    valid_from: "2026-09-22T04:10:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-NOT-004@v1
+    procedure_key: notification-service/bounce-spike
+    action: disable_flag
+    approval: comms-lead
+    acl: [eng-all]
+    updated_at: "2026-09-22T04:10:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Bounce spikes are usually a blocklisted sending IP, and the backup domain shares that IP pool. Pause marketing
+          sends (flag notify.marketing=off) and keep transactional email on the primary domain. The comms lead approves
+          the pause.
+
+  - doc_id: RB-CART-003
+    version: v3
+    title: "cart-api: latency after a deploy"
+    doc_type: runbook
+    owner: cart-team
+    tenant: acme
+    environments: [production]
+    services: [cart-api]
+    status: active
+    valid_from: "2026-09-22T03:20:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-CART-003@v2
+    procedure_key: cart-api/latency-after-deploy
+    action: enable_flag
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-09-22T03:20:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          cart-api latency after a deploy is usually the Redis client pool. Turn on pool autotuning with the flag
+          cart.redis_pool_autotune=on in the flag service; no approval is needed. Roll the release back through the
+          pipeline only if p95 is still above SLO 10 minutes after the flag change.
+

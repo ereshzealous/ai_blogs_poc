@@ -1,0 +1,22 @@
+# Live generation. Local Ollama only (no hosted API). Every call is recorded to the run's tape; replay needs no model.
+primary:
+  model: gpt-oss:20b
+  digest: 17052f91a42e9793
+  think: low
+  temperature: 0.3
+  num_ctx: 8192
+  seeds: [7, 17, 27]          # three repeats per (case, arm); repeats of one case are not independent samples
+sensitivity:
+  model: qwen3:8b
+  digest: 500a1f067a9f7826
+  think: false
+  temperature: 0.3
+  num_ctx: 8192
+  seeds: [7]
+ablation_seed: 7              # experiment E: one repeat per (case, variant), primary model
+judge:                        # experiment D2 only: a model judge compared with the deterministic verifier
+  model: qwen3:8b
+  think: false
+  temperature: 0.0
+  num_ctx: 8192
+  seeds: [7]

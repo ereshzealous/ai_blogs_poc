@@ -1,0 +1,679 @@
+# Source system: Meridian runbook repository (docs-as-code). SIMULATED.
+#
+# Every runbook is a Markdown file with YAML front matter in the real world; here, one record per file version. The
+# connector copies the front matter into the index at ingestion time (the nightly watermark, see sources.yaml). What the
+# source says *after* the watermark lives in source_events.yaml, not here.
+#
+# action vocabulary (config/vocabulary.yaml): rollback_release, restart_pods, raise_pool_size, switch_traffic,
+#   enable_read_replica, scale_out, resync_job, flush_cache, rollback_index_alias, replay_dlq, failover_provider,
+#   disable_flag, enable_flag, pause_job, escalate, none
+# approval: the role whose approval the runbook requires before the action, or "none".
+# status at ingestion: active | superseded | draft | withdrawn.   tenant "*" = every tenant.   services ["*"] = estate-wide.
+# Nothing in this file says which document is right for which question. Ground truth lives in groundtruth/labels.yaml.
+
+source: runbooks
+documents:
+
+  # ------------------------------------------------------------------------------------------------ checkout-api (acme)
+  - doc_id: RB-CHK-007
+    version: v4
+    title: "checkout-api: latency or errors after a deploy"
+    doc_type: runbook
+    owner: checkout-engineering
+    tenant: acme
+    environments: [production, staging]
+    services: [checkout-api]
+    status: active
+    valid_from: "2026-07-01T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-CHK-007@v3
+    procedure_key: checkout-api/latency-after-deploy
+    action: rollback_release
+    approval: incident-commander
+    acl: [eng-all]
+    updated_at: "2026-07-01T09:12:00Z"
+    sections:
+      - heading: Symptoms
+        text: >-
+          p95 latency above the 400 ms SLO or 5xx errors on POST /v1/checkout within an hour of a production deploy.
+          Typical signals: HikariPool connection-acquire timeouts in the checkout-api logs and orders-db pool wait above
+          500 ms.
+      - heading: Diagnose
+        text: >-
+          Open the deployment record of the release that preceded the alert and compare its config diff with the
+          previous release: pool sizes, timeouts, ORM version. If the alert started within 60 minutes of the deploy and
+          the diff touches the datasource, treat it as a release regression.
+      - heading: Remediation
+        text: >-
+          Roll the release back through the release pipeline (release-pipeline rollback checkout-api --to
+          <previous-version>) to the last good version named in the deployment record. Do not restart pods or run
+          kubectl rollout undo: a restart does not fix a regressed release, and the GitOps controller reverts direct
+          changes.
+      - heading: Approval and exceptions
+        text: >-
+          A production rollback requires incident-commander approval under change policy CP-12, recorded in the
+          incident before the pipeline runs. Exception: if the release record shows migration: true, do not roll back;
+          escalate to the DBA on-call.
+
+  - doc_id: RB-CHK-007
+    version: v3
+    title: "checkout-api: latency or errors after a deploy"
+    doc_type: runbook
+    owner: checkout-engineering
+    tenant: acme
+    environments: [production, staging]
+    services: [checkout-api]
+    status: superseded
+    valid_from: "2026-02-10T00:00:00Z"
+    valid_to: "2026-07-01T00:00:00Z"
+    superseded_by: RB-CHK-007@v4
+    supersedes: RB-CHK-007@v2
+    procedure_key: checkout-api/latency-after-deploy
+    action: restart_pods
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-02-10T11:40:00Z"
+    sections:
+      - heading: Symptoms
+        text: >-
+          checkout-api p95 latency above SLO or elevated 5xx shortly after a deploy, often with connection pool timeouts.
+      - heading: Remediation
+        text: >-
+          Restart the checkout-api pods (kubectl rollout restart deployment/checkout-api) and scale to 10 replicas to
+          drain the connection pool. If latency has not recovered within 15 minutes, roll the release back.
+
+  - doc_id: RB-CHK-007
+    version: v5
+    title: "checkout-api: latency or errors after a deploy (automated rollback)"
+    doc_type: runbook
+    owner: checkout-engineering
+    tenant: acme
+    environments: [production, staging]
+    services: [checkout-api]
+    status: draft
+    valid_from: "2026-10-01T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-CHK-007@v4
+    procedure_key: checkout-api/latency-after-deploy
+    action: rollback_release
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-09-21T17:05:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          From 1 October, release-bot rolls checkout-api back automatically when the deploy-correlation score is above
+          0.9. For SEV3 incidents no human approval is needed; incident-commander approval remains for SEV1 and SEV2.
+      - heading: Status
+        text: >-
+          Draft for review by checkout-engineering and the change advisory board. Effective 2026-10-01 if approved.
+
+  # ------------------------------------------------------------------------------------------------ checkout-api (globex)
+  - doc_id: GX-RB-CHK-003
+    version: v2
+    title: "globex checkout-api: latency after a deploy (blue/green)"
+    doc_type: runbook
+    owner: globex-checkout
+    tenant: globex
+    environments: [production]
+    services: [checkout-api]
+    status: active
+    valid_from: "2026-05-04T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: GX-RB-CHK-003@v1
+    procedure_key: checkout-api/latency-after-deploy
+    action: switch_traffic
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-05-04T08:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          globex runs checkout-api blue/green. Switch production traffic back to the blue stack in Traffic Manager
+          (traffic-manager switch checkout-api --to blue). Pool saturation and latency regressions clear within a minute
+          of the switch.
+      - heading: Approval
+        text: >-
+          No approval is needed for a traffic switch within 30 minutes of the deploy. After 30 minutes, page the globex
+          incident commander before switching.
+
+  # ------------------------------------------------------------------------------------------------ estate-wide
+  - doc_id: RB-GEN-012
+    version: v1
+    title: "Production rollbacks and configuration changes (GitOps)"
+    doc_type: runbook
+    owner: platform-team
+    tenant: acme
+    environments: [production]
+    services: ["*"]
+    status: active
+    valid_from: "2026-04-20T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: "*/production-rollback"
+    action: rollback_release
+    approval: incident-commander
+    acl: [eng-all]
+    updated_at: "2026-04-20T10:00:00Z"
+    sections:
+      - heading: Rollbacks
+        text: >-
+          Every production rollback goes through the release pipeline. Direct kubectl changes to production workloads
+          are reverted by the GitOps controller within minutes.
+      - heading: Configuration changes
+        text: >-
+          Configuration changes in production (ConfigMaps, pool sizes, timeouts, feature defaults) also go through the
+          pipeline as a release. Editing them in place is not permitted and will be reverted.
+      - heading: Exceptions
+        text: >-
+          Releases with schema migrations: if the release record shows migration: true, a rollback can leave the schema
+          ahead of the code. Do not roll back. Escalate to the DBA on-call, who decides between a forward fix and a
+          migration rollback.
+
+  # ------------------------------------------------------------------------------------------------ staging
+  - doc_id: STG-OPS-004
+    version: v3
+    title: "Staging operations guide: datasource and scaling changes"
+    doc_type: runbook
+    owner: platform-team
+    tenant: acme
+    environments: [staging]
+    services: [checkout-api, orders-db, search-api]
+    status: active
+    valid_from: "2026-03-02T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: STG-OPS-004@v2
+    procedure_key: "*/staging-config-change"
+    action: raise_pool_size
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-03-02T15:30:00Z"
+    sections:
+      - heading: Pool and connection settings
+        text: >-
+          You may change datasource settings in place: edit maxPoolSize in the checkout-api ConfigMap and restart the
+          pods. For orders-db, max_connections can be raised directly with ALTER SYSTEM. No approval is needed.
+      - heading: Scaling
+        text: >-
+          Scale search query nodes with kubectl scale statefulset/search-query --replicas=<n>. Keep staging under 6
+          nodes to stay inside the staging budget.
+
+  # ------------------------------------------------------------------------------------------------ order-history-api
+  - doc_id: RB-OHA-001
+    version: v2
+    title: "order-history-api: slow order reads"
+    doc_type: runbook
+    owner: orders-team
+    tenant: acme
+    environments: [production]
+    services: [order-history-api]
+    status: active
+    valid_from: "2026-06-15T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-OHA-001@v1
+    procedure_key: order-history-api/slow-reads
+    action: enable_read_replica
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-06-15T09:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Latency on GET /v1/orders after a deploy is almost always read amplification on the primary. Turn on
+          read-replica routing with the feature flag oha.read_replica=on in the flag service. No approval is needed.
+      - heading: When not to
+        text: >-
+          Do not route reads to the replica if replica lag is above 30 seconds; in that case roll the release back
+          through the release pipeline instead.
+
+  # ------------------------------------------------------------------------------------------------ orders-db
+  - doc_id: RB-DB-003
+    version: v2
+    title: "orders-db: connection pool saturation"
+    doc_type: runbook
+    owner: data-platform
+    tenant: acme
+    environments: [production, staging]
+    services: [orders-db]
+    status: active
+    valid_from: "2026-06-12T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-DB-003@v1
+    procedure_key: orders-db/pool-saturation
+    action: rollback_release
+    approval: incident-commander
+    acl: [eng-all]
+    updated_at: "2026-06-12T12:00:00Z"
+    sections:
+      - heading: Diagnose
+        text: >-
+          First check whether a recent release of a client service changed its pool size or query pattern. Compare the
+          connections-by-application view with the baseline.
+      - heading: Remediation
+        text: >-
+          If a client release caused it, roll that release back per the owning service's runbook. Do not restart
+          orders-db: a restart drops every connection and turns a slowdown into an outage.
+      - heading: max_connections
+        text: >-
+          Raising max_connections is a last resort and needs DBA approval; every increase must be recorded in the
+          incident.
+
+  - doc_id: RB-DB-020
+    version: v1
+    title: "orders-db: nightly backup verification"
+    doc_type: runbook
+    owner: data-platform
+    tenant: acme
+    environments: [production]
+    services: [orders-db]
+    status: active
+    valid_from: "2026-05-01T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: orders-db/backup-verification
+    action: none
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-05-01T07:00:00Z"
+    sections:
+      - heading: Backups
+        text: >-
+          orders-db takes a full backup at 01:00 UTC and WAL archives every 5 minutes to the DR region bucket. The
+          verification job restores last night's backup into a scratch instance and checks row counts.
+      - heading: Failures
+        text: >-
+          If verification fails twice in a row, open a SEV3 for data-platform. Do not delete old backups manually.
+
+  # ------------------------------------------------------------------------------------------------ payment-gateway
+  - doc_id: RB-PAY-002
+    version: v3
+    title: "payment-gateway: card network timeouts"
+    doc_type: runbook
+    owner: payments-platform
+    tenant: acme
+    environments: [production]
+    services: [payment-gateway]
+    status: active
+    valid_from: "2026-05-30T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-PAY-002@v2
+    procedure_key: payment-gateway/card-network-timeouts
+    action: failover_provider
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-05-30T10:20:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          When authorization calls to the card network time out above 2%, fail over to the secondary payment provider
+          (payments-ctl failover --to secondary) and page the payments on-call.
+      - heading: Recovery
+        text: >-
+          Fail back once the primary network's error rate has been under 0.5% for 15 minutes.
+
+  - doc_id: RB-PAY-007
+    version: v2
+    title: "payment-gateway: 3DS2 challenge failures"
+    doc_type: runbook
+    owner: payments-platform
+    tenant: acme
+    environments: [production]
+    services: [payment-gateway]
+    status: active
+    valid_from: "2026-08-25T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-PAY-007@v1
+    procedure_key: payment-gateway/3ds2-failures
+    action: disable_flag
+    approval: payments-oncall
+    acl: [eng-all]
+    updated_at: "2026-08-25T13:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          If 3DS2 challenge completions drop after a change to the threeds2 flags, turn the affected flag off in the
+          flag service (for EU cards: threeds2.eu=off). Payments on-call must approve the flag change.
+      - heading: Before you change the flag
+        text: >-
+          Only change the flag after confirming the card network status page is green; if the network is degraded,
+          leave the flag on and follow the network incident instead.
+
+  - doc_id: RB-PAY-007
+    version: v1
+    title: "payment-gateway: 3DS2 challenge failures"
+    doc_type: runbook
+    owner: payments-platform
+    tenant: acme
+    environments: [production]
+    services: [payment-gateway]
+    status: superseded
+    valid_from: "2026-03-15T00:00:00Z"
+    valid_to: "2026-08-25T00:00:00Z"
+    superseded_by: RB-PAY-007@v2
+    supersedes: null
+    procedure_key: payment-gateway/3ds2-failures
+    action: rollback_release
+    approval: incident-commander
+    acl: [eng-all]
+    updated_at: "2026-03-15T09:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          If 3DS2 challenge completions drop after a payment-gateway release, roll the release back through the release
+          pipeline with incident-commander approval.
+
+  # ------------------------------------------------------------------------------------------------ inventory
+  - doc_id: RB-INV-004
+    version: v5
+    title: "inventory-api: stale stock levels"
+    doc_type: runbook
+    owner: fulfilment
+    tenant: acme
+    environments: [production]
+    services: [inventory-api]
+    status: active
+    valid_from: "2026-08-22T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-INV-004@v4
+    procedure_key: inventory-api/stale-stock
+    action: resync_job
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-08-22T10:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Trigger the warehouse resync job from the job runner (jobs run inv-resync --tenant acme). Stock converges
+          within 10 minutes. No approval is needed.
+      - heading: Cache caution
+        text: >-
+          Do not flush the SKU cache between 06:00 and 22:00 UTC: a flush during trading hours causes a cache stampede
+          on inventory-db (see INC-4702).
+
+  - doc_id: RB-INV-004
+    version: v4
+    title: "inventory-api: stale stock levels"
+    doc_type: runbook
+    owner: fulfilment
+    tenant: acme
+    environments: [production]
+    services: [inventory-api]
+    status: superseded
+    valid_from: "2026-04-02T00:00:00Z"
+    valid_to: "2026-08-22T00:00:00Z"
+    superseded_by: RB-INV-004@v5
+    supersedes: RB-INV-004@v3
+    procedure_key: inventory-api/stale-stock
+    action: flush_cache
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-04-02T08:30:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Flush the SKU cache (inv-admin cache flush --all). Fresh stock levels load from inventory-db on the next read.
+
+  - doc_id: RB-INVW-001
+    version: v1
+    title: "inventory-worker: reservation queue lag"
+    doc_type: runbook
+    owner: fulfilment
+    tenant: acme
+    environments: [production]
+    services: [inventory-worker]
+    status: active
+    valid_from: "2026-07-20T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: inventory-worker/queue-lag
+    action: scale_out
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-07-20T14:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Scale the reservation consumers to 8 replicas through the autoscaler override (autoscaler set
+          inventory-worker --min 8). Lag drains at roughly 4,000 messages a minute.
+      - heading: Limits
+        text: >-
+          Do not go above 8 consumers: inventory-db write locks contend beyond that. Never purge the reservation queue;
+          purged reservations are lost orders.
+
+  # ------------------------------------------------------------------------------------------------ search
+  - doc_id: RB-SRCH-004
+    version: v2
+    title: "search-api: relevance drop after an index build"
+    doc_type: runbook
+    owner: search-platform
+    tenant: acme
+    environments: [production]
+    services: [search-api]
+    status: active
+    valid_from: "2026-06-01T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-SRCH-004@v1
+    procedure_key: search-api/relevance-after-index-build
+    action: rollback_index_alias
+    approval: search-oncall
+    acl: [eng-all]
+    updated_at: "2026-06-01T09:30:00Z"
+    sections:
+      - heading: Recovery
+        text: >-
+          Point the products alias back to the previous index build with the search-admin pipeline (search-admin alias
+          products --to <previous-build>). The previous build id is in the index build record.
+      - heading: Approval
+        text: >-
+          The search on-call approves the alias rollback. Keep the bad build for 48 hours for analysis.
+
+  - doc_id: RB-SRCH-040
+    version: v1
+    title: "search-api: query latency"
+    doc_type: runbook
+    owner: search-platform
+    tenant: acme
+    environments: [production]
+    services: [search-api]
+    status: active
+    valid_from: "2026-07-08T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: search-api/query-latency
+    action: scale_out
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-07-08T16:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Scale out the query nodes by applying the autoscaler policy search-q-burst (autoscaler apply search-q-burst).
+          No approval is needed.
+      - heading: Limits
+        text: >-
+          search-q-burst caps the cluster at 12 query nodes; going past 12 needs a capacity request to search-platform.
+
+  - doc_id: GX-RB-SRCH-001
+    version: v1
+    title: "globex search-api: relevance drop after an index build"
+    doc_type: runbook
+    owner: globex-search
+    tenant: globex
+    environments: [production]
+    services: [search-api]
+    status: active
+    valid_from: "2026-06-20T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: search-api/relevance-after-index-build
+    action: rollback_index_alias
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-06-20T10:00:00Z"
+    sections:
+      - heading: Recovery
+        text: >-
+          globex keeps two live builds. Re-point the catalog alias to the standby build in the globex search console.
+          No approval is needed during business hours.
+
+  - doc_id: RB-SIX-002
+    version: v2
+    title: "search-indexer: indexing lag"
+    doc_type: runbook
+    owner: search-platform
+    tenant: acme
+    environments: [production]
+    services: [search-indexer]
+    status: active
+    valid_from: "2026-05-11T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-SIX-002@v1
+    procedure_key: search-indexer/indexing-lag
+    action: pause_job
+    approval: search-oncall
+    acl: [eng-all]
+    updated_at: "2026-05-11T11:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Pause the bulk reindex job (search-admin jobs pause bulk-reindex), including during catalogue imports, so
+          incremental updates catch up. The search on-call approves the pause.
+
+  - doc_id: RB-SIX-005
+    version: v1
+    title: "search-indexer: lag during catalogue imports"
+    doc_type: runbook
+    owner: search-platform
+    tenant: acme
+    environments: [production]
+    services: [search-indexer]
+    status: active
+    valid_from: "2026-08-03T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: search-indexer/indexing-lag
+    action: scale_out
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-08-03T09:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Never pause the bulk reindex during a catalogue import: it leaves products half-indexed. Scale the indexer
+          workers to 6 instead (autoscaler set search-indexer --min 6). No approval is needed.
+
+  # ------------------------------------------------------------------------------------------------ notification-service
+  - doc_id: RB-NOT-002
+    version: v3
+    title: "notification-service: dead-letter queue replay"
+    doc_type: runbook
+    owner: messaging-infra
+    tenant: acme
+    environments: [production]
+    services: [notification-service]
+    status: active
+    valid_from: "2026-04-14T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: RB-NOT-002@v2
+    procedure_key: notification-service/dlq-replay
+    action: replay_dlq
+    approval: comms-lead
+    acl: [eng-all]
+    updated_at: "2026-04-14T13:00:00Z"
+    sections:
+      - heading: Replay
+        text: >-
+          Replay the dead-letter queue with the replay tool (notify-ctl dlq replay --rate 200/s). Replays above 10,000
+          messages reach customers in bulk and need comms-lead approval first.
+
+  - doc_id: RB-NOT-009
+    version: v1
+    title: "notification-service: DLQ replay after a provider outage"
+    doc_type: runbook
+    owner: messaging-infra
+    tenant: acme
+    environments: [production]
+    services: [notification-service]
+    status: active
+    valid_from: "2026-08-29T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: notification-service/dlq-replay
+    action: replay_dlq
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-08-29T08:00:00Z"
+    sections:
+      - heading: Replay
+        text: >-
+          After an email-provider outage, replay up to 50,000 dead-lettered messages without approval (notify-ctl dlq
+          replay --rate 500/s). Messages older than 24 hours are dropped instead of replayed.
+
+  - doc_id: RB-NOT-004
+    version: v1
+    title: "notification-service: email bounce spike"
+    doc_type: runbook
+    owner: messaging-infra
+    tenant: acme
+    environments: [production]
+    services: [notification-service]
+    status: active
+    valid_from: "2026-03-09T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: notification-service/bounce-spike
+    action: switch_traffic
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-03-09T10:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          Move outbound email to the backup sending domain (notify-ctl domain switch --to mail2.meridian.example). No
+          approval is needed.
+
+  # ------------------------------------------------------------------------------------------------ inventory (globex)
+  - doc_id: GX-RB-INV-002
+    version: v1
+    title: "globex inventory-api: stale stock levels"
+    doc_type: runbook
+    owner: globex-fulfilment
+    tenant: globex
+    environments: [production]
+    services: [inventory-api]
+    status: active
+    valid_from: "2026-07-14T00:00:00Z"
+    valid_to: null
+    superseded_by: null
+    supersedes: null
+    procedure_key: inventory-api/stale-stock
+    action: resync_job
+    approval: none
+    acl: [eng-all]
+    updated_at: "2026-07-14T09:00:00Z"
+    sections:
+      - heading: Remediation
+        text: >-
+          globex stock comes from the merchant's ERP feed. Run stock-reconcile from the globex scheduler
+          (gx-sched run stock-reconcile); it replays the last ERP snapshot. No approval is needed.
+

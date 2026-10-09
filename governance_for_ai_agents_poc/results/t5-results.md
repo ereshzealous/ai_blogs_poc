@@ -86,12 +86,4 @@ make docs    # both editions and the three evidence documents (run report, evide
 make qa    # rendered checks at desktop/tablet/mobile + screenshots -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/governance_for_ai_agents_poc/technical/observability-governance-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/governance_for_ai_agents_poc/results/observability-governance-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/governance_for_ai_agents_poc/results/observability-governance-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/governance_for_ai_agents_poc/results/observability-governance-real-vs-simulated.md)
-- [Lab (an HTML page: open results/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/governance_for_ai_agents_poc/results/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results T5` from the files named above. It computes nothing new.*

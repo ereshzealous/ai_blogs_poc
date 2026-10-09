@@ -1,34 +1,58 @@
-# AI blog POCs
+# Production AI Engineering: the proofs of concept
 
-Working proofs of concept for a series of articles on building AI agent systems that survive production. Each POC is a self-contained project in its own folder, runs on one laptop (with local models through [Ollama](https://ollama.com) where it uses a model), and records the numbers its article cites.
+One folder per chapter of [Production AI Engineering](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), a series on what it takes to
+run AI agents in production. Each folder is the chapter's proof of concept with the evidence its article cites: the
+code and its tests, the recorded run behind every number, a results page and the technical edition.
 
-| Folder | Article | What it shows | Start here |
-|---|---|---|---|
-| [`mcp_sprawl_poc/`](mcp_sprawl_poc) | Part 1 — MCP tool sprawl | A capability control plane in front of many MCP tools: discovery, argument validation, policy and evidence, measured against catalogues of 50+ tools | [README](mcp_sprawl_poc/README.md) |
-| [`layered_architecture_poc/`](layered_architecture_poc) | Part 2 — Your Agent Works in a Demo. Why Does It Break in Production? | One incident (INC-4917) through an agent monolith and a six-layer agent platform: 15 architecture invariants, the published numbers recomputed from raw evidence, outcome and fault-exposure accounting, and every claim checked against what it rests on | [README](layered_architecture_poc/README.md) |
-| [`layered_agent_platform/`](layered_agent_platform) | — (shared) | Part 2's earlier implementation, kept as a library: `memory_context_state_poc` builds against its `agent_platform` package (as did the first `headless_ai_poc`, kept at the tag `headless_ai_poc-2026-09-17`), and the run `2026-09-17-recorded` behind the first edition of the article lives here. Not where a new reader starts | [README](layered_agent_platform/README.md) |
-| [`headless_ai_poc/`](headless_ai_poc) | Part 3 — Headless AI: Your AI Shouldn't Live Inside the UI | One incident-intelligence runtime (payment-service, 14% errors) consumed by eight heads — event, chat, web, API, workflow, scheduler, CI/CD and another agent — through one contract and one governed capability layer. Deterministic, no model: 30 architecture checks and `uv run hai verify` | [README](headless_ai_poc/README.md) |
-| [`ai_control_plane_poc/`](ai_control_plane_poc) | T4 — AI Control Plane | Three agents in one long-lived runtime, governed by a separate control plane that versions, signs and distributes their desired state. One central change (P2) turns the same process, code and request from ALLOW into APPROVAL_REQUIRED, with 0 agent edits and 0 redeploys; P1–P12 with a negative control, and a public verifier (`make all`). No model needed | [README](ai_control_plane_poc/README.md) |
-| [`multi_agent_a2a_poc/`](multi_agent_a2a_poc) | C1 — Do You Actually Need Multiple Agents? | One incident-investigation capability implemented three ways — one agent, a deterministic workflow with agents, and a coordinator with four agents over A2A v1.0 — on 8 blind incidents × 3 repeats with `gpt-oss:20b`. The workflow with agents had the most successes at the lowest cost; the coordination tax dominated and the A2A boundary was cheap on loopback. Process kills, the A2A boundary's own cost, termination without an owner, and a replay of all 72 workflows without a model (`make verify`) | [README](multi_agent_a2a_poc/README.md) |
-| [`agent_mcp_security_poc/`](agent_mcp_security_poc) | T6 — Securing Agents, Tools & MCP | A red-team assurance harness: a worst-case-compliant model proposes hostile actions and a trusted registry, identity, policy, approval, MCP gateway and egress boundary decide what executes. 19 attacks across 8 classes under three arms — system compromised 19/19 (vulnerable) → 13/19 (classifier) → 0/19 (hardened) — with the claim boundary measured and a public verifier (`uv run redteam verify`). Deterministic, synthetic, no model | [README](agent_mcp_security_poc/README.md) |
+| Chapter | Folder | Article | The question it answers | How the published run was made |
+|---|---|---|---|---|
+| F1 | [`mcp_sprawl_poc/`](mcp_sprawl_poc) | Your AI agent has 500 MCP tools. Now what? | Which capability should the agent see, and may this exact call execute? | live local model, recorded |
+| F2 | [`layered_architecture_poc/`](layered_architecture_poc) | Your agent works in a demo. Why does it break in production? | Which production responsibility belongs where, and what survives failure? | recorded: live local models, real MCP servers, real SIGKILLs |
+| F3 | [`headless_ai_poc/`](headless_ai_poc) | Headless AI: Your AI Shouldn't Live Inside the UI | How should many consumers use the same AI intelligence safely? | deterministic reasoner over simulated systems |
+| S1 | [`memory_context_state_poc/`](memory_context_state_poc) | Your Agent Remembers Everything. That's a Problem. | What should an agent remember, what should expire, and what is authoritative? | recorded with a live local model |
+| S2 | [`context_eng_rag_poc/`](context_eng_rag_poc) | Your Agent Found the Right Document. Why Did It Give the Wrong Answer? | How does an agent retrieve valid enterprise evidence without dumping the company into the prompt? | live local model on the held-out split |
+| T1 | [`agent_identity_poc/`](agent_identity_poc) | Agent Identity: Who Is Acting, and on Whose Authority? | When an agent acts, whose authority is actually being used? | deterministic run |
+| T2 | [`auth_and_policy_poc/`](auth_and_policy_poc) | Your AI Agent Has an Identity. What Is It Allowed to Do? | For every tool call: may this agent do this, on this resource, in this context, on whose authority? | deterministic, simulated systems of record |
+| T3 | [`human_in_the_loop_poc/`](human_in_the_loop_poc) | APPROVED, but approved what? | What exactly did the human approve, and is that approval still valid now? | deterministic: no model, no network |
+| T4 | [`ai_control_plane_poc/`](ai_control_plane_poc) | AI Control Plane: Your Agents Shouldn't Govern Themselves | How do you change what many agents may do without editing or redeploying any of them? | deterministic: agents follow fixed plans, no model |
+| T5 | [`governance_for_ai_agents_poc/`](governance_for_ai_agents_poc) | Your AI Agent Did Something in Production. Can You Explain Exactly What Happened? | Can you prove what an agent did, and on whose authority? | recorded with a live local model |
+| T6 | [`agent_mcp_security_poc/`](agent_mcp_security_poc) | Securing Agents, Tools & MCP | If the model is fooled, can the unsafe action still happen? | deterministic, scripted worst-case model, no network |
+| R1+R2 | [`evals_obs_reliability_poc/`](evals_obs_reliability_poc) | “The Agent Failed” Is Not an Operational Signal | When something breaks mid-run, what should the runtime do next, and how do you know it chose right? | deterministic scenarios plus a recorded real-model slice |
+| C1 | [`multi_agent_a2a_poc/`](multi_agent_a2a_poc) | Do You Actually Need Multiple Agents? | When does one agent become several, and when does an agent deserve A2A? | live local model, recorded tape |
+| O1+O2 | [`operating_ai_agents_poc/`](operating_ai_agents_poc) | Operating AI Agents at Scale — Cost, Latency, Scale & Lifecycle | What changes at production volume, and how do changes ship safely? | deterministic discrete-event simulation, no model |
+| P1 | [`production_agentic_ai_platform/`](production_agentic_ai_platform) | The Agent Is Not the Architecture | How do all these boundaries fit into one production platform, and does the assembly hold? | proof run: real processes, simulated systems, recorded model calls |
 
-Each folder has its own `pyproject.toml`, tests and runs, and is installed on its own:
+`layered_agent_platform/` is the library F2's first implementation became; S1's POC builds against it. It is not a chapter.
 
-```bash
-cd layered_architecture_poc && uv sync && uv run pytest -m "not model"
+## Every folder has the same shape
+
+```
+<folder>/
+  README.md          what the chapter showed, how to run it, where everything is
+  Makefile           the same commands in every chapter (make help lists them)
+  <poc>/             the proof of concept: code, tests, configuration, recorded runs
+  results/           the results page (<code>-results.md) and the chapter's reports
+  technical/ or docs/  the technical edition (PDF) and the documents the pages link to
+  scripts/publish-checks.sh   the checks run before every publish
+  .publish-frozen    the published run's evidence, which no publish may change
+  public-redactions.json      what this public copy redacted (local paths, host names), with the original's hash
+                              (F1 keeps its own in evidence/)
+  LICENSE            MIT
 ```
 
-**One Part 2, and one shared platform.** [`layered_architecture_poc/`](layered_architecture_poc) is Part 2: the
-standardized edition, canonical run `2026-09-28-recorded`, evidence revision `r3`.
-[`layered_agent_platform/`](layered_agent_platform) is the earlier implementation, renamed from `layered_agent_poc`
-because it is no longer a POC folder in its own right: it is the library `memory_context_state_poc` builds
-against, through its `agent_platform` package (the first `headless_ai_poc` did too), and it holds the run the first
-edition of the article cites. The two are not copies of each other — they share 14 file paths out of about 1,100,
-three of them identical, with different packages (`agent_platform` against `layered_platform`), different recorded
-runs and different results.
+## Run any chapter
 
-**How they relate.** `memory_context_state_poc` imports `layered_agent_platform`'s `agent_platform` package. `headless_ai_poc` is self-contained since it was rebuilt for F3; its first version, which depended on `layered_agent_platform` as a local path dependency, is kept at the tag `headless_ai_poc-2026-09-17`. `layered_architecture_poc` is a separate implementation — its package is `layered_platform`, not `agent_platform` — so it is not a drop-in replacement for either. Nothing else crosses folder boundaries: no folder reads another's databases, runs or configuration.
+```bash
+cd <folder>
+make setup     # the environment, from the lock file (uv)
+make test      # the POC's tests; no model needed
+make verify    # check the published run from the evidence shipped here; no model needed, nothing is rewritten
+```
 
-**Publishing.** Several people and sessions publish here in parallel. [PUBLISHING.md](PUBLISHING.md) has the rules and the script that enforces them.
+`make replay` and `make demo` re-run the recorded run without a model where the chapter has them. Recording a new run
+needs a local model through [Ollama](https://ollama.com) in some chapters; each README says which. Commands that would
+rewrite a published run refuse to run.
+
+**Publishing.** [PUBLISHING.md](PUBLISHING.md) has the rules and the script that enforces them.
 
 Licence: MIT, per folder.

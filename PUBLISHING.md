@@ -1,10 +1,18 @@
 # Publishing to this repository
 
-Three POCs live here, each written in its own workspace, often at the same time. The folders never overlap, so parallel work is safe as long as everyone keeps to these rules.
+15 chapter folders and one shared library live here, each written in its own workspace, often at the same time. The folders never overlap, so parallel work is safe as long as everyone keeps to these rules.
+
+## One shape for every folder
+
+Every chapter folder mirrors the chapter: its README, the same Makefile commands, the POC in its own subfolder,
+`results/`, the technical edition, `scripts/publish-checks.sh` (`make setup`, `make test`, `make verify` with no model
+reachable) and `.publish-frozen`. The folder is a declared public copy of the chapter
+(`series-start-here/tools/series_public.py` in the author's workspace): local paths and host names are redacted by rule
+and listed with the original's hash in `public-redactions.json`, and evidence already published keeps its bytes.
 
 ## The rules
 
-1. **One folder per POC, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, `ai_control_plane_poc/`, `memory_context_state_poc/`, `multi_agent_a2a_poc/`, and the shared `layered_agent_platform/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
+1. **One folder per chapter, and you only touch yours.** `mcp_sprawl_poc/`, `layered_architecture_poc/`, `headless_ai_poc/`, `memory_context_state_poc/`, `context_eng_rag_poc/`, `agent_identity_poc/`, `auth_and_policy_poc/`, `human_in_the_loop_poc/`, `ai_control_plane_poc/`, `governance_for_ai_agents_poc/`, `agent_mcp_security_poc/`, `evals_obs_reliability_poc/`, `multi_agent_a2a_poc/`, `operating_ai_agents_poc/`, `production_agentic_ai_platform/`, and the shared `layered_agent_platform/`. Never stage a change outside your folder. The two shared files, this one and `README.md`, are the only exception, and a change to them is announced first.
 2. **Work in your own clone.** Do not share a working copy between sessions or people. A throwaway clone is fine.
 3. **Rebase, never force-push.** `git pull --rebase` before pushing. Because the folders are disjoint, a rebase never conflicts. Rewriting published history is a last resort, and only after telling everyone who publishes here.
 4. **Run your POC's checks before you push.** At minimum its fast tests and whatever boundary checks it has.

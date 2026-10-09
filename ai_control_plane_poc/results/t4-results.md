@@ -159,12 +159,4 @@ make docs    # both editions and the three evidence documents (results/) as Mark
 make qa    # rendered checks at desktop/tablet/mobile (editions, evidence documents, Lab Console) + screenshots -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/ai_control_plane_poc/technical/ai-control-plane-technical.pdf)
-- [Evidence](https://github.com/ereshzealous/ai_blogs_poc/blob/main/ai_control_plane_poc/results/ai-control-plane-evidence.md)
-- [Report](https://github.com/ereshzealous/ai_blogs_poc/blob/main/ai_control_plane_poc/results/ai-control-plane-report.md)
-- [Real vs simulated](https://github.com/ereshzealous/ai_blogs_poc/blob/main/ai_control_plane_poc/results/ai-control-plane-real-vs-simulated.md)
-- [Lab (an HTML page: open results/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/ai_control_plane_poc/results/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results T4` from the files named above. It computes nothing new.*

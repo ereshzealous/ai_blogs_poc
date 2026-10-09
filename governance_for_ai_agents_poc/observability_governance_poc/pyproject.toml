@@ -1,0 +1,28 @@
+[project]
+name = "t5-observability-governance-poc"
+version = "1.0.0"
+description = "T5 POC: reconstruct an autonomous production action from intent to physical side effect. Application logs vs logs+traces vs governed execution lineage, on the same runs, broken on purpose."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "opentelemetry-api>=1.27",
+    "opentelemetry-sdk>=1.27",
+]
+
+[project.scripts]
+lineage = "lineage.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lineage"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -rA -p no:cacheprovider"
+markers = ["model: needs a live Ollama model"]

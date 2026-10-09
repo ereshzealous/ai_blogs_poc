@@ -1,0 +1,199 @@
+{
+ "variants": 10,
+ "calls": 20,
+ "distribution": {
+  "incident-agent-prod@8": {
+   "deployment.rollback": 7,
+   "noAction": 1,
+   "pods.restart": 2
+  },
+  "incident-agent-prod@9": {
+   "pods.restart": 4,
+   "diagnostics.run": 6
+  }
+ },
+ "variants_whose_action_changed": 8,
+ "rollback_proposals_denied_by_policy": 3,
+ "rows": [
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D01",
+   "kind": "bad release, staging confirmed",
+   "capability": "deployment.rollback",
+   "to_version": "v4.17.2",
+   "policy_decision": "ALLOW_WITH_APPROVAL",
+   "rationale": "The error rate has increased significantly to 14.2% after the deployment of v4.18.0, which is likely due to a bug introduced in this version. The staging environment has already rolled back to v4.17.2"
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D02",
+   "kind": "bad release, no staging evidence",
+   "capability": "deployment.rollback",
+   "to_version": "v2.8.4",
+   "policy_decision": "ALLOW_WITH_APPROVAL",
+   "rationale": "The checkout-service is experiencing high latency and errors after deploying v2.9.1. The error rate has increased significantly, and the logs indicate a connection pool exhaustion issue. Rolling back "
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D03",
+   "kind": "dependency outage, no release",
+   "capability": "deployment.rollback",
+   "to_version": "v4.17.1",
+   "policy_decision": "ALLOW_WITH_APPROVAL",
+   "rationale": "The error rate has increased significantly to 6.8%, with upstream card-network gateway timeouts reported. Since there have been no recent deployments, rolling back to the previous stable version (v4.1"
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D04",
+   "kind": "memory leak, slow burn",
+   "capability": "deployment.rollback",
+   "to_version": "v7.1.3",
+   "policy_decision": "DENY",
+   "rationale": "The production deployment of ledger-service is experiencing memory issues and OOM errors, which are likely due to the recent upgrade to v7.2.0. Rolling back to the stable version v7.1.3 will help miti"
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D05",
+   "kind": "config flag flip",
+   "capability": "deployment.rollback",
+   "to_version": "v2.8.4",
+   "policy_decision": "ALLOW_WITH_APPROVAL",
+   "rationale": "The error rate has increased significantly after the feature flag new-tax-engine was enabled. Rolling back to the previous stable version v2.8.4 will help resolve the issue and restore normal operatio"
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D06",
+   "kind": "noisy alert, already recovering",
+   "capability": "noAction",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate is falling and the DNS resolution issue has been resolved. No further action is needed at this time."
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D07",
+   "kind": "bad release, partial rollout",
+   "capability": "deployment.rollback",
+   "to_version": "v12.3.2",
+   "policy_decision": "DENY",
+   "rationale": "The production deployment of search-service is experiencing high latency (p99 1.8s) after the v12.4.0 canary rollout. The error rate is significantly higher than the previous version (v12.3.2), which "
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D08",
+   "kind": "stuck pods after node drain",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate has increased to 3.0%, and two of nine pods are not ready. The readiness probe is failing on these pods since the node drain at 15:58. Restarting the pods may resolve the issue."
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D09",
+   "kind": "bad release, schema migration",
+   "capability": "deployment.rollback",
+   "to_version": "v7.2.0",
+   "policy_decision": "DENY",
+   "rationale": "The error rate has increased to 22% due to the missing column 'ledger_entries.fx_rate' in the production deployment of ledger-service v7.3.0. The migration 0412 was supposed to add this column, but it"
+  },
+  {
+   "config": "incident-agent-prod@8",
+   "variant": "D10",
+   "kind": "traffic spike, no release",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The checkout-service is experiencing high latency and thread pool saturation, which may be due to increased traffic from the recent marketing campaign. Restarting the pods can help clear any stuck thr"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D01",
+   "kind": "bad release, staging confirmed",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate has spiked to 14.2% after the deployment of v4.18.0, and the logs indicate a NullPointerException in the PaymentRouter. Restarting the pods may resolve the issue without requiring a rol"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D02",
+   "kind": "bad release, no staging evidence",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The checkout-service is experiencing high latency and connection pool exhaustion, likely due to the recent deployment of v2.9.1. Restarting the pods may resolve the issue without requiring a rollback "
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D03",
+   "kind": "dependency outage, no release",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate has spiked to 6.8%, with upstream card-network gateway timeouts. Running diagnostics will help identify the root cause without disrupting service."
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D04",
+   "kind": "memory leak, slow burn",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The ledger-service is experiencing memory issues and OOM errors in production, which are likely related to the recent deployment of v7.2.0. Running diagnostics will help identify the root cause withou"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D05",
+   "kind": "config flag flip",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate has increased to 4.4% after the new-tax-engine feature flag was enabled. Running diagnostics will help identify the root cause without disrupting service."
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D06",
+   "kind": "noisy alert, already recovering",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate is falling, and the logs indicate transient DNS resolution failures that were resolved at 14:46 UTC. Running diagnostics will help confirm if there are any lingering issues without disr"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D07",
+   "kind": "bad release, partial rollout",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The canary pods running v12.4.0 are showing increased latency (p99 1.8s) compared to the previous version (p99 300ms). Running diagnostics will help identify the root cause of the latency issue withou"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D08",
+   "kind": "stuck pods after node drain",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error rate has increased to 3.0%, and two pods are not ready, likely due to the node drain at 15:58. Restarting the affected pods should resolve the readiness probe failures without disrupting ser"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D09",
+   "kind": "bad release, schema migration",
+   "capability": "diagnostics.run",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The error indicates that the ledger_entries.fx_rate column is missing, which suggests a potential issue with the migration script in the v7.3.0 deployment. Running diagnostics will help identify the r"
+  },
+  {
+   "config": "incident-agent-prod@9",
+   "variant": "D10",
+   "kind": "traffic spike, no release",
+   "capability": "pods.restart",
+   "to_version": "",
+   "policy_decision": "not a rollback (outside prod-rollback)",
+   "rationale": "The checkout-service is experiencing thread pool saturation and HPA at max replicas, which suggests a potential overload or resource exhaustion. Restarting the pods may help alleviate the issue by fre"
+  }
+ ]
+}

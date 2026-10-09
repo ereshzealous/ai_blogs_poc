@@ -1,0 +1,54 @@
+# The simulated production world: the same incident as F3, T1, T2 and T3.
+# 14:02 a Datadog monitor fires: payment-service error rate 14.2% against a 1% SLO. v4.18.0 shipped at 13:49.
+# A second, unrelated incident runs concurrently on checkout-service, so every log and trace store holds more than one
+# agent execution, as production does.
+
+date = "2026-09-30"
+
+[incident]
+id = "INC-4471"
+service = "payment-service"
+severity = "SEV-1"
+opened = "14:02:00"
+alert_id = "dd-alert-88121"
+source = "datadog:monitor/payment-service-error-rate"
+on_behalf_of = "group:sre-team"          # T1: the monitor invokes the agent under sre-team's delegation
+
+[incident.signals]
+error_rate = "14.2% (SLO 1%)"
+error_rate_before = "0.4%"
+log_excerpt = "NullPointerException at PaymentRouter.route(PaymentRouter.java:212) · release=v4.18.0 · 3,912 in 5m"
+staging = "staging rolled back v4.18.0 -> v4.17.2 at 13:58; staging error rate 0.3% since"
+previous_good = "v4.17.2 (ran 6 days, error rate 0.4%)"
+
+[background]                            # the concurrent execution: same agent, same tools, different incident
+id = "INC-4472"
+service = "checkout-service"
+severity = "SEV-2"
+opened = "14:03:10"
+alert_id = "dd-alert-88127"
+source = "datadog:monitor/checkout-service-latency"
+on_behalf_of = "group:sre-team"
+
+[background.signals]
+error_rate = "p99 latency 2.9s (SLO 800ms), error rate 3.1%"
+error_rate_before = "p99 410ms, error rate 0.2%"
+log_excerpt = "connection pool exhausted (max=10) · release=v2.9.1 · 1,204 in 5m"
+staging = "staging rolled back v2.9.1 -> v2.9.0 at 13:40; staging p99 380ms since"
+previous_good = "v2.9.0 (ran 11 days, p99 420ms)"
+
+[[deployments]]
+service = "payment-service"
+environment = "production"
+version = "v4.18.0"
+revision = 184
+history = ["v4.16.9", "v4.17.0", "v4.17.1", "v4.17.2", "v4.18.0"]
+bad_versions = ["v4.18.0"]
+
+[[deployments]]
+service = "checkout-service"
+environment = "production"
+version = "v2.9.1"
+revision = 57
+history = ["v2.8.4", "v2.9.0", "v2.9.1"]
+bad_versions = ["v2.9.1"]

@@ -1,0 +1,65 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "governance_for_ai_agents_poc",
+ "redactions": [
+  {
+   "file": "observability_governance_poc/runs/record.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/governance_for_ai_agents/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      16
+     ]
+    }
+   ],
+   "original_sha256": "fe8bf9093338168347f0e54dae933fb497119f8109f1cce0fb22e7245926911c",
+   "public_sha256": "20cd22bc601b1371c3920bb52cc22729c83b84ca388667dd983b3591446868f4",
+   "semantic_changes": false
+  },
+  {
+   "file": "observability_governance_poc/runs/replay.log",
+   "rules": [
+    {
+     "pattern": "/Users/[A-Za-z0-9._-]+/[^\\s\\\"'<>]*?/governance_for_ai_agents/",
+     "replacement": "<chapter>/",
+     "category": "local-path",
+     "reason": "absolute path of the author's checkout of this chapter; the path inside the chapter is kept",
+     "count": 1,
+     "lines": [
+      17
+     ]
+    }
+   ],
+   "original_sha256": "c5c737ba6b3af8cadca7014ad907ef057790aa12aae365975eb066eaca2ed310",
+   "public_sha256": "a2d92c99ac50b9fb3e784e4ae2d6a01fea80ed6452a8df49385472d4d7ad3fd0",
+   "semantic_changes": false
+  },
+  {
+   "file": "verification/pytest.junit.xml",
+   "rules": [
+    {
+     "pattern": "hostname=\"(?!localhost\")[^\"<&]+\"",
+     "replacement": "hostname=\"<host>\"",
+     "category": "hostname",
+     "reason": "the build machine's name, recorded by pytest's junit writer",
+     "count": 1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "original_sha256": "c9cea011afa877b41b787ab400b188b1b0044b2f43e04ac91f9f64b56806486a",
+   "public_sha256": "3e321d50c0feaee02c110289902de7956487ac23cc127be21b2a166d01b04602",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

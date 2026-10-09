@@ -1,0 +1,60 @@
+{
+ "scenario": "e05b-crash-after-dispatch",
+ "title": "SIGKILL after the rollback was sent, before its result was recorded",
+ "group": "runtime failures",
+ "question": "The runtime dies not knowing whether production changed: can it find out without doing it again?",
+ "expect": {
+  "outcome": "MITIGATED",
+  "mutations": 1,
+  "attempts": 1,
+  "tool_invoked": true,
+  "processes": 2
+ },
+ "faults": [],
+ "run": {
+  "seed": 7,
+  "client_timeout_s": 1.5,
+  "drop_hold_s": 3.0,
+  "approval_delay_s": 0.4,
+  "max_attempts": 3
+ },
+ "executions": {
+  "target": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-1",
+   "decisions": [
+    {
+     "who": "ic.dev",
+     "decision": "APPROVED",
+     "reason": "error rate and staging evidence implicate v4.18.0"
+    },
+    {
+     "who": "owner.payments",
+     "decision": "APPROVED",
+     "reason": "agree, roll back"
+    }
+   ],
+   "annotation": null,
+   "context_request": null,
+   "planner_override": null,
+   "direct_gateway_call": false,
+   "redeliver_step": null,
+   "crash_at": "after_dispatch"
+  },
+  "background": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-2",
+   "decisions": [
+    {
+     "who": "ic.sam",
+     "decision": "APPROVED",
+     "reason": "checkout latency follows v2.9.1"
+    }
+   ]
+  }
+ }
+}

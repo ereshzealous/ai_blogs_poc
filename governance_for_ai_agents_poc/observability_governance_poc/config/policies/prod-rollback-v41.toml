@@ -1,0 +1,18 @@
+id = "prod-rollback"
+version = 41
+published = "2026-09-02"
+note = "production rollback by the incident agent: one incident commander approves"
+
+[[rule]]
+id = "R1-rollback-sev12"
+capability = "deployment.rollback"
+environment = "production"
+agents = ["incident-agent-prod"]
+severities = ["SEV-1", "SEV-2"]
+services = ["payment-service", "checkout-service"]
+decision = "ALLOW_WITH_APPROVAL"
+obligations = { approver_roles = ["IncidentCommander"], quorum = 1, expires_in_s = 600, verify_effect = false }
+
+[default]
+decision = "DENY"
+reason = "no rule permits this capability for this agent, environment and severity"

@@ -1,0 +1,6 @@
+# run 2026-09-30-recorded
+cd observability_governance_poc
+uv sync --group dev
+uv run python -m lineage.run record --run-id 2026-09-30-recorded
+uv run python -m lineage.drift record --run-id 2026-09-30-recorded   # the drift probe (reports/drift.json)
+uv run pytest

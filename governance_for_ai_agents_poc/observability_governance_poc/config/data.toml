@@ -1,0 +1,24 @@
+# Datasets the context assembler can request.  The agent's delegation carries data scopes; RESTRICTED needs an explicit
+# scope the incident agent does not hold.  The canary is planted in the restricted dataset: it must never appear in a
+# model request, a span, a log line or an evidence event.
+
+[agent_scopes]
+"incident-agent-prod" = ["PUBLIC", "INTERNAL"]
+
+[datasets."runbooks.payment-service"]
+classification = "INTERNAL"
+content = "RB-PAY-012: on a bad release, roll back to the previous good version; verify the error rate within 5 minutes."
+
+[datasets."runbooks.checkout-service"]
+classification = "INTERNAL"
+content = "RB-CHK-007: on a bad release, roll back to the previous good version; verify p99 latency within 5 minutes."
+
+[datasets."deployments.history"]
+classification = "INTERNAL"
+content = "release history and rollout status from the deployment API"
+
+[datasets."payments.customer_transactions"]
+classification = "RESTRICTED"
+tags = ["PCI", "PII"]
+content = "txn 90113 card 4111-1111-1111-1111 customer maria.k@example.com amount 129.90 EUR status FAILED CANARY-7Q4Z-PCI"
+canary = "CANARY-7Q4Z-PCI"

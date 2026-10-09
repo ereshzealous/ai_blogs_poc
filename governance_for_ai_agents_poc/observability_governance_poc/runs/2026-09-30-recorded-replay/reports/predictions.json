@@ -1,0 +1,524 @@
+{
+ "predictions": [
+  {
+   "id": "P1",
+   "held": true,
+   "evidence": "L2 below 13/13 in: none",
+   "text": "L2 answers all 13 questions correctly in every scenario."
+  },
+  {
+   "id": "P2",
+   "held": true,
+   "evidence": "L0 verified integrity in: none",
+   "text": "L0 cannot verify evidence integrity (Q13) in any scenario."
+  },
+  {
+   "id": "P3",
+   "held": true,
+   "evidence": "L0 Q12 verdict in e11-false-success: WRONG",
+   "text": "L0 reports the wrong final outcome (Q12) in e11-false-success."
+  },
+  {
+   "id": "P4",
+   "held": true,
+   "evidence": "L1 not fewer heuristic joins in: none",
+   "text": "L1 (logs + traces) needs fewer heuristic joins than L0 in every scenario."
+  },
+  {
+   "id": "P5",
+   "held": true,
+   "evidence": "L0 answered Q4 in: none",
+   "text": "L0 cannot say which prompt template or agent configuration produced the proposal (Q4) in any scenario."
+  },
+  {
+   "id": "P6",
+   "held": true,
+   "evidence": "mutations e12a=1, e12b=2",
+   "text": "The e12b control mutates production twice; e12a mutates it once."
+  },
+  {
+   "id": "P7",
+   "held": true,
+   "evidence": "canary found in: none",
+   "text": "The restricted-data canary appears in no model request, span, log line or evidence event, in any scenario."
+  }
+ ],
+ "expectations": [
+  {
+   "scenario": "e01-success",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e01-success",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e01-success",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e01-success",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e02-tool-failure",
+   "field": "outcome",
+   "expected": "NOT_MITIGATED",
+   "observed": "NOT_MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e02-tool-failure",
+   "field": "mutations",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e02-tool-failure",
+   "field": "attempts",
+   "expected": 3,
+   "observed": 3,
+   "held": true
+  },
+  {
+   "scenario": "e02-tool-failure",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e03-policy-denial",
+   "field": "outcome",
+   "expected": "NOT_MITIGATED",
+   "observed": "NOT_MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e03-policy-denial",
+   "field": "mutations",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e03-policy-denial",
+   "field": "attempts",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e03-policy-denial",
+   "field": "tool_invoked",
+   "expected": false,
+   "observed": false,
+   "held": true
+  },
+  {
+   "scenario": "e03-policy-denial",
+   "field": "policy_decision",
+   "expected": "DENY",
+   "observed": "DENY",
+   "held": true
+  },
+  {
+   "scenario": "e04-human-rejection",
+   "field": "outcome",
+   "expected": "NOT_MITIGATED",
+   "observed": "NOT_MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e04-human-rejection",
+   "field": "mutations",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e04-human-rejection",
+   "field": "attempts",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e04-human-rejection",
+   "field": "tool_invoked",
+   "expected": false,
+   "observed": false,
+   "held": true
+  },
+  {
+   "scenario": "e05a-crash-awaiting-approval",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e05a-crash-awaiting-approval",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e05a-crash-awaiting-approval",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e05a-crash-awaiting-approval",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e05a-crash-awaiting-approval",
+   "field": "processes",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e05b-crash-after-dispatch",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e05b-crash-after-dispatch",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e05b-crash-after-dispatch",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e05b-crash-after-dispatch",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e05b-crash-after-dispatch",
+   "field": "processes",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e06-duplicate-delivery",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e06-duplicate-delivery",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e06-duplicate-delivery",
+   "field": "attempts",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e06-duplicate-delivery",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e07-unexpected-capability",
+   "field": "outcome",
+   "expected": "NOT_MITIGATED",
+   "observed": "NOT_MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e07-unexpected-capability",
+   "field": "mutations",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e07-unexpected-capability",
+   "field": "attempts",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e07-unexpected-capability",
+   "field": "tool_invoked",
+   "expected": false,
+   "observed": false,
+   "held": true
+  },
+  {
+   "scenario": "e07-unexpected-capability",
+   "field": "policy_decision",
+   "expected": "DENY",
+   "observed": "DENY",
+   "held": true
+  },
+  {
+   "scenario": "e08a-policy-v41",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e08a-policy-v41",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e08a-policy-v41",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e08a-policy-v41",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e08a-policy-v41",
+   "field": "approvals",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e08b-policy-v42",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e08b-policy-v42",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e08b-policy-v42",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e08b-policy-v42",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e08b-policy-v42",
+   "field": "approvals",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e09-config-v9",
+   "field": "recorded_config",
+   "expected": "incident-agent-prod@9",
+   "observed": "incident-agent-prod@9",
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "data_denied",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e10-restricted-data",
+   "field": "canary_leaks",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e11-false-success",
+   "field": "outcome",
+   "expected": "NOT_MITIGATED",
+   "observed": "NOT_MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e11-false-success",
+   "field": "mutations",
+   "expected": 0,
+   "observed": 0,
+   "held": true
+  },
+  {
+   "scenario": "e11-false-success",
+   "field": "attempts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e11-false-success",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e11-false-success",
+   "field": "verified",
+   "expected": false,
+   "observed": false,
+   "held": true
+  },
+  {
+   "scenario": "e12a-lost-response",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e12a-lost-response",
+   "field": "mutations",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e12a-lost-response",
+   "field": "attempts",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e12a-lost-response",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e12a-lost-response",
+   "field": "timeouts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  },
+  {
+   "scenario": "e12b-lost-response-no-key",
+   "field": "outcome",
+   "expected": "MITIGATED",
+   "observed": "MITIGATED",
+   "held": true
+  },
+  {
+   "scenario": "e12b-lost-response-no-key",
+   "field": "mutations",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e12b-lost-response-no-key",
+   "field": "attempts",
+   "expected": 2,
+   "observed": 2,
+   "held": true
+  },
+  {
+   "scenario": "e12b-lost-response-no-key",
+   "field": "tool_invoked",
+   "expected": true,
+   "observed": true,
+   "held": true
+  },
+  {
+   "scenario": "e12b-lost-response-no-key",
+   "field": "timeouts",
+   "expected": 1,
+   "observed": 1,
+   "held": true
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+[
+ {
+  "n": 1,
+  "received_at": "2026-09-30T06:54:25.204Z",
+  "request_id": "tgw-ac7024579f3f",
+  "method": "POST",
+  "path": "/v1/deployments/payment-service/rollback",
+  "service": "payment-service",
+  "caller": "spiffe://prod.example/ns/agents/sa/tool-gateway",
+  "actor": "incident-agent-prod",
+  "idempotency_key": "act-d751c159",
+  "body": "{\"to_version\":\"v4.17.2\"}",
+  "outcome": "COMMITTED",
+  "txn_id": "dtx-3ea620c893",
+  "status": 200,
+  "response_delivered": 1,
+  "traceparent": "00-1e038f51f7d9ffc1e40a689ece51221b-f54c2bd55b715c44-01",
+  "fault": null
+ },
+ {
+  "n": 2,
+  "received_at": "2026-09-30T06:54:25.644Z",
+  "request_id": "tgw-b08eb84f7a0a",
+  "method": "POST",
+  "path": "/v1/deployments/checkout-service/rollback",
+  "service": "checkout-service",
+  "caller": "spiffe://prod.example/ns/agents/sa/tool-gateway",
+  "actor": "incident-agent-prod",
+  "idempotency_key": "act-dce661be",
+  "body": "{\"to_version\":\"v2.9.0\"}",
+  "outcome": "COMMITTED",
+  "txn_id": "dtx-f672cf0b42",
+  "status": 200,
+  "response_delivered": 1,
+  "traceparent": "00-39a4c281761391840bdca3ff4217178c-69fb6bf1db6cd332-01",
+  "fault": null
+ }
+]

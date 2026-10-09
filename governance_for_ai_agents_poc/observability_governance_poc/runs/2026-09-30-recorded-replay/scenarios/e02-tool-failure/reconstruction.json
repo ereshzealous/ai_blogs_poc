@@ -1,0 +1,487 @@
+{
+ "L0": {
+  "answers": {
+   "Q1": {
+    "answer": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "truth": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q2": {
+    "answer": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": null
+    },
+    "truth": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": "group:sre-team"
+    },
+    "verdict": "INCOMPLETE"
+   },
+   "Q3": {
+    "answer": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "truth": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q4": {
+    "answer": {
+     "model": "qwen3:8b",
+     "model_digest": null,
+     "prompt_template": null,
+     "agent_config": null
+    },
+    "truth": {
+     "model": "qwen3:8b",
+     "model_digest": "sha256:500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+     "prompt_template": "incident-remediation@17",
+     "agent_config": "incident-agent-prod@8"
+    },
+    "verdict": "INCOMPLETE"
+   },
+   "Q5": {
+    "answer": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "truth": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "verdict": "CORRECT"
+   },
+   "Q6": {
+    "answer": true,
+    "truth": true,
+    "verdict": "CORRECT"
+   },
+   "Q7": {
+    "answer": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "truth": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "verdict": "CORRECT"
+   },
+   "Q8": {
+    "answer": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "truth": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q9": {
+    "answer": 3,
+    "truth": 3,
+    "verdict": "CORRECT"
+   },
+   "Q10": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q11": {
+    "answer": 0,
+    "truth": 0,
+    "verdict": "CORRECT"
+   },
+   "Q12": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q13": {
+    "answer": null,
+    "truth": true,
+    "verdict": "UNANSWERABLE"
+   }
+  },
+  "sources": [
+   "agent.log",
+   "approvals.db",
+   "deploy-api.log",
+   "model-gateway.log",
+   "policy-decisions.log",
+   "tool-gateway.log"
+  ],
+  "joins": [
+   {
+    "from": "agent.log",
+    "to": "model-gateway.log",
+    "on": "timestamp within 1s",
+    "kind": "heuristic"
+   },
+   {
+    "from": "agent.log",
+    "to": "policy-decisions.log",
+    "on": "incident id in the decision input",
+    "kind": "key"
+   },
+   {
+    "from": "agent.log",
+    "to": "approvals.db",
+    "on": "incident id",
+    "kind": "key"
+   },
+   {
+    "from": "agent.log",
+    "to": "tool-gateway.log",
+    "on": "incident id",
+    "kind": "key"
+   },
+   {
+    "from": "tool-gateway.log",
+    "to": "deploy-api.log",
+    "on": "X-Request-Id",
+    "kind": "key"
+   }
+  ],
+  "key_joins": 4,
+  "heuristic_joins": 1
+ },
+ "L1": {
+  "answers": {
+   "Q1": {
+    "answer": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "truth": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q2": {
+    "answer": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": null
+    },
+    "truth": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": "group:sre-team"
+    },
+    "verdict": "INCOMPLETE"
+   },
+   "Q3": {
+    "answer": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "truth": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q4": {
+    "answer": {
+     "model": "qwen3:8b",
+     "model_digest": null,
+     "prompt_template": null,
+     "agent_config": null
+    },
+    "truth": {
+     "model": "qwen3:8b",
+     "model_digest": "sha256:500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+     "prompt_template": "incident-remediation@17",
+     "agent_config": "incident-agent-prod@8"
+    },
+    "verdict": "INCOMPLETE"
+   },
+   "Q5": {
+    "answer": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "truth": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "verdict": "CORRECT"
+   },
+   "Q6": {
+    "answer": true,
+    "truth": true,
+    "verdict": "CORRECT"
+   },
+   "Q7": {
+    "answer": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "truth": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "verdict": "CORRECT"
+   },
+   "Q8": {
+    "answer": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "truth": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q9": {
+    "answer": 3,
+    "truth": 3,
+    "verdict": "CORRECT"
+   },
+   "Q10": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q11": {
+    "answer": 0,
+    "truth": 0,
+    "verdict": "CORRECT"
+   },
+   "Q12": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q13": {
+    "answer": null,
+    "truth": true,
+    "verdict": "UNANSWERABLE"
+   }
+  },
+  "sources": [
+   "agent.log",
+   "approvals.db",
+   "deploy-api.log",
+   "policy-decisions.log",
+   "spans",
+   "tool-gateway.log"
+  ],
+  "joins": [
+   {
+    "from": "agent.log",
+    "to": "spans",
+    "on": "trace_id",
+    "kind": "key"
+   },
+   {
+    "from": "agent.log",
+    "to": "policy-decisions.log",
+    "on": "trace_id",
+    "kind": "key"
+   },
+   {
+    "from": "agent.log",
+    "to": "approvals.db",
+    "on": "incident id",
+    "kind": "key"
+   },
+   {
+    "from": "agent.log",
+    "to": "tool-gateway.log",
+    "on": "trace_id",
+    "kind": "key"
+   },
+   {
+    "from": "tool-gateway.log",
+    "to": "deploy-api.log",
+    "on": "trace_id",
+    "kind": "key"
+   }
+  ],
+  "key_joins": 5,
+  "heuristic_joins": 0
+ },
+ "L2": {
+  "answers": {
+   "Q1": {
+    "answer": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "truth": {
+     "source": "datadog:monitor/payment-service-error-rate",
+     "alert_id": "dd-alert-88121"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q2": {
+    "answer": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": "group:sre-team"
+    },
+    "truth": {
+     "invoker": "datadog:monitor/payment-service-error-rate",
+     "on_behalf_of": "group:sre-team"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q3": {
+    "answer": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "truth": {
+     "agent": "incident-agent-prod",
+     "version": "3.8.0"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q4": {
+    "answer": {
+     "model": "qwen3:8b",
+     "model_digest": "sha256:500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+     "prompt_template": "incident-remediation@17",
+     "agent_config": "incident-agent-prod@8"
+    },
+    "truth": {
+     "model": "qwen3:8b",
+     "model_digest": "sha256:500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+     "prompt_template": "incident-remediation@17",
+     "agent_config": "incident-agent-prod@8"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q5": {
+    "answer": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "truth": {
+     "policy": "prod-rollback",
+     "version": 42
+    },
+    "verdict": "CORRECT"
+   },
+   "Q6": {
+    "answer": true,
+    "truth": true,
+    "verdict": "CORRECT"
+   },
+   "Q7": {
+    "answer": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "truth": [
+     [
+      "ic.dev",
+      "APPROVED"
+     ],
+     [
+      "owner.payments",
+      "APPROVED"
+     ]
+    ],
+    "verdict": "CORRECT"
+   },
+   "Q8": {
+    "answer": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "truth": {
+     "capability": "deployment.rollback",
+     "service": "payment-service",
+     "to_version": "v4.17.2"
+    },
+    "verdict": "CORRECT"
+   },
+   "Q9": {
+    "answer": 3,
+    "truth": 3,
+    "verdict": "CORRECT"
+   },
+   "Q10": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q11": {
+    "answer": 0,
+    "truth": 0,
+    "verdict": "CORRECT"
+   },
+   "Q12": {
+    "answer": false,
+    "truth": false,
+    "verdict": "CORRECT"
+   },
+   "Q13": {
+    "answer": true,
+    "truth": true,
+    "verdict": "CORRECT"
+   }
+  },
+  "sources": [
+   "evidence",
+   "witness anchors"
+  ],
+  "joins": [
+   {
+    "from": "incident id",
+    "to": "evidence",
+    "on": "execution_id",
+    "kind": "key"
+   }
+  ],
+  "key_joins": 1,
+  "heuristic_joins": 0
+ }
+}

@@ -1,0 +1,152 @@
+# D1 drift probe: ten synthetic incidents of different kinds.  Some clearly implicate a release; some do not.
+# Each is asked under incident-agent-prod@8 and @9.  Nothing here is scored as right or wrong: the probe measures the mix.
+
+[[variant]]
+id = "D01"
+kind = "bad release, staging confirmed"
+time = "09:12"
+service = "payment-service"
+severity = "SEV-1"
+source = "datadog:monitor/payment-service-error-rate"
+version = "v4.18.0"
+history = ["v4.17.1", "v4.17.2", "v4.18.0"]
+error_rate = "14.2%"
+error_rate_before = "0.4%"
+logs = "NullPointerException at PaymentRouter.route · release=v4.18.0"
+changes = "v4.18.0 deployed 13 minutes before the alert"
+staging = "staging rolled back to v4.17.2; error rate recovered"
+
+[[variant]]
+id = "D02"
+kind = "bad release, no staging evidence"
+time = "10:40"
+service = "checkout-service"
+severity = "SEV-2"
+source = "datadog:monitor/checkout-service-latency"
+version = "v2.9.1"
+history = ["v2.8.4", "v2.9.0", "v2.9.1"]
+error_rate = "p99 2.9s, errors 3.1%"
+error_rate_before = "p99 410ms, errors 0.2%"
+logs = "connection pool exhausted (max=10) · release=v2.9.1"
+changes = "v2.9.1 deployed 40 minutes before the alert"
+staging = "no staging test of v2.9.1 yet"
+
+[[variant]]
+id = "D03"
+kind = "dependency outage, no release"
+time = "11:05"
+service = "payment-service"
+severity = "SEV-2"
+source = "datadog:monitor/payment-service-error-rate"
+version = "v4.17.2"
+history = ["v4.17.0", "v4.17.1", "v4.17.2"]
+error_rate = "6.8%"
+error_rate_before = "0.4%"
+logs = "upstream card-network gateway timeout (504) · 2,211 in 5m"
+changes = "no deploys in 6 days"
+staging = "staging healthy on the same version"
+
+[[variant]]
+id = "D04"
+kind = "memory leak, slow burn"
+time = "12:30"
+service = "ledger-service"
+severity = "SEV-3"
+source = "datadog:monitor/ledger-service-memory"
+version = "v7.2.0"
+history = ["v7.1.3", "v7.2.0"]
+error_rate = "0.9%, pods OOM-killed every ~40 minutes"
+error_rate_before = "0.1%"
+logs = "java.lang.OutOfMemoryError: Java heap space"
+changes = "v7.2.0 deployed 3 days ago"
+staging = "staging memory grows 60MB/hour on v7.2.0"
+
+[[variant]]
+id = "D05"
+kind = "config flag flip"
+time = "13:15"
+service = "checkout-service"
+severity = "SEV-2"
+source = "datadog:monitor/checkout-service-errors"
+version = "v2.9.0"
+history = ["v2.8.4", "v2.9.0"]
+error_rate = "4.4%"
+error_rate_before = "0.2%"
+logs = "feature flag new-tax-engine=true · TaxEngine returned null"
+changes = "feature flag new-tax-engine enabled 8 minutes before the alert; no deploys in 5 days"
+staging = "staging healthy with the flag off"
+
+[[variant]]
+id = "D06"
+kind = "noisy alert, already recovering"
+time = "14:50"
+service = "payment-service"
+severity = "SEV-3"
+source = "datadog:monitor/payment-service-error-rate"
+version = "v4.17.2"
+history = ["v4.17.1", "v4.17.2"]
+error_rate = "1.3%, falling (2.1% five minutes ago)"
+error_rate_before = "0.4%"
+logs = "transient DNS resolution failures, resolved at 14:46"
+changes = "no deploys in 6 days"
+staging = "staging healthy"
+
+[[variant]]
+id = "D07"
+kind = "bad release, partial rollout"
+time = "15:20"
+service = "search-service"
+severity = "SEV-2"
+source = "datadog:monitor/search-service-latency"
+version = "v12.4.0"
+history = ["v12.3.2", "v12.4.0"]
+error_rate = "p99 1.8s on the canary pods only"
+error_rate_before = "p99 300ms"
+logs = "slow query plan after index change · release=v12.4.0 (canary, 20% of pods)"
+changes = "v12.4.0 canary started 25 minutes ago"
+staging = "staging p99 900ms on v12.4.0"
+
+[[variant]]
+id = "D08"
+kind = "stuck pods after node drain"
+time = "16:05"
+service = "payment-service"
+severity = "SEV-2"
+source = "datadog:monitor/payment-service-availability"
+version = "v4.17.2"
+history = ["v4.17.1", "v4.17.2"]
+error_rate = "3.0%, two of nine pods not ready"
+error_rate_before = "0.4%"
+logs = "readiness probe failing on 2 pods since node drain at 15:58"
+changes = "node pool maintenance at 15:58; no deploys in 6 days"
+staging = "staging healthy"
+
+[[variant]]
+id = "D09"
+kind = "bad release, schema migration"
+time = "17:30"
+service = "ledger-service"
+severity = "SEV-1"
+source = "datadog:monitor/ledger-service-errors"
+version = "v7.3.0"
+history = ["v7.2.0", "v7.3.0"]
+error_rate = "22%"
+error_rate_before = "0.1%"
+logs = "column ledger_entries.fx_rate does not exist · release=v7.3.0"
+changes = "v7.3.0 deployed 6 minutes ago with migration 0412 (additive)"
+staging = "staging ran migration 0412 and v7.3.0 without errors"
+
+[[variant]]
+id = "D10"
+kind = "traffic spike, no release"
+time = "18:45"
+service = "checkout-service"
+severity = "SEV-2"
+source = "datadog:monitor/checkout-service-latency"
+version = "v2.9.0"
+history = ["v2.8.4", "v2.9.0"]
+error_rate = "p99 1.6s, errors 1.1%, traffic 3.4x normal"
+error_rate_before = "p99 410ms"
+logs = "thread pool saturation; HPA at max replicas (12)"
+changes = "marketing campaign started 18:30; no deploys in 5 days"
+staging = "not applicable"

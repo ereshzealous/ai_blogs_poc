@@ -1,0 +1,108 @@
+[
+ {
+  "name": "gen_ai.client.token.usage",
+  "unit": "{token}",
+  "description": "tokens per model call",
+  "points": [
+   {
+    "attributes": {
+     "gen_ai.operation.name": "chat",
+     "gen_ai.request.model": "qwen3:8b",
+     "gen_ai.token.type": "input"
+    },
+    "value": {
+     "count": 1,
+     "sum": 597,
+     "min": 597,
+     "max": 597
+    }
+   },
+   {
+    "attributes": {
+     "gen_ai.operation.name": "chat",
+     "gen_ai.request.model": "qwen3:8b",
+     "gen_ai.token.type": "output"
+    },
+    "value": {
+     "count": 1,
+     "sum": 165,
+     "min": 165,
+     "max": 165
+    }
+   }
+  ]
+ },
+ {
+  "name": "gen_ai.client.operation.duration",
+  "unit": "s",
+  "description": "model call duration",
+  "points": [
+   {
+    "attributes": {
+     "gen_ai.operation.name": "chat",
+     "gen_ai.request.model": "qwen3:8b"
+    },
+    "value": {
+     "count": 1,
+     "sum": 9.423,
+     "min": 9.423,
+     "max": 9.423
+    }
+   }
+  ]
+ },
+ {
+  "name": "lineage.policy.decisions",
+  "unit": "",
+  "description": "policy decisions by decision and policy version",
+  "points": [
+   {
+    "attributes": {
+     "decision": "ALLOW_WITH_APPROVAL",
+     "policy_version": "42"
+    },
+    "value": 1
+   }
+  ]
+ },
+ {
+  "name": "lineage.approvals",
+  "unit": "",
+  "description": "approval decisions",
+  "points": [
+   {
+    "attributes": {
+     "decision": "APPROVED"
+    },
+    "value": 2
+   }
+  ]
+ },
+ {
+  "name": "lineage.tool.attempts",
+  "unit": "",
+  "description": "tool attempts by capability and result",
+  "points": [
+   {
+    "attributes": {
+     "capability": "deployment.rollback",
+     "result": "COMMITTED"
+    },
+    "value": 1
+   }
+  ]
+ },
+ {
+  "name": "lineage.executions",
+  "unit": "",
+  "description": "agent executions by outcome",
+  "points": [
+   {
+    "attributes": {
+     "outcome": "MITIGATED"
+    },
+    "value": 1
+   }
+  ]
+ }
+]

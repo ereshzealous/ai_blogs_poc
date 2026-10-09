@@ -1,0 +1,98 @@
+[
+ {
+  "t_plus_s": 0.0,
+  "event": "execution.started",
+  "attempt": null,
+  "summary": "INC-4471 SEV-1 from datadog:monitor/payment-service-error-rate for group:sre-team"
+ },
+ {
+  "t_plus_s": 0.0,
+  "event": "context.accessed",
+  "attempt": null,
+  "summary": "runbooks.payment-service ALLOW"
+ },
+ {
+  "t_plus_s": 0.0,
+  "event": "context.accessed",
+  "attempt": null,
+  "summary": "deployments.history ALLOW"
+ },
+ {
+  "t_plus_s": 9.898,
+  "event": "model.invoked",
+  "attempt": null,
+  "summary": "qwen3:8b \u00b7 incident-remediation@17 \u00b7 incident-agent-prod@8"
+ },
+ {
+  "t_plus_s": 9.899,
+  "event": "decision.proposed",
+  "attempt": null,
+  "summary": "deployment.rollback payment-service v4.17.2"
+ },
+ {
+  "t_plus_s": 9.902,
+  "event": "policy.evaluated",
+  "attempt": null,
+  "summary": "prod-rollback@42 ALLOW_WITH_APPROVAL"
+ },
+ {
+  "t_plus_s": 9.906,
+  "event": "approval.requested",
+  "attempt": null,
+  "summary": "apr-2d7d37e0 quorum 2"
+ },
+ {
+  "t_plus_s": 10.857,
+  "event": "approval.decided",
+  "attempt": null,
+  "summary": "ic.dev APPROVED"
+ },
+ {
+  "t_plus_s": 10.857,
+  "event": "approval.decided",
+  "attempt": null,
+  "summary": "owner.payments APPROVED"
+ },
+ {
+  "t_plus_s": 10.863,
+  "event": "action.authorized",
+  "attempt": null,
+  "summary": "act-7b7550b9 key=act-7b7550b9"
+ },
+ {
+  "t_plus_s": 10.864,
+  "event": "attempt.started",
+  "attempt": "act-7b7550b9.a1",
+  "summary": "attempt 1"
+ },
+ {
+  "t_plus_s": 12.369,
+  "event": "attempt.finished",
+  "attempt": "act-7b7550b9.a1",
+  "summary": "attempt 1 TIMEOUT"
+ },
+ {
+  "t_plus_s": 12.577,
+  "event": "attempt.started",
+  "attempt": "act-7b7550b9.a2",
+  "summary": "attempt 2"
+ },
+ {
+  "t_plus_s": 12.584,
+  "event": "attempt.finished",
+  "attempt": "act-7b7550b9.a2",
+  "summary": "attempt 2 REPLAYED dtx-886a012833"
+ },
+ {
+  "t_plus_s": 12.591,
+  "event": "effect.verified",
+  "attempt": null,
+  "summary": "revision 184 -> 185, v4.17.2, verified=True"
+ },
+ {
+  "t_plus_s": 12.591,
+  "event": "execution.completed",
+  "attempt": null,
+  "summary": "MITIGATED"
+ }
+]

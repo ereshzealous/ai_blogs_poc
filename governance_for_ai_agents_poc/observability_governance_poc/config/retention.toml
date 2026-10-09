@@ -1,0 +1,36 @@
+# Retention and access classes.  Operational telemetry and governance evidence start from the same runtime events but
+# are kept for different people, for different times, under different rules.  Values are illustrative, not legal advice.
+
+[classes.debug-logs]
+retention_days = 7
+readers = ["on-call engineers"]
+integrity = "none"
+
+[classes.ops-telemetry]
+retention_days = 30
+readers = ["on-call engineers", "SRE"]
+integrity = "none"
+sampling = "allowed"
+
+[classes.audit-evidence]
+retention_days = 400
+readers = ["incident review", "security", "compliance"]
+integrity = "hash chain + external anchor"
+sampling = "never"
+
+[event_types]
+"execution.started" = "audit-evidence"
+"execution.completed" = "audit-evidence"
+"workflow.resumed" = "audit-evidence"
+"context.accessed" = "audit-evidence"
+"model.invoked" = "audit-evidence"
+"decision.proposed" = "audit-evidence"
+"policy.evaluated" = "audit-evidence"
+"approval.requested" = "audit-evidence"
+"approval.decided" = "audit-evidence"
+"gateway.denied" = "audit-evidence"
+"action.authorized" = "audit-evidence"
+"attempt.started" = "audit-evidence"
+"attempt.finished" = "audit-evidence"
+"attempt.reconciled" = "audit-evidence"
+"effect.verified" = "audit-evidence"

@@ -1,0 +1,65 @@
+{
+ "scenario": "e12a-lost-response",
+ "title": "Lost response after a committed rollback (flagship)",
+ "group": "side-effect ambiguity",
+ "question": "The rollback commits, the response is lost, the agent times out and retries: how many times did production change, and can we prove it?",
+ "expect": {
+  "outcome": "MITIGATED",
+  "mutations": 1,
+  "attempts": 2,
+  "tool_invoked": true,
+  "timeouts": 1
+ },
+ "faults": [
+  {
+   "kind": "drop_response_after_commit",
+   "times": 1
+  }
+ ],
+ "run": {
+  "seed": 7,
+  "client_timeout_s": 1.5,
+  "drop_hold_s": 3.0,
+  "approval_delay_s": 0.4,
+  "max_attempts": 3
+ },
+ "executions": {
+  "target": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-1",
+   "decisions": [
+    {
+     "who": "ic.dev",
+     "decision": "APPROVED",
+     "reason": "error rate and staging evidence implicate v4.18.0"
+    },
+    {
+     "who": "owner.payments",
+     "decision": "APPROVED",
+     "reason": "agree, roll back"
+    }
+   ],
+   "annotation": null,
+   "context_request": null,
+   "planner_override": null,
+   "direct_gateway_call": false,
+   "redeliver_step": null,
+   "crash_at": null
+  },
+  "background": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-2",
+   "decisions": [
+    {
+     "who": "ic.sam",
+     "decision": "APPROVED",
+     "reason": "checkout latency follows v2.9.1"
+    }
+   ]
+  }
+ }
+}

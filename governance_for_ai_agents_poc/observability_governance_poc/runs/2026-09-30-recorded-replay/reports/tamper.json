@@ -1,0 +1,69 @@
+{
+ "source": "scenarios/e01-success/evidence/audit-events.jsonl",
+ "events": 27,
+ "anchors": 2,
+ "baseline": {
+  "events": 27,
+  "anchors": 2,
+  "chain_ok": true,
+  "anchors_ok": true,
+  "intact": true,
+  "first_problem": [],
+  "problems": 0
+ },
+ "T1_edit_in_place": {
+  "what": "approval.decided seq 15: approver ic.sam -> eng.lee, hashes untouched",
+  "events": 27,
+  "anchors": 2,
+  "chain_ok": false,
+  "anchors_ok": true,
+  "intact": false,
+  "first_problem": [
+   {
+    "seq": 15,
+    "problem": "event_hash does not match the event's content"
+   }
+  ],
+  "problems": 1
+ },
+ "T2_rewrite_chain": {
+  "what": "the same edit, every later hash recomputed so the chain is self-consistent",
+  "events": 27,
+  "anchors": 2,
+  "chain_ok": true,
+  "anchors_ok": false,
+  "intact": false,
+  "first_problem": [
+   {
+    "seq": 20,
+    "problem": "chain head differs from the external anchor (chain rewritten)"
+   }
+  ],
+  "problems": 2
+ },
+ "T3_truncate": {
+  "what": "the last three events deleted",
+  "events": 24,
+  "anchors": 2,
+  "chain_ok": true,
+  "anchors_ok": false,
+  "intact": false,
+  "first_problem": [
+   {
+    "seq": 27,
+    "problem": "anchored event is missing (truncated chain)"
+   }
+  ],
+  "problems": 1
+ },
+ "T4_rewrite_chain_and_anchor": {
+  "what": "T2, and the witness rewritten too: the case an anchor under the same control cannot catch",
+  "events": 27,
+  "anchors": 2,
+  "chain_ok": true,
+  "anchors_ok": true,
+  "intact": true,
+  "first_problem": [],
+  "problems": 0
+ }
+}

@@ -1,0 +1,60 @@
+{
+ "scenario": "e03-policy-denial",
+ "title": "Policy denies the proposal",
+ "group": "governance failures",
+ "question": "A proposal existed and was denied: is there proof nothing downstream happened?",
+ "expect": {
+  "outcome": "NOT_MITIGATED",
+  "mutations": 0,
+  "attempts": 0,
+  "tool_invoked": false,
+  "policy_decision": "DENY"
+ },
+ "faults": [],
+ "run": {
+  "seed": 7,
+  "client_timeout_s": 1.5,
+  "drop_hold_s": 3.0,
+  "approval_delay_s": 0.4,
+  "max_attempts": 3
+ },
+ "executions": {
+  "target": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-3",
+   "decisions": [
+    {
+     "who": "ic.dev",
+     "decision": "APPROVED",
+     "reason": "error rate and staging evidence implicate v4.18.0"
+    },
+    {
+     "who": "owner.payments",
+     "decision": "APPROVED",
+     "reason": "agree, roll back"
+    }
+   ],
+   "annotation": null,
+   "context_request": null,
+   "planner_override": null,
+   "direct_gateway_call": false,
+   "redeliver_step": null,
+   "crash_at": null
+  },
+  "background": {
+   "policy": "prod-rollback@42",
+   "agent_config": "incident-agent-prod@8",
+   "idempotency": "on",
+   "severity": "SEV-2",
+   "decisions": [
+    {
+     "who": "ic.sam",
+     "decision": "APPROVED",
+     "reason": "checkout latency follows v2.9.1"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,110 @@
+{
+ "Q1": {
+  "question": "What triggered the execution?",
+  "value": {
+   "source": "datadog:monitor/payment-service-error-rate",
+   "alert_id": "dd-alert-88121"
+  }
+ },
+ "Q2": {
+  "question": "Which principal initiated it?",
+  "value": {
+   "invoker": "datadog:monitor/payment-service-error-rate",
+   "on_behalf_of": "group:sre-team"
+  }
+ },
+ "Q3": {
+  "question": "Which agent and version acted?",
+  "value": {
+   "agent": "incident-agent-prod",
+   "version": "3.8.0"
+  }
+ },
+ "Q4": {
+  "question": "Which model and configuration produced the proposal?",
+  "value": {
+   "model": "qwen3:8b",
+   "model_digest": "sha256:500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+   "prompt_template": "incident-remediation@17",
+   "agent_config": "incident-agent-prod@8"
+  }
+ },
+ "Q5": {
+  "question": "Which policy and version evaluated it?",
+  "value": {
+   "policy": "prod-rollback",
+   "version": 42
+  }
+ },
+ "Q6": {
+  "question": "Was approval required?",
+  "value": true
+ },
+ "Q7": {
+  "question": "Who approved or rejected it?",
+  "value": [
+   [
+    "ic.dev",
+    "APPROVED"
+   ],
+   [
+    "owner.payments",
+    "APPROVED"
+   ]
+  ]
+ },
+ "Q8": {
+  "question": "Which capability and arguments reached production?",
+  "value": {
+   "capability": "deployment.rollback",
+   "service": "payment-service",
+   "to_version": "v4.17.2"
+  }
+ },
+ "Q9": {
+  "question": "How many attempts reached the production API?",
+  "value": 1,
+  "detail": {
+   "requests": [
+    {
+     "n": 1,
+     "request_id": "tgw-cc4792f876ee",
+     "idempotency_key": "act-e71e8b5e",
+     "outcome": "COMMITTED",
+     "response_delivered": 1,
+     "fault": null
+    }
+   ]
+  }
+ },
+ "Q10": {
+  "question": "Did the side effect occur?",
+  "value": true
+ },
+ "Q11": {
+  "question": "How many times did production change?",
+  "value": 1,
+  "detail": {
+   "revisions_created": [
+    {
+     "revision": 185,
+     "version": "v4.17.2",
+     "txn_id": "dtx-5e6abd738c"
+    }
+   ]
+  }
+ },
+ "Q12": {
+  "question": "Was the incident actually mitigated?",
+  "value": true,
+  "detail": {
+   "final_version": "v4.17.2",
+   "final_revision": 185,
+   "recorded_outcome": "MITIGATED"
+  }
+ },
+ "Q13": {
+  "question": "Can the evidence's integrity be verified?",
+  "value": true
+ }
+}

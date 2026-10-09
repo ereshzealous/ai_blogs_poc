@@ -1,0 +1,37 @@
+incident-agent-prod@8 D01 deployment.rollback v4.17.2
+incident-agent-prod@8 D02 deployment.rollback v2.8.4
+incident-agent-prod@8 D03 deployment.rollback v4.17.1
+incident-agent-prod@8 D04 deployment.rollback v7.1.3
+incident-agent-prod@8 D05 deployment.rollback v2.8.4
+incident-agent-prod@8 D06 noAction 
+incident-agent-prod@8 D07 deployment.rollback v12.3.2
+incident-agent-prod@8 D08 pods.restart 
+incident-agent-prod@8 D09 deployment.rollback v7.2.0
+incident-agent-prod@8 D10 pods.restart 
+incident-agent-prod@9 D01 pods.restart 
+incident-agent-prod@9 D02 pods.restart 
+incident-agent-prod@9 D03 diagnostics.run 
+incident-agent-prod@9 D04 diagnostics.run 
+incident-agent-prod@9 D05 diagnostics.run 
+incident-agent-prod@9 D06 diagnostics.run 
+incident-agent-prod@9 D07 diagnostics.run 
+incident-agent-prod@9 D08 pods.restart 
+incident-agent-prod@9 D09 diagnostics.run 
+incident-agent-prod@9 D10 pods.restart 
+{
+ "variants": 10,
+ "calls": 20,
+ "distribution": {
+  "incident-agent-prod@8": {
+   "deployment.rollback": 7,
+   "noAction": 1,
+   "pods.restart": 2
+  },
+  "incident-agent-prod@9": {
+   "pods.restart": 4,
+   "diagnostics.run": 6
+  }
+ },
+ "variants_whose_action_changed": 8,
+ "rollback_proposals_denied_by_policy": 3
+}

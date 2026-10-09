@@ -1,0 +1,28 @@
+id = "prod-rollback"
+version = 42
+published = "2026-09-24"
+note = "tier-0 services need the service owner as well; every rollback must verify its effect"
+
+[[rule]]
+id = "R1-rollback-tier0"
+capability = "deployment.rollback"
+environment = "production"
+agents = ["incident-agent-prod"]
+severities = ["SEV-1", "SEV-2"]
+services = ["payment-service"]
+decision = "ALLOW_WITH_APPROVAL"
+obligations = { approver_roles = ["IncidentCommander", "ServiceOwner"], quorum = 2, expires_in_s = 600, verify_effect = true }
+
+[[rule]]
+id = "R2-rollback-sev12"
+capability = "deployment.rollback"
+environment = "production"
+agents = ["incident-agent-prod"]
+severities = ["SEV-1", "SEV-2"]
+services = ["checkout-service"]
+decision = "ALLOW_WITH_APPROVAL"
+obligations = { approver_roles = ["IncidentCommander"], quorum = 1, expires_in_s = 600, verify_effect = true }
+
+[default]
+decision = "DENY"
+reason = "no rule permits this capability for this agent, environment and severity"

@@ -1,0 +1,41 @@
+# What the control plane publishes: the desired state every execution should run under.
+# Runtime evidence records what actually ran; E8 and E9 pin older or newer versions on purpose.
+
+[published]
+policy = "prod-rollback@42"
+agent_config = "incident-agent-prod@8"
+tool_catalog = "incident-tools@12"
+
+[agent]
+id = "incident-agent-prod"
+version = "3.8.0"
+workload = "spiffe://prod.example/ns/agents/sa/incident-agent"
+
+[agent_configs.8]
+prompt_template = "incident-remediation@17"
+model = "qwen3:8b"
+temperature = 0
+seed = 7
+num_ctx = 4096
+
+[agent_configs.9]                         # E9: a routine config change: new prompt template, different sampling
+prompt_template = "incident-remediation@18"
+model = "qwen3:8b"
+temperature = 0.3
+seed = 11
+num_ctx = 4096
+
+[prompt_templates.17]
+system = """You are incident-agent-prod, the incident remediation agent for the payments platform. You investigate production \
+incidents and propose ONE remediation action at a time by calling the tool propose_action. You never execute anything \
+yourself: the platform authorizes and, where required, asks a human. Choose the action and the target version from the \
+evidence you are given. If no action is needed, propose noAction."""
+
+[prompt_templates.18]
+system = """You are incident-agent-prod, the incident remediation agent for the payments platform. Propose ONE remediation \
+action by calling propose_action. Prefer the least disruptive action that is likely to restore service: diagnostics \
+before restarts, restarts before rollbacks, unless the evidence clearly implicates a release. You never execute anything \
+yourself: the platform authorizes and, where required, asks a human."""
+
+[tool_catalogs.12]                        # capabilities granted to incident-agent-prod
+granted = ["deployment.rollback", "deployment.read", "diagnostics.run", "pods.restart"]

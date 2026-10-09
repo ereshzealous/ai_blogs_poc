@@ -1,0 +1,38 @@
+[
+ {
+  "n": 1,
+  "received_at": "2026-09-30T06:50:57.261Z",
+  "request_id": "tgw-0cd99a7e53ea",
+  "method": "POST",
+  "path": "/v1/deployments/checkout-service/rollback",
+  "service": "checkout-service",
+  "caller": "spiffe://prod.example/ns/agents/sa/tool-gateway",
+  "actor": "incident-agent-prod",
+  "idempotency_key": "act-7582d5b1",
+  "body": "{\"to_version\":\"v2.9.0\"}",
+  "outcome": "COMMITTED",
+  "txn_id": "dtx-8388761f62",
+  "status": 200,
+  "response_delivered": 1,
+  "traceparent": "00-532d938adefb6cf637a729bc8dd81b73-ea64dd842366b0c4-01",
+  "fault": null
+ },
+ {
+  "n": 2,
+  "received_at": "2026-09-30T06:51:07.185Z",
+  "request_id": "tgw-98eb028d475c",
+  "method": "POST",
+  "path": "/v1/deployments/payment-service/rollback",
+  "service": "payment-service",
+  "caller": "spiffe://prod.example/ns/agents/sa/tool-gateway",
+  "actor": "incident-agent-prod",
+  "idempotency_key": "act-a9fb7710",
+  "body": "{\"to_version\":\"v4.17.2\"}",
+  "outcome": "ACKED_NOT_APPLIED",
+  "txn_id": "dtx-631d4a4b7a",
+  "status": 200,
+  "response_delivered": 1,
+  "traceparent": "00-9dcaee5ccac291d3650164b72f45d31c-8efb5e65d5eb322f-01",
+  "fault": "ack_without_apply"
+ }
+]

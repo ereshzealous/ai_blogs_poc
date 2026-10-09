@@ -1,0 +1,166 @@
+# P1 · Production Agentic AI Platform (the series capstone) · proof manifest
+# Production AI Engineering Proof Contract v1 (pae-proof/v1), vendor/evidence_kit/proof_contract/PROOF_STANDARD.md
+#
+# What a reader needs to know about the proof that is not a number: the article, the run mode, the replay contract, the
+# entry points, and the execution profile. Every REAL and INJECTED item names the check that shows it ran; a diagram
+# saying so is not evidence. Numbers are {{facts}} of the run. tools/proof_pack.py builds each run's manifest.json from
+# this file and what the run recorded.
+
+schema = "pae-proof/v1"
+
+[article]
+id = "P1"
+series = "Production AI Engineering"
+learning = "Capstone"
+title = "Production Agentic AI Platform: The Final Reference Architecture"
+medium_title = "The Agent Is Not the Architecture"
+headline = "The agent proposes. The platform decides what reaches production."
+question = "What has to happen before one consequential action, proposed by a probabilistic agent, is allowed to change production, and can it be proven afterwards?"
+thesis = ["Models reason.", "Agents orchestrate.", "The platform authorizes.", "The runtime enforces.", "The control plane governs.", "Evidence proves what happened."]
+principle = "Agents may reason probabilistically, but every consequential production action executes through deterministic, policy-enforced infrastructure."
+poc = "production_agentic_ai_platform"
+poc_depth = "deep: one vertical slice through every production boundary, not every architecture box"
+scenario = "INC-4917: checkout-api in production, p95 latency over its SLO after release v4.17; the governed remediation is a rollback to v4.16 (the incident of F2 · Layered Agent Platform, carried through the series)"
+one_line = "This POC follows one consequential production action through identity, context, model routing, MCP discovery, deterministic policy, exact human approval, scoped execution authority, durability and causal evidence, and then tries to break each boundary on purpose."
+
+[run]
+runtime_mode = "deterministic and offline: recorded model providers (no live model, no network), real MCP subprocesses, SQLite state, real SIGKILLs"
+replay_level = "SEMANTIC"
+replay_contract = "a second run of the same code from a fresh start reproduces every check's verdict and observed value and every content-derived identifier; trace ids, timestamps, process ids and wall-clock time differ and are listed, not compared"
+
+[entrypoints]
+verify = "uv run pap verify"
+test = "uv run pap test"
+proof = "uv run pap proof"
+run = "uv run pap run --run-id <new-run>"
+replay = "uv run pap replay"
+negative_control = "uv run pap negative-control"
+lab = "uv run pap lab"
+package = "uv run pap package"
+promote = "uv run pap promote <run> --reason ... --note ..."
+make = "make verify · make test · make proof · make replay · make negative-control · make lab · make package"
+
+[paths]
+published = "evidence/published.json"
+run = "evidence/runs/<run>/ (the package: manifest.json, results.json, checks.jsonl, summary.json, summary.md, replay.json, negative-control/results.json, SHA256SUMS)"
+raw = "evidence/runs/<run>/raw/ (what run_proof.py wrote, never edited)"
+replay = "evidence/runs/<run>/replay/raw/ (the second run)"
+negative_control = "evidence/runs/<run>/negative-control/raw/ (negative_control.py)"
+verification = "evidence/verification/verification.json"
+lab = "lab/index.html"
+readme = "README.md"
+contract = "vendor/evidence_kit/proof_contract/PROOF_STANDARD.md"
+relocation = "evidence/RELOCATION.json (runs made before this layout, moved byte for byte)"
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised"
+items = [
+  { text = "MCP over stdio with the official Python SDK {{env_mcp_sdk}}: three MCP server subprocesses; W3C traceparent carried in each request's _meta", check = "P1-R1-C16" },
+  { text = "The release MCP server verifies the execution capability itself (signature, expiry, audience, scope, digest, single use)", check = "P1-R5-C10" },
+  { text = "A deterministic, fail-closed policy engine (rules P01–P13) deciding ALLOW, DENY or REQUIRE_APPROVAL", check = "P1-R1-C07" },
+  { text = "Canonical JSON and SHA-256 invocation digests; approvals bound to the digest", check = "P1-R3-C01" },
+  { text = "HMAC-signed approvals, capabilities and control-plane bundles (one ephemeral key set per run)", check = "P1-R3-C03" },
+  { text = "Retrieval predicates (tenant, classification, ACL, environment, lifecycle) evaluated in SQL before ranking", check = "P1-R8-C01" },
+  { text = "Durable checkpoints, action journal and budget ledger in SQLite (WAL)", check = "P1-R9-C04" },
+  { text = "Runtime budget enforcement before each model call", check = "P1-R6-C04" },
+  { text = "POSIX SIGKILL of separate runtime processes, then restart ({{raw.sigkills}} processes killed)", check = "P1-R9-C02" },
+  { text = "Idempotency keys bound to the invocation, honoured by the release system", check = "P1-R10-C03" },
+  { text = "OpenTelemetry SDK {{env_opentelemetry_sdk}} spans and a hash-chained audit record, one trace per action", check = "P1-R13-C18" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a faithful local substitute for an enterprise or external system"
+items = [
+  { text = "Enterprise systems: the release pipeline, ITSM, metrics and logs, one SQLite world per experiment" },
+  { text = "The identity provider and workload attestation: YAML principals and a signed workload document, not SSO or SPIRE" },
+  { text = "The secrets platform: one ephemeral HMAC key set per run, destroyed at its end, not a vault" },
+  { text = "Enterprise knowledge and episodic memory: SQLite tables with a keyword retriever, not a vector database" },
+]
+
+[[reality]]
+class = "RECORDED"
+meaning = "captured model input and output, reused for deterministic replay"
+items = [
+  { text = "Model providers A and B replay scripted tapes (scenarios/inc_4917/tapes/); no live model was called in this run", check = "P1-R7-C01" },
+]
+
+[[reality]]
+class = "GENERATED"
+meaning = "synthetic content that creates scale or collision pressure"
+items = [
+  { text = "Nothing: the scenario is a hand-written fixture (scenarios/inc_4917/seed.yaml); this POC tests boundaries, not scale" },
+]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure or unsafe condition introduced on purpose"
+items = [
+  { text = "The approved action changed after approval, a rewritten approval, a replayed approval, self-approval", check = "P1-R3-C01" },
+  { text = "Capability variants: missing, expired, another service or version, digest, signature, audience, no idempotency key, reuse", check = "P1-R5-C02" },
+  { text = "A planner that never stops", check = "P1-R6-C01" },
+  { text = "A provider outage (model A), then both eligible models down", check = "P1-R7-C01" },
+  { text = "A SIGKILL after the approval checkpoint, and a checkpoint altered during the crash", check = "P1-R9-C08" },
+  { text = "A SIGKILL after the release system committed, before the journal recorded it", check = "P1-R10-C01" },
+  { text = "The kill switch thrown before a run, and between approval and execution", check = "P1-R11-C07" },
+  { text = "A prompt injection in a log line, with the context guard missing it", check = "P1-R12-C05" },
+  { text = "The negative control: the approval requirement removed from policy", check = "P1-R14-C04" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "a design concept this POC does not exercise"
+items = [
+  { text = "Experience channels beyond the pager request: web, mobile, copilot, Slack or Teams, API, events, automation" },
+  { text = "Multi-agent supervision and agent graphs: the POC runs one agent" },
+  { text = "A vector index over enterprise knowledge, quality, latency and cost routing across live providers" },
+  { text = "Enterprise SSO, SPIFFE/SPIRE, a vault, a production policy language (OPA or Cedar), sandboxed connector runtimes" },
+  { text = "Evaluation and release gates, environment promotion, a governance dashboard, SIEM integration, multi-region operation" },
+]
+
+[[profile]]
+group = "PROTOCOL"
+rows = [
+  ["Actual MCP", "yes: official Python SDK {{env_mcp_sdk}}, stdio, separate server processes", "P1-R1-C16"],
+  ["Discovery separate from execution", "yes: the servers expose {{r4_exposed}} tools; discovery offered {{r4_offered}}", "P1-R4-C01"],
+  ["Resource-side capability check", "yes: the release server refused {{r5_denied}} of {{r5_cases}} variants", "P1-R5-C11"],
+]
+
+[[profile]]
+group = "MODELS"
+rows = [
+  ["Mode", "recorded providers A and B (tapes), offline", "P1-R7-C01"],
+  ["Model calls in the governed path", "{{r1_model_calls}} through the model gateway", "P1-R1-C04"],
+]
+
+[[profile]]
+group = "STATE AND DURABILITY"
+rows = [
+  ["Checkpoints", "SQLite (WAL): {{env_checkpoint_store}}", "P1-R9-C04"],
+  ["Crash injection", "real SIGKILL of separate processes: {{raw.sigkills}} killed across R9 and R10", "P1-R9-C02"],
+  ["Idempotency", "a key bound to the invocation; restarts leave {{r10_lookup_rollbacks}} rollback", "P1-R10-C02"],
+]
+
+[[profile]]
+group = "AUTHORIZATION"
+rows = [
+  ["Policy", "deterministic engine over YAML, fail-closed: {{env_policy_engine}}", "P1-R1-C07"],
+  ["Approval", "bound to the invocation's SHA-256 digest", "P1-R3-C01"],
+  ["Capability", "{{r5_ttl}} s, one audience, one use, one digest", "P1-R5-C10"],
+]
+
+[[profile]]
+group = "OBSERVABILITY"
+rows = [
+  ["Tracing", "OpenTelemetry SDK {{env_opentelemetry_sdk}} to JSONL; one trace across audit, spans and MCP servers", "P1-R1-C16"],
+  ["Audit", "hash-chained: {{raw.audit_chains_verified}} of {{raw.audit_chains}} chains verify", "P1-R13-C21"],
+  ["Reconstruction", "{{r13_questions}} questions answered from evidence and checked against systems of record", "P1-R13-C01"],
+]
+
+[[profile]]
+group = "REPLAY AND NEGATIVE CONTROL"
+rows = [
+  ["Replay", "{{replay.level}}: {{replay_checks_identical}}/{{replay_checks_compared}} checks and {{replay_ids_identical}}/{{replay_ids_compared}} ids identical (verification, not a check)", ""],
+  ["Negative control", "approval requirement removed: {{neg_checks_failed}} of {{neg_checks}} checks failed as assertions, {{neg_harness_exceptions}} harness exceptions", "P1-R14-C04"],
+]

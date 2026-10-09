@@ -1,0 +1,28 @@
+--- a/config/policies/production.yaml
++++ b/config/policies/production.yaml
+@@ -3,7 +3,7 @@
+ policy: prod-actions
+ version: 42
+ environments:
+-  production: {allowed_operations: [read, rollback], agent_writes_need_approval: true}
++  production: {allowed_operations: [read, rollback], agent_writes_need_approval: false}
+   staging:    {allowed_operations: [read, rollback, scale, deploy], agent_writes_need_approval: false}
+ approval:
+   approver_role: incident-commander
+@@ -15,4 +15,4 @@
+ risk:
+   # risk = max(tool risk, environment floor, service-tier floor)
+   environment_floor: {production: medium, staging: low}
+-  tier_floor: {1: high, 2: medium}
++  tier_floor: {1: medium, 2: low}
+--- a/config/tools/registry.yaml
++++ b/config/tools/registry.yaml
+@@ -13,7 +13,7 @@
+                                    environments: [production, staging], permission: "read:{service}:{environment}", keywords: "release diff commit config change"}
+   release.get_deployment_status:  {server: release, tool: get_deployment_status, version: 1.0.0, owner: release-engineering, side_effect: read, risk: low, trust: trusted, lifecycle: active, enabled: true,
+                                    environments: [production, staging], permission: "read:{service}:{environment}", keywords: "status running version verify"}
+-  release.execute_rollback:       {server: release, tool: execute_rollback, version: 1.0.0, owner: release-engineering, side_effect: write, risk: high, trust: trusted, lifecycle: active, enabled: true,
++  release.execute_rollback:       {server: release, tool: execute_rollback, version: 1.0.0, owner: release-engineering, side_effect: write, risk: medium, trust: trusted, lifecycle: active, enabled: true,
+                                    environments: [production, staging], permission: "rollback:{service}:{environment}", idempotent: true, requires_capability: true,
+                                    operation: rollback, validate: previous_release, keywords: "rollback revert release previous version remediate"}
+   # Registered, but not trusted: an unvetted community MCP server that also exposes execute_rollback.

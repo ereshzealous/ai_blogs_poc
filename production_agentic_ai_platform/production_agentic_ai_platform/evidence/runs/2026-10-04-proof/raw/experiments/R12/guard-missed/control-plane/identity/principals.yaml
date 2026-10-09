@@ -1,0 +1,32 @@
+# Human principals (as an IdP would assert them), the agent registry's workload attestations, and the universe used to
+# expand wildcard grants.  Permissions are operation:service:environment.
+universe:
+  operations: [read, rollback, scale, deploy, approve]
+  services: [checkout-api, payment-gateway, inventory-api]
+  environments: [production, staging]
+
+users:
+  sre.alice:
+    tenant: shop
+    groups: [sre]
+    clearance: internal
+    roles: [sre-oncall]
+    permissions: ["read:*:*", "rollback:*:production", "rollback:*:staging", "scale:*:production", "deploy:*:staging"]
+  ic.bob:
+    tenant: shop
+    groups: [sre, incident-commanders]
+    clearance: confidential
+    roles: [incident-commander]
+    permissions: ["read:*:*", "approve:*:production"]
+  dev.dan:
+    tenant: shop
+    groups: [checkout-engineering]
+    clearance: internal
+    roles: [developer]
+    permissions: ["read:checkout-api:*"]
+
+workloads:
+  spiffe://shop.example/ns/agents/sa/incident-remediator:
+    environment: production
+    attested_by: runtime-attestor      # simulated: a signed workload identity document, not a real SPIRE agent
+    permissions: ["read:*:production", "rollback:*:production"]

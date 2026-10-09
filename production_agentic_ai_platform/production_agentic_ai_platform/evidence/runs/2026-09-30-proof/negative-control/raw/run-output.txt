@@ -1,0 +1,46 @@
+proof run negative
+  unit tests: 12 passed, 0 failed
+  R1   FAIL  0/1  Governed happy path
+  R2   FAIL  6/7  Effective authority is an intersection
+  R3   FAIL  0/1  Approval tampering
+  R4   PASS  8/8  Tool governance
+  R5   PASS  11/11  Scoped, short-lived capability
+  R6   PASS  7/7  Budget exhaustion
+  R7   FAIL  0/1  Model routing and fallback
+  R8   PASS  8/8  Context isolation
+  R9   FAIL  0/1  Crash and resume around the approval
+  R10  FAIL  0/1  Lost response and idempotency
+  R11  FAIL  0/1  Control-plane kill switch
+  R12  PASS  6/6  Prompt injection vs policy
+  R13  FAIL  0/1  Trace reconstruction
+# Proof run negative
+
+5/13 experiments passed · 49/57 checks passed · unit tests 12 passed, 0 failed · 17.8 s
+
+| Experiment | Status | Checks |
+|---|---|---|
+| R1 · Governed happy path | FAIL | 0/1 |
+| R2 · Effective authority is an intersection | FAIL | 6/7 |
+| R3 · Approval tampering | FAIL | 0/1 |
+| R4 · Tool governance | PASS | 8/8 |
+| R5 · Scoped, short-lived capability | PASS | 11/11 |
+| R6 · Budget exhaustion | PASS | 7/7 |
+| R7 · Model routing and fallback | FAIL | 0/1 |
+| R8 · Context isolation | PASS | 8/8 |
+| R9 · Crash and resume around the approval | FAIL | 0/1 |
+| R10 · Lost response and idempotency | FAIL | 0/1 |
+| R11 · Control-plane kill switch | FAIL | 0/1 |
+| R12 · Prompt injection vs policy | PASS | 6/6 |
+| R13 · Trace reconstruction | FAIL | 0/1 |
+| Cross-cutting | PASS | 3/3 |
+
+## Failed checks
+
+- `R1.completed` the experiment ran to completion: expected `no exception`, got `IndexError: list index out of range`
+- `R2.checkout` rollback checkout-api/production: inside the intersection -> REQUIRE_APPROVAL: expected `REQUIRE_APPROVAL`, got `ALLOW`
+- `R3.completed` the experiment ran to completion: expected `no exception`, got `KeyError: 'approval_id'`
+- `R7.completed` the experiment ran to completion: expected `no exception`, got `KeyError: 'proposal'`
+- `R9.completed` the experiment ran to completion: expected `no exception`, got `ApprovalError: APPROVAL_UNKNOWN: None`
+- `R10.completed` the experiment ran to completion: expected `no exception`, got `ApprovalError: APPROVAL_UNKNOWN: None`
+- `R11.completed` the experiment ran to completion: expected `no exception`, got `KeyError: 'approval_id'`
+- `R13.completed` the experiment ran to completion: expected `no exception`, got `KeyError: 'trace_id'`

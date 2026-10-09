@@ -1,0 +1,48 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "pae-proof/v1/published",
+ "title": "evidence/published.json · pae-proof/v1",
+ "description": "The run an article cites. Changed only by an explicit promote.",
+ "type": "object",
+ "required": [
+  "schema",
+  "article",
+  "run_id",
+  "reason",
+  "manifest",
+  "results",
+  "results_sha256",
+  "verification",
+  "history"
+ ],
+ "properties": {
+  "schema": {
+   "const": "pae-proof/v1"
+  },
+  "article": {
+   "type": "string"
+  },
+  "run_id": {
+   "type": "string"
+  },
+  "reason": {
+   "type": "string"
+  },
+  "manifest": {
+   "type": "string"
+  },
+  "results": {
+   "type": "string"
+  },
+  "results_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "verification": {
+   "type": "string"
+  },
+  "history": {
+   "type": "array"
+  }
+ }
+}

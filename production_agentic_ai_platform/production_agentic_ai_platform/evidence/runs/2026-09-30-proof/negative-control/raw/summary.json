@@ -1,0 +1,187 @@
+{
+ "run_id": "negative",
+ "started_at": "2026-09-30T14:36:47+00:00",
+ "finished_at": "2026-09-30T14:37:05+00:00",
+ "wall_clock_s": 17.8,
+ "totals": {
+  "experiments": 13,
+  "experiments_passed": 5,
+  "checks": 57,
+  "passed": 49,
+  "failed": 8
+ },
+ "unit_tests": {
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "returncode": 0
+ },
+ "evidence_counts": {
+  "trace": 393,
+  "audit": 266,
+  "approvals": 0,
+  "policy": 99,
+  "capability": 8,
+  "events": 120,
+  "model_io": 45,
+  "context": 12
+ },
+ "experiments": [
+  {
+   "id": "R1",
+   "title": "Governed happy path",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R2",
+   "title": "Effective authority is an intersection",
+   "status": "FAIL",
+   "passed": 6,
+   "total": 7
+  },
+  {
+   "id": "R3",
+   "title": "Approval tampering",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R4",
+   "title": "Tool governance",
+   "status": "PASS",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "id": "R5",
+   "title": "Scoped, short-lived capability",
+   "status": "PASS",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "id": "R6",
+   "title": "Budget exhaustion",
+   "status": "PASS",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "id": "R7",
+   "title": "Model routing and fallback",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R8",
+   "title": "Context isolation",
+   "status": "PASS",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "id": "R9",
+   "title": "Crash and resume around the approval",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R10",
+   "title": "Lost response and idempotency",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R11",
+   "title": "Control-plane kill switch",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  },
+  {
+   "id": "R12",
+   "title": "Prompt injection vs policy",
+   "status": "PASS",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "id": "R13",
+   "title": "Trace reconstruction",
+   "status": "FAIL",
+   "passed": 0,
+   "total": 1
+  }
+ ],
+ "failed_checks": [
+  {
+   "id": "R1.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "IndexError: list index out of range",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 95, in r1\n    appr_req = audit(d, \"approval.requested\")[0][\"payload\"]\n               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\nIndexError: list index out of range\n"
+  },
+  {
+   "id": "R2.checkout",
+   "claim": "rollback checkout-api/production: inside the intersection -> REQUIRE_APPROVAL",
+   "expected": "REQUIRE_APPROVAL",
+   "actual": "ALLOW",
+   "passed": false
+  },
+  {
+   "id": "R3.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "KeyError: 'approval_id'",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 200, in r3\n    ap.decide(st[\"approval_id\"], \"ic.bob\", \"APPROVED\", st[\"digest\"])\n              ~~^^^^^^^^^^^^^^^\nKeyError: 'approval_id'\n"
+  },
+  {
+   "id": "R7.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "KeyError: 'proposal'",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 384, in r7\n    e.check(\"same_decision\", \"the proposal is the same as R1's\", r1_facts[\"proposal\"][\"arguments\"], prop[\"arguments\"])\n                                                                 ~~~~~~~~^^^^^^^^^^^^\nKeyError: 'proposal'\n"
+  },
+  {
+   "id": "R9.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "ApprovalError: APPROVAL_UNKNOWN: None",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 453, in r9\n    approver(d, keys).decide(a[\"result\"][\"approval_id\"], \"ic.bob\", \"APPROVED\", a[\"result\"][\"digest\"])\n  File \"<scratch>/neg/src/agentic_platform/approval.py\", line 48, in decide\n    raise ApprovalError(\"APPROVAL_UNKNOWN\", approval_id)\nagentic_platform.approval.ApprovalError: APPROVAL_UNKNOWN: None\n"
+  },
+  {
+   "id": "R10.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "ApprovalError: APPROVAL_UNKNOWN: None",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 501, in r10\n    approver(d, keys).decide(a[\"result\"][\"approval_id\"], \"ic.bob\", \"APPROVED\", a[\"result\"][\"digest\"])\n  File \"<scratch>/neg/src/agentic_platform/approval.py\", line 48, in decide\n    raise ApprovalError(\"APPROVAL_UNKNOWN\", approval_id)\nagentic_platform.approval.ApprovalError: APPROVAL_UNKNOWN: None\n"
+  },
+  {
+   "id": "R11.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "KeyError: 'approval_id'",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 59, in run\n    r = await r if hasattr(r, \"__await__\") else r\n        ^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 544, in r11\n    approver(d3, keys).decide(s3[\"approval_id\"], \"ic.bob\", \"APPROVED\", s3[\"digest\"])\n                              ~~^^^^^^^^^^^^^^^\nKeyError: 'approval_id'\n"
+  },
+  {
+   "id": "R13.completed",
+   "claim": "the experiment ran to completion",
+   "expected": "no exception",
+   "actual": "KeyError: 'trace_id'",
+   "passed": false,
+   "traceback": "Traceback (most recent call last):\n  File \"<scratch>/neg/run_proof.py\", line 58, in run\n    r = fn(run_dir, keys, *args)\n        ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<scratch>/neg/src/agentic_platform/experiments.py\", line 600, in r13\n    tid = r1_facts[\"trace_id\"]\n          ~~~~~~~~^^^^^^^^^^^^\nKeyError: 'trace_id'\n"
+  }
+ ]
+}

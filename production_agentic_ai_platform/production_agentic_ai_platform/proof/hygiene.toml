@@ -1,0 +1,27 @@
+# Publication hygiene (Proof Contract §7, secret scan): what the scan may find on purpose, and recorded findings that
+# cannot be fixed at their source because they are raw evidence, which is never edited.
+#
+# allow: regexes for matches that are intended (synthetic identifiers in the fixtures).
+# known: a finding in a recorded file, with why it is there; the verifier reports it as known instead of failing, and the
+# published package (tools/package_proof.py) redacts the match to `redact`.
+
+allow = ['@example\.(?:com|org)', 'spiffe://']
+
+[[known]]
+pattern = '/Users/[A-Za-z][\w.-]+/[^\s]*/production_agentic_ai_platform/'
+files = ["evidence/runs/2026-09-30-proof/raw/run-output.txt", "evidence/runs/2026-09-30-proof-2/raw/run-output.txt"]
+why = "the terminal output of the two runs made before 2026-10-04: lab/build_lab.py printed the absolute path of the Lab it wrote. Fixed at the source (it prints a relative path since); the recorded output is not edited."
+redact = "<poc>/"
+
+[[known]]
+pattern = '/(?:private/)?tmp/claude-\d+/[^\s"\\]*?/scratchpad/neg/'
+files = ["evidence/runs/2026-09-30-proof/negative-control/raw/summary.json"]
+why = "the first, hand-run negative control (2026-09-30, superseded) recorded exception tracebacks from a temporary working copy whose path names the author's home directory. The control is kept unchanged as history; negative_control.py has since used a system temporary directory and records no tracebacks for a clean control."
+redact = "<scratch>/neg/"
+
+[[known]]
+pattern = '\b[A-Za-z0-9][A-Za-z0-9-]{2,}\.local\b'
+files = ["evidence/runs/2026-09-30-proof/raw/pytest.junit.xml", "evidence/runs/2026-09-30-proof/replay/raw/pytest.junit.xml",
+         "evidence/runs/2026-09-30-proof-2/raw/pytest.junit.xml", "evidence/runs/2026-09-30-proof-2/replay/raw/pytest.junit.xml"]
+why = "pytest's junit writer records the build machine's name in each test suite's hostname attribute (found by the series' publication scan, 2026-10-09). The recorded files are not edited; the package shows <host> instead, escaped for XML. The published run (2026-10-04-proof) is shipped byte-exact, as its integrity check requires, so its three junit files keep the name (an author decision, 2026-10-09)."
+redact = "&lt;host&gt;"

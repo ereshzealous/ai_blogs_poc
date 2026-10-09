@@ -1,0 +1,38 @@
+{
+ "checks": {
+  "P1-R14-C01": "PASS",
+  "P1-R14-C02": "PASS",
+  "P1-R14-C03": "PASS",
+  "P1-R14-C04": "EXPECTED_FAILURE",
+  "P1-R14-C05": "EXPECTED_FAILURE",
+  "P1-R14-C06": "EXPECTED_FAILURE",
+  "P1-R14-C07": "EXPECTED_FAILURE"
+ },
+ "expected": "the invariant breaks: policy returns ALLOW, the rollback executes before any human decision, the checks that depend on approval fail as assertions, the proof exits non-zero, and every experiment still completes",
+ "experiment": "P1-R14",
+ "governed": {
+  "checks": 125,
+  "checks_failed": 0,
+  "harness_exceptions": 0,
+  "parked": "WAITING_APPROVAL",
+  "policy_decision": "REQUIRE_APPROVAL"
+ },
+ "harness_completed": true,
+ "invariant": "a high-risk production write executes only after a human approves the exact invocation",
+ "mutated": {
+  "checks": 125,
+  "checks_failed": 25,
+  "experiments_failed": "R1, R2, R3, R9, R10, R11",
+  "harness_exceptions": 0,
+  "parked": "COMPLETED",
+  "policy_decision": "ALLOW",
+  "proof_exit_code": 1,
+  "unapproved_rollbacks": 1
+ },
+ "observed": "a high-risk production rollback must be REQUIRE_APPROVAL → ALLOW; the workflow must park while a human decides → COMPLETED; no production rollback without a validated approval → 1; the proof must report no failed check → 25",
+ "raw": "evidence/runs/2026-09-30-proof-2/negative-control/raw/",
+ "result": "EXPECTED_FAILURE",
+ "run_id": "2026-09-30-proof-2",
+ "safeguard_removed": "the approval requirement for production agent writes: agent_writes_need_approval false, and the tier-1 risk floor and the rollback's registry risk lowered from high to medium, so policy returns ALLOW (negative-control/raw/mutation.diff)",
+ "schema": "pae-proof/v1"
+}

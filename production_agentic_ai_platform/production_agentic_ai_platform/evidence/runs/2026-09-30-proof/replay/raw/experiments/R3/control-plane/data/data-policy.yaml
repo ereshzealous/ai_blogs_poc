@@ -1,0 +1,11 @@
+classification_order: [public, internal, confidential, restricted]
+context:
+  filter_before_retrieval: true       # tenant, environment, classification and ACL are query predicates, not post-filters
+  skip_expired: true
+memory:
+  episodic_write:
+    allowed_kinds: [incident_outcome]
+    require: [verified_outcome, workflow_id, trace_id, source_evidence]
+    ttl_days: 180
+    tenant_scoped: true
+    forbidden_patterns: ["(?i)password", "(?i)secret", "CANARY-"]

@@ -1,0 +1,49 @@
+# Approved model registry and routing policy.  Agents ask for a capability class and quality; the gateway picks.
+routing:
+  prefer: [priority]            # among eligible models, lowest priority number first; the next one is the fallback
+  fail_closed: true             # no eligible, healthy model -> the call is refused, never silently downgraded
+models:
+  recorded-model-a:
+    provider: RecordedModelA
+    tape: scenarios/inc_4917/tapes/model_a.jsonl
+    approved: true
+    classes: [incident-reasoning, summarization]
+    quality: high
+    residency: eu
+    max_classification: confidential
+    context_window: 32000
+    priority: 1
+    price: {per_call: 2, per_1k_tokens: 1}
+  recorded-model-b:
+    provider: RecordedModelB
+    tape: scenarios/inc_4917/tapes/model_b.jsonl
+    approved: true
+    classes: [incident-reasoning, summarization]
+    quality: high
+    residency: eu
+    max_classification: confidential
+    context_window: 16000
+    priority: 2
+    price: {per_call: 2, per_1k_tokens: 1}
+  recorded-model-c:
+    provider: RecordedModelC
+    tape: scenarios/inc_4917/tapes/model_b.jsonl
+    approved: true
+    classes: [incident-reasoning, summarization]
+    quality: high
+    residency: us                 # cheaper, but not allowed for an eu-resident tenant's data
+    max_classification: confidential
+    context_window: 32000
+    priority: 0
+    price: {per_call: 1, per_1k_tokens: 1}
+  recorded-model-d:
+    provider: RecordedModelD
+    tape: scenarios/inc_4917/tapes/model_b.jsonl
+    approved: false               # registered, still in evaluation: never routable
+    classes: [incident-reasoning]
+    quality: high
+    residency: eu
+    max_classification: confidential
+    context_window: 64000
+    priority: 0
+    price: {per_call: 1, per_1k_tokens: 1}

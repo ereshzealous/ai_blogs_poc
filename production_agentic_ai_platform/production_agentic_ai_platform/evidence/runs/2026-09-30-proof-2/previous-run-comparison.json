@@ -1,0 +1,31 @@
+{
+ "run_a": "2026-09-30-proof",
+ "run_b": "2026-09-30-proof-2",
+ "checks_compared": 125,
+ "checks_identical": 123,
+ "checks_different": [
+  "R11.agent_same",
+  "R7.same_agent"
+ ],
+ "ids_compared": 11,
+ "ids_identical": 11,
+ "ids": {
+  "R1.workflow_id": true,
+  "R1.digest": true,
+  "R1.approval_id": true,
+  "R1.decision_id": true,
+  "R1.jti": true,
+  "R1.idempotency_key": true,
+  "R1.rollback_id": true,
+  "R1.policy_version": true,
+  "R1.bundle_version": true,
+  "R3.approved_digest": true,
+  "R3.tampered_digest": true
+ },
+ "expected_to_differ": [
+  "OpenTelemetry trace and span ids",
+  "timestamps",
+  "process ids",
+  "wall-clock durations"
+ ]
+}

@@ -1,0 +1,140 @@
+capabilities:
+  incident.get_incident:
+    server: incident
+    tool: get_incident
+    version: 1.0.0
+    owner: itsm-team
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: incident severity alert status
+  incident.get_metrics:
+    server: incident
+    tool: get_metrics
+    version: 1.0.0
+    owner: observability-team
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: latency p95 error rate db pool metrics slo
+  incident.get_logs:
+    server: incident
+    tool: get_logs
+    version: 1.0.0
+    owner: observability-team
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: logs errors warnings pool exhausted
+  release.get_deployment:
+    server: release
+    tool: get_deployment
+    version: 1.0.0
+    owner: release-engineering
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: deployment release version history previous
+  release.inspect_release:
+    server: release
+    tool: inspect_release
+    version: 1.0.0
+    owner: release-engineering
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: release diff commit config change
+  release.get_deployment_status:
+    server: release
+    tool: get_deployment_status
+    version: 1.0.0
+    owner: release-engineering
+    side_effect: read
+    risk: low
+    trust: trusted
+    lifecycle: active
+    enabled: true
+    environments:
+    - production
+    - staging
+    permission: read:{service}:{environment}
+    keywords: status running version verify
+  release.execute_rollback:
+    server: release
+    tool: execute_rollback
+    version: 1.0.0
+    owner: release-engineering
+    side_effect: write
+    risk: high
+    trust: trusted
+    lifecycle: active
+    enabled: false
+    environments:
+    - production
+    - staging
+    permission: rollback:{service}:{environment}
+    idempotent: true
+    requires_capability: true
+    operation: rollback
+    validate: previous_release
+    keywords: rollback revert release previous version remediate
+  toolbox.execute_rollback:
+    server: toolbox
+    tool: execute_rollback
+    version: 0.3.1
+    owner: unknown
+    side_effect: write
+    risk: high
+    trust: untrusted
+    lifecycle: quarantined
+    enabled: true
+    environments:
+    - production
+    permission: rollback:{service}:{environment}
+    operation: rollback
+    keywords: fast rollback any service
+  release.legacy_rollback:
+    server: release
+    tool: execute_rollback
+    version: 0.9.0
+    owner: release-engineering
+    side_effect: write
+    risk: high
+    trust: trusted
+    lifecycle: retired
+    enabled: false
+    environments:
+    - production
+    permission: rollback:{service}:{environment}
+    operation: rollback
+    keywords: legacy rollback

@@ -1,0 +1,192 @@
+# P1 · Production Agentic AI Platform (capstone) · claims (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# Every material claim the articles make → the experiments and checks it rests on → their evidence. A statement holds
+# no result number: numbers are facts, listed under `facts` (every result fact an article prints belongs to a claim).
+# The verdict is tested against the checks by evidence_kit.proof.trace: "supported" needs every check PASS (a control
+# check may be EXPECTED_FAILURE), "control" needs an EXPECTED_FAILURE and no FAIL, "implementation" needs every check
+# PASS, and a "limitation" names what it rests on. `article` names the sections and figures that make the claim.
+
+[[claims]]
+id = "P1-C01"
+statement = "A model proposal does not itself authorize production execution: the rollback reaches production only through policy, an approval of its exact digest and a capability bound to that digest."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R1", "P1-R2"]
+checks = ["P1-R1-C05", "P1-R1-C06", "P1-R1-C07", "P1-R1-C08", "P1-R1-C09", "P1-R1-C10", "P1-R1-C11", "P1-R1-C12", "P1-R1-C13", "P1-R1-C18", "P1-R2-C03"]
+article = ["1 · The model proposes", "2 · Policy decides", "fig:governed-path", "fig:proposal-boundary"]
+facts = ["r1_model", "r1_model_calls", "r1_decision_id", "r1_policy_version", "r1_offered", "r1_exposed", "r1_selected", "r1_excluded",
+         "r1_workflow_id", "r1_workflow_steps", "r1_tool_calls", "r1_rollback_id", "r1_p95_after", "r1_slo", "r1_eval_passed", "r1_eval_total"]
+
+[[claims]]
+id = "P1-C02"
+statement = "Effective authority is an intersection of user, agent, delegation, workload and environment permissions, never a union."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R2"]
+checks = ["P1-R2-C01", "P1-R2-C02", "P1-R2-C03", "P1-R2-C04", "P1-R2-C05", "P1-R2-C06", "P1-R2-C07", "P1-R2-C08", "P1-R2-C09"]
+article = ["2 · Policy decides", "fig:effective-authority"]
+facts = ["r2_effective", "r2_user_perms", "r2_user_rollback"]
+
+[[claims]]
+id = "P1-C03"
+statement = "Approval authorizes an exact invocation, not a session: a changed, rewritten, replayed or self-granted approval is refused at execution."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R3"]
+checks = ["P1-R3-C01", "P1-R3-C02", "P1-R3-C03", "P1-R3-C04", "P1-R3-C05", "P1-R3-C06", "P1-R3-C07", "P1-R3-C08", "P1-R3-C09"]
+article = ["3 · The human approves an exact action", "fig:hitl-digest"]
+facts = ["r1_approval_id", "r1_approver", "r1_digest_short"]
+
+[[claims]]
+id = "P1-C04"
+statement = "An execution capability is short-lived and scoped to one authorized invocation; the resource verifies it, and no key leaks into evidence."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R5"]
+checks = ["P1-R5-C01", "P1-R5-C02", "P1-R5-C03", "P1-R5-C04", "P1-R5-C05", "P1-R5-C06", "P1-R5-C07", "P1-R5-C08", "P1-R5-C09", "P1-R5-C10", "P1-R5-C11", "P1-R5-C12",
+          "P1-R5-C13", "P1-R5-C14"]
+article = ["4 · A capability executes, once", "fig:capability-flow"]
+facts = ["r1_cap_ttl_s", "r1_jti", "r5_cases", "r5_denied"]
+
+[[claims]]
+id = "P1-C05"
+statement = "Runtime budgets stop runaway workflows without relying on prompts."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R6"]
+checks = ["P1-R6-C01", "P1-R6-C02", "P1-R6-C03", "P1-R6-C04", "P1-R6-C05", "P1-R6-C06", "P1-R6-C07"]
+article = ["What it takes to break it", "fig:budget"]
+facts = ["r6_cap", "r6_limit", "r6_max_cost", "r6_max_steps", "r6_max_tool_calls", "r6_model_calls"]
+
+[[claims]]
+id = "P1-C06"
+statement = "Model-provider failure is handled by the model gateway rather than by agent-specific provider code, and fails closed when no eligible model is left."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R7"]
+checks = ["P1-R7-C01", "P1-R7-C02", "P1-R7-C03", "P1-R7-C04", "P1-R7-C05", "P1-R7-C06", "P1-R7-C07", "P1-R7-C08"]
+article = ["fig:model-gateway"]
+facts = []
+
+[[claims]]
+id = "P1-C07"
+statement = "Context is filtered before inference: the predicates run inside retrieval, so excluded items never reach a prompt, while relevance-only ranking would have leaked another tenant's runbook."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R8"]
+checks = ["P1-R8-C01", "P1-R8-C02", "P1-R8-C03", "P1-R8-C04", "P1-R8-C05", "P1-R8-C06", "P1-R8-C07", "P1-R8-C08", "P1-R8-C09"]
+article = ["What it takes to break it", "fig:context-path"]
+facts = ["r8_selected", "r8_excluded"]
+
+[[claims]]
+id = "P1-C08"
+statement = "A crash after approval does not require repeating the human decision: the restart revalidates the approval it has, and a checkpoint altered during the crash is refused."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R9"]
+checks = ["P1-R9-C01", "P1-R9-C02", "P1-R9-C03", "P1-R9-C04", "P1-R9-C05", "P1-R9-C06", "P1-R9-C07", "P1-R9-C08", "P1-R9-C09"]
+article = ["What it takes to break it", "fig:crash-idempotency"]
+facts = ["r9_processes"]
+
+[[claims]]
+id = "P1-C09"
+statement = "A lost response cannot duplicate a consequential side effect: an idempotency key bound to the invocation keeps a restart to one rollback, where a fresh key per attempt rolls back twice."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R10"]
+checks = ["P1-R10-C01", "P1-R10-C02", "P1-R10-C03", "P1-R10-C04", "P1-R10-C05"]
+article = ["What it takes to break it", "fig:crash-idempotency"]
+facts = ["r10_lookup_rollbacks", "r10_resend_rollbacks", "r10_naive_rollbacks"]
+
+[[claims]]
+id = "P1-C10"
+statement = "A central control-plane kill switch revokes execution without changing agent code, including an action approved before the change."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R11"]
+checks = ["P1-R11-C01", "P1-R11-C02", "P1-R11-C03", "P1-R11-C04", "P1-R11-C05", "P1-R11-C06", "P1-R11-C07"]
+article = ["5 · The control plane can kill it centrally", "fig:kill-switch"]
+facts = ["r11_before", "r11_after", "r1_bundle_version", "r1_agent_sha_short"]
+
+[[claims]]
+id = "P1-C11"
+statement = "Guardrail failure does not become authority: when the context guard misses an injection and the model obeys it, deterministic policy still denies the action."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R12"]
+checks = ["P1-R12-C01", "P1-R12-C02", "P1-R12-C03", "P1-R12-C04", "P1-R12-C05", "P1-R12-C06"]
+article = ["What it takes to break it", "fig:guardrails-vs-policy"]
+facts = []
+
+[[claims]]
+id = "P1-C12"
+statement = "A production action can be reconstructed from one causal evidence chain, and a rewritten event is detected at the event."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R13"]
+checks = ["P1-R13-C01", "P1-R13-C02", "P1-R13-C03", "P1-R13-C04", "P1-R13-C05", "P1-R13-C06", "P1-R13-C07", "P1-R13-C08", "P1-R13-C09", "P1-R13-C10",
+          "P1-R13-C11", "P1-R13-C12", "P1-R13-C13", "P1-R13-C14", "P1-R13-C15", "P1-R13-C16", "P1-R13-C17", "P1-R13-C18", "P1-R13-C19", "P1-R13-C20", "P1-R13-C21"]
+article = ["6 · One trace proves what happened", "fig:evidence-chain"]
+facts = ["r13_questions", "r1_trace_id", "r1_audit_events", "r1_spans", "r1_cost_units", "r1_idempotency_key"]
+
+[[claims]]
+id = "P1-C13"
+statement = "Tool discovery and execution governance are different controls: an unregistered, untrusted or retired capability is neither offered nor executed through the platform."
+type = "measured"
+verdict = "supported"
+experiments = ["P1-R4"]
+checks = ["P1-R4-C01", "P1-R4-C02", "P1-R4-C03", "P1-R4-C04", "P1-R4-C05", "P1-R4-C06", "P1-R4-C07", "P1-R4-C08", "P1-R4-C09", "P1-R4-C10", "P1-R4-C11"]
+article = ["fig:discovery-vs-execution"]
+facts = ["r4_exposed", "r4_offered"]
+
+[[claims]]
+id = "P1-C14"
+statement = "The proof can fail: with the approval requirement removed, the checks that depend on it break as explicit assertions, and every experiment still completes."
+type = "control"
+verdict = "control"
+experiments = ["P1-R14"]
+checks = ["P1-R14-C01", "P1-R14-C02", "P1-R14-C03", "P1-R14-C04", "P1-R14-C05", "P1-R14-C06", "P1-R14-C07"]
+article = ["What it takes to break it"]
+facts = ["neg_checks", "neg_checks_failed", "neg_experiments_failed", "neg_experiments_passed", "neg_failed_experiments", "neg_harness_exceptions"]
+
+[[claims]]
+id = "P1-C15"
+statement = "The mechanisms the boundaries rest on actually ran: MCP subprocesses over stdio, a deterministic policy engine, SQLite checkpoints, real SIGKILLs, OpenTelemetry spans and a hash-chained audit record."
+type = "implementation"
+verdict = "implementation"
+experiments = ["P1-R1", "P1-R5", "P1-R9", "P1-R13"]
+checks = ["P1-R1-C16", "P1-R1-C07", "P1-R5-C10", "P1-R9-C02", "P1-R9-C04", "P1-R13-C18", "P1-R13-C20"]
+article = ["What it takes to break it"]
+facts = ["env_mcp_sdk", "env_opentelemetry_sdk", "count_audit"]
+
+[[claims]]
+id = "P1-C16"
+statement = "The models are recorded tapes: the proof is about what the platform does with a proposal, not about proposal quality or live provider behaviour."
+type = "limitation"
+verdict = "limitation"
+rests_on = "the run's model mode (env_model_mode): deterministic recorded providers, offline; no live model was called"
+article = ["What it takes to break it"]
+
+[[claims]]
+id = "P1-C17"
+statement = "The enterprise systems, the identity provider, workload attestation and the secrets platform are simulated."
+type = "limitation"
+verdict = "limitation"
+rests_on = "proof/manifest.toml, the SIMULATED class of the execution profile"
+article = ["What it takes to break it"]
+
+[[claims]]
+id = "P1-C18"
+statement = "One service, one incident, one tenant pair: the POC proves architectural properties, not scale, latency, throughput or availability."
+type = "limitation"
+verdict = "limitation"
+rests_on = "the scenario fixture (scenarios/inc_4917/seed.yaml) and the run's wall-clock time, which is not a performance claim"
+article = ["What it takes to break it"]
+
+[[claims]]
+id = "P1-C19"
+statement = "The execution capability is an illustrative local mechanism (a compact HMAC-signed token with a per-run key), not production credential infrastructure."
+type = "limitation"
+verdict = "limitation"
+rests_on = "src/agentic_platform/capability.py and the SIMULATED secrets platform of the execution profile"
+article = ["4 · A capability executes, once"]

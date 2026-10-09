@@ -1,0 +1,60 @@
+{
+ "run_id": "negative-control",
+ "mutation": [
+  "config/policies/production.yaml",
+  "config/tools/registry.yaml"
+ ],
+ "proof_exit_code": 1,
+ "experiments_failed": [
+  "R1",
+  "R2",
+  "R3",
+  "R9",
+  "R10",
+  "R11"
+ ],
+ "checks_failed": 25,
+ "checks": 125,
+ "harness_exceptions": [],
+ "failed_by_experiment": {
+  "R1": [
+   "R1.policy",
+   "R1.parked",
+   "R1.approval",
+   "R1.capability",
+   "R1.evaluation"
+  ],
+  "R2": [
+   "R2.checkout"
+  ],
+  "R3": [
+   "R3.version",
+   "R3.forged",
+   "R3.replay",
+   "R3.self",
+   "R3.non_approver",
+   "R3.no_capability",
+   "R3.no_effect",
+   "R3.approved_runs"
+  ],
+  "R9": [
+   "R9.parked",
+   "R9.sigkill",
+   "R9.nothing_yet",
+   "R9.revalidated",
+   "R9.processes",
+   "R9.tampered"
+  ],
+  "R10": [
+   "R10.committed",
+   "R10.lookup",
+   "R10.resend",
+   "R10.naive"
+  ],
+  "R11": [
+   "R11.during_approval"
+  ]
+ },
+ "source_sha256": "c24b0f35c03be2622612d983a27d5218b7554e069357eb8d85e272bc07925e35",
+ "behaves_as_negative_control": true
+}

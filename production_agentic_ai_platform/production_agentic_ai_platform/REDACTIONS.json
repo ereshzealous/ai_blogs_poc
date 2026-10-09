@@ -1,0 +1,61 @@
+{
+ "schema": "pae-proof/v1",
+ "redactions": [
+  {
+   "file": "evidence/runs/2026-09-30-proof/negative-control/raw/summary.json",
+   "pattern": "/(?:private/)?tmp/claude-\\d+/[^\\s\"\\\\]*?/scratchpad/neg/",
+   "redact": "<scratch>/neg/",
+   "why": "the first, hand-run negative control (2026-09-30, superseded) recorded exception tracebacks from a temporary working copy whose path names the author's home directory. The control is kept unchanged as history; negative_control.py has since used a system temporary directory and records no tracebacks for a clean control.",
+   "original_sha256": "92897af3d1779412de162051cd8c7708fc62deeb75465144ce2c16fee5287c61",
+   "redacted_sha256": "4c6e6cacf956e1b503630b46a5e70a44eac5c6b36a874c27fd77415d780d0de0"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof/raw/pytest.junit.xml",
+   "pattern": "\\b[A-Za-z0-9][A-Za-z0-9-]{2,}\\.local\\b",
+   "redact": "&lt;host&gt;",
+   "why": "pytest's junit writer records the build machine's name in each test suite's hostname attribute (found by the series' publication scan, 2026-10-09). The recorded files are not edited; the package shows <host> instead, escaped for XML. The published run (2026-10-04-proof) is shipped byte-exact, as its integrity check requires, so its three junit files keep the name (an author decision, 2026-10-09).",
+   "original_sha256": "ce0a3254e8f721b7eb075048f02f003b138e29d2423cbb727f5344d1c78cb4d7",
+   "redacted_sha256": "68c4cab12380976734d419ad71034f0c02c06ffc17deee2d1d790dfdda3e3751"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof/raw/run-output.txt",
+   "pattern": "/Users/[A-Za-z][\\w.-]+/[^\\s]*/production_agentic_ai_platform/",
+   "redact": "<poc>/",
+   "why": "the terminal output of the two runs made before 2026-10-04: lab/build_lab.py printed the absolute path of the Lab it wrote. Fixed at the source (it prints a relative path since); the recorded output is not edited.",
+   "original_sha256": "f76b2a3c7536a218e91565959e21be09b450c6bbe838b0b4f1288a8b8170f083",
+   "redacted_sha256": "c80ef0da111da2ea9bc66766cc6ebe3f25b72679fdda494aa6c631003860321e"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof/replay/raw/pytest.junit.xml",
+   "pattern": "\\b[A-Za-z0-9][A-Za-z0-9-]{2,}\\.local\\b",
+   "redact": "&lt;host&gt;",
+   "why": "pytest's junit writer records the build machine's name in each test suite's hostname attribute (found by the series' publication scan, 2026-10-09). The recorded files are not edited; the package shows <host> instead, escaped for XML. The published run (2026-10-04-proof) is shipped byte-exact, as its integrity check requires, so its three junit files keep the name (an author decision, 2026-10-09).",
+   "original_sha256": "aa52679fff9e7b790192f763717ac873bcfa003ded6ab54712c2b9ba68ac6aa8",
+   "redacted_sha256": "cb3e3b07ff03106b0c9ca87eea8471e9c82288f9dc18e9c7db8c5d28b4807a88"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof-2/raw/pytest.junit.xml",
+   "pattern": "\\b[A-Za-z0-9][A-Za-z0-9-]{2,}\\.local\\b",
+   "redact": "&lt;host&gt;",
+   "why": "pytest's junit writer records the build machine's name in each test suite's hostname attribute (found by the series' publication scan, 2026-10-09). The recorded files are not edited; the package shows <host> instead, escaped for XML. The published run (2026-10-04-proof) is shipped byte-exact, as its integrity check requires, so its three junit files keep the name (an author decision, 2026-10-09).",
+   "original_sha256": "d2556db811b13f317a6f92fa57bff4bcfd146396196c3e0acfb11fccb24ca39e",
+   "redacted_sha256": "2ccb7fd574d551ba36f9976d5640055e178102fe076e7aae5e327d3952992bb0"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof-2/raw/run-output.txt",
+   "pattern": "/Users/[A-Za-z][\\w.-]+/[^\\s]*/production_agentic_ai_platform/",
+   "redact": "<poc>/",
+   "why": "the terminal output of the two runs made before 2026-10-04: lab/build_lab.py printed the absolute path of the Lab it wrote. Fixed at the source (it prints a relative path since); the recorded output is not edited.",
+   "original_sha256": "865c7fb09635f535ddf53c014d984f89643c6729a7042723a03228e6e5ba0577",
+   "redacted_sha256": "2ac24edc263615251d8bb3e6c3041e51fff418fd781d079787e0238ef0a06c7f"
+  },
+  {
+   "file": "evidence/runs/2026-09-30-proof-2/replay/raw/pytest.junit.xml",
+   "pattern": "\\b[A-Za-z0-9][A-Za-z0-9-]{2,}\\.local\\b",
+   "redact": "&lt;host&gt;",
+   "why": "pytest's junit writer records the build machine's name in each test suite's hostname attribute (found by the series' publication scan, 2026-10-09). The recorded files are not edited; the package shows <host> instead, escaped for XML. The published run (2026-10-04-proof) is shipped byte-exact, as its integrity check requires, so its three junit files keep the name (an author decision, 2026-10-09).",
+   "original_sha256": "d3f13694ee4f332deb6ed21278cb7a49281a83250986b6520746fe0988ec2afc",
+   "redacted_sha256": "fa2d99292e3abecf9ee3184069cbe5b8c4e8032059922a1f4b0b183f5ed032e2"
+  }
+ ]
+}

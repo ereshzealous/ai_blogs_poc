@@ -1,0 +1,18 @@
+agent:
+  id: agent:incident-remediator
+  version: 3.2.0
+  owner: sre-platform
+  lifecycle: active
+  workload: spiffe://shop.example/ns/agents/sa/incident-remediator
+  prompt_config: incident-remediation@14
+  model_capability: {class: incident-reasoning, quality: high}
+  # The agent's authority ceiling: what it may ever do, whoever invokes it.
+  permissions: ["read:*:production", "rollback:checkout-api:production", "rollback:inventory-api:production"]
+  # Capabilities the agent may consider (discovery plane).  Execution is governed separately.
+  capabilities: [incident.get_incident, incident.get_metrics, incident.get_logs, release.get_deployment, release.inspect_release,
+                 release.get_deployment_status, release.execute_rollback]
+  # What a user delegates when they ask this agent to handle one incident: narrowed to the incident's service and
+  # environment, then intersected with what the user actually holds.
+  delegation_template: ["read:{service}:{environment}", "rollback:{service}:{environment}"]
+  delegation_ttl_s: 3600
+  budget: incident-remediator

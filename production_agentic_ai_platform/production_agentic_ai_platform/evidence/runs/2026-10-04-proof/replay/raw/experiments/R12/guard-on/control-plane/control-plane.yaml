@@ -1,0 +1,7 @@
+# The AI control plane's bundle manifest.  The runtime loads this directory, verifies its signature and executes under it.
+# Changing what may run is a change to this directory (a new version), never to agent code.
+bundle: prod-agent-platform
+version: 17
+environment: production
+owner: ai-platform-team
+signed_by: control-plane-release   # HMAC over the bundle digest; see agentic_platform/control_plane.py

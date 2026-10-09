@@ -1,0 +1,12 @@
+# Semantic guardrails: they shape what reaches the model and what leaves it.  They do not grant or deny authority.
+context_guard:
+  enabled: true
+  action: quarantine                  # remove the instruction-like text, keep the item's provenance and a marker
+  patterns:
+    - "(?i)ignore (all )?(previous|prior) instructions"
+    - "(?i)\\bcall\\s+[a-z_]+\\s*\\("
+    - "(?i)you are now"
+    - "(?i)\\b(already|pre)[- ]approved\\b"
+output_guard:
+  enabled: true
+  proposal_required_fields: [capability, arguments, rationale, evidence]

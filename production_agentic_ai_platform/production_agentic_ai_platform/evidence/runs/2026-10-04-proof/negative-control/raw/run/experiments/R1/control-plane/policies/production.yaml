@@ -1,0 +1,18 @@
+# Deterministic action policy.  Rules are evaluated in order; the first DENY wins; otherwise the strictest outcome wins
+# (DENY > REQUIRE_APPROVAL > ALLOW).  Unknown input fails closed.  The model's output is an input to this policy, never its author.
+policy: prod-actions
+version: 42
+environments:
+  production: {allowed_operations: [read, rollback], agent_writes_need_approval: false}
+  staging:    {allowed_operations: [read, rollback, scale, deploy], agent_writes_need_approval: false}
+approval:
+  approver_role: incident-commander
+  separation_of_duties: true          # the approver may not be the requester or the agent
+  ttl_s: 900
+capability:
+  ttl_s: 120
+  audience: {release: "mcp://release-pipeline", toolbox: "mcp://ops-toolbox"}
+risk:
+  # risk = max(tool risk, environment floor, service-tier floor)
+  environment_floor: {production: medium, staging: low}
+  tier_floor: {1: medium, 2: low}

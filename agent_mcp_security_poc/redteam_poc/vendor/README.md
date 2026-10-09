@@ -1,0 +1,1 @@
+evidence_kit: pinned copy of ../../evidence-kit/evidence_kit (version 5.2.0), copied 2026-10-07 per the series rule "copy, don't link". Provides the Medium reading skin (skin_css, fonts_css, medium_js) and the publication local-path check.

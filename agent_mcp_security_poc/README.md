@@ -1,73 +1,55 @@
-# T6 red-team assurance harness
+# T6 · Securing Agents & MCP
 
-A defensive lab that demonstrates **model manipulated ≠ system compromised**. A worst-case-compliant scripted model
-proposes whatever synthetic hostile content asks for; a trusted registry, identity/delegation service, policy decision
-point, approval service, MCP gateway and egress boundary decide what executes. Everything runs against local test
-doubles (`store_world`, seed 4917) with external networking disabled.
+*If the model is fooled, can the unsafe action still happen?*
 
-> Synthetic data only. One fake secret value `SYNTHETIC_SECRET_12345`; `.invalid` mock destinations reached through an
-> in-memory transport that records bytes and sends nothing. No real system is targeted, scanned or exfiltrated.
+Production AI Engineering · T6 · Trust & Security · chapter 11 of 15
 
-## Proof at a glance (run `2026-10-07-recorded`)
+## Read it
 
-- 19 attacks across 8 classes + 3 controls; every attack manipulates the model
-  (19/19).
-- System compromised — A: **19/19**, B: **13/19**, C: **0/19**.
-- Controls complete in every arm. Ablation: registry alone contains 15/19; binding is the sole
-  line for 4.
-- `redteam verify` replays the run byte for byte (EXACT) and recomputes every check.
+- **Medium edition:** [`medium/securing-agents-tools-mcp-medium.md`](medium/securing-agents-tools-mcp-medium.md), and the paste-ready page [`medium/securing-agents-tools-mcp-medium.html`](medium/securing-agents-tools-mcp-medium.html)
+- **Technical deep dive:** [`technical/securing-agents-tools-mcp-technical.pdf`](technical/securing-agents-tools-mcp-technical.pdf)
+- **Results:** [`results/t6-results.md`](results/t6-results.md), every number the Medium edition uses with its source file, the checks and the two verdicts ([HTML](results/t6-results.html))
+- **Series:** [Start Here](https://eresh-gorantla.medium.com/start-here-a-hands-on-map-of-production-ai-engineering-5056549657db), the map of all 15 chapters
 
-## Commands
+## What the run showed
 
-```bash
-uv sync --group dev
-uv run redteam scenarios     # the corpus across arms A/B/C
-uv run redteam matrix        # the manipulated-vs-compromised headline
-uv run redteam demo          # the legitimate task + one contained attack
-uv run redteam ablation      # each control's standalone reach + sole-line attacks
-uv run redteam freeze "why"  # freeze the preregistration/corpus/config before a run
-uv run redteam proof         # record a run under pae-proof/v1
-uv run redteam verify        # EXACT replay + integrity + checks -> VERIFIED
-uv run pytest                # the import contract, the invariants, the end-to-end assertions
-```
+- **Published run:** `2026-10-07-recorded`, declared in `redteam_poc/evidence/published.json`; deterministic, scripted worst-case model, no network.
+- **Evidence integrity:** VERIFIED. integrity, exact replay and the check recompute, as last recorded by the publication gate.
+- **Findings:** 7 claims: 6 SUPPORTED, 1 LIMITATION; check findings: 2 EXPECTED FAILURE, 1 LIMITATION OBSERVED.
+- **Checks:** PASS 11, EXPECTED_FAILURE 2, FAIL 1 (`redteam_poc/evidence/runs/2026-10-07-recorded/checks.jsonl`).
+
+## Run it yourself
+
+From this folder. None of these commands changes the published run; `make verify` and `make test` write their own reports (the verification files), which is how they report.
+
+| Command | What it does |
+|---|---|
+| `make setup` | create the POC environment (uv, Python 3.12) |
+| `make test` | pytest: import contract, unit invariants, end-to-end scenarios |
+| `make verify` | PROOF VERIFICATION of the published run (EXACT replay + integrity + checks) |
+| `make replay` | the same as make verify: the published run replayed in memory, exact, as part of PROOF VERIFICATION |
+| `make demo` | the legitimate task and one contained attack, narrated |
+| `make docs` | both editions + results pages as Markdown, standalone HTML and PDF |
+| `make qa` | rendered checks of the pages, when the chapter has them; make gate runs the publication gate |
+
+Author only: `make freeze`, `make proof` rewrite published evidence, so they refuse unless run with `REWRITE_PUBLISHED=yes`.
 
 ## Layout
 
-```
-redteam/
-  corpus.py       load/validate the synthetic corpus (only the model and runner import it)
-  model.py        the worst-case-compliant scripted model (the only reader of the corpus)
-  registry.py     trusted capability + MCP registry (allowlist, metadata pinning)   I-CAP, I-META
-  identity.py     identity & delegation; peer-claim verification                    I-DELEG
-  policy.py       the policy decision point                                          I-AUTHZ
-  approvals.py    approval records bound to an action digest                         I-APPROVAL
-  gateway.py      argument binding, egress, secrets, data labels                     I-ARG, I-EGRESS, I-SECRET
-  enterprise.py   mock systems over store_world; the ledger and canaries
-  transport.py    the in-memory sink the oracle inspects
-  guard.py        arm B's imperfect classifier (defense in depth, not the boundary)
-  oracle.py       judges system_compromised from effects (cannot import the corpus)
-  runtime.py      the agent loop and the three arms
-  runner.py       run the corpus across arms + the ablation
-  proofpack.py    record and verify a pae-proof/v1 run
-config/           principals, capabilities, registry, policy, egress, guard (all guarded by the freeze)
-corpus/           scenarios.yaml (the synthetic assurance corpus)
-proof/            preregistration.toml, claims.toml, FREEZE.json, DEVIATIONS.md
-evidence/         runs/<run>/ and published.json
-tests/            test_import_contract.py, test_units.py, test_scenarios.py
-```
+| Path | What is there |
+|---|---|
+| `diagrams/` | figures and the cover (Excalidraw sources, SVG, PNG) |
+| `docs/` | edition sources and build notes; docs/archive/ keeps replaced originals |
+| `medium/` | the Medium edition: Markdown, and the paste-ready standalone page |
+| `qa/` | rendered-page checks and screenshots |
+| `redteam_poc/` | the proof of concept and its recorded runs |
+| `research/` | sources and reading notes |
+| `results/` | the common results page and the detailed evidence pages |
+| `technical/` | the technical deep dive (Markdown, HTML, PDF) |
+| `tools/` | the chapter's build tools |
+| `Makefile` | the standard commands (`make help` lists them) |
+| `QA.md` | publication checks |
 
-## How the three arms differ
+## Provenance
 
-- **A** executes the model's proposed tool calls directly — the vulnerable toy.
-- **B** runs a keyword classifier over the untrusted content first; a flag blocks the turn, a miss behaves exactly like
-  A. The classifier is in front of an unrestricted path, so it is defense in depth, never the boundary. On synthetic
-  markers its hit/miss split is illustrative and is not reported as a detection rate.
-- **C** runs the full deterministic chain. The model is still manipulated; the action is still proposed; it does not
-  execute.
-
-## Reproducibility
-
-The run is deterministic: no model, no network, a fixed clock. `uv run redteam verify` re-runs the harness, compares
-`results.json` byte for byte, recomputes the checks against the preregistered hypotheses, and verifies the SHA256SUMS.
-A change to a guarded file (the preregistration, the corpus, any config) stops a new run until it is logged in
-`proof/DEVIATIONS.md` and re-frozen.
+Every measured number in the editions comes from `redteam_poc/evidence/runs/2026-10-07-recorded/facts.json` of run `2026-10-07-recorded`. This README, the results page and the Medium edition's top and end are written by `series-start-here/tools/series_edition.py` from `series-start-here/series.json` and the chapter's own files; the previous README is kept in `docs/archive/README-original.md`.

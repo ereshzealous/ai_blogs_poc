@@ -1,0 +1,48 @@
+{
+ "schema": "pae-proof/v1 public-redactions",
+ "created": "2026-10-09",
+ "source": "agent_mcp_security_poc",
+ "redactions": [
+  {
+   "file": "redteam_poc/pyproject.toml",
+   "rules": [
+    {
+     "pattern": "(?<=\")\\.\\./\\.\\./store_world(?=\")",
+     "replacement": "../store_world",
+     "category": "local-path",
+     "reason": "workspace-relative dependency path; the public folder carries store_world beside the POC",
+     "count": 1,
+     "lines": [
+      20
+     ]
+    }
+   ],
+   "original_sha256": "8bd187c55bd81b94f8f34c6b5fa025ce36449cc5ffad9aed1f786317efce44d3",
+   "public_sha256": "68a94f1342f42e27480ee26cc38a8aa5e5cf28e2bfe979aeac79321e793aaae9",
+   "semantic_changes": false
+  },
+  {
+   "file": "redteam_poc/uv.lock",
+   "rules": [
+    {
+     "pattern": "(?<=\")\\.\\./\\.\\./store_world(?=\")",
+     "replacement": "../store_world",
+     "category": "local-path",
+     "reason": "workspace-relative dependency path; the public folder carries store_world beside the POC",
+     "count": 2,
+     "lines": [
+      141,
+      171
+     ]
+    }
+   ],
+   "original_sha256": "bcf7522f16f7fdb4575971ba9a20a65289f3882129b25b8d18198939ae0062ae",
+   "public_sha256": "a5349cb99d62e70ca3f792759bea3bf462dc61df861ea2ec5ae54828fc2c2572",
+   "semantic_changes": false
+  }
+ ],
+ "public_sums": [],
+ "excluded": [],
+ "unresolved_sums": [],
+ "binary_findings": []
+}

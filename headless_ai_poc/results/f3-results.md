@@ -96,8 +96,4 @@ make docs    # both editions as Markdown, standalone HTML and PDF
 make qa    # rendered checks at desktop/tablet/mobile + screenshots -> qa/
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/headless_ai_poc/technical/headless-ai-technical.pdf)
-
 *Built by `series-start-here/tools/series_edition.py results F3` from the files named above. It computes nothing new.*

@@ -1,0 +1,34 @@
+# Who can act. Agents are principals, registered in the Agent Identity article (T1).
+# Roles are the RBAC layer: what a principal is *normally* permitted to do.
+
+[agents.incident-agent-prod]
+registered_as = "agent.incident-intel@1.3.0"
+owner = "team:sre-platform"
+roles = ["incident-responder"]
+
+[agents.release-guard-prod]
+registered_as = "agent.release-guard@2.1.0"
+owner = "team:release-eng"
+roles = ["release-observer"]
+
+[humans."ic.dev"]
+roles = ["IncidentCommander"]
+teams = ["sre-team"]
+
+[humans."sre.lead"]
+roles = ["sre-lead"]
+teams = ["sre-team"]
+
+[humans."sre.maya"]
+roles = ["sre-oncall"]
+teams = ["sre-team"]
+
+# RBAC. Deny by default: an action that no role lists is never allowed, whatever else is true.
+[roles.incident-responder]
+actions = [
+  "kubernetes.readPods", "kubernetes.readDeployment", "logs.query", "dashboards.read",
+  "kubernetes.restartPod", "kubernetes.rollbackDeployment",
+]
+
+[roles.release-observer]
+actions = ["kubernetes.readDeployment", "dashboards.read"]

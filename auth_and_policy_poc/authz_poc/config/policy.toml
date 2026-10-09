@@ -1,0 +1,98 @@
+# ABAC guard rules: how context changes a decision that RBAC and delegation would otherwise allow.
+#
+# Every rule restricts. Nothing here can grant an action that no role grants.
+# Our combining rule is fail-closed:  DENY > ALLOW_WITH_APPROVAL > ALLOW_WITH_CONSTRAINTS > ALLOW.
+# (That is this gateway's choice. XACML and Cedar leave combining to the policy author or fix it differently.)
+# A condition on an attribute the PIP could not resolve counts as satisfied: unknown context fails closed.
+#
+# Condition keys are  "<attribute>"  (equals, or "in" for a list)  or  "<attribute>.<op>"  with op in lt, gte, ne, not_in.
+#
+# Two audiences per rule:
+#   reason              the audit record: precise, may name rules, attributes and relationships
+#   code/message/next   what the agent is told: actionable, and only what the caller is allowed to learn
+
+version = "authz-2026-09-29.2"
+
+[[rule]]
+id = "F1-no-namespace-deletion"
+effect = "DENY"
+reason = "Namespace deletion is never delegated to agents"
+code = "ACTION_NEVER_DELEGATED"
+message = "This action is not available to agents"
+next = "Escalate to a human operator"
+[rule.when]
+action = "kubernetes.deleteNamespace"
+
+[[rule]]
+id = "F2-insufficient-evidence-high-risk-write"
+effect = "DENY"
+reason = "High-risk production writes need a diagnosis evidence score of at least 0.80"
+code = "PROD_WRITE_EVIDENCE_INSUFFICIENT"
+message = "Not enough independent evidence for this production change"
+next = "Validate the fix in staging first"
+[rule.when]
+environment = "production"
+risk = "high"
+"evidence_score.lt" = 0.80
+
+[[rule]]
+id = "F3-change-freeze"
+effect = "DENY"
+reason = "Change freeze: only SEV-1 remediation may write to production"
+code = "CHANGE_FREEZE"
+message = "Production changes are frozen"
+next = "Escalate to the incident commander"
+[rule.when]
+environment = "production"
+kind = "write"
+change_window = "freeze"
+"severity.not_in" = ["SEV-1"]
+
+[[rule]]
+id = "F4-tenant-boundary"
+effect = "DENY"
+reason = "Request crosses the tenant boundary of the incident"
+code = "OUT_OF_SCOPE"
+message = "Request is outside the incident's scope"
+next = "Narrow the query to the affected tenant"
+[rule.when]
+tenant_in_scope = false
+
+[[rule]]
+id = "A1-production-rollback"
+effect = "ALLOW_WITH_APPROVAL"
+reason = "Production rollback requires SRE approval"
+code = "APPROVAL_REQUIRED"
+message = "Production rollback requires SRE approval"
+next = "Wait for the approval decision"
+[rule.when]
+action = "kubernetes.rollbackDeployment"
+environment = "production"
+[rule.constraints]
+approverRole = "IncidentCommander"
+expiresIn = "10m"
+
+[[rule]]
+id = "C1-production-restart"
+effect = "ALLOW_WITH_CONSTRAINTS"
+reason = "Production restarts are limited to one pod per call"
+code = "CONSTRAINED"
+message = "Production restarts are limited to one pod per call"
+[rule.when]
+action = "kubernetes.restartPod"
+environment = "production"
+[rule.constraints]
+maxPods = 1
+
+[[rule]]
+id = "C2-restricted-logs"
+effect = "ALLOW_WITH_CONSTRAINTS"
+reason = "Restricted logs are returned redacted"
+code = "CONSTRAINED"
+message = "Restricted logs are returned redacted"
+[rule.when]
+action = "logs.query"
+data_classification = "restricted"
+[rule.constraints]
+redact = ["card_number", "email"]
+maxWindow = "1h"

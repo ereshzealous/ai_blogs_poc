@@ -1,0 +1,23 @@
+# ReBAC: relationships between principals and resources, and explicit delegations ("acting-for").
+
+[[relation]]
+subject = "sre-team"
+relation = "owns"
+object = "service:payment-service"
+
+[[relation]]
+subject = "checkout-team"
+relation = "owns"
+object = "service:checkout-service"
+
+# A standing, bounded delegation from a team to an agent. It is written down, owned, time-limited and auditable.
+# It covers only services the team owns, only these actions, and only while an incident on that service is open.
+# Setting `revoked = true` withdraws it immediately; the PIP then finds no delegation and writes fail closed.
+[[delegation]]
+id = "dlg-sre-incident-2026q4"
+from = "sre-team"
+to = "incident-agent-prod"
+granted_by = "sre.lead"
+actions = ["kubernetes.restartPod", "kubernetes.rollbackDeployment"]
+while_incident_state = ["open", "mitigating"]
+expires = "2026-12-31T23:59:59Z"

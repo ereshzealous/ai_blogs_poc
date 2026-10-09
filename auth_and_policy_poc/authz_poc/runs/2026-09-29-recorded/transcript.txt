@@ -1,0 +1,13 @@
+14:03:05  kubernetes.readDeployment        production -> executed  [ALLOW]
+14:03:20  kubernetes.readPods              production -> executed  [ALLOW]
+14:04:02  logs.query                       production -> executed  [ALLOW_WITH_CONSTRAINTS]
+14:04:30  kubernetes.deleteNamespace       production -> denied  [DENY]
+14:05:10  kubernetes.rollbackDeployment    production -> denied  [DENY]  evidence 0.62
+14:05:40  kubernetes.restartPod            production -> executed  [ALLOW_WITH_CONSTRAINTS]
+14:06:15  kubernetes.restartPod            staging    -> executed  [ALLOW]
+14:06:40  kubernetes.rollbackDeployment    staging    -> executed  [ALLOW]  evidence 0.62
+14:07:05  kubernetes.rollbackDeployment    production -> denied  [DENY]  evidence 0
+14:07:30  kubernetes.rollbackDeployment    production -> pending_approval  [ALLOW_WITH_APPROVAL]  evidence 0.94
+14:07:45  approval apr-819ba4aa10 by incident-agent-prod  -> The requester cannot approve its own action
+14:08:50  approval apr-819ba4aa10 by ic.dev               -> approved
+14:09:02  agent re-submits the approved call: binding ok, policy re-check -> executed {'rolled_back_to': 'v4.17.2'}

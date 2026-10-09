@@ -1,0 +1,8421 @@
+{
+ "kit": "4.1.0",
+ "schema": "evidence-kit/4",
+ "meta": {
+  "series": "Production AI Engineering",
+  "id": "T2",
+  "topic": "Authorization & policy",
+  "label": "T2 · Lab Console · run 2026-09-29-recorded",
+  "title": "Authorization & policy for AI agents: every check, recorded",
+  "question": "An incident agent (incident-agent-prod, acting for sre-team) works a SEV-1 on payment-service. Every tool call passes a policy gateway. For every check: what the agent asked, what policy decided and why, what the gateway did, and whether it matched the expected outcome.",
+  "claim": [
+   "Every decision, checked against its expected outcome.",
+   "Every number, traced to a recorded file."
+  ],
+  "byline": "T2 · Production AI Engineering · Part 5",
+  "filed": "2026-09-29",
+  "brand": "Production AI Engineering",
+  "tagline": "Build. Test. Learn. Ship responsibly.",
+  "note": "Generated from the recorded run; rebuild after every run",
+  "state": "RECORDED",
+  "links": [
+   {
+    "label": "Technical edition",
+    "href": "../authorization-and-policy-for-ai-agents.html"
+   },
+   {
+    "label": "Medium edition",
+    "href": "../medium/authorization-and-policy-for-ai-agents-medium.html"
+   }
+  ]
+ },
+ "dimensions": {
+  "factor": {
+   "label": "Expected outcome",
+   "unit": "",
+   "all": "Any expected outcome",
+   "values": [
+    "ALLOW",
+    "ALLOW_WITH_CONSTRAINTS",
+    "ALLOW_WITH_APPROVAL",
+    "DENY",
+    "rejected",
+    "approved",
+    "executed",
+    "holds",
+    "PASS"
+   ],
+   "primary": "ALLOW"
+  },
+  "result": {
+   "pass": "Passed",
+   "fail": "Failed"
+  },
+  "severity": [
+   {
+    "id": "none",
+    "label": "Passed",
+    "tone": "ok"
+   },
+   {
+    "id": "fail",
+    "label": "Failed",
+    "tone": "bad"
+   },
+   {
+    "id": "error",
+    "label": "Error",
+    "tone": "bad"
+   }
+  ],
+  "variants": [
+   {
+    "key": "R",
+    "name": "Incident run · L4 replay",
+    "color": "blue",
+    "policy": "the recorded incident: 10 proposed calls, the approval attempts, the re-submitted call, and the L4 replay tests"
+   },
+   {
+    "key": "S",
+    "name": "Context sweep",
+    "color": "indigo",
+    "policy": "one production rollback, 8 contexts"
+   },
+   {
+    "key": "T",
+    "name": "L1 · Policy tests",
+    "color": "orange",
+    "policy": "tests/test_l1_policy.py: the decision table, the freeze case, combining, conditions, evidence, fingerprint"
+   },
+   {
+    "key": "V",
+    "name": "L2 · Invariants",
+    "color": "green",
+    "policy": "tests/test_l2_invariants.py: the named production authorization invariants",
+    "governed": true
+   },
+   {
+    "key": "G",
+    "name": "L3 · Gateway tests",
+    "color": "amber",
+    "policy": "tests/test_l3_gateway.py: the real enforcement path, end to end"
+   }
+  ],
+  "groups": {
+   "l1": "L1 policy unit test",
+   "l3": "L3 gateway integration test",
+   "l4": "L4 recorded replay test",
+   "permit": "Role grant, no rule restricted it",
+   "constraint": "Constraint rule (ABAC)",
+   "approval": "Approval rule (ABAC)",
+   "forbid": "Forbid rule (ABAC)",
+   "rebac": "Relationship check (ReBAC)",
+   "rbac": "Role check (RBAC)",
+   "gate": "Approval gate",
+   "invariant": "Invariant"
+  }
+ },
+ "facts": {
+  "G.kn": {
+   "value": "19/19",
+   "display": "19/19",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "G.n": {
+   "value": 19,
+   "display": "19",
+   "source": "authz_poc/runs/2026-09-29-recorded/",
+   "derivation": "rows of the L3 gateway tests"
+  },
+  "G.pass": {
+   "value": 19,
+   "display": "19",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "L3-01",
+     "L3-02",
+     "L3-03",
+     "L3-04",
+     "L3-05",
+     "L3-06",
+     "L3-07",
+     "L3-08",
+     "L3-09",
+     "L3-10",
+     "L3-11",
+     "L3-12",
+     "L3-13",
+     "L3-14",
+     "L3-15",
+     "L3-16",
+     "L3-17",
+     "L3-18",
+     "L3-19"
+    ]
+   },
+   "derivation": "L3 gateway tests checks that passed",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "R.kn": {
+   "value": "33/33",
+   "display": "33/33",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "R.n": {
+   "value": 33,
+   "display": "33",
+   "source": "authz_poc/runs/2026-09-29-recorded/",
+   "derivation": "rows of the incident run and replay"
+  },
+  "R.pass": {
+   "value": 33,
+   "display": "33",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-01",
+     "step-02",
+     "step-03",
+     "step-04",
+     "step-05",
+     "step-06",
+     "step-07",
+     "step-08",
+     "step-09",
+     "step-10",
+     "approval-1",
+     "approval-2",
+     "resume",
+     "L4-01",
+     "L4-02",
+     "L4-03",
+     "L4-04",
+     "L4-05",
+     "L4-06",
+     "L4-07",
+     "L4-08",
+     "L4-09",
+     "L4-10",
+     "L4-11",
+     "L4-12",
+     "L4-13",
+     "L4-14",
+     "L4-15",
+     "L4-16",
+     "L4-17",
+     "L4-18",
+     "L4-19",
+     "L4-20"
+    ]
+   },
+   "derivation": "incident run and replay checks that passed",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "S.kn": {
+   "value": "8/8",
+   "display": "8/8",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "S.n": {
+   "value": 8,
+   "display": "8",
+   "source": "authz_poc/runs/2026-09-29-recorded/",
+   "derivation": "rows of the context sweep"
+  },
+  "S.pass": {
+   "value": 8,
+   "display": "8",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "sweep-1",
+     "sweep-2",
+     "sweep-3",
+     "sweep-4",
+     "sweep-5",
+     "sweep-6",
+     "sweep-7",
+     "sweep-8"
+    ]
+   },
+   "derivation": "context sweep checks that passed",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "T.kn": {
+   "value": "24/24",
+   "display": "24/24",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "T.n": {
+   "value": 24,
+   "display": "24",
+   "source": "authz_poc/runs/2026-09-29-recorded/",
+   "derivation": "rows of the L1 policy tests"
+  },
+  "T.pass": {
+   "value": 24,
+   "display": "24",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "L1-01",
+     "L1-02",
+     "L1-03",
+     "L1-04",
+     "L1-05",
+     "L1-06",
+     "L1-07",
+     "L1-08",
+     "L1-09",
+     "L1-10",
+     "L1-11",
+     "L1-12",
+     "L1-13",
+     "L1-14",
+     "L1-15",
+     "L1-16",
+     "L1-17",
+     "L1-18",
+     "L1-19",
+     "L1-20",
+     "L1-21",
+     "L1-22",
+     "L1-23",
+     "L1-24"
+    ]
+   },
+   "derivation": "L1 policy tests checks that passed",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "V.kn": {
+   "value": "14/14",
+   "display": "14/14",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "V.n": {
+   "value": 14,
+   "display": "14",
+   "source": "authz_poc/runs/2026-09-29-recorded/",
+   "derivation": "rows of the L2 invariants"
+  },
+  "V.pass": {
+   "value": 14,
+   "display": "14",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "AUTHZ-INV-01",
+     "AUTHZ-INV-02",
+     "AUTHZ-INV-03",
+     "AUTHZ-INV-04",
+     "AUTHZ-INV-05",
+     "AUTHZ-INV-06",
+     "AUTHZ-INV-07",
+     "AUTHZ-INV-08",
+     "AUTHZ-INV-09",
+     "AUTHZ-INV-10",
+     "AUTHZ-INV-11",
+     "AUTHZ-INV-12",
+     "AUTHZ-INV-13",
+     "AUTHZ-INV-14"
+    ]
+   },
+   "derivation": "L2 invariants checks that passed",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "audit.records": {
+   "value": 23,
+   "display": "23",
+   "source": "authz_poc/runs/2026-09-29-recorded/decisions.jsonl"
+  },
+  "audit.valid": {
+   "value": true,
+   "display": "true",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "calls.blocked": {
+   "value": 3,
+   "display": "3",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "calls.executed": {
+   "value": 7,
+   "display": "7",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "calls.proposed": {
+   "value": 10,
+   "display": "10",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "checks.all": {
+   "value": 98,
+   "display": "98",
+   "unit": "checks",
+   "source": "expectations.json + tests.json + invariants.json",
+   "derivation": "every recorded check: incident run, context sweep, policy tests and invariants"
+  },
+  "checks.all_pass": {
+   "value": true,
+   "display": "true",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "checks.failed": {
+   "value": 0,
+   "display": "0",
+   "derivation": "checks that did not match",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "checks.passed": {
+   "value": 98,
+   "display": "98",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-01",
+     "step-02",
+     "step-03",
+     "step-04",
+     "step-05",
+     "step-06",
+     "step-07",
+     "step-08",
+     "step-09",
+     "step-10",
+     "approval-1",
+     "approval-2",
+     "resume",
+     "sweep-1",
+     "sweep-2",
+     "sweep-3",
+     "sweep-4",
+     "sweep-5",
+     "sweep-6",
+     "sweep-7",
+     "sweep-8",
+     "L1-01",
+     "L1-02",
+     "L1-03",
+     "L1-04",
+     "L1-05",
+     "L1-06",
+     "L1-07",
+     "L1-08",
+     "L1-09",
+     "L1-10",
+     "L1-11",
+     "L1-12",
+     "L1-13",
+     "L1-14",
+     "L1-15",
+     "L1-16",
+     "L1-17",
+     "L1-18",
+     "L1-19",
+     "L1-20",
+     "L1-21",
+     "L1-22",
+     "L1-23",
+     "L1-24",
+     "L3-01",
+     "L3-02",
+     "L3-03",
+     "L3-04",
+     "L3-05",
+     "L3-06",
+     "L3-07",
+     "L3-08",
+     "L3-09",
+     "L3-10",
+     "L3-11",
+     "L3-12",
+     "L3-13",
+     "L3-14",
+     "L3-15",
+     "L3-16",
+     "L3-17",
+     "L3-18",
+     "L3-19",
+     "L4-01",
+     "L4-02",
+     "L4-03",
+     "L4-04",
+     "L4-05",
+     "L4-06",
+     "L4-07",
+     "L4-08",
+     "L4-09",
+     "L4-10",
+     "L4-11",
+     "L4-12",
+     "L4-13",
+     "L4-14",
+     "L4-15",
+     "L4-16",
+     "L4-17",
+     "L4-18",
+     "L4-19",
+     "L4-20",
+     "AUTHZ-INV-01",
+     "AUTHZ-INV-02",
+     "AUTHZ-INV-03",
+     "AUTHZ-INV-04",
+     "AUTHZ-INV-05",
+     "AUTHZ-INV-06",
+     "AUTHZ-INV-07",
+     "AUTHZ-INV-08",
+     "AUTHZ-INV-09",
+     "AUTHZ-INV-10",
+     "AUTHZ-INV-11",
+     "AUTHZ-INV-12",
+     "AUTHZ-INV-13",
+     "AUTHZ-INV-14"
+    ]
+   },
+   "derivation": "checks whose recorded outcome matched the expected one",
+   "source": "authz_poc/runs/2026-09-29-recorded/"
+  },
+  "dec.ALLOW": {
+   "value": 4,
+   "display": "4",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-01",
+     "step-02",
+     "step-07",
+     "step-08"
+    ]
+   },
+   "derivation": "first-pass decisions of type ALLOW"
+  },
+  "dec.ALLOW_WITH_APPROVAL": {
+   "value": 1,
+   "display": "1",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-10"
+    ]
+   },
+   "derivation": "first-pass decisions of type ALLOW_WITH_APPROVAL"
+  },
+  "dec.ALLOW_WITH_CONSTRAINTS": {
+   "value": 2,
+   "display": "2",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-03",
+     "step-06"
+    ]
+   },
+   "derivation": "first-pass decisions of type ALLOW_WITH_CONSTRAINTS"
+  },
+  "dec.DENY": {
+   "value": 3,
+   "display": "3",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json",
+   "rows": {
+    "run": "2026-09-29-recorded",
+    "ids": [
+     "step-04",
+     "step-05",
+     "step-09"
+    ]
+   },
+   "derivation": "first-pass decisions of type DENY"
+  },
+  "decisions.total": {
+   "value": 11,
+   "display": "11",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json",
+   "derivation": "policy decisions in the audit log, including the re-check"
+  },
+  "evidence.final": {
+   "value": 0.94,
+   "display": "0.94",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json → production_rollback_attempts"
+  },
+  "evidence.first": {
+   "value": 0.62,
+   "display": "0.62",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json → production_rollback_attempts"
+  },
+  "evidence.floor": {
+   "value": 0.8,
+   "display": "0.80",
+   "source": "config/policy.toml → F2"
+  },
+  "final.version": {
+   "value": "v4.17.2",
+   "display": "v4.17.2",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "inputs.count": {
+   "value": 24,
+   "display": "24",
+   "source": "authz_poc/runs/2026-09-29-recorded/manifest.json"
+  },
+  "inv.cases": {
+   "value": 89,
+   "display": "89",
+   "source": "authz_poc/runs/2026-09-29-recorded/invariants.json",
+   "derivation": "named cases across the 14 invariants"
+  },
+  "inv.passed": {
+   "value": 14,
+   "display": "14",
+   "source": "authz_poc/runs/2026-09-29-recorded/invariants.json"
+  },
+  "inv.total": {
+   "value": 14,
+   "display": "14",
+   "source": "authz_poc/runs/2026-09-29-recorded/invariants.json"
+  },
+  "layers.n": {
+   "value": 4,
+   "display": "4",
+   "source": "authz_poc/runs/2026-09-29-recorded/tests.json"
+  },
+  "layers.pass": {
+   "value": 4,
+   "display": "4",
+   "source": "authz_poc/runs/2026-09-29-recorded/tests.json"
+  },
+  "policy.version": {
+   "value": "authz-2026-09-29.2",
+   "display": "authz-2026-09-29.2",
+   "source": "authz_poc/runs/2026-09-29-recorded/manifest.json"
+  },
+  "python": {
+   "value": "3.14.6",
+   "display": "3.14.6",
+   "source": "authz_poc/runs/2026-09-29-recorded/manifest.json"
+  },
+  "replay.files": {
+   "value": 10,
+   "display": "10",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  },
+  "replay.same": {
+   "value": 10,
+   "display": "10",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  },
+  "rules.count": {
+   "value": 7,
+   "display": "7",
+   "source": "config/policy.toml"
+  },
+  "run.filed": {
+   "value": "2026-09-29",
+   "display": "2026-09-29",
+   "source": "authz_poc/runs/2026-09-29-recorded"
+  },
+  "run.id": {
+   "value": "2026-09-29-recorded",
+   "display": "2026-09-29-recorded",
+   "source": "authz_poc/runs/2026-09-29-recorded"
+  },
+  "sweep.ALLOW": {
+   "value": 1,
+   "display": "1",
+   "source": "authz_poc/runs/2026-09-29-recorded/sweep.json"
+  },
+  "sweep.ALLOW_WITH_APPROVAL": {
+   "value": 2,
+   "display": "2",
+   "source": "authz_poc/runs/2026-09-29-recorded/sweep.json"
+  },
+  "sweep.DENY": {
+   "value": 5,
+   "display": "5",
+   "source": "authz_poc/runs/2026-09-29-recorded/sweep.json"
+  },
+  "sweep.n": {
+   "value": 8,
+   "display": "8",
+   "source": "authz_poc/runs/2026-09-29-recorded/sweep.json"
+  },
+  "tamper.detected": {
+   "value": true,
+   "display": "true",
+   "source": "authz_poc/runs/2026-09-29-recorded/facts.json"
+  },
+  "tests.checks": {
+   "value": 153,
+   "display": "153",
+   "source": "authz_poc/runs/2026-09-29-recorded/tests.json",
+   "derivation": "tests and subtests"
+  },
+  "tests.methods": {
+   "value": 51,
+   "display": "51",
+   "source": "authz_poc/runs/2026-09-29-recorded/tests.json"
+  },
+  "tests.passed": {
+   "value": 153,
+   "display": "153",
+   "source": "authz_poc/runs/2026-09-29-recorded/tests.json"
+  },
+  "variant.G.name": {
+   "value": "L3 · Gateway tests",
+   "display": "L3 · Gateway tests",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.G.name_lower": {
+   "value": "l3 · gateway tests",
+   "display": "l3 · gateway tests",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.R.name": {
+   "value": "Incident run · L4 replay",
+   "display": "Incident run · L4 replay",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.R.name_lower": {
+   "value": "incident run · l4 replay",
+   "display": "incident run · l4 replay",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.S.name": {
+   "value": "Context sweep",
+   "display": "Context sweep",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.S.name_lower": {
+   "value": "context sweep",
+   "display": "context sweep",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.T.name": {
+   "value": "L1 · Policy tests",
+   "display": "L1 · Policy tests",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.T.name_lower": {
+   "value": "l1 · policy tests",
+   "display": "l1 · policy tests",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.V.name": {
+   "value": "L2 · Invariants",
+   "display": "L2 · Invariants",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "variant.V.name_lower": {
+   "value": "l2 · invariants",
+   "display": "l2 · invariants",
+   "source": "learning.toml → dimensions.variants"
+  },
+  "verify.chain": {
+   "value": "PASS",
+   "display": "PASS",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  },
+  "verify.deterministic": {
+   "value": true,
+   "display": "true",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  },
+  "verify.ok": {
+   "value": true,
+   "display": "true",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  },
+  "verify.replay": {
+   "value": "PASS",
+   "display": "PASS",
+   "source": "authz_poc/runs/2026-09-29-recorded/verification.json"
+  }
+ },
+ "provenance": {
+  "freeze": null
+ },
+ "claims": {
+  "title": ""
+ },
+ "hypotheses": [],
+ "failures": [],
+ "failure_classes": [],
+ "metrics": [
+  {
+   "id": "pass-R",
+   "variant": "R",
+   "headline": "33/33 passed",
+   "statement": "33 of 33 incident-run and L4 replay checks passed",
+   "breakdown_title": "By what decided it",
+   "source": "R.pass",
+   "rows": [
+    "step-01",
+    "step-02",
+    "step-03",
+    "step-04",
+    "step-05",
+    "step-06",
+    "step-07",
+    "step-08",
+    "step-09",
+    "step-10",
+    "approval-1",
+    "approval-2",
+    "resume",
+    "L4-01",
+    "L4-02",
+    "L4-03",
+    "L4-04",
+    "L4-05",
+    "L4-06",
+    "L4-07",
+    "L4-08",
+    "L4-09",
+    "L4-10",
+    "L4-11",
+    "L4-12",
+    "L4-13",
+    "L4-14",
+    "L4-15",
+    "L4-16",
+    "L4-17",
+    "L4-18",
+    "L4-19",
+    "L4-20"
+   ],
+   "breakdown": [
+    {
+     "label": "Approval rule (ABAC)",
+     "count": 1,
+     "rows": [
+      "step-10"
+     ]
+    },
+    {
+     "label": "Constraint rule (ABAC)",
+     "count": 2,
+     "rows": [
+      "step-03",
+      "step-06"
+     ]
+    },
+    {
+     "label": "Forbid rule (ABAC)",
+     "count": 2,
+     "rows": [
+      "step-04",
+      "step-05"
+     ]
+    },
+    {
+     "label": "Approval gate",
+     "count": 3,
+     "rows": [
+      "approval-1",
+      "approval-2",
+      "resume"
+     ]
+    },
+    {
+     "label": "L4 recorded replay test",
+     "count": 20,
+     "rows": [
+      "L4-01",
+      "L4-02",
+      "L4-03",
+      "L4-04",
+      "L4-05",
+      "L4-06",
+      "L4-07",
+      "L4-08",
+      "L4-09",
+      "L4-10",
+      "L4-11",
+      "L4-12",
+      "L4-13",
+      "L4-14",
+      "L4-15",
+      "L4-16",
+      "L4-17",
+      "L4-18",
+      "L4-19",
+      "L4-20"
+     ]
+    },
+    {
+     "label": "Role grant, no rule restricted it",
+     "count": 4,
+     "rows": [
+      "step-01",
+      "step-02",
+      "step-07",
+      "step-08"
+     ]
+    },
+    {
+     "label": "Relationship check (ReBAC)",
+     "count": 1,
+     "rows": [
+      "step-09"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pass-S",
+   "variant": "S",
+   "headline": "8/8 passed",
+   "statement": "8 of 8 sweep contexts produced the expected decision and rule",
+   "breakdown_title": "By what decided it",
+   "source": "S.pass",
+   "rows": [
+    "sweep-1",
+    "sweep-2",
+    "sweep-3",
+    "sweep-4",
+    "sweep-5",
+    "sweep-6",
+    "sweep-7",
+    "sweep-8"
+   ],
+   "breakdown": [
+    {
+     "label": "Approval rule (ABAC)",
+     "count": 2,
+     "rows": [
+      "sweep-2",
+      "sweep-5"
+     ]
+    },
+    {
+     "label": "Forbid rule (ABAC)",
+     "count": 2,
+     "rows": [
+      "sweep-3",
+      "sweep-4"
+     ]
+    },
+    {
+     "label": "Role grant, no rule restricted it",
+     "count": 1,
+     "rows": [
+      "sweep-1"
+     ]
+    },
+    {
+     "label": "Relationship check (ReBAC)",
+     "count": 3,
+     "rows": [
+      "sweep-6",
+      "sweep-7",
+      "sweep-8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pass-T",
+   "variant": "T",
+   "headline": "24/24 passed",
+   "statement": "24 of 24 L1 policy tests and subtests passed",
+   "breakdown_title": "By what decided it",
+   "source": "T.pass",
+   "rows": [
+    "L1-01",
+    "L1-02",
+    "L1-03",
+    "L1-04",
+    "L1-05",
+    "L1-06",
+    "L1-07",
+    "L1-08",
+    "L1-09",
+    "L1-10",
+    "L1-11",
+    "L1-12",
+    "L1-13",
+    "L1-14",
+    "L1-15",
+    "L1-16",
+    "L1-17",
+    "L1-18",
+    "L1-19",
+    "L1-20",
+    "L1-21",
+    "L1-22",
+    "L1-23",
+    "L1-24"
+   ],
+   "breakdown": [
+    {
+     "label": "Approval rule (ABAC)",
+     "count": 1,
+     "rows": [
+      "L1-11"
+     ]
+    },
+    {
+     "label": "Constraint rule (ABAC)",
+     "count": 2,
+     "rows": [
+      "L1-07",
+      "L1-09"
+     ]
+    },
+    {
+     "label": "Forbid rule (ABAC)",
+     "count": 3,
+     "rows": [
+      "L1-12",
+      "L1-13",
+      "L1-17"
+     ]
+    },
+    {
+     "label": "L1 policy unit test",
+     "count": 9,
+     "rows": [
+      "L1-01",
+      "L1-02",
+      "L1-03",
+      "L1-04",
+      "L1-05",
+      "L1-21",
+      "L1-22",
+      "L1-23",
+      "L1-24"
+     ]
+    },
+    {
+     "label": "Role grant, no rule restricted it",
+     "count": 3,
+     "rows": [
+      "L1-06",
+      "L1-08",
+      "L1-10"
+     ]
+    },
+    {
+     "label": "Role check (RBAC)",
+     "count": 4,
+     "rows": [
+      "L1-16",
+      "L1-18",
+      "L1-19",
+      "L1-20"
+     ]
+    },
+    {
+     "label": "Relationship check (ReBAC)",
+     "count": 2,
+     "rows": [
+      "L1-14",
+      "L1-15"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pass-V",
+   "variant": "V",
+   "headline": "14/14 hold",
+   "statement": "14 of 14 invariants hold, in the run and in the test suite",
+   "breakdown_title": "By kind",
+   "source": "V.pass",
+   "rows": [
+    "AUTHZ-INV-01",
+    "AUTHZ-INV-02",
+    "AUTHZ-INV-03",
+    "AUTHZ-INV-04",
+    "AUTHZ-INV-05",
+    "AUTHZ-INV-06",
+    "AUTHZ-INV-07",
+    "AUTHZ-INV-08",
+    "AUTHZ-INV-09",
+    "AUTHZ-INV-10",
+    "AUTHZ-INV-11",
+    "AUTHZ-INV-12",
+    "AUTHZ-INV-13",
+    "AUTHZ-INV-14"
+   ],
+   "breakdown": [
+    {
+     "label": "Invariant",
+     "count": 14,
+     "rows": [
+      "AUTHZ-INV-01",
+      "AUTHZ-INV-02",
+      "AUTHZ-INV-03",
+      "AUTHZ-INV-04",
+      "AUTHZ-INV-05",
+      "AUTHZ-INV-06",
+      "AUTHZ-INV-07",
+      "AUTHZ-INV-08",
+      "AUTHZ-INV-09",
+      "AUTHZ-INV-10",
+      "AUTHZ-INV-11",
+      "AUTHZ-INV-12",
+      "AUTHZ-INV-13",
+      "AUTHZ-INV-14"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pass-G",
+   "variant": "G",
+   "headline": "19/19 passed",
+   "statement": "19 of 19 L3 gateway integration tests and subtests passed",
+   "breakdown_title": "By layer",
+   "source": "G.pass",
+   "rows": [
+    "L3-01",
+    "L3-02",
+    "L3-03",
+    "L3-04",
+    "L3-05",
+    "L3-06",
+    "L3-07",
+    "L3-08",
+    "L3-09",
+    "L3-10",
+    "L3-11",
+    "L3-12",
+    "L3-13",
+    "L3-14",
+    "L3-15",
+    "L3-16",
+    "L3-17",
+    "L3-18",
+    "L3-19"
+   ],
+   "breakdown": [
+    {
+     "label": "L3 gateway integration test",
+     "count": 19,
+     "rows": [
+      "L3-01",
+      "L3-02",
+      "L3-03",
+      "L3-04",
+      "L3-05",
+      "L3-06",
+      "L3-07",
+      "L3-08",
+      "L3-09",
+      "L3-10",
+      "L3-11",
+      "L3-12",
+      "L3-13",
+      "L3-14",
+      "L3-15",
+      "L3-16",
+      "L3-17",
+      "L3-18",
+      "L3-19"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "decisions-R",
+   "variant": "R",
+   "headline": "10 proposed calls",
+   "statement": "The first-pass decision on each of the 10 calls the agent proposed",
+   "breakdown_title": "By decision",
+   "source": "calls.proposed",
+   "rows": [
+    "step-01",
+    "step-02",
+    "step-03",
+    "step-04",
+    "step-05",
+    "step-06",
+    "step-07",
+    "step-08",
+    "step-09",
+    "step-10"
+   ],
+   "breakdown": [
+    {
+     "label": "ALLOW",
+     "count": 4,
+     "rows": [
+      "step-01",
+      "step-02",
+      "step-07",
+      "step-08"
+     ]
+    },
+    {
+     "label": "ALLOW_WITH_CONSTRAINTS",
+     "count": 2,
+     "rows": [
+      "step-03",
+      "step-06"
+     ]
+    },
+    {
+     "label": "DENY",
+     "count": 3,
+     "rows": [
+      "step-04",
+      "step-05",
+      "step-09"
+     ]
+    },
+    {
+     "label": "ALLOW_WITH_APPROVAL",
+     "count": 1,
+     "rows": [
+      "step-10"
+     ]
+    }
+   ]
+  }
+ ],
+ "datasets": {
+  "systems": {
+   "items": [
+    [
+     "alert",
+     "Datadog event",
+     "INC-4471"
+    ],
+    [
+     "user",
+     "Agent identity",
+     "incident-agent-prod"
+    ],
+    [
+     "shield",
+     "Gateway (PEP)",
+     "authz/pep.py"
+    ],
+    [
+     "target",
+     "Policy engine (PDP)",
+     "authz-2026-09-29.2"
+    ],
+    [
+     "check",
+     "Approval gate",
+     "authz/approvals.py"
+    ],
+    [
+     "box",
+     "Simulated tools",
+     "Kubernetes, logs"
+    ],
+    [
+     "lock",
+     "Audit log",
+     "hash-chained"
+    ]
+   ],
+   "label": "What every call touches"
+  },
+  "suites": {
+   "head": [
+    "Suite",
+    "Checks",
+    "Passed",
+    "Failed",
+    "What it checks"
+   ],
+   "rows": [
+    [
+     "Incident run and replay",
+     "33",
+     "33",
+     "0",
+     "each call's decision, rule and enforcement against `scenario.toml`, both approval attempts, the re-check, and the L4 replay tests: the run re-created byte for byte and its published facts re-derived"
+    ],
+    [
+     "Context sweep",
+     "8",
+     "8",
+     "0",
+     "the same production rollback under 8 contexts, against the expected decision and rule"
+    ],
+    [
+     "L1 policy tests",
+     "24",
+     "24",
+     "0",
+     "L1: the decision table, the freeze case, the combining rule, conditions, evidence, fingerprint, caller view"
+    ],
+    [
+     "L2 invariants",
+     "14",
+     "14",
+     "0",
+     "L2: the 14 named production invariants, 89 named cases"
+    ],
+    [
+     "L3 gateway tests",
+     "19",
+     "19",
+     "0",
+     "L3: the real enforcement path, with tool call counters, credentials and fail-closed policy errors"
+    ]
+   ]
+  },
+  "story": {
+   "events": [
+    {
+     "at": "14:02:00",
+     "title": "Datadog alert for `payment-service`, SEV-1",
+     "tone": "info"
+    },
+    {
+     "at": "14:02:00",
+     "title": "identity established: `incident-agent-prod` acting for `sre-team`",
+     "tone": "info"
+    },
+    {
+     "at": "14:03:05",
+     "title": "`kubernetes.readDeployment` payment-service (production) → **ALLOW** · executed",
+     "sub": "What is running?",
+     "tone": "ok",
+     "row": "step-01",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:03:20",
+     "title": "`kubernetes.readPods` payment-service (production) → **ALLOW** · executed",
+     "sub": "Are pods healthy?",
+     "tone": "ok",
+     "row": "step-02",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:04:02",
+     "title": "`logs.query` payment-service (production) → **ALLOW_WITH_CONSTRAINTS** · executed",
+     "sub": "What do the errors say?",
+     "tone": "info",
+     "row": "step-03",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:04:30",
+     "title": "`kubernetes.deleteNamespace` payments-canary (production) → **DENY** · denied",
+     "sub": "Follow the runbook line in the alert annotation",
+     "tone": "bad",
+     "row": "step-04",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:05:10",
+     "title": "`kubernetes.rollbackDeployment` payment-service (production) → **DENY** · denied",
+     "sub": "First hypothesis: bad release (weak evidence yet)",
+     "tone": "bad",
+     "row": "step-05",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:05:40",
+     "title": "`kubernetes.restartPod` payment-service (production) → **ALLOW_WITH_CONSTRAINTS** · executed",
+     "sub": "Mitigate: recycle crash-looping pods",
+     "tone": "info",
+     "row": "step-06",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:06:15",
+     "title": "`kubernetes.restartPod` payment-service (staging) → **ALLOW** · executed",
+     "sub": "Reproduce in staging",
+     "tone": "ok",
+     "row": "step-07",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:06:40",
+     "title": "`kubernetes.rollbackDeployment` payment-service (staging) → **ALLOW** · executed",
+     "sub": "Validate that v4.17.2 fixes it in staging",
+     "tone": "ok",
+     "row": "step-08",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:07:05",
+     "title": "`kubernetes.rollbackDeployment` checkout-service (production) → **DENY** · denied",
+     "sub": "Checkout errors too: roll it back as well?",
+     "tone": "bad",
+     "row": "step-09",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:07:30",
+     "title": "`kubernetes.rollbackDeployment` payment-service (production) → **ALLOW_WITH_APPROVAL** · pending_approval",
+     "sub": "Staging confirmed the fix: roll back production",
+     "tone": "warn",
+     "row": "step-10",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:07:45",
+     "title": "approval by `incident-agent-prod` → **rejected**",
+     "sub": "The requester cannot approve its own action",
+     "tone": "bad",
+     "row": "approval-1",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:08:50",
+     "title": "approval by `ic.dev` → **approved**",
+     "sub": "approved",
+     "tone": "ok",
+     "row": "approval-2",
+     "run": "2026-09-29-recorded"
+    },
+    {
+     "at": "14:09:02",
+     "title": "re-submitted call: binding ok, policy re-check → **rolled_back_to: v4.17.2**",
+     "tone": "ok",
+     "row": "resume",
+     "run": "2026-09-29-recorded"
+    }
+   ]
+  },
+  "decisions": {
+   "head": [
+    "",
+    "Time",
+    "Agent proposes",
+    "Evidence",
+    "Decision",
+    "Rule",
+    "Outcome"
+   ],
+   "rows": [
+    {
+     "row": "step-01",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:03:05",
+      "`kubernetes.readDeployment` payment-service · production",
+      "–",
+      "**ALLOW**",
+      "–",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-02",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:03:20",
+      "`kubernetes.readPods` payment-service · production",
+      "–",
+      "**ALLOW**",
+      "–",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-03",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:04:02",
+      "`logs.query` payment-service · production",
+      "–",
+      "**ALLOW_WITH_CONSTRAINTS**",
+      "`C2-restricted-logs`",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-04",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:04:30",
+      "`kubernetes.deleteNamespace` payments-canary · production",
+      "–",
+      "**DENY**",
+      "`rbac.no-grant` `rebac.not-delegated` `F1-no-namespace-deletion`",
+      "denied"
+     ]
+    },
+    {
+     "row": "step-05",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:05:10",
+      "`kubernetes.rollbackDeployment` payment-service · production",
+      "0.62",
+      "**DENY**",
+      "`F2-insufficient-evidence-high-risk-write`",
+      "denied"
+     ]
+    },
+    {
+     "row": "step-06",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:05:40",
+      "`kubernetes.restartPod` payment-service · production",
+      "–",
+      "**ALLOW_WITH_CONSTRAINTS**",
+      "`C1-production-restart`",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-07",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:06:15",
+      "`kubernetes.restartPod` payment-service · staging",
+      "–",
+      "**ALLOW**",
+      "–",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-08",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:06:40",
+      "`kubernetes.rollbackDeployment` payment-service · staging",
+      "0.62",
+      "**ALLOW**",
+      "–",
+      "executed"
+     ]
+    },
+    {
+     "row": "step-09",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:07:05",
+      "`kubernetes.rollbackDeployment` checkout-service · production",
+      "0",
+      "**DENY**",
+      "`rebac.not-owner` `F2-insufficient-evidence-high-risk-write`",
+      "denied"
+     ]
+    },
+    {
+     "row": "step-10",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "14:07:30",
+      "`kubernetes.rollbackDeployment` payment-service · production",
+      "0.94",
+      "**ALLOW_WITH_APPROVAL**",
+      "`A1-production-rollback`",
+      "pending approval"
+     ]
+    }
+   ]
+  },
+  "sweep": {
+   "head": [
+    "",
+    "Context",
+    "Expected",
+    "Decision",
+    "Rule",
+    "Reason (audit view)"
+   ],
+   "rows": [
+    {
+     "row": "sweep-1",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "staging",
+      "ALLOW",
+      "**ALLOW**",
+      "`-`",
+      "incident-responder permits kubernetes.rollbackDeployment"
+     ]
+    },
+    {
+     "row": "sweep-2",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, SEV-1, evidence 0.94",
+      "ALLOW_WITH_APPROVAL",
+      "**ALLOW_WITH_APPROVAL**",
+      "`A1-production-rollback`",
+      "Production rollback requires SRE approval"
+     ]
+    },
+    {
+     "row": "sweep-3",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, evidence 0.62 (before staging validation)",
+      "DENY",
+      "**DENY**",
+      "`F2-insufficient-evidence-high-risk-write`",
+      "High-risk production writes need a diagnosis evidence score of at least 0.80"
+     ]
+    },
+    {
+     "row": "sweep-4",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, SEV-3, during change freeze",
+      "DENY",
+      "**DENY**",
+      "`F3-change-freeze`",
+      "Change freeze: only SEV-1 remediation may write to production"
+     ]
+    },
+    {
+     "row": "sweep-5",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, SEV-1, during change freeze",
+      "ALLOW_WITH_APPROVAL",
+      "**ALLOW_WITH_APPROVAL**",
+      "`A1-production-rollback`",
+      "Production rollback requires SRE approval"
+     ]
+    },
+    {
+     "row": "sweep-6",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, incident resolved",
+      "DENY",
+      "**DENY**",
+      "`rebac.delegation-inactive`",
+      "Delegation dlg-sre-incident-2026q4 applies only while an incident on payment-service is open"
+     ]
+    },
+    {
+     "row": "sweep-7",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, no acting-for principal",
+      "DENY",
+      "**DENY**",
+      "`rebac.no-principal`",
+      "Writes need an acting-for principal; the agent has no write authority of its own"
+     ]
+    },
+    {
+     "row": "sweep-8",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "production, checkout-service (not owned)",
+      "DENY",
+      "**DENY**",
+      "`rebac.not-owner`",
+      "sre-team does not own checkout-service, so it cannot lend authority over it"
+     ]
+    }
+   ]
+  },
+  "tests": {
+   "head": [
+    "",
+    "Row",
+    "Test",
+    "Expected",
+    "Rule"
+   ],
+   "rows": [
+    {
+     "row": "L1-06",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-06`",
+      "read deployment",
+      "ALLOW",
+      "`—`"
+     ]
+    },
+    {
+     "row": "L1-07",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-07`",
+      "read logs are redacted",
+      "ALLOW_WITH_CONSTRAINTS",
+      "`C2-restricted-logs`"
+     ]
+    },
+    {
+     "row": "L1-08",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-08`",
+      "restart pod in staging",
+      "ALLOW",
+      "`—`"
+     ]
+    },
+    {
+     "row": "L1-09",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-09`",
+      "restart pod in production",
+      "ALLOW_WITH_CONSTRAINTS",
+      "`C1-production-restart`"
+     ]
+    },
+    {
+     "row": "L1-10",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-10`",
+      "rollback staging",
+      "ALLOW",
+      "`—`"
+     ]
+    },
+    {
+     "row": "L1-11",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-11`",
+      "rollback production",
+      "ALLOW_WITH_APPROVAL",
+      "`A1-production-rollback`"
+     ]
+    },
+    {
+     "row": "L1-12",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-12`",
+      "rollback production, weak evidence",
+      "DENY",
+      "`F2-insufficient-evidence-high-risk-write`"
+     ]
+    },
+    {
+     "row": "L1-13",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-13`",
+      "delete namespace",
+      "DENY",
+      "`F1-no-namespace-deletion`"
+     ]
+    },
+    {
+     "row": "L1-14",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-14`",
+      "not the owner",
+      "DENY",
+      "`rebac.not-owner`"
+     ]
+    },
+    {
+     "row": "L1-15",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-15`",
+      "no acting-for principal",
+      "DENY",
+      "`rebac.no-principal`"
+     ]
+    },
+    {
+     "row": "L1-16",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-16`",
+      "read-only agent cannot restart",
+      "DENY",
+      "`rbac.no-grant`"
+     ]
+    },
+    {
+     "row": "L1-17",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-17`",
+      "cross-tenant log query",
+      "DENY",
+      "`F4-tenant-boundary`"
+     ]
+    },
+    {
+     "row": "L1-18",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-18`",
+      "exec is not in any role",
+      "DENY",
+      "`default.unknown-action`"
+     ]
+    },
+    {
+     "row": "L1-19",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-19`",
+      "unknown resource",
+      "DENY",
+      "`default.unknown-resource`"
+     ]
+    },
+    {
+     "row": "L1-20",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L1-20`",
+      "unknown environment",
+      "DENY",
+      "`default.unknown-environment`"
+     ]
+    }
+   ]
+  },
+  "invariants": {
+   "head": [
+    "",
+    "Id",
+    "Invariant",
+    "Cases",
+    "In the run",
+    "In the tests"
+   ],
+   "rows": [
+    {
+     "row": "AUTHZ-INV-01",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-01",
+      "Deny by default",
+      "4",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-02",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-02",
+      "Role ceiling cannot be exceeded",
+      "11",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-03",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-03",
+      "Tool access is not action permission",
+      "5",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-04",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-04",
+      "Resource authority is required",
+      "3",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-05",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-05",
+      "Delegation is an intersection, never a union",
+      "5",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-06",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-06",
+      "Delegation scope and lifetime are enforced",
+      "7",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-07",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-07",
+      "Context may restrict, never manufacture authority",
+      "5",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-08",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-08",
+      "Agent assertions never loosen authorization",
+      "5",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-09",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-09",
+      "Missing or unknown security context fails closed",
+      "7",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-10",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-10",
+      "Same identity may produce different contextual decisions",
+      "10",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-11",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-11",
+      "Production rollback cannot silently auto-execute",
+      "4",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-12",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-12",
+      "Approval cannot widen DENY",
+      "9",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-13",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-13",
+      "Authorization is rechecked at time of use",
+      "8",
+      "✓",
+      "✓"
+     ]
+    },
+    {
+     "row": "AUTHZ-INV-14",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "AUTHZ-INV-14",
+      "Every decision is reconstructable and replayable",
+      "6",
+      "✓",
+      "✓"
+     ]
+    }
+   ]
+  },
+  "gateway": {
+   "head": [
+    "",
+    "Row",
+    "Gateway test"
+   ],
+   "rows": [
+    {
+     "row": "L3-01",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-01`",
+      "nothing executes before approval"
+     ]
+    },
+    {
+     "row": "L3-02",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-02`",
+      "stale authorization is rechecked"
+     ]
+    },
+    {
+     "row": "L3-03",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-03`",
+      "denial tells the agent what to do not how policy works"
+     ]
+    },
+    {
+     "row": "L3-04",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-04`",
+      "restart is reshaped to one pod"
+     ]
+    },
+    {
+     "row": "L3-05",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-05`",
+      "restricted logs come back redacted"
+     ]
+    },
+    {
+     "row": "L3-06",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-06`",
+      "denied calls never reach a tool · delete namespace"
+     ]
+    },
+    {
+     "row": "L3-07",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-07`",
+      "denied calls never reach a tool · rollback a service sre-team does not own"
+     ]
+    },
+    {
+     "row": "L3-08",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-08`",
+      "denied calls never reach a tool · production rollback on weak evidence"
+     ]
+    },
+    {
+     "row": "L3-09",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-09`",
+      "denied calls never reach a tool · write without an acting-for principal"
+     ]
+    },
+    {
+     "row": "L3-10",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-10`",
+      "denied calls never reach a tool · exec (no role grants it"
+     ]
+    },
+    {
+     "row": "L3-11",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-11`",
+      "execution records link decision credential and approval"
+     ]
+    },
+    {
+     "row": "L3-12",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-12`",
+      "invalid policy response"
+     ]
+    },
+    {
+     "row": "L3-13",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-13`",
+      "pdp unavailable"
+     ]
+    },
+    {
+     "row": "L3-14",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-14`",
+      "broker refuses without a permitting decision"
+     ]
+    },
+    {
+     "row": "L3-15",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-15`",
+      "credential for another call"
+     ]
+    },
+    {
+     "row": "L3-16",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-16`",
+      "credential is single use"
+     ]
+    },
+    {
+     "row": "L3-17",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-17`",
+      "expired credential"
+     ]
+    },
+    {
+     "row": "L3-18",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-18`",
+      "forged credential"
+     ]
+    },
+    {
+     "row": "L3-19",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L3-19`",
+      "no credential"
+     ]
+    }
+   ]
+  },
+  "replay": {
+   "head": [
+    "",
+    "Row",
+    "Replay test"
+   ],
+   "rows": [
+    {
+     "row": "L4-01",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-01`",
+      "checkout rollback is denied for ownership"
+     ]
+    },
+    {
+     "row": "L4-02",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-02`",
+      "every expected outcome holds"
+     ]
+    },
+    {
+     "row": "L4-03",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-03`",
+      "facts are derived from the log"
+     ]
+    },
+    {
+     "row": "L4-04",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-04`",
+      "namespace deletion is denied and nothing is deleted"
+     ]
+    },
+    {
+     "row": "L4-05",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-05`",
+      "one identity many answers"
+     ]
+    },
+    {
+     "row": "L4-06",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-06`",
+      "receipt is the log"
+     ]
+    },
+    {
+     "row": "L4-07",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-07`",
+      "recorded chain verifies from the file"
+     ]
+    },
+    {
+     "row": "L4-08",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-08`",
+      "replay is byte identical to the recorded run · decisions.jsonl"
+     ]
+    },
+    {
+     "row": "L4-09",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-09`",
+      "replay is byte identical to the recorded run · timeline.json"
+     ]
+    },
+    {
+     "row": "L4-10",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-10`",
+      "replay is byte identical to the recorded run · timeline.md"
+     ]
+    },
+    {
+     "row": "L4-11",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-11`",
+      "replay is byte identical to the recorded run · sweep.json"
+     ]
+    },
+    {
+     "row": "L4-12",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-12`",
+      "replay is byte identical to the recorded run · sweep.md"
+     ]
+    },
+    {
+     "row": "L4-13",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-13`",
+      "replay is byte identical to the recorded run · invariants.json"
+     ]
+    },
+    {
+     "row": "L4-14",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-14`",
+      "replay is byte identical to the recorded run · expectations.json"
+     ]
+    },
+    {
+     "row": "L4-15",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-15`",
+      "replay is byte identical to the recorded run · receipt.json"
+     ]
+    },
+    {
+     "row": "L4-16",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-16`",
+      "replay is byte identical to the recorded run · transcript.txt"
+     ]
+    },
+    {
+     "row": "L4-17",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-17`",
+      "replay is byte identical to the recorded run · facts.json"
+     ]
+    },
+    {
+     "row": "L4-18",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-18`",
+      "same production rollback denied then approvable on evidence"
+     ]
+    },
+    {
+     "row": "L4-19",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-19`",
+      "self approval refused then executed after recheck"
+     ]
+    },
+    {
+     "row": "L4-20",
+     "run": "2026-09-29-recorded",
+     "cells": [
+      "✓",
+      "`L4-20`",
+      "staging rollback is allowed"
+     ]
+    }
+   ]
+  },
+  "chain": {
+   "head": [
+    "Seq",
+    "Time",
+    "Kind",
+    "Prev",
+    "Hash",
+    "Link ok",
+    "Hash ok"
+   ],
+   "rows": [
+    [
+     "1",
+     "14:02:00",
+     "`event.received`",
+     "`0000000000000000`",
+     "`42a848b386dbb85a`",
+     "✓",
+     "✓"
+    ],
+    [
+     "2",
+     "14:02:00",
+     "`identity.established`",
+     "`42a848b386dbb85a`",
+     "`c1b32c21c5a00eed`",
+     "✓",
+     "✓"
+    ],
+    [
+     "3",
+     "14:03:05",
+     "`policy.decision`",
+     "`c1b32c21c5a00eed`",
+     "`3fc7d3c49d3266d7`",
+     "✓",
+     "✓"
+    ],
+    [
+     "4",
+     "14:03:05",
+     "`tool.executed`",
+     "`3fc7d3c49d3266d7`",
+     "`717bf63a85923695`",
+     "✓",
+     "✓"
+    ],
+    [
+     "5",
+     "14:03:20",
+     "`policy.decision`",
+     "`717bf63a85923695`",
+     "`eb62f56c5c0acdc9`",
+     "✓",
+     "✓"
+    ],
+    [
+     "6",
+     "14:03:20",
+     "`tool.executed`",
+     "`eb62f56c5c0acdc9`",
+     "`f9121e88f7da34d9`",
+     "✓",
+     "✓"
+    ],
+    [
+     "7",
+     "14:04:02",
+     "`policy.decision`",
+     "`f9121e88f7da34d9`",
+     "`998ecff7ab4705be`",
+     "✓",
+     "✓"
+    ],
+    [
+     "8",
+     "14:04:02",
+     "`tool.executed`",
+     "`998ecff7ab4705be`",
+     "`8a8e7a0bc564e4fc`",
+     "✓",
+     "✓"
+    ],
+    [
+     "9",
+     "14:04:30",
+     "`policy.decision`",
+     "`8a8e7a0bc564e4fc`",
+     "`2a94c7d8b4e26e97`",
+     "✓",
+     "✓"
+    ],
+    [
+     "10",
+     "14:05:10",
+     "`policy.decision`",
+     "`2a94c7d8b4e26e97`",
+     "`7df8ed54cda022e4`",
+     "✓",
+     "✓"
+    ],
+    [
+     "11",
+     "14:05:40",
+     "`policy.decision`",
+     "`7df8ed54cda022e4`",
+     "`433ccf992b0789c3`",
+     "✓",
+     "✓"
+    ],
+    [
+     "12",
+     "14:05:40",
+     "`tool.executed`",
+     "`433ccf992b0789c3`",
+     "`d443cdf0c60c4486`",
+     "✓",
+     "✓"
+    ],
+    [
+     "13",
+     "14:06:15",
+     "`policy.decision`",
+     "`d443cdf0c60c4486`",
+     "`a25f94a401ef04d1`",
+     "✓",
+     "✓"
+    ],
+    [
+     "14",
+     "14:06:15",
+     "`tool.executed`",
+     "`a25f94a401ef04d1`",
+     "`fa783439b49c6000`",
+     "✓",
+     "✓"
+    ],
+    [
+     "15",
+     "14:06:40",
+     "`policy.decision`",
+     "`fa783439b49c6000`",
+     "`d4239d34eccb9da2`",
+     "✓",
+     "✓"
+    ],
+    [
+     "16",
+     "14:06:40",
+     "`tool.executed`",
+     "`d4239d34eccb9da2`",
+     "`264b096c3328873f`",
+     "✓",
+     "✓"
+    ],
+    [
+     "17",
+     "14:07:05",
+     "`policy.decision`",
+     "`264b096c3328873f`",
+     "`3e31d14e4763929d`",
+     "✓",
+     "✓"
+    ],
+    [
+     "18",
+     "14:07:30",
+     "`policy.decision`",
+     "`3e31d14e4763929d`",
+     "`16d33cf912830387`",
+     "✓",
+     "✓"
+    ],
+    [
+     "19",
+     "14:07:30",
+     "`approval.requested`",
+     "`16d33cf912830387`",
+     "`dd8beca97c391c72`",
+     "✓",
+     "✓"
+    ],
+    [
+     "20",
+     "14:07:45",
+     "`approval.rejected`",
+     "`dd8beca97c391c72`",
+     "`c0dfb9ec163e246b`",
+     "✓",
+     "✓"
+    ],
+    [
+     "21",
+     "14:08:50",
+     "`approval.granted`",
+     "`c0dfb9ec163e246b`",
+     "`da37dea2921acba1`",
+     "✓",
+     "✓"
+    ],
+    [
+     "22",
+     "14:09:02",
+     "`policy.decision`",
+     "`da37dea2921acba1`",
+     "`825f601473589408`",
+     "✓",
+     "✓"
+    ],
+    [
+     "23",
+     "14:09:02",
+     "`tool.executed`",
+     "`825f601473589408`",
+     "`63b9c60232f8b1cc`",
+     "✓",
+     "✓"
+    ]
+   ]
+  },
+  "lineage": {
+   "head": [
+    "Stage",
+    "File",
+    "Carries"
+   ],
+   "rows": [
+    [
+     "Scenario",
+     "`authz_poc/scenario.toml`",
+     "the incident, 10 proposed calls, approvals, sweep contexts, expected outcomes"
+    ],
+    [
+     "Policy",
+     "`authz_poc/config/*.toml`",
+     "roles (RBAC), relationships and delegation (ReBAC), guard rules (ABAC), the action catalog"
+    ],
+    [
+     "Run",
+     "`authz_poc/runs/2026-09-29-recorded/decisions.jsonl`",
+     "the hash-chained audit log: every decision, approval and execution"
+    ],
+    [
+     "Run",
+     "`authz_poc/runs/2026-09-29-recorded/timeline.json` · `sweep.json` · `invariants.json`",
+     "each call, each sweep context, each invariant"
+    ],
+    [
+     "Checks",
+     "`authz_poc/runs/2026-09-29-recorded/expectations.json`",
+     "every recorded outcome against the scenario's expected one"
+    ],
+    [
+     "Tests",
+     "`authz_poc/runs/2026-09-29-recorded/tests.json`",
+     "every test and subtest of the four layers in `tests/`"
+    ],
+    [
+     "Verification",
+     "`authz_poc/runs/2026-09-29-recorded/manifest.json` · `verification.json`",
+     "input hashes, the chain re-hashed, the replay"
+    ],
+    [
+     "This page",
+     "`results/lab-console.evidence.json`",
+     "every number above, with its source"
+    ]
+   ]
+  }
+ },
+ "runs": [
+  {
+   "id": "2026-09-29-recorded",
+   "label": "Run 2026-09-29-recorded",
+   "kind": "recorded",
+   "path": "authz_poc/runs/2026-09-29-recorded",
+   "note": "scripted agent, simulated tools, real policy engine and gateway",
+   "rows": [
+    {
+     "id": "step-01",
+     "case": "step-01",
+     "key": "R",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       null
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:03:05"
+      ]
+     ]
+    },
+    {
+     "id": "step-02",
+     "case": "step-02",
+     "key": "R",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       null
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:03:20"
+      ]
+     ]
+    },
+    {
+     "id": "step-03",
+     "case": "step-03",
+     "key": "R",
+     "x": "ALLOW_WITH_CONSTRAINTS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Rule",
+       "C2-restricted-logs"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:04:02"
+      ]
+     ]
+    },
+    {
+     "id": "step-04",
+     "case": "step-04",
+     "key": "R",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rbac.no-grant, rebac.not-delegated, F1-no-namespace-deletion"
+      ],
+      [
+       "Outcome",
+       "denied"
+      ],
+      [
+       "Time",
+       "14:04:30"
+      ]
+     ]
+    },
+    {
+     "id": "step-05",
+     "case": "step-05",
+     "key": "R",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F2-insufficient-evidence-high-risk-write"
+      ],
+      [
+       "Outcome",
+       "denied"
+      ],
+      [
+       "Time",
+       "14:05:10"
+      ]
+     ]
+    },
+    {
+     "id": "step-06",
+     "case": "step-06",
+     "key": "R",
+     "x": "ALLOW_WITH_CONSTRAINTS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Rule",
+       "C1-production-restart"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:05:40"
+      ]
+     ]
+    },
+    {
+     "id": "step-07",
+     "case": "step-07",
+     "key": "R",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       null
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:06:15"
+      ]
+     ]
+    },
+    {
+     "id": "step-08",
+     "case": "step-08",
+     "key": "R",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       null
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:06:40"
+      ]
+     ]
+    },
+    {
+     "id": "step-09",
+     "case": "step-09",
+     "key": "R",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.not-owner, F2-insufficient-evidence-high-risk-write"
+      ],
+      [
+       "Outcome",
+       "denied"
+      ],
+      [
+       "Time",
+       "14:07:05"
+      ]
+     ]
+    },
+    {
+     "id": "step-10",
+     "case": "step-10",
+     "key": "R",
+     "x": "ALLOW_WITH_APPROVAL",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ],
+      [
+       "Enforced as decided",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Rule",
+       "A1-production-rollback"
+      ],
+      [
+       "Outcome",
+       "pending_approval"
+      ],
+      [
+       "Time",
+       "14:07:30"
+      ]
+     ]
+    },
+    {
+     "id": "approval-1",
+     "case": "approval-1",
+     "key": "R",
+     "x": "rejected",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Outcome as expected",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "rejected"
+      ],
+      [
+       "Actual",
+       "rejected"
+      ],
+      [
+       "Rule",
+       "approval gate"
+      ],
+      [
+       "Outcome",
+       "The requester cannot approve its own action"
+      ],
+      [
+       "Time",
+       "14:07:45"
+      ]
+     ]
+    },
+    {
+     "id": "approval-2",
+     "case": "approval-2",
+     "key": "R",
+     "x": "approved",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Outcome as expected",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "approved"
+      ],
+      [
+       "Actual",
+       "approved"
+      ],
+      [
+       "Rule",
+       "approval gate"
+      ],
+      [
+       "Outcome",
+       "approved"
+      ],
+      [
+       "Time",
+       "14:08:50"
+      ]
+     ]
+    },
+    {
+     "id": "resume",
+     "case": "resume",
+     "key": "R",
+     "x": "executed",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Outcome as expected",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "executed"
+      ],
+      [
+       "Actual",
+       "executed"
+      ],
+      [
+       "Rule",
+       "A1-production-rollback"
+      ],
+      [
+       "Outcome",
+       "executed"
+      ],
+      [
+       "Time",
+       "14:09:02"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-1",
+     "case": "sweep-1",
+     "key": "S",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       null
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "-"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-2",
+     "case": "sweep-2",
+     "key": "S",
+     "x": "ALLOW_WITH_APPROVAL",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Rule",
+       "A1-production-rollback"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-3",
+     "case": "sweep-3",
+     "key": "S",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F2-insufficient-evidence-high-risk-write"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-4",
+     "case": "sweep-4",
+     "key": "S",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F3-change-freeze"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-5",
+     "case": "sweep-5",
+     "key": "S",
+     "x": "ALLOW_WITH_APPROVAL",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Rule",
+       "A1-production-rollback"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-6",
+     "case": "sweep-6",
+     "key": "S",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.delegation-inactive"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-7",
+     "case": "sweep-7",
+     "key": "S",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.no-principal"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "sweep-8",
+     "case": "sweep-8",
+     "key": "S",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Decision as expected",
+       true
+      ],
+      [
+       "Matched the expected rule",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.not-owner"
+      ],
+      [
+       "Outcome",
+       "evaluated only"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-01",
+     "case": "L1-01",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-02",
+     "case": "L1-02",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-03",
+     "case": "L1-03",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-04",
+     "case": "L1-04",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-05",
+     "case": "L1-05",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-06",
+     "case": "L1-06",
+     "key": "T",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-07",
+     "case": "L1-07",
+     "key": "T",
+     "x": "ALLOW_WITH_CONSTRAINTS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Rule",
+       "C2-restricted-logs"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-08",
+     "case": "L1-08",
+     "key": "T",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-09",
+     "case": "L1-09",
+     "key": "T",
+     "x": "ALLOW_WITH_CONSTRAINTS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_CONSTRAINTS"
+      ],
+      [
+       "Rule",
+       "C1-production-restart"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-10",
+     "case": "L1-10",
+     "key": "T",
+     "x": "ALLOW",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW"
+      ],
+      [
+       "Actual",
+       "ALLOW"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-11",
+     "case": "L1-11",
+     "key": "T",
+     "x": "ALLOW_WITH_APPROVAL",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Actual",
+       "ALLOW_WITH_APPROVAL"
+      ],
+      [
+       "Rule",
+       "A1-production-rollback"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-12",
+     "case": "L1-12",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F2-insufficient-evidence-high-risk-write"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-13",
+     "case": "L1-13",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F1-no-namespace-deletion"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-14",
+     "case": "L1-14",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.not-owner"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-15",
+     "case": "L1-15",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rebac.no-principal"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-16",
+     "case": "L1-16",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "rbac.no-grant"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-17",
+     "case": "L1-17",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "F4-tenant-boundary"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-18",
+     "case": "L1-18",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "default.unknown-action"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-19",
+     "case": "L1-19",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "default.unknown-resource"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-20",
+     "case": "L1-20",
+     "key": "T",
+     "x": "DENY",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "DENY"
+      ],
+      [
+       "Actual",
+       "DENY"
+      ],
+      [
+       "Rule",
+       "default.unknown-environment"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-21",
+     "case": "L1-21",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-22",
+     "case": "L1-22",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-23",
+     "case": "L1-23",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L1-24",
+     "case": "L1-24",
+     "key": "T",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-01",
+     "case": "L3-01",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-02",
+     "case": "L3-02",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-03",
+     "case": "L3-03",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-04",
+     "case": "L3-04",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-05",
+     "case": "L3-05",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-06",
+     "case": "L3-06",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-07",
+     "case": "L3-07",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-08",
+     "case": "L3-08",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-09",
+     "case": "L3-09",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-10",
+     "case": "L3-10",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-11",
+     "case": "L3-11",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-12",
+     "case": "L3-12",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-13",
+     "case": "L3-13",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-14",
+     "case": "L3-14",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-15",
+     "case": "L3-15",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-16",
+     "case": "L3-16",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-17",
+     "case": "L3-17",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-18",
+     "case": "L3-18",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L3-19",
+     "case": "L3-19",
+     "key": "G",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-01",
+     "case": "L4-01",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-02",
+     "case": "L4-02",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-03",
+     "case": "L4-03",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-04",
+     "case": "L4-04",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-05",
+     "case": "L4-05",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-06",
+     "case": "L4-06",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-07",
+     "case": "L4-07",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-08",
+     "case": "L4-08",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-09",
+     "case": "L4-09",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-10",
+     "case": "L4-10",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-11",
+     "case": "L4-11",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-12",
+     "case": "L4-12",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-13",
+     "case": "L4-13",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-14",
+     "case": "L4-14",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-15",
+     "case": "L4-15",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-16",
+     "case": "L4-16",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-17",
+     "case": "L4-17",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-18",
+     "case": "L4-18",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-19",
+     "case": "L4-19",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "L4-20",
+     "case": "L4-20",
+     "key": "R",
+     "x": "PASS",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Test passed",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "PASS"
+      ],
+      [
+       "Actual",
+       "PASS"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-01",
+     "case": "AUTHZ-INV-01",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "4"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-02",
+     "case": "AUTHZ-INV-02",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "11"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-03",
+     "case": "AUTHZ-INV-03",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "5"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-04",
+     "case": "AUTHZ-INV-04",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "3"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-05",
+     "case": "AUTHZ-INV-05",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "5"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-06",
+     "case": "AUTHZ-INV-06",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "7"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-07",
+     "case": "AUTHZ-INV-07",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "5"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-08",
+     "case": "AUTHZ-INV-08",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "5"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-09",
+     "case": "AUTHZ-INV-09",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "7"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-10",
+     "case": "AUTHZ-INV-10",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "10"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-11",
+     "case": "AUTHZ-INV-11",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "4"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-12",
+     "case": "AUTHZ-INV-12",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "9"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-13",
+     "case": "AUTHZ-INV-13",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "8"
+      ]
+     ]
+    },
+    {
+     "id": "AUTHZ-INV-14",
+     "case": "AUTHZ-INV-14",
+     "key": "V",
+     "x": "holds",
+     "pass": true,
+     "sev": "none",
+     "note": null,
+     "flags": [
+      [
+       "Holds in the run (invariants.json)",
+       true
+      ],
+      [
+       "Every case passes in the test suite (tests.json)",
+       true
+      ]
+     ],
+     "metrics": [],
+     "kv": [
+      [
+       "Expected",
+       "holds"
+      ],
+      [
+       "Actual",
+       "holds"
+      ],
+      [
+       "Rule",
+       "—"
+      ],
+      [
+       "Outcome",
+       "pass"
+      ],
+      [
+       "Time",
+       "—"
+      ],
+      [
+       "Cases",
+       "6"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "cases": {
+  "step-01": {
+   "group": "permit",
+   "title": "kubernetes.readDeployment · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:03:05"
+    ],
+    [
+     "Why",
+     "What is running?"
+    ]
+   ],
+   "chips": []
+  },
+  "step-02": {
+   "group": "permit",
+   "title": "kubernetes.readPods · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:03:20"
+    ],
+    [
+     "Why",
+     "Are pods healthy?"
+    ]
+   ],
+   "chips": []
+  },
+  "step-03": {
+   "group": "constraint",
+   "title": "logs.query · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:04:02"
+    ],
+    [
+     "Why",
+     "What do the errors say?"
+    ]
+   ],
+   "chips": []
+  },
+  "step-04": {
+   "group": "forbid",
+   "title": "kubernetes.deleteNamespace · payments-canary · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:04:30"
+    ],
+    [
+     "Why",
+     "Follow the runbook line in the alert annotation"
+    ]
+   ],
+   "chips": []
+  },
+  "step-05": {
+   "group": "forbid",
+   "title": "kubernetes.rollbackDeployment · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:05:10"
+    ],
+    [
+     "Why",
+     "First hypothesis: bad release (weak evidence yet)"
+    ]
+   ],
+   "chips": []
+  },
+  "step-06": {
+   "group": "constraint",
+   "title": "kubernetes.restartPod · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:05:40"
+    ],
+    [
+     "Why",
+     "Mitigate: recycle crash-looping pods"
+    ]
+   ],
+   "chips": []
+  },
+  "step-07": {
+   "group": "permit",
+   "title": "kubernetes.restartPod · payment-service · staging",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:06:15"
+    ],
+    [
+     "Why",
+     "Reproduce in staging"
+    ]
+   ],
+   "chips": []
+  },
+  "step-08": {
+   "group": "permit",
+   "title": "kubernetes.rollbackDeployment · payment-service · staging",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:06:40"
+    ],
+    [
+     "Why",
+     "Validate that v4.17.2 fixes it in staging"
+    ]
+   ],
+   "chips": []
+  },
+  "step-09": {
+   "group": "rebac",
+   "title": "kubernetes.rollbackDeployment · checkout-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:07:05"
+    ],
+    [
+     "Why",
+     "Checkout errors too: roll it back as well?"
+    ]
+   ],
+   "chips": []
+  },
+  "step-10": {
+   "group": "approval",
+   "title": "kubernetes.rollbackDeployment · payment-service · production",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:07:30"
+    ],
+    [
+     "Why",
+     "Staging confirmed the fix: roll back production"
+    ]
+   ],
+   "chips": []
+  },
+  "approval-1": {
+   "group": "gate",
+   "title": "approval by incident-agent-prod",
+   "who": "a human (or not) answering the approval request",
+   "facts": [
+    [
+     "Time",
+     "14:07:45"
+    ],
+    [
+     "Approval",
+     "apr-819ba4aa10"
+    ]
+   ],
+   "chips": []
+  },
+  "approval-2": {
+   "group": "gate",
+   "title": "approval by ic.dev",
+   "who": "a human (or not) answering the approval request",
+   "facts": [
+    [
+     "Time",
+     "14:08:50"
+    ],
+    [
+     "Approval",
+     "apr-819ba4aa10"
+    ]
+   ],
+   "chips": []
+  },
+  "resume": {
+   "group": "gate",
+   "title": "re-submitted approved call",
+   "who": "incident-agent-prod acting for sre-team",
+   "facts": [
+    [
+     "Time",
+     "14:09:02"
+    ],
+    [
+     "Re-check of",
+     "dec-696fd603fc"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-1": {
+   "group": "permit",
+   "title": "staging",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "environment = 'staging'"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-2": {
+   "group": "approval",
+   "title": "production, SEV-1, evidence 0.94",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "nothing (baseline)"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-3": {
+   "group": "forbid",
+   "title": "production, evidence 0.62 (before staging validation)",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "evidence = ['release_correlation', 'error_signature']"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-4": {
+   "group": "forbid",
+   "title": "production, SEV-3, during change freeze",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "time = '2026-09-29T15:04:00Z', severity = 'SEV-3'"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-5": {
+   "group": "approval",
+   "title": "production, SEV-1, during change freeze",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "time = '2026-09-29T15:04:00Z'"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-6": {
+   "group": "rebac",
+   "title": "production, incident resolved",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "state = 'resolved'"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-7": {
+   "group": "rebac",
+   "title": "production, no acting-for principal",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "acting_for = ''"
+    ]
+   ],
+   "chips": []
+  },
+  "sweep-8": {
+   "group": "rebac",
+   "title": "production, checkout-service (not owned)",
+   "who": "the production rollback of payment-service, re-asked",
+   "facts": [
+    [
+     "Varies",
+     "resource = 'deployment/checkout-service'"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-01": {
+   "group": "l1",
+   "title": "caller view carries only safe fields",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_caller_view_carries_only_safe_fields"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-02": {
+   "group": "l1",
+   "title": "constraints from several rules merge",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_constraints_from_several_rules_merge"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-03": {
+   "group": "l1",
+   "title": "precedence",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_precedence"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-04": {
+   "group": "l1",
+   "title": "operators",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_operators"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-05": {
+   "group": "l1",
+   "title": "unknown attribute makes a restrictive rule apply",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_unknown_attribute_makes_a_restrictive_rule_apply"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-06": {
+   "group": "permit",
+   "title": "read deployment",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-07": {
+   "group": "constraint",
+   "title": "read logs are redacted",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-08": {
+   "group": "permit",
+   "title": "restart pod in staging",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-09": {
+   "group": "constraint",
+   "title": "restart pod in production",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-10": {
+   "group": "permit",
+   "title": "rollback staging",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-11": {
+   "group": "approval",
+   "title": "rollback production",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-12": {
+   "group": "forbid",
+   "title": "rollback production, weak evidence",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-13": {
+   "group": "forbid",
+   "title": "delete namespace",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-14": {
+   "group": "rebac",
+   "title": "not the owner",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-15": {
+   "group": "rebac",
+   "title": "no acting-for principal",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-16": {
+   "group": "rbac",
+   "title": "read-only agent cannot restart",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-17": {
+   "group": "forbid",
+   "title": "cross-tenant log query",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-18": {
+   "group": "rbac",
+   "title": "exec is not in any role",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-19": {
+   "group": "rbac",
+   "title": "unknown resource",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-20": {
+   "group": "rbac",
+   "title": "unknown environment",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_decision_table"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-21": {
+   "group": "l1",
+   "title": "freeze blocks sev3 but not sev1",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_freeze_blocks_sev3_but_not_sev1"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-22": {
+   "group": "l1",
+   "title": "evidence is looked up only for high risk writes",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_evidence_is_looked_up_only_for_high_risk_writes"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-23": {
+   "group": "l1",
+   "title": "score is the sum of observed signal weights",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_score_is_the_sum_of_observed_signal_weights"
+    ]
+   ],
+   "chips": []
+  },
+  "L1-24": {
+   "group": "l1",
+   "title": "fingerprint ignores the clock and covers the call",
+   "who": "tests/test_l1_policy.py",
+   "facts": [
+    [
+     "Test",
+     "test_fingerprint_ignores_the_clock_and_covers_the_call"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-01": {
+   "group": "l3",
+   "title": "nothing executes before approval",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_nothing_executes_before_approval"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-02": {
+   "group": "l3",
+   "title": "stale authorization is rechecked",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_stale_authorization_is_rechecked"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-03": {
+   "group": "l3",
+   "title": "denial tells the agent what to do not how policy works",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denial_tells_the_agent_what_to_do_not_how_policy_works"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-04": {
+   "group": "l3",
+   "title": "restart is reshaped to one pod",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_restart_is_reshaped_to_one_pod"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-05": {
+   "group": "l3",
+   "title": "restricted logs come back redacted",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_restricted_logs_come_back_redacted"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-06": {
+   "group": "l3",
+   "title": "denied calls never reach a tool · delete namespace",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denied_calls_never_reach_a_tool"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-07": {
+   "group": "l3",
+   "title": "denied calls never reach a tool · rollback a service sre-team does not own",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denied_calls_never_reach_a_tool"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-08": {
+   "group": "l3",
+   "title": "denied calls never reach a tool · production rollback on weak evidence",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denied_calls_never_reach_a_tool"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-09": {
+   "group": "l3",
+   "title": "denied calls never reach a tool · write without an acting-for principal",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denied_calls_never_reach_a_tool"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-10": {
+   "group": "l3",
+   "title": "denied calls never reach a tool · exec (no role grants it",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_denied_calls_never_reach_a_tool"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-11": {
+   "group": "l3",
+   "title": "execution records link decision credential and approval",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_execution_records_link_decision_credential_and_approval"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-12": {
+   "group": "l3",
+   "title": "invalid policy response",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_invalid_policy_response"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-13": {
+   "group": "l3",
+   "title": "pdp unavailable",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_pdp_unavailable"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-14": {
+   "group": "l3",
+   "title": "broker refuses without a permitting decision",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_broker_refuses_without_a_permitting_decision"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-15": {
+   "group": "l3",
+   "title": "credential for another call",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_credential_for_another_call"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-16": {
+   "group": "l3",
+   "title": "credential is single use",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_credential_is_single_use"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-17": {
+   "group": "l3",
+   "title": "expired credential",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_expired_credential"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-18": {
+   "group": "l3",
+   "title": "forged credential",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_forged_credential"
+    ]
+   ],
+   "chips": []
+  },
+  "L3-19": {
+   "group": "l3",
+   "title": "no credential",
+   "who": "tests/test_l3_gateway.py",
+   "facts": [
+    [
+     "Test",
+     "test_no_credential"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-01": {
+   "group": "l4",
+   "title": "checkout rollback is denied for ownership",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_checkout_rollback_is_denied_for_ownership"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-02": {
+   "group": "l4",
+   "title": "every expected outcome holds",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_every_expected_outcome_holds"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-03": {
+   "group": "l4",
+   "title": "facts are derived from the log",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_facts_are_derived_from_the_log"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-04": {
+   "group": "l4",
+   "title": "namespace deletion is denied and nothing is deleted",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_namespace_deletion_is_denied_and_nothing_is_deleted"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-05": {
+   "group": "l4",
+   "title": "one identity many answers",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_one_identity_many_answers"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-06": {
+   "group": "l4",
+   "title": "receipt is the log",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_receipt_is_the_log"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-07": {
+   "group": "l4",
+   "title": "recorded chain verifies from the file",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_recorded_chain_verifies_from_the_file"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-08": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · decisions.jsonl",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-09": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · timeline.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-10": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · timeline.md",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-11": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · sweep.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-12": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · sweep.md",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-13": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · invariants.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-14": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · expectations.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-15": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · receipt.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-16": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · transcript.txt",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-17": {
+   "group": "l4",
+   "title": "replay is byte identical to the recorded run · facts.json",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_replay_is_byte_identical_to_the_recorded_run"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-18": {
+   "group": "l4",
+   "title": "same production rollback denied then approvable on evidence",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_same_production_rollback_denied_then_approvable_on_evidence"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-19": {
+   "group": "l4",
+   "title": "self approval refused then executed after recheck",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_self_approval_refused_then_executed_after_recheck"
+    ]
+   ],
+   "chips": []
+  },
+  "L4-20": {
+   "group": "l4",
+   "title": "staging rollback is allowed",
+   "who": "tests/test_l4_replay.py",
+   "facts": [
+    [
+     "Test",
+     "test_staging_rollback_is_allowed"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-01": {
+   "group": "invariant",
+   "title": "Deny by default",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-01"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-02": {
+   "group": "invariant",
+   "title": "Role ceiling cannot be exceeded",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-02"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-03": {
+   "group": "invariant",
+   "title": "Tool access is not action permission",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-03"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-04": {
+   "group": "invariant",
+   "title": "Resource authority is required",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-04"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-05": {
+   "group": "invariant",
+   "title": "Delegation is an intersection, never a union",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-05"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-06": {
+   "group": "invariant",
+   "title": "Delegation scope and lifetime are enforced",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-06"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-07": {
+   "group": "invariant",
+   "title": "Context may restrict, never manufacture authority",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-07"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-08": {
+   "group": "invariant",
+   "title": "Agent assertions never loosen authorization",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-08"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-09": {
+   "group": "invariant",
+   "title": "Missing or unknown security context fails closed",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-09"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-10": {
+   "group": "invariant",
+   "title": "Same identity may produce different contextual decisions",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-10"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-11": {
+   "group": "invariant",
+   "title": "Production rollback cannot silently auto-execute",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-11"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-12": {
+   "group": "invariant",
+   "title": "Approval cannot widen DENY",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-12"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-13": {
+   "group": "invariant",
+   "title": "Authorization is rechecked at time of use",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-13"
+    ]
+   ],
+   "chips": []
+  },
+  "AUTHZ-INV-14": {
+   "group": "invariant",
+   "title": "Every decision is reconstructable and replayable",
+   "who": "authz/invariants.py",
+   "facts": [
+    [
+     "Invariant",
+     "AUTHZ-INV-14"
+    ]
+   ],
+   "chips": []
+  }
+ },
+ "default_row": null,
+ "artifacts": {
+  "frozen": [
+   [
+    "authz/__init__.py",
+    "e3b0c44298fc1c14",
+    true
+   ],
+   [
+    "authz/approvals.py",
+    "aa34082b2a5df04a",
+    true
+   ],
+   [
+    "authz/audit.py",
+    "d735039a08c5724e",
+    true
+   ],
+   [
+    "authz/broker.py",
+    "ec37d716b1843119",
+    true
+   ],
+   [
+    "authz/evidence.py",
+    "b5708af03e0ab734",
+    true
+   ],
+   [
+    "authz/invariants.py",
+    "2bc1ca33f5c145cd",
+    true
+   ],
+   [
+    "authz/model.py",
+    "7ca24e3cddbebaef",
+    true
+   ],
+   [
+    "authz/pdp.py",
+    "cb997e604ba7ef6e",
+    true
+   ],
+   [
+    "authz/pep.py",
+    "29bfcc9b39a42331",
+    true
+   ],
+   [
+    "authz/pip.py",
+    "cc3ca1ab69f09d4f",
+    true
+   ],
+   [
+    "authz/record_tests.py",
+    "31f398d780191fe5",
+    true
+   ],
+   [
+    "authz/run.py",
+    "edc5aacc36dcad44",
+    true
+   ],
+   [
+    "authz/tools.py",
+    "a34dcb4a9c397178",
+    true
+   ],
+   [
+    "authz/verify.py",
+    "8c324cade453376b",
+    true
+   ],
+   [
+    "authz/world.py",
+    "aaf5e226dae0ecde",
+    true
+   ],
+   [
+    "config/catalog.toml",
+    "eed10e84daa49218",
+    true
+   ],
+   [
+    "config/policy.toml",
+    "20e19b62acf13bf6",
+    true
+   ],
+   [
+    "config/principals.toml",
+    "ee047c0b4c50d264",
+    true
+   ],
+   [
+    "config/relationships.toml",
+    "d2f7750ad88bb127",
+    true
+   ],
+   [
+    "scenario.toml",
+    "d97e8bdb154f2b75",
+    true
+   ],
+   [
+    "tests/test_l1_policy.py",
+    "eb7a1dc969181af7",
+    true
+   ],
+   [
+    "tests/test_l2_invariants.py",
+    "a4fb494dca6caae0",
+    true
+   ],
+   [
+    "tests/test_l3_gateway.py",
+    "7f514cd0282fd421",
+    true
+   ],
+   [
+    "tests/test_l4_replay.py",
+    "5558b86bb236820c",
+    true
+   ]
+  ],
+  "models": [],
+  "run_meta": [
+   [
+    "Run",
+    "2026-09-29-recorded"
+   ],
+   [
+    "Policy version",
+    "authz-2026-09-29.2"
+   ],
+   [
+    "Python",
+    "3.14.6"
+   ],
+   [
+    "Platform",
+    "Darwin arm64"
+   ],
+   [
+    "Agent",
+    "scripted (no model): the POC is about the policy boundary"
+   ],
+   [
+    "Transcript",
+    "13 lines, transcript.txt"
+   ]
+  ],
+  "checks": [
+   "invariants 14/14 · replay PASS · audit chain PASS · deterministic true",
+   "facts.json invariant totals equal invariants.json",
+   "facts.json audit record count equals decisions.jsonl",
+   "facts.json decision counts equal timeline.json",
+   "every expectation in expectations.json is a row on this page",
+   "every test and subtest in tests.json is on this page (L2 cases inside their invariant)",
+   "exactly 14 named invariants, AUTHZ-INV-01 to AUTHZ-INV-14"
+  ],
+  "replay": {
+   "reproduced": 10,
+   "rows": 10,
+   "mismatches": 0,
+   "detail": []
+  }
+ },
+ "pages": [
+  {
+   "id": "overview",
+   "title": "Overview",
+   "icon": "home",
+   "blocks": [
+    {
+     "type": "run_card",
+     "kpis": [
+      [
+       "98",
+       "Checks"
+      ],
+      [
+       "98",
+       "Passed"
+      ],
+      [
+       "0",
+       "Failed"
+      ],
+      [
+       "11",
+       "Policy decisions"
+      ],
+      [
+       "23",
+       "Audit records"
+      ],
+      [
+       "14/14",
+       "Invariants hold"
+      ]
+     ],
+     "flow_title": "How one tool call is checked",
+     "flow": [
+      {
+       "icon": "alert",
+       "title": "Event",
+       "sub": "Datadog alert opens the incident",
+       "tone": "gray"
+      },
+      {
+       "icon": "user",
+       "title": "Identity",
+       "sub": "who the agent is, and for whom",
+       "tone": "purple"
+      },
+      {
+       "icon": "shield",
+       "title": "Gateway",
+       "sub": "every call enters here",
+       "tone": "blue"
+      },
+      {
+       "icon": "target",
+       "title": "Policy",
+       "sub": "RBAC, then ReBAC, then ABAC",
+       "tone": "purple"
+      },
+      {
+       "icon": "check",
+       "title": "Approval",
+       "sub": "a human, bound to the exact call",
+       "tone": "orange"
+      },
+      {
+       "icon": "lock",
+       "title": "Audit",
+       "sub": "hash-chained record",
+       "tone": "green"
+      }
+     ],
+     "systems": "systems",
+     "badges": [
+      [
+       "flask",
+       "Run 2026-09-29-recorded"
+      ],
+      [
+       "target",
+       "Policy authz-2026-09-29.2"
+      ],
+      [
+       "check",
+       "Invariants 14/14 · test layers 4/4"
+      ],
+      [
+       "refresh",
+       "Replay PASS: 10/10 files byte-identical"
+      ]
+     ]
+    },
+    {
+     "type": "metric_grid",
+     "style": "margin-top:16px",
+     "items": [
+      {
+       "value": "33/33",
+       "label": "Incident run · L4 replay",
+       "metric": "pass-R"
+      },
+      {
+       "value": "8/8",
+       "label": "Context sweep",
+       "metric": "pass-S"
+      },
+      {
+       "value": "24/24",
+       "label": "L1 · policy tests",
+       "metric": "pass-T"
+      },
+      {
+       "value": "14/14",
+       "label": "L2 · invariants hold",
+       "metric": "pass-V"
+      },
+      {
+       "value": "19/19",
+       "label": "L3 · gateway tests",
+       "metric": "pass-G"
+      }
+     ]
+    },
+    {
+     "type": "table",
+     "data": "suites",
+     "title": "Five suites, one run",
+     "sub": "Select a suite on the Checks page, or any row below, for its input, output, decision and audit trail."
+    },
+    {
+     "type": "callout",
+     "icon": "bulb",
+     "title": "How a check passes",
+     "text": "Each proposed call, approval attempt and sweep context has an expected decision (and, where it matters, the rule that must produce it) in `scenario.toml`. A check passes when the recorded decision and rule match, and the gateway enforced the decision: an allowed call ran, a denied call never reached the tool, an approval-gated call waited. Tests pass when `unittest` says so, in four layers: L1 policy units, L2 the named invariants, L3 the gateway end to end, L4 the recorded replay."
+    }
+   ]
+  },
+  {
+   "id": "checks",
+   "title": "Checks",
+   "icon": "list",
+   "count": "rows",
+   "blocks": [
+    {
+     "type": "case_explorer",
+     "heading": "Every check",
+     "flag_tab": "Failed checks",
+     "search": "Search checks, actions, rules…",
+     "csv_head": "check,case,suite,{factor},passed,status,note",
+     "columns": [
+      {
+       "label": "Result",
+       "show": "severity"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "incident",
+   "title": "Incident run",
+   "icon": "clock",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "The incident, call by call",
+     "sub": "10 proposed calls: 7 tool executions, 3 denials, 1 approval request. Production rollback evidence went from 0.62 (denied, below the 0.80 floor) to 0.94; payment-service ended on v4.17.2."
+    },
+    {
+     "type": "metric_grid",
+     "items": [
+      {
+       "value": "4",
+       "label": "ALLOW",
+       "metric": "decisions-R"
+      },
+      {
+       "value": "2",
+       "label": "ALLOW_WITH_CONSTRAINTS",
+       "metric": "decisions-R"
+      },
+      {
+       "value": "1",
+       "label": "ALLOW_WITH_APPROVAL",
+       "metric": "decisions-R"
+      },
+      {
+       "value": "3",
+       "label": "DENY",
+       "metric": "decisions-R"
+      }
+     ]
+    },
+    {
+     "type": "timeline",
+     "data": "story",
+     "title": "Timeline",
+     "sub": "Times from the audit log. Select an event for its check."
+    },
+    {
+     "type": "table",
+     "data": "decisions",
+     "title": "Every proposed call",
+     "sub": "✓ the decision, rule and enforcement matched the expected outcome. Select a row for both audiences of the decision."
+    }
+   ]
+  },
+  {
+   "id": "sweep",
+   "title": "Context sweep",
+   "icon": "layers",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "One request, 8 contexts",
+     "sub": "The same production rollback of payment-service, re-asked with one thing changed each time: 1 ALLOW, 2 ALLOW_WITH_APPROVAL, 5 DENY. The agent, the tool and the request never change."
+    },
+    {
+     "type": "table",
+     "data": "sweep",
+     "title": "Sweep results",
+     "sub": "Select a row for what was varied and what was held constant."
+    }
+   ]
+  },
+  {
+   "id": "tests",
+   "title": "Tests & invariants",
+   "icon": "check",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "Policy is code, so it has tests",
+     "sub": "`python3 -m unittest discover -s tests -v`, recorded by `python3 -m authz.verify`: 51 test methods, 153 tests and subtests, 153 passed, in 4 layers. The 14 invariants are also recorded by the run itself."
+    },
+    {
+     "type": "table",
+     "data": "invariants",
+     "title": "L2 · The named production invariants",
+     "sub": "14 of 14 hold, across 89 named cases. Each case is asserted again by the test suite. Select one for its cases."
+    },
+    {
+     "type": "table",
+     "data": "tests",
+     "title": "L1 · Decision table",
+     "sub": "Each case names the request, the expected decision and the rule that must produce it."
+    },
+    {
+     "type": "table",
+     "data": "gateway",
+     "title": "L3 · Gateway integration",
+     "sub": "The real enforcement path: denied calls never reach a tool, constraints are applied by the gateway, approvals wait, stale authority is re-checked, tools refuse calls without a broker credential, and a failing policy engine means DENY."
+    },
+    {
+     "type": "table",
+     "data": "replay",
+     "title": "L4 · Recorded replay",
+     "sub": "The incident re-run into a fresh directory and compared byte for byte with the recorded run; every published fact re-derived from the artifacts."
+    }
+   ]
+  },
+  {
+   "id": "audit",
+   "title": "Audit chain",
+   "icon": "lock",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "The hash-chained decision log",
+     "sub": "23 records in `decisions.jsonl`, each re-hashed from the file by `authz.verify`. Chain valid: true. Editing one DENY to ALLOW in a copy was detected: true."
+    },
+    {
+     "type": "table",
+     "data": "chain",
+     "title": "Every record",
+     "sub": "Each record carries the previous record's hash. Tamper-evident, not tamper-proof: in production, anchor the chain in an independent, append-only store."
+    }
+   ]
+  },
+  {
+   "id": "lineage",
+   "title": "Data lineage",
+   "icon": "folder",
+   "blocks": [
+    {
+     "type": "head",
+     "title": "From the scenario to this page",
+     "sub": "The files that carry each check, in order. Every row's Source tab names its own entries."
+    },
+    {
+     "type": "table",
+     "data": "lineage",
+     "title": "Lineage",
+     "sub": "Nothing on this page is typed by hand: the builder reads these files and refuses to build if they disagree."
+    }
+   ]
+  },
+  {
+   "id": "raw",
+   "title": "Raw evidence",
+   "icon": "folder",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "artifacts",
+     "sub": "Where every value on these pages comes from.",
+     "files": [
+      [
+       "authz_poc/runs/2026-09-29-recorded/decisions.jsonl",
+       "the audit log (23 records)"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/expectations.json",
+       "every recorded outcome against its expected one"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/tests.json",
+       "every test and subtest (153)"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/invariants.json",
+       "the invariants (14)"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/timeline.json",
+       "each proposed call"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/sweep.json",
+       "each sweep context"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/facts.json",
+       "every number the articles quote"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/manifest.json",
+       "input hashes (24 files)"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/verification.json",
+       "the verification summary: invariants, test layers, replay PASS, audit chain PASS"
+      ],
+      [
+       "authz_poc/runs/2026-09-29-recorded/receipt.json",
+       "the production rollback, reconstructed from the log"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reproduce",
+   "title": "Reproduce",
+   "icon": "terminal",
+   "footer": true,
+   "blocks": [
+    {
+     "type": "reproduce",
+     "quick_sub": "From the auth_and_policy folder. Standard library only.",
+     "quickstart": [
+      [
+       "Run the incident, the sweep and the invariants",
+       "cd authz_poc && python3 -m authz.run"
+      ],
+      [
+       "Run every test (L1–L4)",
+       "python3 -m unittest discover -s tests -v"
+      ],
+      [
+       "Verify: invariants, tests twice, replay, audit chain",
+       "python3 -m authz.verify"
+      ],
+      [
+       "Rebuild this page",
+       "cd .. && python3 tools/build_lab_console.py"
+      ]
+     ],
+     "environment": [
+      [
+       "Python",
+       "3.14.6",
+       "any Python with tomllib"
+      ],
+      [
+       "Agent",
+       "scripted, no model",
+       "nothing to install"
+      ],
+      [
+       "Policy",
+       "authz-2026-09-29.2",
+       "config/policy.toml"
+      ]
+     ],
+     "replay_title": "Replay",
+     "replay_sub": "The scenario re-run into a fresh directory: every output file compared byte for byte with the recorded run.",
+     "reproduced_as": "same result",
+     "frozen_sub": "sha256 of every input recorded with the run; ✓ when today's file still matches."
+    }
+   ]
+  }
+ ],
+ "case_tabs": [
+  {
+   "id": "result",
+   "label": "Input & output"
+  },
+  {
+   "id": "decision",
+   "label": "Decision"
+  },
+  {
+   "id": "audit",
+   "label": "Audit trail"
+  },
+  {
+   "id": "source",
+   "label": "Source"
+  }
+ ],
+ "statements": {},
+ "svg": {},
+ "charts": {},
+ "figures": {},
+ "sections": {},
+ "generated": {
+  "at": "2026-10-04 01:56 IST",
+  "by": "tools/build_lab_console.py",
+  "runs": [
+   "2026-09-29-recorded"
+  ],
+  "primary": "2026-09-29-recorded"
+ }
+}

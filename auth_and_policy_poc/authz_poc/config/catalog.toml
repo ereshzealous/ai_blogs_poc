@@ -1,0 +1,54 @@
+# The action catalog and the resource catalog. The policy information point (PIP) reads both.
+# Tools never see this file: they cannot tell a staging restart from a production rollback during a freeze.
+
+[actions."kubernetes.readPods"]
+system = "kubernetes"
+kind = "read"
+risk = "low"
+
+[actions."kubernetes.readDeployment"]
+system = "kubernetes"
+kind = "read"
+risk = "low"
+
+[actions."logs.query"]
+system = "logs"
+kind = "read"
+risk = "low"
+
+[actions."dashboards.read"]
+system = "dashboards"
+kind = "read"
+risk = "low"
+
+[actions."kubernetes.restartPod"]
+system = "kubernetes"
+kind = "write"
+risk = "low"
+
+[actions."kubernetes.rollbackDeployment"]
+system = "kubernetes"
+kind = "write"
+risk = "high"
+
+[actions."kubernetes.deleteNamespace"]
+system = "kubernetes"
+kind = "destructive"
+risk = "critical"
+
+# Context the PDP must recognise. Anything else fails closed (default.unknown-environment, default.unknown-incident-context).
+[context]
+environments = ["production", "staging"]
+severities = ["SEV-1", "SEV-2", "SEV-3", "SEV-4"]
+
+# Resources: which service a resource belongs to, and how sensitive its data is.
+[services.payment-service]
+tier = "tier-0"
+data_classification = { deployment = "internal", pods = "internal", logs = "restricted" }
+
+[services.checkout-service]
+tier = "tier-0"
+data_classification = { deployment = "internal", pods = "internal", logs = "restricted" }
+
+[namespaces.payments-canary]
+service = "payment-service"

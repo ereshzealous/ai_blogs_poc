@@ -1,0 +1,58 @@
+[
+  {
+    "context": "staging",
+    "decision": "ALLOW",
+    "rule": "-",
+    "reason": "incident-responder permits kubernetes.rollbackDeployment",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, SEV-1, evidence 0.94",
+    "decision": "ALLOW_WITH_APPROVAL",
+    "rule": "A1-production-rollback",
+    "reason": "Production rollback requires SRE approval",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, evidence 0.62 (before staging validation)",
+    "decision": "DENY",
+    "rule": "F2-insufficient-evidence-high-risk-write",
+    "reason": "High-risk production writes need a diagnosis evidence score of at least 0.80",
+    "evidence": 0.62
+  },
+  {
+    "context": "production, SEV-3, during change freeze",
+    "decision": "DENY",
+    "rule": "F3-change-freeze",
+    "reason": "Change freeze: only SEV-1 remediation may write to production",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, SEV-1, during change freeze",
+    "decision": "ALLOW_WITH_APPROVAL",
+    "rule": "A1-production-rollback",
+    "reason": "Production rollback requires SRE approval",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, incident resolved",
+    "decision": "DENY",
+    "rule": "rebac.delegation-inactive",
+    "reason": "Delegation dlg-sre-incident-2026q4 applies only while an incident on payment-service is open",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, no acting-for principal",
+    "decision": "DENY",
+    "rule": "rebac.no-principal",
+    "reason": "Writes need an acting-for principal; the agent has no write authority of its own",
+    "evidence": 0.94
+  },
+  {
+    "context": "production, checkout-service (not owned)",
+    "decision": "DENY",
+    "rule": "rebac.not-owner",
+    "reason": "sre-team does not own checkout-service, so it cannot lend authority over it",
+    "evidence": 0.94
+  }
+]

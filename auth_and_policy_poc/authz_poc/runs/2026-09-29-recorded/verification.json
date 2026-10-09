@@ -1,0 +1,371 @@
+{
+  "summary": {
+    "run": "2026-09-29-recorded",
+    "policy_version": "authz-2026-09-29.2",
+    "invariants": {
+      "total": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    "tests": {
+      "L1": {
+        "passed": 24,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 90,
+        "failed": 0
+      },
+      "L3": {
+        "passed": 19,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 20,
+        "failed": 0
+      }
+    },
+    "integration": "PASS",
+    "replay": "PASS",
+    "audit_chain": "PASS",
+    "deterministic": true,
+    "ok": true
+  },
+  "invariants": [
+    {
+      "id": "AUTHZ-INV-01",
+      "name": "Deny by default",
+      "passed": true,
+      "cases": 4
+    },
+    {
+      "id": "AUTHZ-INV-02",
+      "name": "Role ceiling cannot be exceeded",
+      "passed": true,
+      "cases": 11
+    },
+    {
+      "id": "AUTHZ-INV-03",
+      "name": "Tool access is not action permission",
+      "passed": true,
+      "cases": 5
+    },
+    {
+      "id": "AUTHZ-INV-04",
+      "name": "Resource authority is required",
+      "passed": true,
+      "cases": 3
+    },
+    {
+      "id": "AUTHZ-INV-05",
+      "name": "Delegation is an intersection, never a union",
+      "passed": true,
+      "cases": 5
+    },
+    {
+      "id": "AUTHZ-INV-06",
+      "name": "Delegation scope and lifetime are enforced",
+      "passed": true,
+      "cases": 7
+    },
+    {
+      "id": "AUTHZ-INV-07",
+      "name": "Context may restrict, never manufacture authority",
+      "passed": true,
+      "cases": 5
+    },
+    {
+      "id": "AUTHZ-INV-08",
+      "name": "Agent assertions never loosen authorization",
+      "passed": true,
+      "cases": 5
+    },
+    {
+      "id": "AUTHZ-INV-09",
+      "name": "Missing or unknown security context fails closed",
+      "passed": true,
+      "cases": 7
+    },
+    {
+      "id": "AUTHZ-INV-10",
+      "name": "Same identity may produce different contextual decisions",
+      "passed": true,
+      "cases": 10
+    },
+    {
+      "id": "AUTHZ-INV-11",
+      "name": "Production rollback cannot silently auto-execute",
+      "passed": true,
+      "cases": 4
+    },
+    {
+      "id": "AUTHZ-INV-12",
+      "name": "Approval cannot widen DENY",
+      "passed": true,
+      "cases": 9
+    },
+    {
+      "id": "AUTHZ-INV-13",
+      "name": "Authorization is rechecked at time of use",
+      "passed": true,
+      "cases": 8
+    },
+    {
+      "id": "AUTHZ-INV-14",
+      "name": "Every decision is reconstructable and replayable",
+      "passed": true,
+      "cases": 6
+    }
+  ],
+  "replay": [
+    {
+      "file": "decisions.jsonl",
+      "same": true
+    },
+    {
+      "file": "timeline.json",
+      "same": true
+    },
+    {
+      "file": "timeline.md",
+      "same": true
+    },
+    {
+      "file": "sweep.json",
+      "same": true
+    },
+    {
+      "file": "sweep.md",
+      "same": true
+    },
+    {
+      "file": "invariants.json",
+      "same": true
+    },
+    {
+      "file": "expectations.json",
+      "same": true
+    },
+    {
+      "file": "receipt.json",
+      "same": true
+    },
+    {
+      "file": "transcript.txt",
+      "same": true
+    },
+    {
+      "file": "facts.json",
+      "same": true
+    }
+  ],
+  "chain": [
+    {
+      "seq": 1,
+      "time": "2026-09-29T14:02:00Z",
+      "kind": "event.received",
+      "hash": "42a848b386dbb85a",
+      "prev": "0000000000000000",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 2,
+      "time": "2026-09-29T14:02:00Z",
+      "kind": "identity.established",
+      "hash": "c1b32c21c5a00eed",
+      "prev": "42a848b386dbb85a",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 3,
+      "time": "2026-09-29T14:03:05Z",
+      "kind": "policy.decision",
+      "hash": "3fc7d3c49d3266d7",
+      "prev": "c1b32c21c5a00eed",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 4,
+      "time": "2026-09-29T14:03:05Z",
+      "kind": "tool.executed",
+      "hash": "717bf63a85923695",
+      "prev": "3fc7d3c49d3266d7",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 5,
+      "time": "2026-09-29T14:03:20Z",
+      "kind": "policy.decision",
+      "hash": "eb62f56c5c0acdc9",
+      "prev": "717bf63a85923695",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 6,
+      "time": "2026-09-29T14:03:20Z",
+      "kind": "tool.executed",
+      "hash": "f9121e88f7da34d9",
+      "prev": "eb62f56c5c0acdc9",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 7,
+      "time": "2026-09-29T14:04:02Z",
+      "kind": "policy.decision",
+      "hash": "998ecff7ab4705be",
+      "prev": "f9121e88f7da34d9",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 8,
+      "time": "2026-09-29T14:04:02Z",
+      "kind": "tool.executed",
+      "hash": "8a8e7a0bc564e4fc",
+      "prev": "998ecff7ab4705be",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 9,
+      "time": "2026-09-29T14:04:30Z",
+      "kind": "policy.decision",
+      "hash": "2a94c7d8b4e26e97",
+      "prev": "8a8e7a0bc564e4fc",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 10,
+      "time": "2026-09-29T14:05:10Z",
+      "kind": "policy.decision",
+      "hash": "7df8ed54cda022e4",
+      "prev": "2a94c7d8b4e26e97",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 11,
+      "time": "2026-09-29T14:05:40Z",
+      "kind": "policy.decision",
+      "hash": "433ccf992b0789c3",
+      "prev": "7df8ed54cda022e4",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 12,
+      "time": "2026-09-29T14:05:40Z",
+      "kind": "tool.executed",
+      "hash": "d443cdf0c60c4486",
+      "prev": "433ccf992b0789c3",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 13,
+      "time": "2026-09-29T14:06:15Z",
+      "kind": "policy.decision",
+      "hash": "a25f94a401ef04d1",
+      "prev": "d443cdf0c60c4486",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 14,
+      "time": "2026-09-29T14:06:15Z",
+      "kind": "tool.executed",
+      "hash": "fa783439b49c6000",
+      "prev": "a25f94a401ef04d1",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 15,
+      "time": "2026-09-29T14:06:40Z",
+      "kind": "policy.decision",
+      "hash": "d4239d34eccb9da2",
+      "prev": "fa783439b49c6000",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 16,
+      "time": "2026-09-29T14:06:40Z",
+      "kind": "tool.executed",
+      "hash": "264b096c3328873f",
+      "prev": "d4239d34eccb9da2",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 17,
+      "time": "2026-09-29T14:07:05Z",
+      "kind": "policy.decision",
+      "hash": "3e31d14e4763929d",
+      "prev": "264b096c3328873f",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 18,
+      "time": "2026-09-29T14:07:30Z",
+      "kind": "policy.decision",
+      "hash": "16d33cf912830387",
+      "prev": "3e31d14e4763929d",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 19,
+      "time": "2026-09-29T14:07:30Z",
+      "kind": "approval.requested",
+      "hash": "dd8beca97c391c72",
+      "prev": "16d33cf912830387",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 20,
+      "time": "2026-09-29T14:07:45Z",
+      "kind": "approval.rejected",
+      "hash": "c0dfb9ec163e246b",
+      "prev": "dd8beca97c391c72",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 21,
+      "time": "2026-09-29T14:08:50Z",
+      "kind": "approval.granted",
+      "hash": "da37dea2921acba1",
+      "prev": "c0dfb9ec163e246b",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 22,
+      "time": "2026-09-29T14:09:02Z",
+      "kind": "policy.decision",
+      "hash": "825f601473589408",
+      "prev": "da37dea2921acba1",
+      "prev_ok": true,
+      "hash_ok": true
+    },
+    {
+      "seq": 23,
+      "time": "2026-09-29T14:09:02Z",
+      "kind": "tool.executed",
+      "hash": "63b9c60232f8b1cc",
+      "prev": "825f601473589408",
+      "prev_ok": true,
+      "hash_ok": true
+    }
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "reconstruction": {
+    "who": "incident-agent-prod",
+    "acting_for": "sre-team",
+    "delegation_chain": [
+      {
+        "from": "sre-team",
+        "to": "incident-agent-prod",
+        "delegation": "dlg-sre-incident-2026q4",
+        "granted_by": "sre.lead",
+        "actions": [
+          "kubernetes.restartPod",
+          "kubernetes.rollbackDeployment"
+        ],
+        "expires": "2026-12-31T23:59:59Z",
+        "relation": "sre-team owns service:payment-service"
+      }
+    ],
+    "requested": "kubernetes.rollbackDeployment",
+    "against": "deployment/payment-service",
+    "environment": "production",
+    "arguments": {
+      "to_version": "v4.17.2"
+    },
+    "request_fingerprint": "8fc070d3f4fec204",
+    "context": {
+      "severity": "SEV-1",
+      "incident_state": "open",
+      "change_window": "normal",
+      "risk": "high",
+      "tier": "tier-0",
+      "evidence_score": 0.94,
+      "evidence_signals": [
+        "release_correlation",
+        "error_signature",
+        "staging_validation",
+        "staging_recovery"
+      ]
+    },
+    "context_sources": {
+      "severity": "incident system",
+      "incident_state": "incident system",
+      "change_window": "change calendar",
+      "evidence_score": "evidence evaluator"
+    },
+    "policy_version": "authz-2026-09-29.2",
+    "grants": [
+      "role:incident-responder",
+      "delegation:dlg-sre-incident-2026q4",
+      "relation:sre-team owns payment-service"
+    ],
+    "matched_rules": [
+      "A1-production-rollback"
+    ],
+    "decision": "ALLOW_WITH_APPROVAL",
+    "audit_reason": "Production rollback requires SRE approval",
+    "caller_view": {
+      "decision": "ALLOW_WITH_APPROVAL",
+      "code": "APPROVAL_REQUIRED",
+      "reason": "Production rollback requires SRE approval",
+      "next": "Wait for the approval decision",
+      "constraints": {
+        "approverRole": "IncidentCommander",
+        "expiresIn": "10m"
+      }
+    },
+    "constraints": {
+      "approverRole": "IncidentCommander",
+      "expiresIn": "10m"
+    },
+    "approval": {
+      "approval_id": "apr-819ba4aa10",
+      "approver_role": "IncidentCommander",
+      "expires_at": "2026-09-29T14:17:30Z",
+      "attempts": [
+        {
+          "approver": "incident-agent-prod",
+          "time": "2026-09-29T14:07:45Z",
+          "result": "The requester cannot approve its own action"
+        },
+        {
+          "approver": "ic.dev",
+          "time": "2026-09-29T14:08:50Z",
+          "result": "approved"
+        }
+      ]
+    },
+    "recheck": {
+      "decision_id": "dec-0b5c5dde6e",
+      "time": "2026-09-29T14:09:02Z",
+      "decision": "ALLOW_WITH_APPROVAL"
+    },
+    "execution": {
+      "time": "2026-09-29T14:09:02Z",
+      "credential": {
+        "id": "cred-c97ffe5cf8",
+        "expires_at": "2026-09-29T14:10:02Z",
+        "single_use": true
+      },
+      "approved_by": "ic.dev",
+      "output": {
+        "rolled_back_to": "v4.17.2"
+      }
+    }
+  },
+  "records": [
+    {
+      "seq": 18,
+      "time": "2026-09-29T14:07:30Z",
+      "kind": "policy.decision",
+      "record": {
+        "decision_id": "dec-696fd603fc",
+        "recheck_of": null,
+        "principal": "incident-agent-prod",
+        "acting_for": "sre-team",
+        "action": "kubernetes.rollbackDeployment",
+        "resource": "deployment/payment-service",
+        "environment": "production",
+        "arguments": {
+          "to_version": "v4.17.2"
+        },
+        "request_fingerprint": "8fc070d3f4fec204",
+        "policy_version": "authz-2026-09-29.2",
+        "grants": [
+          "role:incident-responder",
+          "delegation:dlg-sre-incident-2026q4",
+          "relation:sre-team owns payment-service"
+        ],
+        "delegation_chain": [
+          {
+            "from": "sre-team",
+            "to": "incident-agent-prod",
+            "delegation": "dlg-sre-incident-2026q4",
+            "granted_by": "sre.lead",
+            "actions": [
+              "kubernetes.restartPod",
+              "kubernetes.rollbackDeployment"
+            ],
+            "expires": "2026-12-31T23:59:59Z",
+            "relation": "sre-team owns service:payment-service"
+          }
+        ],
+        "matched_rules": [
+          "A1-production-rollback"
+        ],
+        "attributes": {
+          "principal": "incident-agent-prod",
+          "principal.roles": [
+            "incident-responder"
+          ],
+          "acting_for": "sre-team",
+          "action": "kubernetes.rollbackDeployment",
+          "kind": "write",
+          "risk": "high",
+          "resource": "deployment/payment-service",
+          "service": "payment-service",
+          "tier": "tier-0",
+          "data_classification": "internal",
+          "environment": "production",
+          "severity": "SEV-1",
+          "incident_state": "open",
+          "incident_service": "payment-service",
+          "change_window": "normal",
+          "tenant_in_scope": true,
+          "time": "2026-09-29T14:07:30Z",
+          "evidence_score": 0.94,
+          "evidence_signals": [
+            "release_correlation",
+            "error_signature",
+            "staging_validation",
+            "staging_recovery"
+          ]
+        },
+        "attribute_sources": {
+          "principal": "request",
+          "principal.roles": "directory",
+          "acting_for": "request",
+          "action": "request",
+          "kind": "action catalog",
+          "risk": "action catalog",
+          "resource": "request",
+          "service": "resource catalog",
+          "tier": "resource catalog",
+          "data_classification": "resource catalog",
+          "environment": "request",
+          "severity": "incident system",
+          "incident_state": "incident system",
+          "incident_service": "incident system",
+          "change_window": "change calendar",
+          "tenant_in_scope": "incident system",
+          "time": "platform clock",
+          "evidence_score": "evidence evaluator",
+          "evidence_signals": "evidence evaluator"
+        },
+        "decision": "ALLOW_WITH_APPROVAL",
+        "reason": "Production rollback requires SRE approval",
+        "constraints": {
+          "approverRole": "IncidentCommander",
+          "expiresIn": "10m"
+        },
+        "agent_view": {
+          "decision": "ALLOW_WITH_APPROVAL",
+          "code": "APPROVAL_REQUIRED",
+          "reason": "Production rollback requires SRE approval",
+          "next": "Wait for the approval decision",
+          "constraints": {
+            "approverRole": "IncidentCommander",
+            "expiresIn": "10m"
+          }
+        }
+      },
+      "prev": "3e31d14e4763929d",
+      "hash": "16d33cf912830387"
+    },
+    {
+      "seq": 19,
+      "time": "2026-09-29T14:07:30Z",
+      "kind": "approval.requested",
+      "record": {
+        "approval_id": "apr-819ba4aa10",
+        "decision_id": "dec-696fd603fc",
+        "request_fingerprint": "8fc070d3f4fec204",
+        "incident_id": "INC-4471",
+        "policy_version": "authz-2026-09-29.2",
+        "requested_by": "incident-agent-prod",
+        "acting_for": "sre-team",
+        "approver_role": "IncidentCommander",
+        "requested_at": "2026-09-29T14:07:30Z",
+        "expires_at": "2026-09-29T14:17:30Z",
+        "status": "pending"
+      },
+      "prev": "16d33cf912830387",
+      "hash": "dd8beca97c391c72"
+    },
+    {
+      "seq": 20,
+      "time": "2026-09-29T14:07:45Z",
+      "kind": "approval.rejected",
+      "record": {
+        "approval_id": "apr-819ba4aa10",
+        "approver": "incident-agent-prod",
+        "result": "The requester cannot approve its own action"
+      },
+      "prev": "dd8beca97c391c72",
+      "hash": "c0dfb9ec163e246b"
+    },
+    {
+      "seq": 21,
+      "time": "2026-09-29T14:08:50Z",
+      "kind": "approval.granted",
+      "record": {
+        "approval_id": "apr-819ba4aa10",
+        "approver": "ic.dev",
+        "result": "approved"
+      },
+      "prev": "c0dfb9ec163e246b",
+      "hash": "da37dea2921acba1"
+    },
+    {
+      "seq": 22,
+      "time": "2026-09-29T14:09:02Z",
+      "kind": "policy.decision",
+      "record": {
+        "decision_id": "dec-0b5c5dde6e",
+        "recheck_of": "dec-696fd603fc",
+        "principal": "incident-agent-prod",
+        "acting_for": "sre-team",
+        "action": "kubernetes.rollbackDeployment",
+        "resource": "deployment/payment-service",
+        "environment": "production",
+        "arguments": {
+          "to_version": "v4.17.2"
+        },
+        "request_fingerprint": "8fc070d3f4fec204",
+        "policy_version": "authz-2026-09-29.2",
+        "grants": [
+          "role:incident-responder",
+          "delegation:dlg-sre-incident-2026q4",
+          "relation:sre-team owns payment-service"
+        ],
+        "delegation_chain": [
+          {
+            "from": "sre-team",
+            "to": "incident-agent-prod",
+            "delegation": "dlg-sre-incident-2026q4",
+            "granted_by": "sre.lead",
+            "actions": [
+              "kubernetes.restartPod",
+              "kubernetes.rollbackDeployment"
+            ],
+            "expires": "2026-12-31T23:59:59Z",
+            "relation": "sre-team owns service:payment-service"
+          }
+        ],
+        "matched_rules": [
+          "A1-production-rollback"
+        ],
+        "attributes": {
+          "principal": "incident-agent-prod",
+          "principal.roles": [
+            "incident-responder"
+          ],
+          "acting_for": "sre-team",
+          "action": "kubernetes.rollbackDeployment",
+          "kind": "write",
+          "risk": "high",
+          "resource": "deployment/payment-service",
+          "service": "payment-service",
+          "tier": "tier-0",
+          "data_classification": "internal",
+          "environment": "production",
+          "severity": "SEV-1",
+          "incident_state": "open",
+          "incident_service": "payment-service",
+          "change_window": "normal",
+          "tenant_in_scope": true,
+          "time": "2026-09-29T14:09:02Z",
+          "evidence_score": 0.94,
+          "evidence_signals": [
+            "release_correlation",
+            "error_signature",
+            "staging_validation",
+            "staging_recovery"
+          ]
+        },
+        "attribute_sources": {
+          "principal": "request",
+          "principal.roles": "directory",
+          "acting_for": "request",
+          "action": "request",
+          "kind": "action catalog",
+          "risk": "action catalog",
+          "resource": "request",
+          "service": "resource catalog",
+          "tier": "resource catalog",
+          "data_classification": "resource catalog",
+          "environment": "request",
+          "severity": "incident system",
+          "incident_state": "incident system",
+          "incident_service": "incident system",
+          "change_window": "change calendar",
+          "tenant_in_scope": "incident system",
+          "time": "platform clock",
+          "evidence_score": "evidence evaluator",
+          "evidence_signals": "evidence evaluator"
+        },
+        "decision": "ALLOW_WITH_APPROVAL",
+        "reason": "Production rollback requires SRE approval",
+        "constraints": {
+          "approverRole": "IncidentCommander",
+          "expiresIn": "10m"
+        },
+        "agent_view": {
+          "decision": "ALLOW_WITH_APPROVAL",
+          "code": "APPROVAL_REQUIRED",
+          "reason": "Production rollback requires SRE approval",
+          "next": "Wait for the approval decision",
+          "constraints": {
+            "approverRole": "IncidentCommander",
+            "expiresIn": "10m"
+          }
+        }
+      },
+      "prev": "da37dea2921acba1",
+      "hash": "825f601473589408"
+    },
+    {
+      "seq": 23,
+      "time": "2026-09-29T14:09:02Z",
+      "kind": "tool.executed",
+      "record": {
+        "decision_id": "dec-0b5c5dde6e",
+        "action": "kubernetes.rollbackDeployment",
+        "resource": "deployment/payment-service",
+        "environment": "production",
+        "arguments": {
+          "to_version": "v4.17.2"
+        },
+        "constraints_applied": [],
+        "approval_id": "apr-819ba4aa10",
+        "approved_by": "ic.dev",
+        "credential": {
+          "id": "cred-c97ffe5cf8",
+          "expires_at": "2026-09-29T14:10:02Z",
+          "single_use": true
+        },
+        "output": {
+          "rolled_back_to": "v4.17.2"
+        }
+      },
+      "prev": "825f601473589408",
+      "hash": "63b9c60232f8b1cc"
+    }
+  ]
+}

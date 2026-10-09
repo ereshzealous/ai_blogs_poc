@@ -1,0 +1,63 @@
+{
+  "run_id": "2026-09-29-recorded",
+  "policy_version": "authz-2026-09-29.2",
+  "tool_calls_proposed": 10,
+  "decisions_total": 11,
+  "decisions_by_type": {
+    "ALLOW": 4,
+    "ALLOW_WITH_CONSTRAINTS": 2,
+    "DENY": 3,
+    "ALLOW_WITH_APPROVAL": 1
+  },
+  "executed": 7,
+  "blocked": 3,
+  "credentials_issued": 7,
+  "approvals_requested": 1,
+  "approvals_rejected": 1,
+  "approvals_granted": 1,
+  "evidence_weights": {
+    "release_correlation": 0.35,
+    "error_signature": 0.27,
+    "staging_validation": 0.22,
+    "staging_recovery": 0.1
+  },
+  "production_rollback_attempts": [
+    {
+      "time": "2026-09-29T14:05:10Z",
+      "evidence": 0.62,
+      "signals": [
+        "release_correlation",
+        "error_signature"
+      ],
+      "decision": "DENY"
+    },
+    {
+      "time": "2026-09-29T14:07:30Z",
+      "evidence": 0.94,
+      "signals": [
+        "release_correlation",
+        "error_signature",
+        "staging_validation",
+        "staging_recovery"
+      ],
+      "decision": "ALLOW_WITH_APPROVAL"
+    }
+  ],
+  "audit_records": 23,
+  "audit_chain_valid": true,
+  "tamper_detected": true,
+  "sweep_cases": 8,
+  "sweep_decisions": {
+    "ALLOW": 1,
+    "ALLOW_WITH_APPROVAL": 2,
+    "DENY": 5
+  },
+  "invariants_total": 14,
+  "invariants_passed": 14,
+  "namespaces_after_run": [
+    "payments",
+    "payments-canary",
+    "payments-staging"
+  ],
+  "payment_service_production_version": "v4.17.2"
+}

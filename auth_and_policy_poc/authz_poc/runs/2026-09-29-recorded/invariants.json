@@ -1,0 +1,456 @@
+[
+  {
+    "id": "AUTHZ-INV-01",
+    "name": "Deny by default",
+    "passed": true,
+    "cases": [
+      {
+        "case": "unknown principal",
+        "passed": true
+      },
+      {
+        "case": "unknown action (kubernetes.execShell)",
+        "passed": true
+      },
+      {
+        "case": "unknown resource (deployment/ledger-service)",
+        "passed": true
+      },
+      {
+        "case": "unknown environment (prod-eu)",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-02",
+    "name": "Role ceiling cannot be exceeded",
+    "passed": true,
+    "cases": [
+      {
+        "case": "deleteNamespace \u00b7 production \u00b7 SEV-1 \u00b7 full evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 production \u00b7 SEV-1 \u00b7 no evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 production \u00b7 SEV-3 \u00b7 full evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 production \u00b7 SEV-3 \u00b7 no evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 staging \u00b7 SEV-1 \u00b7 full evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 staging \u00b7 SEV-1 \u00b7 no evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 staging \u00b7 SEV-3 \u00b7 full evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace \u00b7 staging \u00b7 SEV-3 \u00b7 no evidence",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace with every context rule removed (mutation)",
+        "passed": true
+      },
+      {
+        "case": "deleteNamespace with the delegation widened to include it (mutation)",
+        "passed": true
+      },
+      {
+        "case": "read-only agent cannot restart a pod",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-03",
+    "name": "Tool access is not action permission",
+    "passed": true,
+    "cases": [
+      {
+        "case": "same tool, same identity: readDeployment executes",
+        "passed": true
+      },
+      {
+        "case": "same tool, same identity: deleteNamespace is denied",
+        "passed": true
+      },
+      {
+        "case": "same tool, same identity: kubernetes.execShell is denied",
+        "passed": true
+      },
+      {
+        "case": "a read credential cannot be redeemed for deleteNamespace",
+        "passed": true
+      },
+      {
+        "case": "reaching the tool without the gateway changes nothing (no credential)",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-04",
+    "name": "Resource authority is required",
+    "passed": true,
+    "cases": [
+      {
+        "case": "rollback checkout-service: role \u2713 delegation \u2713 ownership \u2717 \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "restart checkout-service pods \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "control: the same rollback on payment-service is not denied for ownership",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-05",
+    "name": "Delegation is an intersection, never a union",
+    "passed": true,
+    "cases": [
+      {
+        "case": "delegation wider than the role: role still caps it",
+        "passed": true
+      },
+      {
+        "case": "role wider than the delegation: delegation caps it",
+        "passed": true
+      },
+      {
+        "case": "role and delegation without the relationship: ownership caps it",
+        "passed": true
+      },
+      {
+        "case": "all three present, production context narrows ALLOW to ALLOW_WITH_APPROVAL",
+        "passed": true
+      },
+      {
+        "case": "all three present in staging: ALLOW",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-06",
+    "name": "Delegation scope and lifetime are enforced",
+    "passed": true,
+    "cases": [
+      {
+        "case": "wrong action: not in the delegation",
+        "passed": true
+      },
+      {
+        "case": "wrong resource: checkout-service",
+        "passed": true
+      },
+      {
+        "case": "wrong acting-for principal: checkout-team never delegated",
+        "passed": true
+      },
+      {
+        "case": "no acting-for principal: the agent has no write authority of its own",
+        "passed": true
+      },
+      {
+        "case": "expired delegation",
+        "passed": true
+      },
+      {
+        "case": "inactive incident: resolved",
+        "passed": true
+      },
+      {
+        "case": "revoked delegation",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-07",
+    "name": "Context may restrict, never manufacture authority",
+    "passed": true,
+    "cases": [
+      {
+        "case": "an injected ALLOW rule cannot grant deleteNamespace",
+        "passed": true
+      },
+      {
+        "case": "an injected constraint rule cannot grant deleteNamespace",
+        "passed": true
+      },
+      {
+        "case": "an injected ALLOW rule cannot grant checkout-service",
+        "passed": true
+      },
+      {
+        "case": "context rules add no grants: grants are identical with and without them",
+        "passed": true
+      },
+      {
+        "case": "removing the context rules can only loosen, never tighten",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-08",
+    "name": "Agent assertions never loosen authorization",
+    "passed": true,
+    "cases": [
+      {
+        "case": "weak evidence stays DENY with confidence, urgency and a claimed score in context",
+        "passed": true
+      },
+      {
+        "case": "\u2026and with the same claims smuggled into the arguments",
+        "passed": true
+      },
+      {
+        "case": "the decision is computed from platform attributes only: no asserted value reaches them",
+        "passed": true
+      },
+      {
+        "case": "claiming an approver in context does not skip the approval",
+        "passed": true
+      },
+      {
+        "case": "the gateway parks the call regardless of what the agent claims",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-09",
+    "name": "Missing or unknown security context fails closed",
+    "passed": true,
+    "cases": [
+      {
+        "case": "unknown severity (missing from the incident record)",
+        "passed": true
+      },
+      {
+        "case": "unrecognised severity (SEV-9)",
+        "passed": true
+      },
+      {
+        "case": "missing environment",
+        "passed": true
+      },
+      {
+        "case": "missing ownership data",
+        "passed": true
+      },
+      {
+        "case": "change calendar unavailable (SEV-3): the freeze rule applies",
+        "passed": true
+      },
+      {
+        "case": "missing evidence source",
+        "passed": true
+      },
+      {
+        "case": "unknown incident id",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-10",
+    "name": "Same identity may produce different contextual decisions",
+    "passed": true,
+    "cases": [
+      {
+        "case": "sweep: staging \u2192 ALLOW",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, SEV-1, evidence 0.94 \u2192 ALLOW_WITH_APPROVAL",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, evidence 0.62 (before staging validation) \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, SEV-3, during change freeze \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, SEV-1, during change freeze \u2192 ALLOW_WITH_APPROVAL",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, incident resolved \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, no acting-for principal \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "sweep: production, checkout-service (not owned) \u2192 DENY",
+        "passed": true
+      },
+      {
+        "case": "one principal and one action across every context",
+        "passed": true
+      },
+      {
+        "case": "at least three different outcomes",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-11",
+    "name": "Production rollback cannot silently auto-execute",
+    "passed": true,
+    "cases": [
+      {
+        "case": "qualifying production rollback \u2192 ALLOW_WITH_APPROVAL, not ALLOW",
+        "passed": true
+      },
+      {
+        "case": "the gateway parks it: no tool call, version unchanged",
+        "passed": true
+      },
+      {
+        "case": "SEV-1 during the change freeze \u2192 still ALLOW_WITH_APPROVAL",
+        "passed": true
+      },
+      {
+        "case": "staging rollback \u2192 ALLOW and executes",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-12",
+    "name": "Approval cannot widen DENY",
+    "passed": true,
+    "cases": [
+      {
+        "case": "no denied call ever opens an approval",
+        "passed": true
+      },
+      {
+        "case": "the approval gate refuses to open for a DENY decision",
+        "passed": true
+      },
+      {
+        "case": "an approved call whose re-check is DENY does not execute",
+        "passed": true
+      },
+      {
+        "case": "an approval cannot be applied to a different, denied call",
+        "passed": true
+      },
+      {
+        "case": "the requester cannot approve its own action",
+        "passed": true
+      },
+      {
+        "case": "a human without the named approver role cannot approve",
+        "passed": true
+      },
+      {
+        "case": "another agent cannot approve",
+        "passed": true
+      },
+      {
+        "case": "an expired approval window cannot be approved",
+        "passed": true
+      },
+      {
+        "case": "an approval is single-use",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-13",
+    "name": "Authorization is rechecked at time of use",
+    "passed": true,
+    "cases": [
+      {
+        "case": "arguments changed (to_version v4.16.0)",
+        "passed": true
+      },
+      {
+        "case": "resource changed (checkout-service)",
+        "passed": true
+      },
+      {
+        "case": "policy version changed",
+        "passed": true
+      },
+      {
+        "case": "delegation expired while waiting",
+        "passed": true
+      },
+      {
+        "case": "incident closed while waiting",
+        "passed": true
+      },
+      {
+        "case": "change freeze started and the incident was downgraded",
+        "passed": true
+      },
+      {
+        "case": "ownership changed while waiting",
+        "passed": true
+      },
+      {
+        "case": "control: the unchanged call executes",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "id": "AUTHZ-INV-14",
+    "name": "Every decision is reconstructable and replayable",
+    "passed": true,
+    "cases": [
+      {
+        "case": "every decision record answers who, for whom, what, against what, context, policy version, rules, outcome",
+        "passed": true
+      },
+      {
+        "case": "every execution links to a permitting decision, a credential and, where required, its approver",
+        "passed": true
+      },
+      {
+        "case": "the hash chain verifies",
+        "passed": true
+      },
+      {
+        "case": "editing any single record breaks the chain",
+        "passed": true
+      },
+      {
+        "case": "replaying the incident reproduces every security-relevant decision",
+        "passed": true
+      },
+      {
+        "case": "replaying the incident reproduces the log byte for byte",
+        "passed": true
+      }
+    ]
+  }
+]

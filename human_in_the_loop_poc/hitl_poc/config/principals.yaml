@@ -1,0 +1,45 @@
+# Simulated identity provider and identity context.  Approvers authenticate with their own credential; the runtime and the
+# agent hold none of them.  Static tokens only because this is a deterministic simulation.
+#
+# This POC consumes identity as an input (Agent Identity built it): who the agent is, which runtimes may run it, the
+# delegation it acts under and whether each is still active.  It does not re-implement token exchange or attestation.
+principals:
+  alice:                          {kind: human,    roles: [production-approver, sre], oncall: primary}
+  dana:                           {kind: human,    roles: [production-approver, release-engineer]}   # authored deployment v4.18.0
+  omar:                           {kind: human,    roles: [production-approver, sre], oncall: secondary}
+  reggie:                         {kind: human,    roles: [readonly-engineer]}
+  svc.monitoring-webhook:         {kind: workload, roles: []}
+  agent.incident-investigator:    {kind: agent,    roles: [], version: "2.1.0", status: enabled}
+  svc.hitl-runtime:               {kind: workload, roles: []}
+  svc.hitl-runtime-b:             {kind: workload, roles: []}          # the second worker a durable workflow can resume on
+  svc.capability-gateway:         {kind: workload, roles: []}
+  production-incident-platform:   {kind: service,  roles: []}
+credentials:
+  tok-alice:     alice
+  tok-dana:      dana
+  tok-omar:      omar
+  tok-reggie:    reggie
+  tok-monitor:   svc.monitoring-webhook
+  tok-runtime:   svc.hitl-runtime
+  tok-agent:     agent.incident-investigator
+
+# Which runtimes may run which agent (Agent Identity: the attested workloads registered for an agent).
+runtimes:
+  agent.incident-investigator: [svc.hitl-runtime, svc.hitl-runtime-b]
+
+# The delegation the agent acts under (Agent Identity: subject + actor chain + scopes).  A reference, not a token.
+delegations:
+  dlg-incident-remediation:
+    subject: production-incident-platform
+    actor: agent.incident-investigator
+    scopes: ["deployments:rollback:propose", "incidents:write", "telemetry:read"]
+    status: active
+
+# The chat channel's user ids and the enterprise principal each one maps to.  A click from an id with no mapping is a
+# click from nobody the enterprise knows (a guest in the incident channel).
+channel_links:
+  slack:
+    U02ALICE:  alice
+    U02DANA:   dana
+    U02OMAR:   omar
+    U02REGGIE: reggie

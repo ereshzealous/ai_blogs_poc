@@ -1,0 +1,74 @@
+# T3 · Human-in-the-Loop · proof manifest (Production AI Engineering Proof Contract v1, pae-proof/v1)
+
+schema = "pae-proof/v1"
+
+[article]
+id = "T3"
+series = "Production AI Engineering"
+title = "APPROVED, but approved what?"
+headline = "Human-in-the-loop is a control protocol, not a button"
+question = "How do we pause an autonomous action, obtain an accountable decision from an authorized human, bind it to exactly what was reviewed, and resume without stale authority or stale world state?"
+thesis = ["Human-in-the-loop is a control protocol: pause one side effect, show an authorized human the evidence, bind the decision to the exact action, and resume only if the context is still valid.", "Approval is evidence used by authorization, not authorization by itself."]
+poc = "hitl_poc"
+scenario = "payment-service, production, 14% errors after v4.18.0 (the F3 incident): the incident agent proposes rollbackDeployment v4.18.0 → v4.17.2 at 14:09 and waits for a human; thirty scenarios change what happens next, under three approval protocols"
+
+[run]
+runtime_mode = "deterministic: no model, no network; simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions"
+replay_level = "EXACT"
+replay_contract = "re-running the scenarios and the conformance suite reproduces every raw file byte for byte"
+
+[entrypoints]
+verify = "uv run hitl verify"
+test = "uv run pytest"
+freeze = "uv run hitl freeze --note ..."
+proof = "uv run hitl proof"
+scenarios = "uv run hitl scenarios [H5c ...]"
+suite = "uv run hitl suite"
+serve = "uv run hitl serve"
+make = "make verify · make test · make proof"
+
+[[reality]]
+class = "REAL"
+meaning = "the actual mechanism was exercised"
+items = [
+  { text = "Approval artifact and action digest binding (canonical JSON, SHA-256)" },
+  { text = "Approval state machine with compare-and-set transitions in SQLite; single-use consumption" },
+  { text = "Approver authentication, eligibility and separation of duties; two-person quorum; escalation" },
+  { text = "Expiry, deny and timeout handling" },
+  { text = "Resume revalidation: identity, delegation, policy, resource state, approval validity, digest" },
+  { text = "Idempotency keys, execution records and reconciliation after a crash" },
+  { text = "Hash-chained audit and the 16-question reconstruction" },
+  { text = "The three approval protocols (arms A, B, C) and the policy-enforcing gateway they share" },
+  { text = "HTTP API and approval inbox (stdlib http.server), driven over real HTTP" },
+]
+
+[[reality]]
+class = "SIMULATED"
+meaning = "a faithful local substitute for an enterprise or external system"
+items = [
+  { text = "Datadog (one event), Kubernetes, logging, tracing and ITSM (hitl/enterprise.py) with an effects ledger" },
+  { text = "The identity provider and identity context: principals, runtimes, the delegation, chat-user links (config/principals.yaml)" },
+  { text = "The Slack approval channel: messages and button clicks as function calls" },
+  { text = "Human waiting: the clock moves only when a scenario moves it" },
+  { text = "The agent: a deterministic evidence correlator and a fixed plan in place of a model" },
+]
+
+[[reality]]
+class = "INJECTED"
+meaning = "a failure or unsafe condition introduced on purpose"
+items = [
+  { text = "Actions changed after approval; replays; ineligible approvers; a guest click; an agent approving itself" },
+  { text = "World, identity and policy changes during the pause: hotfix, manual rollback, revoked delegation, disabled agent, policy v8, approver role removed" },
+  { text = "Duplicate clicks and webhooks, a worker crash after commit, two racing resume workers" },
+  { text = "Deny, silence, late approval, use after expiry; approval service and policy engine down; rollout failure; lost response" },
+]
+
+[[reality]]
+class = "ARCHITECTURE"
+meaning = "a design concept this POC does not exercise"
+items = [
+  { text = "A durable workflow engine for long pauses (Temporal, Step Functions): the pause is a clock advance here" },
+  { text = "Out-of-band approver authentication (OIDC CIBA), step-up and signed approval records" },
+  { text = "Real Slack/Teams interactivity, a real IdP and a real cluster" },
+  { text = "Multi-agent approval chains and AI control plane integration" },
+]

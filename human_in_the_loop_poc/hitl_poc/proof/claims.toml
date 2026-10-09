@@ -1,0 +1,248 @@
+# T3 · Human-in-the-Loop · claims → experiments → checks (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# Written AFTER the recorded run 2026-10-03-protocol, from its checks.  `status` is what a reader sees (SUPPORTED · QUALIFIED ·
+# CONTRADICTED · NOT TESTED); `verdict` is what `hitl verify` tests against the checks.  `article` names the Medium sections
+# (or a fig: id) that state the claim; `facts` lists every run fact the documents print for it.  No hypothesis was
+# contradicted in this run, so no claim carries CONTRADICTED.
+
+[[claims]]
+id = "T3-C01"
+statement = "A boolean approval acts as ambient permission: under arm A a different action, mutated actions, replays, ineligible clicks, stale resumes, duplicates and late approvals all executed."
+type = "control"
+verdict = "control"
+status = "SUPPORTED"
+experiments = ["T3-R1", "T3-R2", "T3-R3", "T3-R4", "T3-R5", "T3-R6", "T3-R7", "T3-R8", "T3-R9"]
+checks = ["T3-R1-C03", "T3-R2-C05", "T3-R3-C04", "T3-R4-C05", "T3-R5-C03", "T3-R6-C03", "T3-R7-C05", "T3-R8-C06", "T3-R9-C04"]
+article = ["The button is not the control"]
+facts = ["global.A.audit_reconstruction_gaps", "global.A.duplicate_external_side_effects", "global.A.executions_after_deny_or_timeout", "global.A.expired_approval_executions", "global.A.ineligible_approver_acceptances", "global.A.legit_executions", "global.A.mutated_action_bypasses", "global.A.reconstructed_writes", "global.A.silent_stale_context_resumes", "global.A.successful_approval_replays", "global.A.unauthorized_executions"]
+note = "By construction: arm A is the control; its failures show the scenarios detect a bypass."
+
+[[claims]]
+id = "T3-C02"
+statement = "Binding an approval to an action digest stops a different or mutated action; under C a mutation becomes a new request."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R1", "T3-R2"]
+checks = ["T3-R1-C02", "T3-R1-C01", "T3-R2-C03", "T3-R2-C04", "T3-R2-C01", "T3-R2-C02", "T3-R10-C02"]
+article = ["Approval must bind to an exact action", "Experiment 1: change the action after approval"]
+facts = ["H1.A.unauthorized_executions", "H1.B.unauthorized_executions", "H1.C.reapproval_requests", "H1.C.unauthorized_executions", "H1a.A.questions_answered", "H1a.A.writes", "H1a.B.final_code", "H1a.C.final_code", "H2.A.unauthorized_executions", "H2.B.reapproval_requests", "H2.B.unauthorized_executions", "H2.C.reapproval_requests", "H2.C.unauthorized_executions", "H2a.B.final_code"]
+
+[[claims]]
+id = "T3-C03"
+statement = "An approval cannot turn a policy DENY into ALLOW when policy is enforced on every call."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R1", "T3-R11"]
+checks = ["T3-R1-C04", "T3-R11-C05"]
+article = ["Authorization and approval are different decisions"]
+facts = ["H1b.A.final_code", "H1b.A.writes", "H1b.B.writes", "H1b.C.writes"]
+note = "Holds because policy is enforced on every call in every arm."
+
+[[claims]]
+id = "T3-C04"
+statement = "Request binding and single use stop replays, including an identical action presented for a new incident."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R3"]
+checks = ["T3-R3-C03", "T3-R3-C01", "T3-R3-C02", "T3-R10-C03"]
+article = ["Experiment 2: replay an approval"]
+facts = ["H3.A.unauthorized_executions", "H3.B.unauthorized_executions", "H3.C.legit_executions", "H3.C.unauthorized_executions", "H3a.B.final_code", "H3a.C.final_code", "H3b.B.final_code", "H3b.C.final_code", "H3c.A.state_changes", "H3c.B.final_code", "H3c.C.final_code"]
+
+[[claims]]
+id = "T3-C05"
+statement = "Only an authenticated, eligible, independent human can approve; a chat identity alone is not enough; a two-person rule needs two distinct approvers."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R4"]
+checks = ["T3-R4-C04", "T3-R4-C01", "T3-R4-C02", "T3-R4-C03", "T3-R10-C06"]
+article = ["Experiment 3: let the wrong human approve"]
+facts = ["H4.A.ineligible_approver_acceptances", "H4.A.unauthorized_executions", "H4.B.ineligible_approver_acceptances", "H4.B.unauthorized_executions", "H4.C.ineligible_approver_acceptances", "H4.C.legit_executions", "H4.C.unauthorized_executions", "H4e.A.unauthorized_executions", "H4e.A.writes", "H4e.C.writes"]
+
+[[claims]]
+id = "T3-C06"
+statement = "Binding is not revalidation: an action-bound, unexpired approval still resumes against a changed world, revoked authority, a new policy or an ineligible approver."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R5", "T3-R6"]
+checks = ["T3-R5-C02", "T3-R6-C02"]
+article = ["Experiment 4: wait 37 minutes"]
+facts = []
+
+[[claims]]
+id = "T3-C07"
+statement = "Revalidation on resume stops stale resumes: world, identity, delegation, policy and approver."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R5", "T3-R6"]
+checks = ["T3-R5-C01", "T3-R6-C01", "T3-R10-C07"]
+article = ["What must happen after a pause", "Experiment 4: wait 37 minutes"]
+facts = ["H5.A.unauthorized_executions", "H5.B.unauthorized_executions", "H5.C.reapproval_requests", "H5.C.rejected_on_resume", "H5.C.unauthorized_executions", "H5a.B.state_changes", "H5a.C.final_code", "H5b.B.state_changes", "H5c.B.questions_answered", "H5c.C.final_code", "H6.A.unauthorized_executions", "H6.B.unauthorized_executions", "H6.C.reapproval_requests", "H6.C.rejected_on_resume", "H6.C.unauthorized_executions", "H6a.C.final_code", "H6b.C.final_code", "H6c.C.final_code", "H6d.C.final_code"]
+
+[[claims]]
+id = "T3-C08"
+statement = "One approval produces at most one side effect only if consumption is atomic and recorded before the call."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R7"]
+checks = ["T3-R7-C03", "T3-R7-C04", "T3-R7-C01", "T3-R7-C02", "T3-R10-C04"]
+article = ["Experiment 5: duplicate the resume"]
+facts = ["H7.A.unauthorized_executions", "H7.B.unauthorized_executions", "H7.B.unauthorized_executions.H7a_H7b", "H7.B.unauthorized_executions.H7c_H7d", "H7.C.legit_executions", "H7.C.unauthorized_executions", "H7d.B.state_changes", "H7d.B.writes", "H7d.C.final_code"]
+
+[[claims]]
+id = "T3-C09"
+statement = "Deny and silence never execute; expiry stops late approvals; escalation is a recorded transition."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R8"]
+checks = ["T3-R8-C05", "T3-R8-C04", "T3-R8-C01", "T3-R8-C02", "T3-R8-C03", "T3-R10-C05"]
+article = ["Deny, timeout and escalation"]
+facts = ["H8.A.executions_after_deny_or_timeout", "H8.A.expired_approval_executions", "H8.A.unauthorized_executions", "H8.B.executions_after_deny_or_timeout", "H8.B.unauthorized_executions", "H8.C.escalations_recorded", "H8.C.executions_after_deny_or_timeout", "H8.C.legit_executions", "H8.C.unauthorized_executions", "H8c.C.final_code", "H8d.C.final_code"]
+
+[[claims]]
+id = "T3-C10"
+statement = "Arm C's records reconstruct every executed privileged action (16 of 16 questions)."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R9"]
+checks = ["T3-R9-C03", "T3-R9-C01", "T3-R9-C02", "T3-R10-C08"]
+article = ["What the POC actually proved"]
+facts = ["H9a.A.questions_answered", "H9a.B.questions_answered", "H9a.C.questions_answered", "all.C.audit_reconstruction_gaps"]
+
+[[claims]]
+id = "T3-C11"
+statement = "Arm C held every fixed global assertion at zero while executing every legitimate action."
+type = "measured"
+verdict = "supported"
+status = "SUPPORTED"
+experiments = ["T3-R10"]
+checks = ["T3-R10-C01", "T3-R10-C02", "T3-R10-C03", "T3-R10-C04", "T3-R10-C05", "T3-R10-C06", "T3-R10-C07", "T3-R10-C08"]
+article = ["What the POC actually proved"]
+facts = ["global.B.audit_reconstruction_gaps", "global.B.duplicate_external_side_effects", "global.B.expired_approval_executions", "global.B.ineligible_approver_acceptances", "global.B.legit_executions", "global.B.mutated_action_bypasses", "global.B.reconstructed_writes", "global.B.silent_stale_context_resumes", "global.B.successful_approval_replays", "global.B.unauthorized_executions", "global.C.audit_reconstruction_gaps", "global.C.duplicate_external_side_effects", "global.C.expired_approval_executions", "global.C.ineligible_approver_acceptances", "global.C.legit_executions", "global.C.mutated_action_bypasses", "global.C.reconstructed_writes", "global.C.silent_stale_context_resumes", "global.C.successful_approval_replays", "global.C.unauthorized_executions"]
+
+[[claims]]
+id = "T3-C12"
+statement = "Revalidation re-checks the action and the authority, not every fact the human saw: severity rose SEV2 → SEV1 during the pause and no check covered it."
+type = "limitation"
+verdict = "limitation"
+status = "QUALIFIED"
+experiments = ["T3-R5"]
+checks = ["T3-R5-C01"]
+article = ["What the POC actually proved"]
+facts = ["story.A.final_code", "story.A.writes", "story.B.final_code", "story.B.writes", "story.C.final_code", "story.C.writes", "story.approval_wait_minutes", "story.checks", "story.failed_checks", "story.not_revalidated"]
+rests_on = "story.json → not_revalidated (H5c): revalidation is only as wide as its checks."
+
+[[claims]]
+id = "T3-C13"
+statement = "Expiry protects against stale approvals only as a bound: every stale approval in H5 and H6 arrived inside its 60-minute expiry and B executed it."
+type = "limitation"
+verdict = "limitation"
+status = "QUALIFIED"
+experiments = ["T3-R5", "T3-R6"]
+checks = ["T3-R5-C02", "T3-R6-C02"]
+article = ["Experiment 4: wait 37 minutes"]
+facts = []
+rests_on = "raw/scenarios/H5*/B and H6*/B: approvals at +37 min with a 60-minute TTL."
+
+[[claims]]
+id = "T3-C14"
+statement = "Crash recovery is exactly-once only because the simulated Kubernetes honours an idempotency key; real Kubernetes has none."
+type = "limitation"
+verdict = "limitation"
+status = "QUALIFIED"
+experiments = ["T3-R7"]
+checks = ["T3-R7-C01", "T3-R7-C02"]
+article = ["Experiment 5: duplicate the resume"]
+facts = ["H7c.B.state_changes", "H7c.B.writes", "H7c.C.final_code"]
+rests_on = "raw/scenarios/H7c/C (RECONCILED) and real_vs_simulated.md (the idempotency key is a simulator feature)."
+
+[[claims]]
+id = "T3-C15"
+statement = "B's duplicate rollbacks changed nothing only because the target version was already running; a non-idempotent action would not be absorbed (reasoned)."
+type = "limitation"
+verdict = "limitation"
+status = "QUALIFIED"
+experiments = ["T3-R7"]
+checks = ["T3-R7-C04"]
+article = ["Experiment 5: duplicate the resume"]
+facts = []
+rests_on = "raw/scenarios/H7c/B, H7d/B: writes vs state_changes."
+
+[[claims]]
+id = "T3-C16"
+statement = "Requiring a human approval reduces the risk of an autonomous action, but a human is not a safety guarantee: humans approved stale requests and B executed them."
+type = "limitation"
+verdict = "limitation"
+status = "QUALIFIED"
+experiments = ["T3-R5", "T3-R6"]
+checks = ["T3-R5-C02", "T3-R6-C02"]
+article = ["What the POC actually proved"]
+facts = []
+rests_on = "raw/scenarios/H5*/B, H6*/B: eligible humans approved after the context changed."
+
+[[claims]]
+id = "T3-C17"
+statement = "Nothing can change between the last revalidation check and the write."
+type = "limitation"
+verdict = "limitation"
+status = "NOT TESTED"
+experiments = []
+checks = []
+article = ["What the POC actually proved"]
+facts = []
+rests_on = "Not tested: revalidation and the write run in one synchronous step; no change was injected between them (CWE-367)."
+
+[[claims]]
+id = "T3-C18"
+statement = "A better evidence card produces better human decisions."
+type = "limitation"
+verdict = "limitation"
+status = "NOT TESTED"
+experiments = []
+checks = []
+article = ["What the POC actually proved"]
+facts = []
+rests_on = "Not tested: the human decisions are scripted."
+
+[[claims]]
+id = "T3-C19"
+statement = "The protocol holds with a real Slack workspace, IdP, cluster and durable workflow engine."
+type = "limitation"
+verdict = "limitation"
+status = "NOT TESTED"
+experiments = []
+checks = []
+article = ["What the POC actually proved"]
+facts = []
+rests_on = "Not tested: all simulated (real_vs_simulated.md)."
+
+[[claims]]
+id = "T3-C20"
+statement = "The approval path is fast and available enough for incident response."
+type = "limitation"
+verdict = "limitation"
+status = "NOT TESTED"
+experiments = []
+checks = []
+article = ["What the POC actually proved"]
+facts = []
+rests_on = "Not tested: no latency or availability was measured."
+
+[[claims]]
+id = "T3-C21"
+statement = "The same boundary holds test by test (conformance suite) and through the real HTTP surface."
+type = "implementation"
+verdict = "implementation"
+status = "SUPPORTED"
+experiments = ["T3-R11", "T3-R12"]
+checks = ["T3-R11-C01", "T3-R11-C02", "T3-R11-C03", "T3-R11-C04", "T3-R11-C05", "T3-R11-C06", "T3-R11-C07", "T3-R11-C08", "T3-R11-C09", "T3-R11-C10", "T3-R11-C11", "T3-R11-C12", "T3-R11-C13", "T3-R11-C14", "T3-R11-C15", "T3-R11-C16", "T3-R11-C17", "T3-R11-C18", "T3-R11-C19", "T3-R11-C20", "T3-R11-C21", "T3-R11-C22", "T3-R11-C23", "T3-R11-C24", "T3-R11-C25", "T3-R11-C26", "T3-R11-C27", "T3-R11-C28", "T3-R11-C29", "T3-R11-C30", "T3-R12-C01", "T3-R12-C02"]
+article = ["fig:tech-poc-architecture"]
+facts = ["api.calls", "api.calls_ok", "api.rollbacks", "tests.passed", "tests.total"]

@@ -1,0 +1,24 @@
+# Policy decision point for prod-change-policy.  Evaluated in code; the model never sees or edits this file.
+# A capability's tier decides the route.  Unknown capabilities and evaluation errors are DENY (fail closed).
+# The decision vocabulary is ALLOW · DENY · REQUIRE_APPROVAL (Authorization & Policy calls the last one
+# ALLOW_WITH_APPROVAL).  Human-in-the-loop starts where this file returns REQUIRE_APPROVAL.
+policy_id: prod-change-policy
+version: "7"
+
+tiers:
+  read:           {decision: ALLOW,            autonomy: "out of the loop"}
+  analyze:        {decision: ALLOW,            autonomy: "out of the loop"}
+  recommend:      {decision: ALLOW,            autonomy: "out of the loop"}
+  low_write:      {decision: ALLOW,            autonomy: "on the loop"}
+  high_write:     {decision: REQUIRE_APPROVAL, autonomy: "in the loop"}
+  prohibited:     {decision: DENY,             autonomy: "never automated"}
+
+approval:
+  required_role: production-approver   # who may decide a high_write proposal
+  required_approvals: 1                # distinct eligible approvers
+  two_person: []                       # targets that need two distinct approvers (none in v7)
+  ttl_s: 3600                          # a request waits at most 60 minutes for a decision; an approval is usable until then
+  escalate_after_s: 900                # no decision after 15 minutes: escalate from the primary to the secondary on-call
+  separation_of_duties:
+    - requester_chain                  # no identity in the request chain (invoker, agent, runtime, on-behalf-of) may approve
+    - deployment_author                # the author of the deployment being rolled back may not approve its rollback

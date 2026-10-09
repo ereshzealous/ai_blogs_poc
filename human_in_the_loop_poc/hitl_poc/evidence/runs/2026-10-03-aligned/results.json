@@ -1,0 +1,2910 @@
+{
+ "schema": "pae-proof/v1",
+ "contract": "Production AI Engineering Proof Contract v1",
+ "run_id": "2026-10-03-aligned",
+ "article": "T3",
+ "status": "COMPLETE",
+ "check_counts": {
+  "experiments": 8,
+  "checks": 36,
+  "pass": 33,
+  "fail": 0,
+  "expected_failure": 3
+ },
+ "experiment_results": {
+  "pass": 7,
+  "fail": 0,
+  "expected_failure": 1
+ },
+ "finding_counts": {},
+ "experiments": [
+  {
+   "id": "T3-R1",
+   "title": "Risk-based routing",
+   "question": "Does policy route each action by risk: automatic below the line, a human at the line, never above it?",
+   "claim": "Reads, analysis and recommendations run without a human; a high-risk write waits for one; a prohibited action stays denied even after a human approves.",
+   "hypothesis": "Reads, analysis and recommendations run without a human; a high-risk write waits for one; a prohibited action stays denied even after a human approves.",
+   "setup": "Fresh platform per test; the payment-service incident (14% error rate after v4.18.0); prod-change-policy v7.",
+   "invariant": "Every routed action ends where the policy tier says, and approval never converts DENY into ALLOW.",
+   "category": "A \u00b7 Risk and policy routing",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R1-C01",
+    "T3-R1-C02",
+    "T3-R1-C03",
+    "T3-R1-C04",
+    "T3-R1-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R2",
+   "title": "Exact-action binding",
+   "question": "Does an approval authorize exactly one action and nothing adjacent to it?",
+   "claim": "An approval is bound to the digest of capability, target, arguments, environment, preconditions and policy version; any change is refused or forces re-evaluation.",
+   "hypothesis": "An approval is bound to the digest of capability, target, arguments, environment, preconditions and policy version; any change is refused or forces re-evaluation.",
+   "setup": "Approve rollbackDeployment(payment-service, production, v4.18.0 to v4.17.2), then ask the gate to run variants of it.",
+   "invariant": "A mutated action never executes under an approval for a different action; a stale approval never executes.",
+   "category": "B \u00b7 Exact-action binding and tamper protection",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R2-C01",
+    "T3-R2-C02",
+    "T3-R2-C03",
+    "T3-R2-C04",
+    "T3-R2-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R3",
+   "title": "Approval lifecycle",
+   "question": "Does the approval behave as a strict state machine?",
+   "claim": "Rejected, expired and canceled proposals never execute; illegal transitions fail instead of happening.",
+   "hypothesis": "Rejected, expired and canceled proposals never execute; illegal transitions fail instead of happening.",
+   "setup": "Deterministic clock; proposals expire 5 minutes after creation.",
+   "invariant": "Only AWAITING_APPROVAL can be decided and only APPROVED can execute; terminal states stay terminal.",
+   "category": "C \u00b7 Approval lifecycle",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R3-C01",
+    "T3-R3-C02",
+    "T3-R3-C03",
+    "T3-R3-C04",
+    "T3-R3-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R4",
+   "title": "Identity and separation of duties",
+   "question": "Can only an independent, authorized human approve?",
+   "claim": "The approver is the authenticated principal; agents, runtimes and anyone in the request chain cannot approve; the deployment author cannot approve its rollback.",
+   "hypothesis": "The approver is the authenticated principal; agents, runtimes and anyone in the request chain cannot approve; the deployment author cannot approve its rollback.",
+   "setup": "Simulated identity provider: alice and omar (production-approver), dana (production-approver, authored v4.18.0), reggie (readonly).",
+   "invariant": "No decision is accepted from an unauthorized, non-human or conflicted identity, and every identity survives to the audit record.",
+   "category": "D \u00b7 Identity and separation of duties",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R4-C01",
+    "T3-R4-C02",
+    "T3-R4-C03",
+    "T3-R4-C04",
+    "T3-R4-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R5",
+   "title": "Duplicates, idempotency and concurrency",
+   "question": "Do duplicates, retries and races produce exactly one business effect?",
+   "claim": "Redelivered events, repeated clicks, replayed approvals, racing decisions and lost responses never duplicate a side effect.",
+   "hypothesis": "Redelivered events, repeated clicks, replayed approvals, racing decisions and lost responses never duplicate a side effect.",
+   "setup": "At-least-once event delivery, browser retries, a deterministic approve/reject race, an injected lost response.",
+   "invariant": "The effects ledger shows at most one rollback per approved proposal, and one terminal decision per proposal.",
+   "category": "E \u00b7 Duplicates, idempotency and concurrency",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R5-C01",
+    "T3-R5-C02",
+    "T3-R5-C03",
+    "T3-R5-C04",
+    "T3-R5-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R6",
+   "title": "Fail-closed, adversarial and audit",
+   "question": "Does the boundary hold when parts fail or the input is hostile, and can every action be reconstructed?",
+   "claim": "Prompt injection, an unavailable approval service, an unavailable policy engine and a failing tool all fail closed; the audit chain reconstructs a successful rollback end to end.",
+   "hypothesis": "Prompt injection, an unavailable approval service, an unavailable policy engine and a failing tool all fail closed; the audit chain reconstructs a successful rollback end to end.",
+   "setup": "Injected log line claiming approval; approval service and policy engine switched off; rollout failure injected.",
+   "invariant": "No gated action executes without verified policy and approval; every consequential action has a complete, intact audit chain.",
+   "category": "F \u00b7 Fail-closed, adversarial and audit",
+   "limitations": "Deterministic suite: simulated enterprise systems, identity provider and clock; no model is called.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R6-C01",
+    "T3-R6-C02",
+    "T3-R6-C03",
+    "T3-R6-C04",
+    "T3-R6-C05"
+   ],
+   "counts": {
+    "PASS": 5,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  },
+  {
+   "id": "T3-R7",
+   "title": "Negative controls",
+   "question": "Do the canonical tests notice when a safeguard is removed?",
+   "claim": "The suite is not vacuous: removing exact-action binding or approver authentication lets an unapproved side effect through, and the tests catch it.",
+   "hypothesis": "With a safeguard removed, the invariant it protects breaks and the harness still completes.",
+   "setup": "The same 30 tests run twice more: once with the gate's digest binding off, once with approver authentication off (identity taken from the request).",
+   "invariant": "Each protected invariant breaks cleanly (a side effect appears) and every test still completes.",
+   "result": "EXPECTED_FAILURE",
+   "finding": "EXPECTED FAILURE",
+   "checks": [
+    "T3-R7-C01",
+    "T3-R7-C02",
+    "T3-R7-C03",
+    "T3-R7-C04"
+   ],
+   "counts": {
+    "PASS": 1,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 3
+   }
+  },
+  {
+   "id": "T3-R8",
+   "title": "Implementation: the HTTP surface and approval inbox",
+   "question": "Does the same boundary hold through the real HTTP API a person or a client would use?",
+   "claim": "Events, the inbox, decisions and the audit are served over HTTP, and the approver is the credential's principal.",
+   "hypothesis": "Every call returns its expected status: refused for an unauthenticated inbox, a readonly approver and an agent claiming a human identity; accepted for the authorized human; one rollback.",
+   "setup": "uv run hitl serve, driven by urllib in-process: POST /events, GET /approvals, POST /approvals/{id}/decision, GET /audit/{id}.",
+   "invariant": "Each call returns the expected status and exactly one rollback follows the one valid approval.",
+   "result": "PASS",
+   "finding": "PASS",
+   "checks": [
+    "T3-R8-C01",
+    "T3-R8-C02"
+   ],
+   "counts": {
+    "PASS": 2,
+    "FAIL": 0,
+    "EXPECTED_FAILURE": 0
+   }
+  }
+ ],
+ "checks": [
+  "T3-R1-C01",
+  "T3-R1-C02",
+  "T3-R1-C03",
+  "T3-R1-C04",
+  "T3-R1-C05",
+  "T3-R2-C01",
+  "T3-R2-C02",
+  "T3-R2-C03",
+  "T3-R2-C04",
+  "T3-R2-C05",
+  "T3-R3-C01",
+  "T3-R3-C02",
+  "T3-R3-C03",
+  "T3-R3-C04",
+  "T3-R3-C05",
+  "T3-R4-C01",
+  "T3-R4-C02",
+  "T3-R4-C03",
+  "T3-R4-C04",
+  "T3-R4-C05",
+  "T3-R5-C01",
+  "T3-R5-C02",
+  "T3-R5-C03",
+  "T3-R5-C04",
+  "T3-R5-C05",
+  "T3-R6-C01",
+  "T3-R6-C02",
+  "T3-R6-C03",
+  "T3-R6-C04",
+  "T3-R6-C05",
+  "T3-R7-C01",
+  "T3-R7-C02",
+  "T3-R7-C03",
+  "T3-R7-C04",
+  "T3-R8-C01",
+  "T3-R8-C02"
+ ],
+ "claims": [
+  {
+   "id": "T3-C01",
+   "statement": "Policy routes by risk: reads, analysis and recommendations run without a human, and a high-risk write waits for one.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R1"
+   ],
+   "checks": [
+    "T3-R1-C01",
+    "T3-R1-C02",
+    "T3-R1-C03",
+    "T3-R1-C04"
+   ],
+   "article": [
+    "Not every action needs a human"
+   ],
+   "facts": [
+    "tests.HITL-T04.side_effects",
+    "tests.HITL-T04.approval_requests"
+   ],
+   "statuses": {
+    "T3-R1-C01": "PASS",
+    "T3-R1-C02": "PASS",
+    "T3-R1-C03": "PASS",
+    "T3-R1-C04": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T02]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T03]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04]"
+   ]
+  },
+  {
+   "id": "T3-C02",
+   "statement": "Approval never expands authorization: a prohibited capability stays denied after an authorized human approves it.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R1"
+   ],
+   "checks": [
+    "T3-R1-C05"
+   ],
+   "article": [
+    "Approval is not authorization"
+   ],
+   "facts": [
+    "tests.HITL-T05.side_effects"
+   ],
+   "statuses": {
+    "T3-R1-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05]"
+   ]
+  },
+  {
+   "id": "T3-C03",
+   "statement": "An approval authorizes exactly one action: changing its arguments, target, environment or capability is refused, and a changed precondition or policy forces re-evaluation.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R2"
+   ],
+   "checks": [
+    "T3-R2-C01",
+    "T3-R2-C02",
+    "T3-R2-C03",
+    "T3-R2-C04",
+    "T3-R2-C05"
+   ],
+   "article": [
+    "Exact-action binding"
+   ],
+   "facts": [
+    "tests.HITL-T07.side_effects",
+    "tests.HITL-T10.side_effects",
+    "tests.HITL-T06.side_effects",
+    "tests.HITL-T08.side_effects",
+    "tests.HITL-T09.side_effects"
+   ],
+   "statuses": {
+    "T3-R2-C01": "PASS",
+    "T3-R2-C02": "PASS",
+    "T3-R2-C03": "PASS",
+    "T3-R2-C04": "PASS",
+    "T3-R2-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T06]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T07]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T08]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T09]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T10]"
+   ]
+  },
+  {
+   "id": "T3-C04",
+   "statement": "Rejected, expired and canceled approvals never execute, and illegal state transitions fail instead of happening.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R3"
+   ],
+   "checks": [
+    "T3-R3-C01",
+    "T3-R3-C02",
+    "T3-R3-C03",
+    "T3-R3-C04",
+    "T3-R3-C05"
+   ],
+   "article": [
+    "What can go wrong"
+   ],
+   "facts": [
+    "tests.HITL-T15.illegal_transitions_refused"
+   ],
+   "statuses": {
+    "T3-R3-C01": "PASS",
+    "T3-R3-C02": "PASS",
+    "T3-R3-C03": "PASS",
+    "T3-R3-C04": "PASS",
+    "T3-R3-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T11]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T12]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T13]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T14]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T15]"
+   ]
+  },
+  {
+   "id": "T3-C05",
+   "statement": "Only an authenticated, authorized and independent human can approve; the agent cannot approve its own proposal.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R4"
+   ],
+   "checks": [
+    "T3-R4-C01",
+    "T3-R4-C02",
+    "T3-R4-C03",
+    "T3-R4-C04"
+   ],
+   "article": [
+    "What can go wrong"
+   ],
+   "facts": [
+    "tests.HITL-T18.self_approvals_accepted"
+   ],
+   "statuses": {
+    "T3-R4-C01": "PASS",
+    "T3-R4-C02": "PASS",
+    "T3-R4-C03": "PASS",
+    "T3-R4-C04": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T16]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T17]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T19]"
+   ]
+  },
+  {
+   "id": "T3-C06",
+   "statement": "Every identity in the chain (invoker, agent, runtime, on-behalf-of, approver, executor) survives to the audit record.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R4"
+   ],
+   "checks": [
+    "T3-R4-C05"
+   ],
+   "article": [
+    "The production architecture"
+   ],
+   "facts": [
+    "tests.HITL-T20.distinct_identities"
+   ],
+   "statuses": {
+    "T3-R4-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T20]"
+   ]
+  },
+  {
+   "id": "T3-C07",
+   "statement": "Redelivered events, repeated clicks, replayed approvals, racing decisions and lost responses produce one business effect.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R5"
+   ],
+   "checks": [
+    "T3-R5-C01",
+    "T3-R5-C02",
+    "T3-R5-C03",
+    "T3-R5-C04",
+    "T3-R5-C05"
+   ],
+   "article": [
+    "What can go wrong"
+   ],
+   "facts": [
+    "tests.HITL-T21.deliveries",
+    "tests.HITL-T21.approval_requests",
+    "tests.HITL-T25.attempts",
+    "tests.HITL-T25.side_effects",
+    "tests.HITL-T22.decisions",
+    "tests.HITL-T22.side_effects",
+    "tests.HITL-T23.side_effects",
+    "tests.HITL-T24.decisions",
+    "tests.HITL-T24.side_effects"
+   ],
+   "statuses": {
+    "T3-R5-C01": "PASS",
+    "T3-R5-C02": "PASS",
+    "T3-R5-C03": "PASS",
+    "T3-R5-C04": "PASS",
+    "T3-R5-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T23]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25]"
+   ]
+  },
+  {
+   "id": "T3-C08",
+   "statement": "The boundary fails closed: prompt injection, an unavailable approval service, an unavailable policy engine and a failing tool never produce an unapproved effect.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R6"
+   ],
+   "checks": [
+    "T3-R6-C01",
+    "T3-R6-C02",
+    "T3-R6-C03",
+    "T3-R6-C04"
+   ],
+   "article": [
+    "What can go wrong"
+   ],
+   "facts": [
+    "tests.HITL-T26.side_effects",
+    "tests.HITL-T27.side_effects",
+    "tests.HITL-T28.side_effects",
+    "tests.HITL-T29.side_effects"
+   ],
+   "statuses": {
+    "T3-R6-C01": "PASS",
+    "T3-R6-C02": "PASS",
+    "T3-R6-C03": "PASS",
+    "T3-R6-C04": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T26]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T27]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T28]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T29]"
+   ]
+  },
+  {
+   "id": "T3-C09",
+   "statement": "A successful rollback can be reconstructed end to end from the hash-chained audit records alone.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R6"
+   ],
+   "checks": [
+    "T3-R6-C05"
+   ],
+   "article": [
+    "Proving the boundary"
+   ],
+   "facts": [
+    "tests.HITL-T30.links",
+    "tests.HITL-T30.audit_records"
+   ],
+   "statuses": {
+    "T3-R6-C05": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30]"
+   ]
+  },
+  {
+   "id": "T3-C10",
+   "statement": "The tests are not vacuous: with exact-action binding or approver authentication removed, an unapproved side effect gets through and the suite reports it.",
+   "type": "control",
+   "verdict": "control",
+   "experiments": [
+    "T3-R7"
+   ],
+   "checks": [
+    "T3-R7-C01",
+    "T3-R7-C02",
+    "T3-R7-C03"
+   ],
+   "article": [
+    "Proving the boundary"
+   ],
+   "facts": [
+    "control.bind_digest.HITL-T07.side_effects",
+    "control.bind_digest.HITL-T09.side_effects",
+    "control.authenticate_approver.HITL-T18.side_effects"
+   ],
+   "statuses": {
+    "T3-R7-C01": "EXPECTED_FAILURE",
+    "T3-R7-C02": "EXPECTED_FAILURE",
+    "T3-R7-C03": "EXPECTED_FAILURE"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T18.json",
+    "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T07.json",
+    "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T09.json"
+   ]
+  },
+  {
+   "id": "T3-C11",
+   "statement": "The suite proves control semantics, not model judgement: the enterprise systems, identity provider and clock are simulated and no model is called.",
+   "type": "limitation",
+   "verdict": "limitation",
+   "rests_on": "proof/manifest.toml reality map (SIMULATED and ARCHITECTURE)",
+   "article": [
+    "Proving the boundary"
+   ],
+   "statuses": {},
+   "evidence": []
+  },
+  {
+   "id": "T3-C12",
+   "statement": "Every canonical test passed on the published run, across all ten invariants, and each negative control lowered the pass count.",
+   "type": "measured",
+   "verdict": "supported",
+   "experiments": [
+    "T3-R1",
+    "T3-R2",
+    "T3-R3",
+    "T3-R4",
+    "T3-R5",
+    "T3-R6",
+    "T3-R7"
+   ],
+   "checks": [
+    "T3-R1-C01",
+    "T3-R1-C02",
+    "T3-R1-C03",
+    "T3-R1-C04",
+    "T3-R1-C05",
+    "T3-R2-C01",
+    "T3-R2-C02",
+    "T3-R2-C03",
+    "T3-R2-C04",
+    "T3-R2-C05",
+    "T3-R3-C01",
+    "T3-R3-C02",
+    "T3-R3-C03",
+    "T3-R3-C04",
+    "T3-R3-C05",
+    "T3-R4-C01",
+    "T3-R4-C02",
+    "T3-R4-C03",
+    "T3-R4-C04",
+    "T3-R4-C05",
+    "T3-R5-C01",
+    "T3-R5-C02",
+    "T3-R5-C03",
+    "T3-R5-C04",
+    "T3-R5-C05",
+    "T3-R6-C01",
+    "T3-R6-C02",
+    "T3-R6-C03",
+    "T3-R6-C04",
+    "T3-R6-C05",
+    "T3-R7-C04"
+   ],
+   "article": [
+    "Proving the boundary"
+   ],
+   "facts": [
+    "tests.passed",
+    "tests.total",
+    "tests.failed",
+    "tests.invariants",
+    "control.bind_digest.passed",
+    "control.authenticate_approver.passed",
+    "control.tests_run",
+    "control.tests_completed"
+   ],
+   "statuses": {
+    "T3-R1-C01": "PASS",
+    "T3-R1-C02": "PASS",
+    "T3-R1-C03": "PASS",
+    "T3-R1-C04": "PASS",
+    "T3-R1-C05": "PASS",
+    "T3-R2-C01": "PASS",
+    "T3-R2-C02": "PASS",
+    "T3-R2-C03": "PASS",
+    "T3-R2-C04": "PASS",
+    "T3-R2-C05": "PASS",
+    "T3-R3-C01": "PASS",
+    "T3-R3-C02": "PASS",
+    "T3-R3-C03": "PASS",
+    "T3-R3-C04": "PASS",
+    "T3-R3-C05": "PASS",
+    "T3-R4-C01": "PASS",
+    "T3-R4-C02": "PASS",
+    "T3-R4-C03": "PASS",
+    "T3-R4-C04": "PASS",
+    "T3-R4-C05": "PASS",
+    "T3-R5-C01": "PASS",
+    "T3-R5-C02": "PASS",
+    "T3-R5-C03": "PASS",
+    "T3-R5-C04": "PASS",
+    "T3-R5-C05": "PASS",
+    "T3-R6-C01": "PASS",
+    "T3-R6-C02": "PASS",
+    "T3-R6-C03": "PASS",
+    "T3-R6-C04": "PASS",
+    "T3-R6-C05": "PASS",
+    "T3-R7-C04": "PASS"
+   },
+   "evidence": [
+    "evidence/runs/2026-10-03-aligned/raw/controls/",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T02]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T03]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T06]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T07]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T08]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T09]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T10]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T11]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T12]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T13]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T14]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T15]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T16]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T17]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T19]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T20]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T23]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T26]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T27]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T28]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T29]",
+    "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30]"
+   ]
+  }
+ ],
+ "profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "text": "Ordered, fail-closed policy decision point (prod-change-policy v7)",
+      "check": "T3-R1-C05"
+     },
+     {
+      "text": "Approval state machine with compare-and-set transitions in SQLite",
+      "check": "T3-R3-C05"
+     },
+     {
+      "text": "Execution gate: digest binding, expiry, consumption, preconditions, policy version, approver role",
+      "check": "T3-R2-C02"
+     },
+     {
+      "text": "Approver authentication and separation of duties",
+      "check": "T3-R4-C04"
+     },
+     {
+      "text": "Idempotency keys on writes; at-least-once event dedupe",
+      "check": "T3-R5-C05"
+     },
+     {
+      "text": "Hash-chained audit and its reconstruction",
+      "check": "T3-R6-C05"
+     },
+     {
+      "text": "HTTP API and approval inbox (stdlib http.server), driven over real HTTP",
+      "check": "T3-R8-C01"
+     }
+    ]
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "Kubernetes deployments, logging, tracing and ITSM (hitl/enterprise.py) with an effects ledger"
+     },
+     {
+      "text": "The identity provider (config/principals.yaml): approvers authenticate with their own credential"
+     },
+     {
+      "text": "The clock: time moves only when a test moves it"
+     },
+     {
+      "text": "The reasoner: a deterministic evidence correlator in place of a model"
+     }
+    ]
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "text": "A log line that claims approval was granted and asks for immediate execution (prompt injection)"
+     },
+     {
+      "text": "Approval service down, policy engine down, rollout failure, lost response after commit"
+     },
+     {
+      "text": "An out-of-band deployment (v4.18.1) under a pending approval; a policy version bump"
+     },
+     {
+      "text": "A deterministic approve/reject race"
+     }
+    ]
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "A durable workflow engine for long approval pauses (Temporal, Step Functions)"
+     },
+     {
+      "text": "Out-of-band approver authentication (OIDC CIBA) and transaction-bound authorization (OAuth RAR)"
+     },
+     {
+      "text": "Multi-agent approval chains and AI control plane integration"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "name": "canonical suite",
+    "experiments": [
+     "T3-R1",
+     "T3-R2",
+     "T3-R3",
+     "T3-R4",
+     "T3-R5",
+     "T3-R6",
+     "T3-R8"
+    ]
+   },
+   {
+    "name": "negative controls",
+    "experiments": [
+     "T3-R7"
+    ]
+   }
+  ]
+ },
+ "tables": {},
+ "paths": {
+  "test_report": "evidence/runs/2026-10-03-aligned/test-report.json",
+  "raw": "evidence/runs/2026-10-03-aligned/raw/"
+ },
+ "facts": {
+  "api.calls": {
+   "value": 9,
+   "display": "9",
+   "source": "evidence/runs/2026-10-03-aligned/raw/api.json#calls"
+  },
+  "api.calls_ok": {
+   "value": 9,
+   "display": "9",
+   "source": "evidence/runs/2026-10-03-aligned/raw/api.json#calls_ok"
+  },
+  "api.rollbacks": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/api.json#rollbacks"
+  },
+  "control.authenticate_approver.HITL-T01.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T01.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T01.executions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T01.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T02.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T02.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T02"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T03.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T03.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T03"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T04.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T04.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T04.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T04.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T05.approval_accepted": {
+   "value": false,
+   "display": "false",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T05.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T05.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T05.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T06.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T06.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T06"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T07.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T07.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T07"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T08.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T08.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T08"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T09.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T09.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T09"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T10.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T10.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T10"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T12.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T12.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T12"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T13.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T13.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T13"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T14.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T14.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T14"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T15.illegal_transitions_refused": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T15.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T15"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T17.status": {
+   "value": 403,
+   "display": "403",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T17.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T17"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T18.self_approvals_accepted": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T18.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T18.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T18.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T20.distinct_identities": {
+   "value": 6,
+   "display": "6",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T20.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T20"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T21.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T21.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T21.deliveries": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T21.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T22.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T22.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T22.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T22.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T23.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T23.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T23"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T24.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T24.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T24.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T24.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T25.attempts": {
+   "value": 2,
+   "display": "2",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T25.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T25.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T25.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T26.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T26.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T26"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T27.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T27.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T27"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T28.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T28.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T28"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T29.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T29.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T29"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T30.audit_records": {
+   "value": 37,
+   "display": "37",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T30.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.HITL-T30.links": {
+   "value": 13,
+   "display": "13",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/HITL-T30.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed with the safeguard 'authenticate_approver' removed"
+  },
+  "control.authenticate_approver.passed": {
+   "value": 28,
+   "display": "28",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/authenticate_approver/"
+  },
+  "control.bind_digest.HITL-T01.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T01.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T01.executions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T01.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T02.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T02.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T02"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T03.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T03.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T03"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T04.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T04.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T04.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T04.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T05.approval_accepted": {
+   "value": false,
+   "display": "false",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T05.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T05.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T05.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T06.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T06.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T06"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T07.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T07.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T07"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T08.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T08.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T08"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T09.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T09.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T09"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T10.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T10.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T10"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T12.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T12.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T12"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T13.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T13.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T13"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T14.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T14.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T14"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T15.illegal_transitions_refused": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T15.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T15"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T17.status": {
+   "value": 403,
+   "display": "403",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T17.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T17"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T18.self_approvals_accepted": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T18.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T18.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T18.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T20.distinct_identities": {
+   "value": 6,
+   "display": "6",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T20.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T20"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T21.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T21.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T21.deliveries": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T21.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T22.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T22.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T22.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T22.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T23.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T23.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T23"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T24.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T24.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T24.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T24.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T25.attempts": {
+   "value": 2,
+   "display": "2",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T25.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T25.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T25.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T26.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T26.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T26"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T27.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T27.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T27"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T28.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T28.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T28"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T29.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T29.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T29"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T30.audit_records": {
+   "value": 36,
+   "display": "36",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T30.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.HITL-T30.links": {
+   "value": 13,
+   "display": "13",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/HITL-T30.json",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed with the safeguard 'bind_digest' removed"
+  },
+  "control.bind_digest.passed": {
+   "value": 26,
+   "display": "26",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/bind_digest/"
+  },
+  "control.tests_completed": {
+   "value": 60,
+   "display": "60",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/",
+   "derivation": "tests that completed without an exception"
+  },
+  "control.tests_run": {
+   "value": 60,
+   "display": "60",
+   "source": "evidence/runs/2026-10-03-aligned/raw/controls/",
+   "derivation": "tests run under the two negative controls"
+  },
+  "run.id": {
+   "value": "2026-10-03-aligned",
+   "display": "2026-10-03-aligned"
+  },
+  "tests.HITL-T01.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01].measured.approval_requests",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T01.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T01.executions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01].measured.executions",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T01.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T01]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T01"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T02.approval_requests": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T02].measured.approval_requests",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T02"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T02.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T02]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T02"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T02.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T02]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T02"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T03.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T03]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T03"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T03.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T03]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T03"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T03.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T03].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T03"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T04.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04].measured.approval_requests",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T04.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T04.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T04.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T04].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T04"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T05.approval_accepted": {
+   "value": false,
+   "display": "false",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05].measured.approval_accepted",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T05.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T05.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T05.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T05].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T05"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T06.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T06]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T06"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T06.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T06]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T06"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T06.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T06].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T06"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T07.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T07]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T07"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T07.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T07]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T07"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T07.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T07].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T07"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T08.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T08]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T08"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T08.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T08]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T08"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T08.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T08].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T08"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T09.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T09]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T09"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T09.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T09]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T09"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T09.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T09].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T09"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T10.assertions": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T10]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T10"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T10.held": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T10]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T10"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T10.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T10].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T10"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T11.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T11]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T11"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T11.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T11]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T11"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T12.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T12]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T12"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T12.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T12]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T12"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T12.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T12].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T12"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T13.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T13]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T13"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T13.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T13]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T13"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T13.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T13].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T13"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T14.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T14]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T14"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T14.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T14]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T14"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T14.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T14].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T14"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T15.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T15]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T15"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T15.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T15]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T15"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T15.illegal_transitions_refused": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T15].measured.illegal_transitions_refused",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T15"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T16.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T16]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T16"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T16.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T16]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T16"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T17.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T17]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T17"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T17.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T17]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T17"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T17.status": {
+   "value": 403,
+   "display": "403",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T17].measured.status",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T17"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T18.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T18.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T18.self_approvals_accepted": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18].measured.self_approvals_accepted",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T18.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T18].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T18"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T19.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T19]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T19"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T19.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T19]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T19"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T20.assertions": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T20]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T20"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T20.distinct_identities": {
+   "value": 6,
+   "display": "6",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T20].measured.distinct_identities",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T20"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T20.held": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T20]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T20"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T21.approval_requests": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21].measured.approval_requests",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T21.assertions": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T21.deliveries": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21].measured.deliveries",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T21.held": {
+   "value": 3,
+   "display": "3",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T21]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T21"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T22.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T22.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22].measured.decisions",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T22.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T22.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T22].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T22"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T23.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T23]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T23"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T23.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T23]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T23"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T23.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T23].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T23"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T24.assertions": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T24.decisions": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24].measured.decisions",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T24.held": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T24.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T24].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T24"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T25.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T25.attempts": {
+   "value": 2,
+   "display": "2",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25].measured.attempts",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T25.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T25.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T25].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T25"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T26.assertions": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T26]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T26"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T26.held": {
+   "value": 7,
+   "display": "7",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T26]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T26"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T26.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T26].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T26"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T27.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T27]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T27"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T27.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T27]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T27"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T27.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T27].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T27"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T28.assertions": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T28]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T28"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T28.held": {
+   "value": 5,
+   "display": "5",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T28]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T28"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T28.side_effects": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T28].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T28"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T29.assertions": {
+   "value": 8,
+   "display": "8",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T29]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T29"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T29.held": {
+   "value": 8,
+   "display": "8",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T29]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T29"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T29.side_effects": {
+   "value": 1,
+   "display": "1",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T29].measured.side_effects",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T29"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T30.assertions": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "number of assertions the test makes"
+  },
+  "tests.HITL-T30.audit_records": {
+   "value": 37,
+   "display": "37",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30].measured.audit_records",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.HITL-T30.held": {
+   "value": 4,
+   "display": "4",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30]",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "assertions whose observed value equals the expected value"
+  },
+  "tests.HITL-T30.links": {
+   "value": 13,
+   "display": "13",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#tests[id=HITL-T30].measured.links",
+   "rows": {
+    "run": "2026-10-03-aligned",
+    "ids": [
+     "HITL-T30"
+    ]
+   },
+   "derivation": "observed in the systems of record during the test"
+  },
+  "tests.failed": {
+   "value": 0,
+   "display": "0",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#failed"
+  },
+  "tests.invariants": {
+   "value": 10,
+   "display": "10",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#invariants"
+  },
+  "tests.passed": {
+   "value": 30,
+   "display": "30",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#passed"
+  },
+  "tests.total": {
+   "value": 30,
+   "display": "30",
+   "source": "evidence/runs/2026-10-03-aligned/test-report.json#total"
+  }
+ }
+}

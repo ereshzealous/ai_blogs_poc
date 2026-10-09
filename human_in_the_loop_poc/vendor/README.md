@@ -1,0 +1,1 @@
+evidence_kit: pinned copy of ../evidence-kit/evidence_kit (version 5.2.0), copied 2026-10-03 per the series rule "copy, don't link". Provides the Proof Contract v1 (proof.py, proof_contract/), the publication local-path check (publication.py) and the Medium reading template.

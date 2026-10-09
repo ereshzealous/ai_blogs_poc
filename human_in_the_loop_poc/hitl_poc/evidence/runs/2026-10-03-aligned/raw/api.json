@@ -1,0 +1,103 @@
+{
+ "audit_records": 39,
+ "calls": 9,
+ "calls_ok": 9,
+ "card_fields": [
+  "acting_for",
+  "action_digest",
+  "deployment_author",
+  "evidence",
+  "expires",
+  "from",
+  "impact",
+  "invoked_by",
+  "policy",
+  "precondition",
+  "proposal_id",
+  "recovery",
+  "requested_by",
+  "risk",
+  "state",
+  "to",
+  "what",
+  "where",
+  "why",
+  "you_are_authorizing"
+ ],
+ "execution_code": "EXECUTED",
+ "log": [
+  {
+   "expected": 202,
+   "method": "POST",
+   "ok": true,
+   "path": "events",
+   "status": 202,
+   "step": "event"
+  },
+  {
+   "expected": 401,
+   "method": "GET",
+   "ok": true,
+   "path": "approvals",
+   "status": 401,
+   "step": "inbox without a credential"
+  },
+  {
+   "expected": 200,
+   "method": "GET",
+   "ok": true,
+   "path": "approvals",
+   "status": 200,
+   "step": "inbox"
+  },
+  {
+   "expected": 200,
+   "method": "GET",
+   "ok": true,
+   "path": "approvals",
+   "status": 200,
+   "step": "one approval"
+  },
+  {
+   "expected": 403,
+   "method": "POST",
+   "ok": true,
+   "path": "approvals",
+   "status": 403,
+   "step": "readonly engineer decides"
+  },
+  {
+   "expected": 403,
+   "method": "POST",
+   "ok": true,
+   "path": "approvals",
+   "status": 403,
+   "step": "agent claims to be alice"
+  },
+  {
+   "expected": 200,
+   "method": "POST",
+   "ok": true,
+   "path": "approvals",
+   "status": 200,
+   "step": "alice approves the exact digest"
+  },
+  {
+   "expected": 200,
+   "method": "GET",
+   "ok": true,
+   "path": "executions",
+   "status": 200,
+   "step": "execution view"
+  },
+  {
+   "expected": 200,
+   "method": "GET",
+   "ok": true,
+   "path": "audit",
+   "status": 200,
+   "step": "audit"
+  }
+ ],
+ "rollbacks": 1
+}

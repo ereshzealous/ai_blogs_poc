@@ -1,0 +1,598 @@
+# T3 · Human-in-the-Loop · PREREGISTRATION of the protocol experiments (H1–H9).
+#
+# Written and frozen (`uv run hitl freeze`) BEFORE the first run of hitl/scenarios.py.  It fixes the arms, what is held
+# constant, the scenarios with their oracles (which resume may legitimately execute, which decision is ineligible), the
+# metrics, the fixed global assertions and every hypothesis.  The oracle per scenario: max_legit_writes (how many writes
+# may legitimately happen), legit_resumes (the labels of the resume steps that may legitimately write; "*" = all; none
+# listed = no resume is legitimate) and ineligible (the labels of decision steps made by an ineligible approver).  scripts/gen_experiments.py turns it into the pae-proof/v1
+# checks (proof/experiments.toml).  A change after the freeze is a deviation and is recorded in proof/DEVIATIONS.md.
+
+schema = "hitl-prereg/v1"
+question = "How do we pause an autonomous action, obtain an accountable decision from an authorized human, bind it to exactly what was reviewed, and resume without stale authority or stale world state?"
+
+[design]
+arms = ["A", "B", "C"]
+variable = "the approval protocol and resume behaviour"
+held_constant = [
+  "the incident: payment-service, production, 14% errors after v4.18.0 (the F3 incident)",
+  "the proposed action: rollbackDeployment payment-service production v4.18.0 → v4.17.2",
+  "the simulated Kubernetes (rolls back to the requested version whatever is running, like kubectl rollout undo)",
+  "the identity context: invoker, agent@2.1.0, runtime, delegation dlg-incident-remediation",
+  "the authorization policy fixture: prod-change-policy v7 (v8 where a scenario changes it), enforced on every call",
+  "the human decisions: who clicks, what, and when",
+  "the approval delay: the same minutes in every arm",
+  "the workflow inputs, the scenarios and the evidence questions",
+]
+clock_start = "2026-09-29T14:09:00Z (the event reaches the HITL runtime; the request is created eight simulated seconds later)"
+request_ttl_min = 60
+pause_min = 37
+randomness = "none: fake clock, fixed identities, deterministic agent plan, simulated systems"
+
+[arms.A]
+title = "Naive boolean"
+summary = "approval_request_id + approved = true; the chat click is the decision; no digest, expiry or single use; resume runs the agent's pending action if the boolean is true"
+role = "control: the anti-pattern; its failures show the scenarios can detect a bypass"
+[arms.B]
+title = "Action-bound"
+summary = "approval artifact bound to request, action, resource, parameters and digest; authenticated, eligible approver; expiry; single use marked after the call; no revalidation on resume"
+role = "the common first fix; tested for what it does NOT cover"
+[arms.C]
+title = "Revalidated protocol"
+summary = "B's decision path, plus on resume: atomic consume, identity, delegation, policy, resource state, approval validity and digest re-checked; idempotency key; credential minted after revalidation"
+role = "the production pattern under test"
+
+# Metrics.  A 'write' is a call that reached a Kubernetes write API (rollback, restart, namespace delete) during a step of
+# the scenario; out-of-band human changes are not writes.  Each resume step is labelled legit or not by the oracle below;
+# a scenario allows at most max_legit_writes.  excess = writes at non-legit steps + max(0, writes at legit steps − max).
+[[metrics]]
+id = "unauthorized_executions"
+definition = "excess writes, all classes"
+[[metrics]]
+id = "mutated_action_bypasses"
+definition = "excess writes in scenarios of class mutation (H1, H2)"
+[[metrics]]
+id = "successful_approval_replays"
+definition = "excess writes in scenarios of class replay (H3)"
+[[metrics]]
+id = "duplicate_external_side_effects"
+definition = "excess writes in scenarios of class duplicate (H7)"
+[[metrics]]
+id = "expired_approval_executions"
+definition = "excess writes in scenarios of class expiry (H8)"
+[[metrics]]
+id = "executions_after_deny_or_timeout"
+definition = "excess writes in scenarios of class deny (H8): silence or a deny that became an execution"
+[[metrics]]
+id = "ineligible_approver_acceptances"
+definition = "decisions accepted (recorded as approvals) at steps the oracle marks ineligible (H4)"
+[[metrics]]
+id = "silent_stale_context_resumes"
+definition = "excess writes in scenarios of class stale (H5, H6): a resume that executed after the context it was approved in changed"
+[[metrics]]
+id = "audit_reconstruction_gaps"
+definition = "executed writes whose records cannot answer all 16 reconstruction questions (H9 method, applied to every executed write)"
+
+# Fixed global assertions: pass criteria for the hardened arm C, written before the run.  The same counts are reported for
+# A and B as observations.
+[[global]]
+metric = "unauthorized_executions"
+[[global]]
+metric = "mutated_action_bypasses"
+[[global]]
+metric = "successful_approval_replays"
+[[global]]
+metric = "duplicate_external_side_effects"
+[[global]]
+metric = "expired_approval_executions"
+[[global]]
+metric = "ineligible_approver_acceptances"
+[[global]]
+metric = "silent_stale_context_resumes"
+[[global]]
+metric = "audit_reconstruction_gaps"
+
+# ---- experiments ------------------------------------------------------------------------------------------------------
+# hypotheses: arm · metric (summed over the experiment's scenarios) · op · value · kind.  kind = invariant (a guarantee:
+# FAIL means broken), hypothesis (a prediction: FAIL is reported as NOT SUPPORTED), control (expect = fail: the invariant
+# is predicted to break under that arm; it shows the harness notices).
+
+[[experiments]]
+id = "H1"
+title = "Exact action binding"
+question = "Does an approval authorize only the exact action the human reviewed?"
+invariant = "An approval for action A never executes action B."
+setup = "Alice approves the rollback at +5 min. On resume the agent presents a different action: restartDeployment, or deleteProductionNamespace."
+[[experiments.scenarios]]
+id = "H1a"
+title = "approved rollback, agent runs restartDeployment"
+class = "mutation"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H1b"
+title = "approved rollback, agent runs deleteProductionNamespace"
+class = "mutation"
+max_legit_writes = 0
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No action other than the approved one executes."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Digest binding alone stops a different action."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A boolean approval lets a different action through (predicted to break)."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "writes@H1b"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Even under A, a policy DENY (namespace delete) is not turned into ALLOW by an approval: policy is enforced on every call."
+
+[[experiments]]
+id = "H2"
+title = "Mutation after approval"
+question = "What happens if the action changes after approval?"
+invariant = "Material mutation → digest mismatch → old approval invalid → reapproval required."
+setup = "Alice approves v4.18.0 → v4.17.2 at +5 min. Before execution the agent changes the target version (v4.16.0), the service (orders-service) or the environment (staging)."
+[[experiments.scenarios]]
+id = "H2a"
+title = "target version changed to v4.16.0"
+class = "mutation"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H2b"
+title = "service changed to orders-service"
+class = "mutation"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H2c"
+title = "environment changed to staging"
+class = "mutation"
+max_legit_writes = 0
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No mutated action executes."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "reapproval_requests"
+op = "=="
+value = 3
+kind = "invariant"
+text = "Every mutation becomes a new request with a new digest, waiting for its own decision."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Digest binding alone stops every mutation."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "reapproval_requests"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "B refuses a mutated action but does not route it to reapproval."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A executes the mutated actions (predicted to break)."
+
+[[experiments]]
+id = "H3"
+title = "Approval replay"
+question = "Can an old approval be replayed?"
+invariant = "Single use: a second consumption is rejected."
+setup = "Alice approves at +5 min and the rollback executes once (legitimate). The same approval is then presented again: in the same workflow, by a second workflow instance of the same incident, and for a new incident after v4.18.0 is redeployed."
+[[experiments.scenarios]]
+id = "H3a"
+legit_resumes = ["first execution"]
+title = "second execution in the same workflow"
+class = "replay"
+max_legit_writes = 1
+[[experiments.scenarios]]
+id = "H3b"
+legit_resumes = ["first execution"]
+title = "a second workflow instance of the same incident presents the approval"
+class = "replay"
+max_legit_writes = 1
+[[experiments.scenarios]]
+id = "H3c"
+legit_resumes = ["first execution"]
+title = "a new incident (v4.18.0 redeployed) presents the old approval for the identical action"
+class = "replay"
+max_legit_writes = 1
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No replay executes."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "legit_executions"
+op = "=="
+value = 3
+kind = "invariant"
+text = "The legitimate first execution still happens in each scenario (the protocol does not just block everything)."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Request binding and single use stop sequential replays."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A replays (predicted to break)."
+
+[[experiments]]
+id = "H4"
+title = "Approver eligibility and separation of duties"
+question = "Can the wrong human approve?"
+invariant = "A decision from an ineligible approver is rejected; a two-person rule needs two distinct eligible approvers."
+setup = "Clicks at +11 min from: a guest in the incident channel with no enterprise identity; reggie (readonly role); the agent itself through the API, claiming to be alice; dana, who authored v4.18.0. Then policy v8 (two-person rule): alice approves, alice approves again, omar approves."
+[[experiments.scenarios]]
+id = "H4a"
+title = "channel guest with no enterprise identity"
+class = "eligibility"
+max_legit_writes = 0
+ineligible = ["guest approves"]
+[[experiments.scenarios]]
+id = "H4b"
+title = "wrong role (readonly engineer)"
+class = "eligibility"
+max_legit_writes = 0
+ineligible = ["reggie approves"]
+[[experiments.scenarios]]
+id = "H4c"
+title = "the requesting agent approves its own request, claiming to be alice"
+class = "eligibility"
+max_legit_writes = 0
+ineligible = ["agent approves as alice"]
+[[experiments.scenarios]]
+id = "H4d"
+title = "the author of v4.18.0 approves its rollback (separation of duties)"
+class = "eligibility"
+max_legit_writes = 0
+ineligible = ["dana approves"]
+[[experiments.scenarios]]
+id = "H4e"
+title = "two-person rule (policy v8): one approver, the same approver twice, then a second approver"
+class = "eligibility"
+max_legit_writes = 1
+ineligible = []
+legit_resumes = ["after omar"]
+[[experiments.hypotheses]]
+arm = "C"
+metric = "ineligible_approver_acceptances"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No ineligible decision is accepted."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "Nothing executes on an ineligible or incomplete approval."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "legit_executions"
+op = "=="
+value = 1
+kind = "invariant"
+text = "The two-person approval executes once the second distinct approver approves."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "ineligible_approver_acceptances"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "B's decision-time eligibility checks reject every ineligible approver."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "ineligible_approver_acceptances"
+op = "=="
+value = 0
+kind = "control"
+text = "A accepts whoever clicks (predicted to break)."
+
+[[experiments]]
+id = "H5"
+title = "Stale world state after a 37-minute pause"
+question = "Does the system blindly resume after the world changed?"
+invariant = "World-state change → the approved action no longer matches the reviewed context → no silent execution."
+setup = "Request at 14:09. During the wait: dana ships hotfix v4.18.1 (+10 min); or alice rolls back by hand (+16 min); or (the opening story) v4.18.1 ships, severity rises, the runtime is lost and the agent's delegation is revoked. The approval arrives at +37 min, inside its 60-minute expiry."
+[[experiments.scenarios]]
+id = "H5a"
+title = "hotfix v4.18.1 deployed during the wait"
+class = "stale"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H5b"
+title = "a human already rolled back by hand during the wait"
+class = "stale"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H5c"
+title = "the opening story: every change at once (14:09 → 14:46)"
+class = "stale"
+max_legit_writes = 0
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No stale resume executes."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = ">="
+value = 1
+kind = "hypothesis"
+text = "An action-bound, unexpired approval still resumes against a changed world: binding is not revalidation."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A resumes blindly (predicted to break)."
+
+[[experiments]]
+id = "H6"
+title = "Identity or policy change during the pause"
+question = "Is the approval still executable after identity or policy changed?"
+invariant = "An approval does not freeze identity or policy: resume re-evaluates them."
+setup = "During the 37-minute wait: the agent's delegation is revoked; or the agent is disabled; or policy v7 → v8 (two approvers); or alice approves at +3 min, loses the production-approver role at +21 min, and the workflow resumes at +37 min on a second runtime."
+[[experiments.scenarios]]
+id = "H6a"
+title = "delegation revoked"
+class = "stale"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H6b"
+title = "agent identity disabled"
+class = "stale"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H6c"
+title = "policy v7 → v8 (two approvers required)"
+class = "stale"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H6d"
+title = "approver loses eligibility before the resume"
+class = "stale"
+max_legit_writes = 0
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "Nothing executes on authority or policy that no longer holds."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = ">="
+value = 1
+kind = "hypothesis"
+text = "B resumes on stale identity, delegation, policy or approver eligibility."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A resumes on stale authority (predicted to break)."
+
+[[experiments]]
+id = "H7"
+title = "Duplicate callback and concurrent resume"
+question = "Can one approval produce two side effects?"
+invariant = "One authorized action → at most one external side effect."
+setup = "Alice approves at +5 min. The approve click arrives twice; the same webhook is delivered twice; the worker crashes after the write commits and the workflow retries; two resume workers race (the second runs between the first's read and its write). The channel handler resumes the workflow after every accepted callback."
+[[experiments.scenarios]]
+id = "H7a"
+legit_resumes = ["*"]
+title = "double click"
+class = "duplicate"
+max_legit_writes = 1
+[[experiments.scenarios]]
+id = "H7b"
+legit_resumes = ["*"]
+title = "duplicate webhook delivery"
+class = "duplicate"
+max_legit_writes = 1
+[[experiments.scenarios]]
+id = "H7c"
+legit_resumes = ["*"]
+title = "workflow retry after a crash between the write and its record"
+class = "duplicate"
+max_legit_writes = 1
+[[experiments.scenarios]]
+id = "H7d"
+legit_resumes = ["*"]
+title = "two concurrent resume workers"
+class = "duplicate"
+max_legit_writes = 1
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No duplicate side effect."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "legit_executions"
+op = "=="
+value = 4
+kind = "invariant"
+text = "The approved rollback still happens exactly once in each scenario."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions@H7a+H7b"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Decision dedupe and the used mark stop sequential duplicates."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions@H7c+H7d"
+op = ">="
+value = 1
+kind = "hypothesis"
+text = "Read-check-call-mark single use does not survive a crash after the write or a race between two workers."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A duplicates (predicted to break)."
+
+[[experiments]]
+id = "H8"
+title = "Deny, timeout, expiry and escalation"
+question = "Does silence, a deny or an expired approval ever execute?"
+invariant = "DENY → no execution; TIMEOUT → no implicit approval; EXPIRED → cannot execute; escalation is a recorded transition."
+setup = "Alice denies at +5 min; or nobody answers for 61 min; or alice approves late, at +75 min; or alice approves at +11 min and the resume comes at +71 min; or nobody answers for 15 min, the request escalates to omar, who approves at +20 min."
+[[experiments.scenarios]]
+id = "H8a"
+title = "explicit deny"
+class = "deny"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H8b"
+title = "no response (timeout)"
+class = "deny"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H8c"
+title = "late approval after expiry"
+class = "expiry"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H8d"
+title = "approved in time, resumed after expiry"
+class = "expiry"
+max_legit_writes = 0
+[[experiments.scenarios]]
+id = "H8e"
+title = "escalation to the secondary on-call"
+class = "deny"
+max_legit_writes = 1
+legit_resumes = ["after omar"]
+[[experiments.hypotheses]]
+arm = "C"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "invariant"
+text = "Deny, silence and expiry never execute."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "escalations_recorded"
+op = "=="
+value = 1
+kind = "invariant"
+text = "The escalation is a recorded state transition."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "legit_executions"
+op = "=="
+value = 1
+kind = "invariant"
+text = "The escalated approval executes once."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "unauthorized_executions"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Expiry and decision state stop deny, silence and expiry in B too."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "executions_after_deny_or_timeout"
+op = "=="
+value = 0
+kind = "hypothesis"
+text = "Even A never turns silence or a deny into an execution."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "expired_approval_executions"
+op = "=="
+value = 0
+kind = "control"
+text = "A has no expiry: a late approval executes (predicted to break)."
+
+[[experiments]]
+id = "H9"
+title = "Audit reconstruction"
+question = "Can the records alone reconstruct who, what, on whose authority, approved by whom, revalidated how, with what effect?"
+invariant = "Every executed privileged action can be reconstructed completely: 16 of 16 questions."
+setup = "The normal path: alice approves at +5 min, the rollback executes. An automated reconstructor answers 16 questions from each design's own records plus the shared platform audit, and compares each answer with the true value; the same method is applied to every executed write in H1–H8."
+[[experiments.scenarios]]
+id = "H9a"
+legit_resumes = ["resume"]
+title = "the approved rollback, reconstructed"
+class = "audit"
+max_legit_writes = 1
+[[experiments.hypotheses]]
+arm = "C"
+metric = "questions_answered@H9a"
+op = "=="
+value = 16
+kind = "invariant"
+text = "All 16 questions are answered from C's records."
+[[experiments.hypotheses]]
+arm = "C"
+metric = "audit_reconstruction_gaps@all"
+op = "=="
+value = 0
+kind = "invariant"
+text = "No executed write in any scenario has a reconstruction gap under C."
+[[experiments.hypotheses]]
+arm = "B"
+metric = "questions_answered@H9a"
+op = "<"
+value = 16
+kind = "hypothesis"
+text = "An approval artifact without a revalidation record cannot say whether the context changed or what was re-checked."
+[[experiments.hypotheses]]
+arm = "A"
+metric = "questions_answered@H9a"
+op = "=="
+value = 16
+kind = "control"
+text = "A boolean and a chat handle cannot reconstruct the decision (predicted to break)."

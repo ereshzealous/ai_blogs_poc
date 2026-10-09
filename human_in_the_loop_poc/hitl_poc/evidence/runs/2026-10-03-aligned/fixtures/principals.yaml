@@ -1,0 +1,20 @@
+# Simulated identity provider.  Approvers authenticate with their own credential; the runtime and the agent hold none of
+# them.  Static tokens only because this is a deterministic simulation.
+principals:
+  alice:                          {kind: human,    roles: [production-approver, sre]}
+  dana:                           {kind: human,    roles: [production-approver, release-engineer]}   # authored deployment v4.18.0
+  omar:                           {kind: human,    roles: [production-approver, sre]}
+  reggie:                         {kind: human,    roles: [readonly-engineer]}
+  svc.monitoring-webhook:         {kind: workload, roles: []}
+  agent.incident-investigator:    {kind: agent,    roles: [], version: "2.1.0"}
+  svc.hitl-runtime:               {kind: workload, roles: []}
+  svc.capability-gateway:         {kind: workload, roles: []}
+  production-incident-platform:   {kind: service,  roles: []}
+credentials:
+  tok-alice:     alice
+  tok-dana:      dana
+  tok-omar:      omar
+  tok-reggie:    reggie
+  tok-monitor:   svc.monitoring-webhook
+  tok-runtime:   svc.hitl-runtime
+  tok-agent:     agent.incident-investigator

@@ -1,0 +1,230 @@
+{
+ "approval_wait_minutes": 37.0,
+ "incident": "INC-5120 \u00b7 payment-service",
+ "not_revalidated": [
+  {
+   "at_approval": "SEV1",
+   "at_request": "SEV2",
+   "note": "shown on the approval card; no revalidation check covers it",
+   "what": "incident severity"
+  }
+ ],
+ "outcome": {
+  "A": {
+   "code": "EXECUTED",
+   "effects": [
+    {
+     "by": "svc.capability-gateway:standing-kubernetes-credential",
+     "changed": true,
+     "environment": "production",
+     "from": "v4.18.1",
+     "kind": "rollback",
+     "service": "payment-service",
+     "to": "v4.17.2"
+    }
+   ],
+   "writes": 1
+  },
+  "B": {
+   "code": "EXECUTED",
+   "effects": [
+    {
+     "by": "svc.capability-gateway:standing-kubernetes-credential",
+     "changed": true,
+     "environment": "production",
+     "from": "v4.18.1",
+     "kind": "rollback",
+     "service": "payment-service",
+     "to": "v4.17.2"
+    }
+   ],
+   "writes": 1
+  },
+  "C": {
+   "code": "DELEGATION_REVOKED",
+   "effects": [],
+   "writes": 0
+  }
+ },
+ "request": {
+  "action_digest": "accdf24716d4494f8be14cf4b3a9e275c52c0961258729ad9cac8ca8e13c4c4d",
+  "created": "2026-09-29T14:09:08Z",
+  "expires_at": "2026-09-29T15:09:08Z",
+  "policy_decision_id": "pd-3312f6b2cc",
+  "proposal_id": "prop-364b4c3499",
+  "shown": {
+   "action_digest": "sha256:accdf24716d4494f8be14cf4b3a9e275c52c0961258729ad9cac8ca8e13c4c4d",
+   "approvals_needed": 1,
+   "authority": "dlg-incident-remediation",
+   "buttons": [
+    "Approve exact action",
+    "Deny"
+   ],
+   "current": "v4.18.0",
+   "environment": "production",
+   "expires": "2026-09-29T15:09:08Z",
+   "impact": "Production deployment change: replaces the running pods of the target service",
+   "incident": "INC-5120 \u00b7 payment-service",
+   "policy": "prod-change-policy v7 \u00b7 P3-high-risk-write",
+   "proposed_action": "rollbackDeployment",
+   "recovery": "Roll forward to the from_version with the same capability (also approval-gated)",
+   "requested_by": "agent.incident-investigator via svc.hitl-runtime",
+   "severity": "SEV2",
+   "target": "v4.17.2",
+   "why": "Error rate rose to 14% after v4.18.0; 3 matching error signals."
+  }
+ },
+ "revalidation": [
+  {
+   "check": "agent enabled",
+   "observed": "agent.incident-investigator",
+   "ok": true
+  },
+  {
+   "check": "runtime registered for the agent",
+   "observed": "svc.hitl-runtime-b",
+   "ok": true
+  },
+  {
+   "check": "delegation active",
+   "observed": "dlg-incident-remediation",
+   "ok": false
+  },
+  {
+   "check": "not expired",
+   "observed": "expires 2026-09-29T15:09:08Z",
+   "ok": true
+  },
+  {
+   "check": "action digest matches the approval",
+   "observed": "accdf24716d4 vs approved accdf24716d4",
+   "ok": true
+  },
+  {
+   "check": "policy version unchanged",
+   "observed": "approved under v7, now v7",
+   "ok": true
+  },
+  {
+   "check": "policy still requires this approval",
+   "observed": "REQUIRE_APPROVAL, 1 approver(s) needed, 1 approved",
+   "ok": true
+  },
+  {
+   "check": "resource state unchanged",
+   "observed": "running v4.18.1, approved against v4.18.0",
+   "ok": false
+  },
+  {
+   "check": "approver still eligible",
+   "observed": "alice: eligible",
+   "ok": true
+  }
+ ],
+ "scenario": "H5c",
+ "schema": "hitl-story/v1",
+ "source": "evidence/runs/2026-10-03-protocol/raw/scenarios/H5c/",
+ "timeline": [
+  {
+   "detail": "payment-service \u00b7 error rate 14%",
+   "time": "2026-09-29T14:09:00Z",
+   "what": "Datadog event received"
+  },
+  {
+   "detail": "prod-change-policy v7 \u00b7 P3-high-risk-write",
+   "time": "2026-09-29T14:09:08Z",
+   "what": "Policy \u2192 REQUIRE_APPROVAL"
+  },
+  {
+   "detail": "action_digest sha256:accdf24716d4\u2026",
+   "time": "2026-09-29T14:09:08Z",
+   "what": "Approval request created"
+  },
+  {
+   "detail": "dana",
+   "time": "2026-09-29T14:19:08Z",
+   "what": "dana deploys hotfix v4.18.1"
+  },
+  {
+   "detail": "incident-commander",
+   "time": "2026-09-29T14:24:08Z",
+   "what": "severity raised SEV2 \u2192 SEV1"
+  },
+  {
+   "detail": "workflow-engine",
+   "time": "2026-09-29T14:31:08Z",
+   "what": "runtime svc.hitl-runtime lost; the workflow will resume on svc.hitl-runtime-b"
+  },
+  {
+   "detail": "security-operations",
+   "time": "2026-09-29T14:38:08Z",
+   "what": "delegation dlg-incident-remediation revoked"
+  },
+  {
+   "detail": "alice \u00b7 slack",
+   "time": "2026-09-29T14:46:08Z",
+   "what": "Human approves"
+  },
+  {
+   "detail": "on svc.hitl-runtime-b",
+   "time": "2026-09-29T14:46:08Z",
+   "what": "Resume \u2192 revalidate"
+  },
+  {
+   "detail": "revalidation failed: delegation active; resource state unchanged",
+   "time": "2026-09-29T14:46:08Z",
+   "what": "REJECTED (DELEGATION_REVOKED)"
+  }
+ ],
+ "title": "the opening story: every change at once (14:09 \u2192 14:46)",
+ "transitions": [
+  {
+   "by": "svc.hitl-runtime",
+   "dst": "PROPOSED",
+   "note": "",
+   "proposal_id": "prop-364b4c3499",
+   "src": null,
+   "t": 1790690948.0
+  },
+  {
+   "by": "svc.hitl-runtime",
+   "dst": "POLICY_EVALUATED",
+   "note": "",
+   "proposal_id": "prop-364b4c3499",
+   "src": "PROPOSED",
+   "t": 1790690948.0
+  },
+  {
+   "by": "svc.hitl-runtime",
+   "dst": "PENDING_APPROVAL",
+   "note": "",
+   "proposal_id": "prop-364b4c3499",
+   "src": "POLICY_EVALUATED",
+   "t": 1790690948.0
+  },
+  {
+   "by": "alice",
+   "dst": "APPROVED",
+   "note": "",
+   "proposal_id": "prop-364b4c3499",
+   "src": "PENDING_APPROVAL",
+   "t": 1790693168.0
+  },
+  {
+   "by": "svc.capability-gateway",
+   "dst": "REVALIDATING",
+   "note": "approval consumed; revalidating",
+   "proposal_id": "prop-364b4c3499",
+   "src": "APPROVED",
+   "t": 1790693168.0
+  },
+  {
+   "by": "svc.hitl-runtime",
+   "dst": "REJECTED",
+   "note": "delegation active; resource state unchanged",
+   "proposal_id": "prop-364b4c3499",
+   "src": "REVALIDATING",
+   "t": 1790693168.0
+  }
+ ]
+}

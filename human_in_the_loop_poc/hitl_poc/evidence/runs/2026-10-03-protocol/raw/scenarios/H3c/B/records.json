@@ -1,0 +1,54 @@
+{
+ "prop-364b4c3499": {
+  "artifact": {
+   "action": "rollbackDeployment",
+   "action_digest": "sha256:accdf24716d4494f8be14cf4b3a9e275c52c0961258729ad9cac8ca8e13c4c4d",
+   "approval_id": "apr-43c1f6d359",
+   "approver": "user://alice",
+   "approver_eligibility": "role production-approver; not in the request chain; not the author of v4.18.0",
+   "decision": "APPROVED",
+   "decision_at": "2026-09-29T14:14:08Z",
+   "delegation_chain_ref": "dlg-incident-remediation",
+   "environment": "production",
+   "expires_at": "2026-09-29T15:09:08Z",
+   "incident_id": "INC-5120",
+   "parameters": {
+    "from_version": "v4.18.0",
+    "to_version": "v4.17.2"
+   },
+   "policy_decision_id": "pd-3312f6b2cc",
+   "reason": "approve after reviewing the evidence card",
+   "request_id": "prop-364b4c3499",
+   "requested_at": "2026-09-29T14:09:08Z",
+   "resource": "k8s://production/payment-service",
+   "risk": "high_write",
+   "single_use": true,
+   "subject": "agent://agent.incident-investigator"
+  },
+  "execution_log": [
+   {
+    "approval_id": "apr-43c1f6d359",
+    "arguments": {
+     "from_version": "v4.18.0",
+     "to_version": "v4.17.2"
+    },
+    "at": "2026-09-29T14:14:09Z",
+    "capability": "rollbackDeployment",
+    "credential": "svc.capability-gateway:standing-kubernetes-credential",
+    "event": "action.executed",
+    "request_id": "prop-364b4c3499",
+    "result": {
+     "rolled_back": "payment-service/production v4.18.0 -> v4.17.2"
+    },
+    "target": {
+     "environment": "production",
+     "service": "payment-service"
+    }
+   }
+  ]
+ },
+ "prop-479718710b": {
+  "artifact": null,
+  "execution_log": []
+ }
+}

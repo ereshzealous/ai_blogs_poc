@@ -1,0 +1,23 @@
+# prod-change-policy v8: v7 plus a two-person rule for production rollbacks of payment-service.
+# Used by the scenarios that change the policy during a pause (H6) and by the two-person case (H4).
+policy_id: prod-change-policy
+version: "8"
+
+tiers:
+  read:           {decision: ALLOW,            autonomy: "out of the loop"}
+  analyze:        {decision: ALLOW,            autonomy: "out of the loop"}
+  recommend:      {decision: ALLOW,            autonomy: "out of the loop"}
+  low_write:      {decision: ALLOW,            autonomy: "on the loop"}
+  high_write:     {decision: REQUIRE_APPROVAL, autonomy: "in the loop"}
+  prohibited:     {decision: DENY,             autonomy: "never automated"}
+
+approval:
+  required_role: production-approver
+  required_approvals: 1
+  two_person:
+    - {capability: rollbackDeployment, service: payment-service, environment: production}
+  ttl_s: 3600
+  escalate_after_s: 900
+  separation_of_duties:
+    - requester_chain
+    - deployment_author

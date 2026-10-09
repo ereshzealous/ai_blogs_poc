@@ -1,0 +1,68 @@
+{
+ "audit": [
+  {
+   "correlation_id": "cor-direct",
+   "hash": "ca52d596ee255c952cf0d14f705a032f13c21e8e75adb5eac09deaac70c9912e",
+   "kind": "policy.evaluated",
+   "n": 1,
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "capability": "getDeploymentHealth",
+    "decision": "ALLOW",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "rule": "P4-read",
+    "runtime": "svc.hitl-runtime",
+    "tier": "read"
+   },
+   "t": 1790690520.0,
+   "time": "2026-09-29T14:02:00Z"
+  },
+  {
+   "correlation_id": "cor-direct",
+   "hash": "ff6c5011f7813eae9e3be938288068da8245735b367812a29e92047f87e4f0a5",
+   "kind": "capability.invoked",
+   "n": 2,
+   "prev": "ca52d596ee255c952cf0d14f705a032f13c21e8e75adb5eac09deaac70c9912e",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "approval": null,
+    "arguments": {},
+    "attempts": 1,
+    "capability": "getDeploymentHealth",
+    "executor": "svc.capability-gateway",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "runtime": "svc.hitl-runtime",
+    "target": {
+     "environment": "production",
+     "service": "payment-service"
+    }
+   },
+   "t": 1790690521.0,
+   "time": "2026-09-29T14:02:01Z"
+  }
+ ],
+ "audit_chain_intact": true,
+ "effects": [],
+ "spans": [
+  {
+   "attrs": {
+    "attempt": 1
+   },
+   "end": 1790690521.0,
+   "kind": "tool",
+   "name": "getDeploymentHealth",
+   "parent": null,
+   "span_id": "sp-f14b14d236",
+   "start": 1790690521.0,
+   "status": "ok",
+   "trace_id": "cor-direct"
+  }
+ ],
+ "test": "HITL-T01",
+ "transitions": []
+}

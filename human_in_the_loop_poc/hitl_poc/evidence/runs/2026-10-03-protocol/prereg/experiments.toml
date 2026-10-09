@@ -1,0 +1,971 @@
+# T3 · Human-in-the-Loop · experiments → checks (Production AI Engineering Proof Contract v1, pae-proof/v1)
+#
+# GENERATED from proof/preregistration.toml and hitl/suite.py by scripts/gen_experiments.py; frozen with it (proof/FREEZE.json).
+# H1–H9: one check per preregistered hypothesis (invariant: must hold · hypothesis: a prediction, FAIL = NOT SUPPORTED ·
+# control: predicted to break under that arm, EXPECTED_FAILURE when it does).  GA: the fixed global assertions on arm C.
+# CS: the arm-C conformance suite (30 regression tests).  API: the HTTP surface.
+
+[[experiments]]
+id = "T3-R1"
+title = "H1 · Exact action binding"
+h = "H1"
+question = "Does an approval authorize only the exact action the human reviewed?"
+claim = "An approval for action A never executes action B."
+hypothesis = "C: No action other than the approved one executes. B: Digest binding alone stops a different action. A: A boolean approval lets a different action through (predicted to break). A: Even under A, a policy DENY (namespace delete) is not turned into ALLOW by an approval: policy is enforced on every call."
+setup = "Alice approves the rollback at +5 min. On resume the agent presents a different action: restartDeployment, or deleteProductionNamespace."
+invariant = "An approval for action A never executes action B."
+scenarios = ["H1a", "H1b"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R1-C01"
+label = "H1-C01"
+description = "H1 · arm C · No action other than the approved one executes."
+kind = "invariant"
+arm = "C"
+fact = "H1.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R1-C02"
+label = "H1-B01"
+description = "H1 · arm B · Digest binding alone stops a different action."
+kind = "hypothesis"
+arm = "B"
+fact = "H1.B.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R1-C03"
+label = "H1-A01"
+description = "H1 · arm A · A boolean approval lets a different action through (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H1.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments.checks]]
+id = "T3-R1-C04"
+label = "H1-A02"
+description = "H1 · arm A · Even under A, a policy DENY (namespace delete) is not turned into ALLOW by an approval: policy is enforced on every call."
+kind = "hypothesis"
+arm = "A"
+fact = "H1b.A.writes"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments]]
+id = "T3-R2"
+title = "H2 · Mutation after approval"
+h = "H2"
+question = "What happens if the action changes after approval?"
+claim = "Material mutation → digest mismatch → old approval invalid → reapproval required."
+hypothesis = "C: No mutated action executes. C: Every mutation becomes a new request with a new digest, waiting for its own decision. B: Digest binding alone stops every mutation. B: B refuses a mutated action but does not route it to reapproval. A: A executes the mutated actions (predicted to break)."
+setup = "Alice approves v4.18.0 → v4.17.2 at +5 min. Before execution the agent changes the target version (v4.16.0), the service (orders-service) or the environment (staging)."
+invariant = "Material mutation → digest mismatch → old approval invalid → reapproval required."
+scenarios = ["H2a", "H2b", "H2c"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R2-C01"
+label = "H2-C01"
+description = "H2 · arm C · No mutated action executes."
+kind = "invariant"
+arm = "C"
+fact = "H2.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R2-C02"
+label = "H2-C02"
+description = "H2 · arm C · Every mutation becomes a new request with a new digest, waiting for its own decision."
+kind = "invariant"
+arm = "C"
+fact = "H2.C.reapproval_requests"
+op = "=="
+value = 3
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R2-C03"
+label = "H2-B01"
+description = "H2 · arm B · Digest binding alone stops every mutation."
+kind = "hypothesis"
+arm = "B"
+fact = "H2.B.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R2-C04"
+label = "H2-B02"
+description = "H2 · arm B · B refuses a mutated action but does not route it to reapproval."
+kind = "hypothesis"
+arm = "B"
+fact = "H2.B.reapproval_requests"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R2-C05"
+label = "H2-A01"
+description = "H2 · arm A · A executes the mutated actions (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H2.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R3"
+title = "H3 · Approval replay"
+h = "H3"
+question = "Can an old approval be replayed?"
+claim = "Single use: a second consumption is rejected."
+hypothesis = "C: No replay executes. C: The legitimate first execution still happens in each scenario (the protocol does not just block everything). B: Request binding and single use stop sequential replays. A: A replays (predicted to break)."
+setup = "Alice approves at +5 min and the rollback executes once (legitimate). The same approval is then presented again: in the same workflow, by a second workflow instance of the same incident, and for a new incident after v4.18.0 is redeployed."
+invariant = "Single use: a second consumption is rejected."
+scenarios = ["H3a", "H3b", "H3c"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R3-C01"
+label = "H3-C01"
+description = "H3 · arm C · No replay executes."
+kind = "invariant"
+arm = "C"
+fact = "H3.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R3-C02"
+label = "H3-C02"
+description = "H3 · arm C · The legitimate first execution still happens in each scenario (the protocol does not just block everything)."
+kind = "invariant"
+arm = "C"
+fact = "H3.C.legit_executions"
+op = "=="
+value = 3
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R3-C03"
+label = "H3-B01"
+description = "H3 · arm B · Request binding and single use stop sequential replays."
+kind = "hypothesis"
+arm = "B"
+fact = "H3.B.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R3-C04"
+label = "H3-A01"
+description = "H3 · arm A · A replays (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H3.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R4"
+title = "H4 · Approver eligibility and separation of duties"
+h = "H4"
+question = "Can the wrong human approve?"
+claim = "A decision from an ineligible approver is rejected; a two-person rule needs two distinct eligible approvers."
+hypothesis = "C: No ineligible decision is accepted. C: Nothing executes on an ineligible or incomplete approval. C: The two-person approval executes once the second distinct approver approves. B: B's decision-time eligibility checks reject every ineligible approver. A: A accepts whoever clicks (predicted to break)."
+setup = "Clicks at +11 min from: a guest in the incident channel with no enterprise identity; reggie (readonly role); the agent itself through the API, claiming to be alice; dana, who authored v4.18.0. Then policy v8 (two-person rule): alice approves, alice approves again, omar approves."
+invariant = "A decision from an ineligible approver is rejected; a two-person rule needs two distinct eligible approvers."
+scenarios = ["H4a", "H4b", "H4c", "H4d", "H4e"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R4-C01"
+label = "H4-C01"
+description = "H4 · arm C · No ineligible decision is accepted."
+kind = "invariant"
+arm = "C"
+fact = "H4.C.ineligible_approver_acceptances"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R4-C02"
+label = "H4-C02"
+description = "H4 · arm C · Nothing executes on an ineligible or incomplete approval."
+kind = "invariant"
+arm = "C"
+fact = "H4.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R4-C03"
+label = "H4-C03"
+description = "H4 · arm C · The two-person approval executes once the second distinct approver approves."
+kind = "invariant"
+arm = "C"
+fact = "H4.C.legit_executions"
+op = "=="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R4-C04"
+label = "H4-B01"
+description = "H4 · arm B · B's decision-time eligibility checks reject every ineligible approver."
+kind = "hypothesis"
+arm = "B"
+fact = "H4.B.ineligible_approver_acceptances"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R4-C05"
+label = "H4-A01"
+description = "H4 · arm A · A accepts whoever clicks (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H4.A.ineligible_approver_acceptances"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R5"
+title = "H5 · Stale world state after a 37-minute pause"
+h = "H5"
+question = "Does the system blindly resume after the world changed?"
+claim = "World-state change → the approved action no longer matches the reviewed context → no silent execution."
+hypothesis = "C: No stale resume executes. B: An action-bound, unexpired approval still resumes against a changed world: binding is not revalidation. A: A resumes blindly (predicted to break)."
+setup = "Request at 14:09. During the wait: dana ships hotfix v4.18.1 (+10 min); or alice rolls back by hand (+16 min); or (the opening story) v4.18.1 ships, severity rises, the runtime is lost and the agent's delegation is revoked. The approval arrives at +37 min, inside its 60-minute expiry."
+invariant = "World-state change → the approved action no longer matches the reviewed context → no silent execution."
+scenarios = ["H5a", "H5b", "H5c"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R5-C01"
+label = "H5-C01"
+description = "H5 · arm C · No stale resume executes."
+kind = "invariant"
+arm = "C"
+fact = "H5.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R5-C02"
+label = "H5-B01"
+description = "H5 · arm B · An action-bound, unexpired approval still resumes against a changed world: binding is not revalidation."
+kind = "hypothesis"
+arm = "B"
+fact = "H5.B.unauthorized_executions"
+op = ">="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R5-C03"
+label = "H5-A01"
+description = "H5 · arm A · A resumes blindly (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H5.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R6"
+title = "H6 · Identity or policy change during the pause"
+h = "H6"
+question = "Is the approval still executable after identity or policy changed?"
+claim = "An approval does not freeze identity or policy: resume re-evaluates them."
+hypothesis = "C: Nothing executes on authority or policy that no longer holds. B: B resumes on stale identity, delegation, policy or approver eligibility. A: A resumes on stale authority (predicted to break)."
+setup = "During the 37-minute wait: the agent's delegation is revoked; or the agent is disabled; or policy v7 → v8 (two approvers); or alice approves at +3 min, loses the production-approver role at +21 min, and the workflow resumes at +37 min on a second runtime."
+invariant = "An approval does not freeze identity or policy: resume re-evaluates them."
+scenarios = ["H6a", "H6b", "H6c", "H6d"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R6-C01"
+label = "H6-C01"
+description = "H6 · arm C · Nothing executes on authority or policy that no longer holds."
+kind = "invariant"
+arm = "C"
+fact = "H6.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R6-C02"
+label = "H6-B01"
+description = "H6 · arm B · B resumes on stale identity, delegation, policy or approver eligibility."
+kind = "hypothesis"
+arm = "B"
+fact = "H6.B.unauthorized_executions"
+op = ">="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R6-C03"
+label = "H6-A01"
+description = "H6 · arm A · A resumes on stale authority (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H6.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R7"
+title = "H7 · Duplicate callback and concurrent resume"
+h = "H7"
+question = "Can one approval produce two side effects?"
+claim = "One authorized action → at most one external side effect."
+hypothesis = "C: No duplicate side effect. C: The approved rollback still happens exactly once in each scenario. B: Decision dedupe and the used mark stop sequential duplicates. B: Read-check-call-mark single use does not survive a crash after the write or a race between two workers. A: A duplicates (predicted to break)."
+setup = "Alice approves at +5 min. The approve click arrives twice; the same webhook is delivered twice; the worker crashes after the write commits and the workflow retries; two resume workers race (the second runs between the first's read and its write). The channel handler resumes the workflow after every accepted callback."
+invariant = "One authorized action → at most one external side effect."
+scenarios = ["H7a", "H7b", "H7c", "H7d"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R7-C01"
+label = "H7-C01"
+description = "H7 · arm C · No duplicate side effect."
+kind = "invariant"
+arm = "C"
+fact = "H7.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R7-C02"
+label = "H7-C02"
+description = "H7 · arm C · The approved rollback still happens exactly once in each scenario."
+kind = "invariant"
+arm = "C"
+fact = "H7.C.legit_executions"
+op = "=="
+value = 4
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R7-C03"
+label = "H7-B01"
+description = "H7 · arm B · Decision dedupe and the used mark stop sequential duplicates."
+kind = "hypothesis"
+arm = "B"
+fact = "H7.B.unauthorized_executions.H7a_H7b"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R7-C04"
+label = "H7-B02"
+description = "H7 · arm B · Read-check-call-mark single use does not survive a crash after the write or a race between two workers."
+kind = "hypothesis"
+arm = "B"
+fact = "H7.B.unauthorized_executions.H7c_H7d"
+op = ">="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R7-C05"
+label = "H7-A01"
+description = "H7 · arm A · A duplicates (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H7.A.unauthorized_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R8"
+title = "H8 · Deny, timeout, expiry and escalation"
+h = "H8"
+question = "Does silence, a deny or an expired approval ever execute?"
+claim = "DENY → no execution; TIMEOUT → no implicit approval; EXPIRED → cannot execute; escalation is a recorded transition."
+hypothesis = "C: Deny, silence and expiry never execute. C: The escalation is a recorded state transition. C: The escalated approval executes once. B: Expiry and decision state stop deny, silence and expiry in B too. A: Even A never turns silence or a deny into an execution. A: A has no expiry: a late approval executes (predicted to break)."
+setup = "Alice denies at +5 min; or nobody answers for 61 min; or alice approves late, at +75 min; or alice approves at +11 min and the resume comes at +71 min; or nobody answers for 15 min, the request escalates to omar, who approves at +20 min."
+invariant = "DENY → no execution; TIMEOUT → no implicit approval; EXPIRED → cannot execute; escalation is a recorded transition."
+scenarios = ["H8a", "H8b", "H8c", "H8d", "H8e"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R8-C01"
+label = "H8-C01"
+description = "H8 · arm C · Deny, silence and expiry never execute."
+kind = "invariant"
+arm = "C"
+fact = "H8.C.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R8-C02"
+label = "H8-C02"
+description = "H8 · arm C · The escalation is a recorded state transition."
+kind = "invariant"
+arm = "C"
+fact = "H8.C.escalations_recorded"
+op = "=="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R8-C03"
+label = "H8-C03"
+description = "H8 · arm C · The escalated approval executes once."
+kind = "invariant"
+arm = "C"
+fact = "H8.C.legit_executions"
+op = "=="
+value = 1
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R8-C04"
+label = "H8-B01"
+description = "H8 · arm B · Expiry and decision state stop deny, silence and expiry in B too."
+kind = "hypothesis"
+arm = "B"
+fact = "H8.B.unauthorized_executions"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R8-C05"
+label = "H8-A01"
+description = "H8 · arm A · Even A never turns silence or a deny into an execution."
+kind = "hypothesis"
+arm = "A"
+fact = "H8.A.executions_after_deny_or_timeout"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R8-C06"
+label = "H8-A02"
+description = "H8 · arm A · A has no expiry: a late approval executes (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H8.A.expired_approval_executions"
+op = "=="
+value = 0
+expect = "fail"
+
+[[experiments]]
+id = "T3-R9"
+title = "H9 · Audit reconstruction"
+h = "H9"
+question = "Can the records alone reconstruct who, what, on whose authority, approved by whom, revalidated how, with what effect?"
+claim = "Every executed privileged action can be reconstructed completely: 16 of 16 questions."
+hypothesis = "C: All 16 questions are answered from C's records. C: No executed write in any scenario has a reconstruction gap under C. B: An approval artifact without a revalidation record cannot say whether the context changed or what was re-checked. A: A boolean and a chat handle cannot reconstruct the decision (predicted to break)."
+setup = "The normal path: alice approves at +5 min, the rollback executes. An automated reconstructor answers 16 questions from each design's own records plus the shared platform audit, and compares each answer with the true value; the same method is applied to every executed write in H1–H8."
+invariant = "Every executed privileged action can be reconstructed completely: 16 of 16 questions."
+scenarios = ["H9a"]
+limitations = "Deterministic simulation: simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions; no model."
+
+[[experiments.checks]]
+id = "T3-R9-C01"
+label = "H9-C01"
+description = "H9 · arm C · All 16 questions are answered from C's records."
+kind = "invariant"
+arm = "C"
+fact = "H9a.C.questions_answered"
+op = "=="
+value = 16
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R9-C02"
+label = "H9-C02"
+description = "H9 · arm C · No executed write in any scenario has a reconstruction gap under C."
+kind = "invariant"
+arm = "C"
+fact = "all.C.audit_reconstruction_gaps"
+op = "=="
+value = 0
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R9-C03"
+label = "H9-B01"
+description = "H9 · arm B · An approval artifact without a revalidation record cannot say whether the context changed or what was re-checked."
+kind = "hypothesis"
+arm = "B"
+fact = "H9a.B.questions_answered"
+op = "<"
+value = 16
+expect = "hold"
+
+[[experiments.checks]]
+id = "T3-R9-C04"
+label = "H9-A01"
+description = "H9 · arm A · A boolean and a chat handle cannot reconstruct the decision (predicted to break)."
+kind = "control"
+arm = "A"
+fact = "H9a.A.questions_answered"
+op = "=="
+value = 16
+expect = "fail"
+
+[[experiments]]
+id = "T3-R10"
+title = "GA · Fixed global assertions (arm C)"
+h = "GA"
+question = "Across every hardened scenario, does anything unsafe happen at all?"
+claim = "Under the revalidated protocol every global failure count is zero."
+hypothesis = "C: zero unauthorized executions, mutated-action bypasses, replays, duplicates, expired executions, ineligible acceptances, silent stale resumes and audit gaps."
+setup = "The sums over all thirty scenarios of H1–H9 under arm C; the same sums for A and B are reported as observations."
+invariant = "Each count is 0."
+
+[[experiments.checks]]
+id = "T3-R10-C01"
+label = "GA-01"
+description = "GA · unauthorized executions = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.unauthorized_executions"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C02"
+label = "GA-02"
+description = "GA · mutated action bypasses = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.mutated_action_bypasses"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C03"
+label = "GA-03"
+description = "GA · successful approval replays = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.successful_approval_replays"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C04"
+label = "GA-04"
+description = "GA · duplicate external side effects = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.duplicate_external_side_effects"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C05"
+label = "GA-05"
+description = "GA · expired approval executions = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.expired_approval_executions"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C06"
+label = "GA-06"
+description = "GA · ineligible approver acceptances = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.ineligible_approver_acceptances"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C07"
+label = "GA-07"
+description = "GA · silent stale context resumes = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.silent_stale_context_resumes"
+op = "=="
+value = 0
+
+[[experiments.checks]]
+id = "T3-R10-C08"
+label = "GA-08"
+description = "GA · audit reconstruction gaps = 0 under arm C"
+kind = "invariant"
+arm = "C"
+fact = "global.C.audit_reconstruction_gaps"
+op = "=="
+value = 0
+
+[[experiments]]
+id = "T3-R11"
+title = "CS · Arm C conformance suite (30 regression tests)"
+h = "CS"
+question = "Does the revalidated protocol keep its routing, lifecycle, identity, duplicate, fail-closed and audit guarantees, test by test?"
+claim = "Every conformance test holds every assertion it makes."
+hypothesis = "30 of 30 tests pass."
+setup = "hitl/suite.py: a fresh platform per test, clock at 14:02:00 UTC, the F3 incident; the gate and approval service of arm C."
+invariant = "held == assertions for every test."
+
+[[experiments.checks]]
+id = "T3-R11-C01"
+label = "CS-T01"
+description = "CS · HITL-T01 · Read action executes automatically"
+kind = "invariant"
+fact = "tests.HITL-T01.held"
+op = "=="
+ref = "tests.HITL-T01.assertions"
+invariants = ["HITL-I01"]
+
+[[experiments.checks]]
+id = "T3-R11-C02"
+label = "CS-T02"
+description = "CS · HITL-T02 · Analysis executes automatically"
+kind = "invariant"
+fact = "tests.HITL-T02.held"
+op = "=="
+ref = "tests.HITL-T02.assertions"
+invariants = ["HITL-I01"]
+
+[[experiments.checks]]
+id = "T3-R11-C03"
+label = "CS-T03"
+description = "CS · HITL-T03 · Recommendation does not require approval and changes nothing"
+kind = "invariant"
+fact = "tests.HITL-T03.held"
+op = "=="
+ref = "tests.HITL-T03.assertions"
+invariants = ["HITL-I01"]
+
+[[experiments.checks]]
+id = "T3-R11-C04"
+label = "CS-T04"
+description = "CS · HITL-T04 · High-risk write requires approval and waits"
+kind = "invariant"
+fact = "tests.HITL-T04.held"
+op = "=="
+ref = "tests.HITL-T04.assertions"
+invariants = ["HITL-I01"]
+
+[[experiments.checks]]
+id = "T3-R11-C05"
+label = "CS-T05"
+description = "CS · HITL-T05 · Policy DENY cannot be overridden by human approval"
+kind = "invariant"
+fact = "tests.HITL-T05.held"
+op = "=="
+ref = "tests.HITL-T05.assertions"
+invariants = ["HITL-I04"]
+
+[[experiments.checks]]
+id = "T3-R11-C06"
+label = "CS-T06"
+description = "CS · HITL-T06 · Exact approved proposal executes once"
+kind = "invariant"
+fact = "tests.HITL-T06.held"
+op = "=="
+ref = "tests.HITL-T06.assertions"
+invariants = ["HITL-I02"]
+
+[[experiments.checks]]
+id = "T3-R11-C07"
+label = "CS-T07"
+description = "CS · HITL-T07 · Argument mutation invalidates approval"
+kind = "invariant"
+fact = "tests.HITL-T07.held"
+op = "=="
+ref = "tests.HITL-T07.assertions"
+invariants = ["HITL-I02", "HITL-I03"]
+
+[[experiments.checks]]
+id = "T3-R11-C08"
+label = "CS-T08"
+description = "CS · HITL-T08 · Resource mutation invalidates approval"
+kind = "invariant"
+fact = "tests.HITL-T08.held"
+op = "=="
+ref = "tests.HITL-T08.assertions"
+invariants = ["HITL-I02", "HITL-I03"]
+
+[[experiments.checks]]
+id = "T3-R11-C09"
+label = "CS-T09"
+description = "CS · HITL-T09 · Environment or capability mutation invalidates approval"
+kind = "invariant"
+fact = "tests.HITL-T09.held"
+op = "=="
+ref = "tests.HITL-T09.assertions"
+invariants = ["HITL-I02", "HITL-I03"]
+
+[[experiments.checks]]
+id = "T3-R11-C10"
+label = "CS-T10"
+description = "CS · HITL-T10 · Precondition or policy change forces re-evaluation"
+kind = "invariant"
+fact = "tests.HITL-T10.held"
+op = "=="
+ref = "tests.HITL-T10.assertions"
+invariants = ["HITL-I02", "HITL-I03"]
+
+[[experiments.checks]]
+id = "T3-R11-C11"
+label = "CS-T11"
+description = "CS · HITL-T11 · Pending approval transitions to approved"
+kind = "invariant"
+fact = "tests.HITL-T11.held"
+op = "=="
+ref = "tests.HITL-T11.assertions"
+invariants = ["HITL-I07"]
+
+[[experiments.checks]]
+id = "T3-R11-C12"
+label = "CS-T12"
+description = "CS · HITL-T12 · Rejected approval prevents execution"
+kind = "invariant"
+fact = "tests.HITL-T12.held"
+op = "=="
+ref = "tests.HITL-T12.assertions"
+invariants = ["HITL-I05"]
+
+[[experiments.checks]]
+id = "T3-R11-C13"
+label = "CS-T13"
+description = "CS · HITL-T13 · Expired approval cannot execute"
+kind = "invariant"
+fact = "tests.HITL-T13.held"
+op = "=="
+ref = "tests.HITL-T13.assertions"
+invariants = ["HITL-I05"]
+
+[[experiments.checks]]
+id = "T3-R11-C14"
+label = "CS-T14"
+description = "CS · HITL-T14 · Canceled proposal cannot execute"
+kind = "invariant"
+fact = "tests.HITL-T14.held"
+op = "=="
+ref = "tests.HITL-T14.assertions"
+invariants = ["HITL-I05"]
+
+[[experiments.checks]]
+id = "T3-R11-C15"
+label = "CS-T15"
+description = "CS · HITL-T15 · Invalid terminal-state transitions are rejected"
+kind = "invariant"
+fact = "tests.HITL-T15.held"
+op = "=="
+ref = "tests.HITL-T15.assertions"
+invariants = ["HITL-I05"]
+
+[[experiments.checks]]
+id = "T3-R11-C16"
+label = "CS-T16"
+description = "CS · HITL-T16 · Authorized approver can approve"
+kind = "invariant"
+fact = "tests.HITL-T16.held"
+op = "=="
+ref = "tests.HITL-T16.assertions"
+invariants = ["HITL-I07"]
+
+[[experiments.checks]]
+id = "T3-R11-C17"
+label = "CS-T17"
+description = "CS · HITL-T17 · Unauthorized identity cannot approve"
+kind = "invariant"
+fact = "tests.HITL-T17.held"
+op = "=="
+ref = "tests.HITL-T17.assertions"
+invariants = ["HITL-I07"]
+
+[[experiments.checks]]
+id = "T3-R11-C18"
+label = "CS-T18"
+description = "CS · HITL-T18 · Agent cannot approve its own proposal"
+kind = "invariant"
+fact = "tests.HITL-T18.held"
+op = "=="
+ref = "tests.HITL-T18.assertions"
+invariants = ["HITL-I06"]
+
+[[experiments.checks]]
+id = "T3-R11-C19"
+label = "CS-T19"
+description = "CS · HITL-T19 · Separation of duties: the deployment author cannot approve its rollback"
+kind = "invariant"
+fact = "tests.HITL-T19.held"
+op = "=="
+ref = "tests.HITL-T19.assertions"
+invariants = ["HITL-I07"]
+
+[[experiments.checks]]
+id = "T3-R11-C20"
+label = "CS-T20"
+description = "CS · HITL-T20 · Every identity in the chain survives to the audit record"
+kind = "invariant"
+fact = "tests.HITL-T20.held"
+op = "=="
+ref = "tests.HITL-T20.assertions"
+invariants = ["HITL-I10"]
+
+[[experiments.checks]]
+id = "T3-R11-C21"
+label = "CS-T21"
+description = "CS · HITL-T21 · Duplicate triggering event creates one logical proposal"
+kind = "invariant"
+fact = "tests.HITL-T21.held"
+op = "=="
+ref = "tests.HITL-T21.assertions"
+invariants = ["HITL-I08"]
+
+[[experiments.checks]]
+id = "T3-R11-C22"
+label = "CS-T22"
+description = "CS · HITL-T22 · Duplicate approval submission is idempotent"
+kind = "invariant"
+fact = "tests.HITL-T22.held"
+op = "=="
+ref = "tests.HITL-T22.assertions"
+invariants = ["HITL-I08"]
+
+[[experiments.checks]]
+id = "T3-R11-C23"
+label = "CS-T23"
+description = "CS · HITL-T23 · Consumed approval cannot be replayed for a second side effect"
+kind = "invariant"
+fact = "tests.HITL-T23.held"
+op = "=="
+ref = "tests.HITL-T23.assertions"
+invariants = ["HITL-I02", "HITL-I08"]
+
+[[experiments.checks]]
+id = "T3-R11-C24"
+label = "CS-T24"
+description = "CS · HITL-T24 · Concurrent approve and reject end in one terminal decision"
+kind = "invariant"
+fact = "tests.HITL-T24.held"
+op = "=="
+ref = "tests.HITL-T24.assertions"
+invariants = ["HITL-I05", "HITL-I08"]
+
+[[experiments.checks]]
+id = "T3-R11-C25"
+label = "CS-T25"
+description = "CS · HITL-T25 · Downstream retries do not duplicate business effects"
+kind = "invariant"
+fact = "tests.HITL-T25.held"
+op = "=="
+ref = "tests.HITL-T25.assertions"
+invariants = ["HITL-I08"]
+
+[[experiments.checks]]
+id = "T3-R11-C26"
+label = "CS-T26"
+description = "CS · HITL-T26 · Prompt injection cannot bypass approval"
+kind = "invariant"
+fact = "tests.HITL-T26.held"
+op = "=="
+ref = "tests.HITL-T26.assertions"
+invariants = ["HITL-I01", "HITL-I06"]
+
+[[experiments.checks]]
+id = "T3-R11-C27"
+label = "CS-T27"
+description = "CS · HITL-T27 · Approval service unavailable fails closed"
+kind = "invariant"
+fact = "tests.HITL-T27.held"
+op = "=="
+ref = "tests.HITL-T27.assertions"
+invariants = ["HITL-I09"]
+
+[[experiments.checks]]
+id = "T3-R11-C28"
+label = "CS-T28"
+description = "CS · HITL-T28 · Policy evaluation failure fails closed"
+kind = "invariant"
+fact = "tests.HITL-T28.held"
+op = "=="
+ref = "tests.HITL-T28.assertions"
+invariants = ["HITL-I09"]
+
+[[experiments.checks]]
+id = "T3-R11-C29"
+label = "CS-T29"
+description = "CS · HITL-T29 · Tool failure after approval is safe, auditable and retried only by the rules"
+kind = "invariant"
+fact = "tests.HITL-T29.held"
+op = "=="
+ref = "tests.HITL-T29.assertions"
+invariants = ["HITL-I09", "HITL-I10"]
+
+[[experiments.checks]]
+id = "T3-R11-C30"
+label = "CS-T30"
+description = "CS · HITL-T30 · Complete audit reconstruction"
+kind = "invariant"
+fact = "tests.HITL-T30.held"
+op = "=="
+ref = "tests.HITL-T30.assertions"
+invariants = ["HITL-I10"]
+
+[[experiments]]
+id = "T3-R12"
+title = "API · Implementation: the HTTP surface and approval inbox"
+h = "API"
+question = "Does the same boundary hold through the real HTTP API a person or a client would use?"
+claim = "Events, the inbox, decisions and the audit are served over HTTP, and the approver is the credential's principal."
+hypothesis = "Every call returns its expected status; exactly one rollback follows the one valid approval."
+setup = "uv run hitl serve, driven by urllib in-process: POST /events, GET /approvals, POST /approvals/{id}/decision, GET /audit/{id}."
+invariant = "Each call returns the expected status and exactly one rollback follows the one valid approval."
+
+[[experiments.checks]]
+id = "T3-R12-C01"
+label = "API-01"
+description = "API · Every HTTP call returned its expected status"
+kind = "implementation"
+fact = "api.calls_ok"
+op = "=="
+ref = "api.calls"
+
+[[experiments.checks]]
+id = "T3-R12-C02"
+label = "API-02"
+description = "API · Exactly one rollback after the one valid approval"
+kind = "implementation"
+fact = "api.rollbacks"
+op = "=="
+value = 1

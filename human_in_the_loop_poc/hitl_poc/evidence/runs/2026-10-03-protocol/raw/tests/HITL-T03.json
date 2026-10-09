@@ -1,0 +1,77 @@
+{
+ "audit": [
+  {
+   "correlation_id": "cor-direct",
+   "hash": "a6478f5f4ab05d2d576b8e5e9bfc86ab8db49d1351a994e186b16caa2a7755a9",
+   "kind": "policy.evaluated",
+   "n": 1,
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "capability": "recommendRollback",
+    "decision": "ALLOW",
+    "delegation": "dlg-incident-remediation",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "policy_decision_id": "pd-a486404ea2",
+    "rule": "P4-recommend",
+    "runtime": "svc.hitl-runtime",
+    "tier": "recommend"
+   },
+   "t": 1790690520.0,
+   "time": "2026-09-29T14:02:00Z"
+  },
+  {
+   "correlation_id": "cor-direct",
+   "hash": "caf979b44803c338d19ba91ce321a485ebf1b565736d6ba7d7cb6cd85288090d",
+   "kind": "capability.invoked",
+   "n": 2,
+   "prev": "a6478f5f4ab05d2d576b8e5e9bfc86ab8db49d1351a994e186b16caa2a7755a9",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "approval": null,
+    "arguments": {
+     "assessment": {
+      "from_version": "v4.18.0",
+      "signals": 3,
+      "to_version": "v4.17.2"
+     }
+    },
+    "attempts": 1,
+    "capability": "recommendRollback",
+    "delegation": "dlg-incident-remediation",
+    "executor": "svc.capability-gateway",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "runtime": "svc.hitl-runtime",
+    "target": {
+     "environment": "production",
+     "service": "payment-service"
+    }
+   },
+   "t": 1790690521.0,
+   "time": "2026-09-29T14:02:01Z"
+  }
+ ],
+ "audit_chain_intact": true,
+ "effects": [],
+ "spans": [
+  {
+   "attrs": {
+    "attempt": 1
+   },
+   "end": 1790690521.0,
+   "kind": "tool",
+   "name": "recommendRollback",
+   "parent": null,
+   "span_id": "sp-ab80b1308d",
+   "start": 1790690521.0,
+   "status": "ok",
+   "trace_id": "cor-direct"
+  }
+ ],
+ "test": "HITL-T03",
+ "transitions": []
+}

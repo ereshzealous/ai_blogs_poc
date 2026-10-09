@@ -1,0 +1,167 @@
+{
+ "schema": "pae-proof/v1",
+ "series": "Production AI Engineering",
+ "article_id": "T3",
+ "poc": "hitl_poc",
+ "run_id": "2026-10-03-aligned",
+ "scenario": "payment-service, production, error rate 14% after deployment v4.18.0: the incident agent proposes rollbackDeployment v4.18.0 \u2192 v4.17.2",
+ "source_commit": "unknown (not a git repository)",
+ "runtime_mode": "deterministic: no model, no network; simulated enterprise, identity provider and clock",
+ "started_at": "2026-10-03T16:53:19Z",
+ "completed_at": "2026-10-03T16:53:21Z",
+ "environment": {
+  "os": "Darwin",
+  "arch": "arm64",
+  "python": "3.12.13",
+  "model_runtime": "none",
+  "model": "none (deterministic EvidenceReasoner)",
+  "model_version": "n/a",
+  "temperature": "n/a",
+  "seed": "n/a (no randomness)"
+ },
+ "benchmark": {
+  "modes": [
+   "canonical",
+   "negative-control:bind_digest",
+   "negative-control:authenticate_approver",
+   "api-roundtrip"
+  ],
+  "canonical_tests": 30,
+  "invariants": 10,
+  "experiments": 8,
+  "checks": 36
+ },
+ "execution_profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "text": "Ordered, fail-closed policy decision point (prod-change-policy v7)",
+      "check": "T3-R1-C05"
+     },
+     {
+      "text": "Approval state machine with compare-and-set transitions in SQLite",
+      "check": "T3-R3-C05"
+     },
+     {
+      "text": "Execution gate: digest binding, expiry, consumption, preconditions, policy version, approver role",
+      "check": "T3-R2-C02"
+     },
+     {
+      "text": "Approver authentication and separation of duties",
+      "check": "T3-R4-C04"
+     },
+     {
+      "text": "Idempotency keys on writes; at-least-once event dedupe",
+      "check": "T3-R5-C05"
+     },
+     {
+      "text": "Hash-chained audit and its reconstruction",
+      "check": "T3-R6-C05"
+     },
+     {
+      "text": "HTTP API and approval inbox (stdlib http.server), driven over real HTTP",
+      "check": "T3-R8-C01"
+     }
+    ]
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "Kubernetes deployments, logging, tracing and ITSM (hitl/enterprise.py) with an effects ledger"
+     },
+     {
+      "text": "The identity provider (config/principals.yaml): approvers authenticate with their own credential"
+     },
+     {
+      "text": "The clock: time moves only when a test moves it"
+     },
+     {
+      "text": "The reasoner: a deterministic evidence correlator in place of a model"
+     }
+    ]
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "text": "A log line that claims approval was granted and asks for immediate execution (prompt injection)"
+     },
+     {
+      "text": "Approval service down, policy engine down, rollout failure, lost response after commit"
+     },
+     {
+      "text": "An out-of-band deployment (v4.18.1) under a pending approval; a policy version bump"
+     },
+     {
+      "text": "A deterministic approve/reject race"
+     }
+    ]
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "A durable workflow engine for long approval pauses (Temporal, Step Functions)"
+     },
+     {
+      "text": "Out-of-band approver authentication (OIDC CIBA) and transaction-bound authorization (OAuth RAR)"
+     },
+     {
+      "text": "Multi-agent approval chains and AI control plane integration"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "name": "canonical suite",
+    "experiments": [
+     "T3-R1",
+     "T3-R2",
+     "T3-R3",
+     "T3-R4",
+     "T3-R5",
+     "T3-R6",
+     "T3-R8"
+    ]
+   },
+   {
+    "name": "negative controls",
+    "experiments": [
+     "T3-R7"
+    ]
+   }
+  ]
+ },
+ "entrypoints": {
+  "verify": "uv run hitl verify",
+  "test": "uv run pytest",
+  "suite": "uv run hitl suite",
+  "proof": "uv run hitl proof",
+  "negative_control": "uv run hitl proof (runs both controls)",
+  "serve": "uv run hitl serve",
+  "make": "make verify \u00b7 make test \u00b7 make proof"
+ },
+ "integrity": {
+  "sha256sums": "evidence/runs/2026-10-03-aligned/SHA256SUMS"
+ },
+ "config_sha256": {
+  "capabilities.yaml": "3511137a967fa82c5ec7047e794926852219c31b545b1b0be221b6e6abf66773",
+  "policy.yaml": "59ce0d0de83ba06fcb8cee18a704193af18d732c20e6461e5def6fdc30ab60f3",
+  "principals.yaml": "a914abc28a4e576c0553b26b3f39e5599d9cc0adbbbc7710b67e3a1385c895ac"
+ },
+ "provenance": {
+  "manifest_origin": "built by hitl/proofpack.py from proof/manifest.toml and the run",
+  "fields": {
+   "started_at": "recorded",
+   "completed_at": "recorded",
+   "environment": "recorded",
+   "source_commit": "unknown",
+   "benchmark": "recorded",
+   "execution_profile": "frozen (proof/manifest.toml)"
+  }
+ }
+}

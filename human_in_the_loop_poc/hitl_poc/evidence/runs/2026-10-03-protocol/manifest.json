@@ -1,0 +1,207 @@
+{
+ "schema": "pae-proof/v1",
+ "series": "Production AI Engineering",
+ "article_id": "T3",
+ "poc": "hitl_poc",
+ "run_id": "2026-10-03-protocol",
+ "scenario": "payment-service, production, 14% errors after v4.18.0 (the F3 incident): the incident agent proposes rollbackDeployment v4.18.0 \u2192 v4.17.2 at 14:09 and waits for a human; thirty scenarios change what happens next, under three approval protocols",
+ "source_commit": "unknown (not a git repository)",
+ "runtime_mode": "deterministic: no model, no network; simulated Kubernetes, identity provider, chat channel and clock; scripted human decisions",
+ "started_at": "2026-10-03T18:18:07Z",
+ "completed_at": "2026-10-03T18:18:09Z",
+ "environment": {
+  "os": "Darwin",
+  "arch": "arm64",
+  "python": "3.12.13",
+  "model_runtime": "none",
+  "model": "none (deterministic EvidenceReasoner and agent plan)",
+  "model_version": "n/a",
+  "temperature": "n/a",
+  "seed": "none: no randomness (fake clock, fixed identities, scripted human decisions)"
+ },
+ "benchmark": {
+  "modes": [
+   "arm A \u00b7 Naive boolean",
+   "arm B \u00b7 Action-bound",
+   "arm C \u00b7 Revalidated protocol",
+   "conformance suite (arm C)",
+   "api-roundtrip"
+  ],
+  "approval_models": {
+   "A": "Naive boolean",
+   "B": "Action-bound",
+   "C": "Revalidated protocol"
+  },
+  "experiments": 12,
+  "checks": 79,
+  "scenarios": 30,
+  "scenario_runs": 90,
+  "conformance_tests": 30,
+  "unit_tests": 5
+ },
+ "preregistration": {
+  "frozen_at": "2026-10-03T18:18:07Z",
+  "note": "Re-frozen after deviation 3 (ids renamed to the pae-proof/v1 pattern) and the freeze-history change; no criterion changed. First freeze 2026-10-03T17:45:00Z, before the first scenario run (see DEVIATIONS.md).",
+  "guarded_sha256": {
+   "config/capabilities.yaml": "3511137a967fa82c5ec7047e794926852219c31b545b1b0be221b6e6abf66773",
+   "config/policy-v8.yaml": "1b626f48a0d181a97fed09b897cc58b36c03641f9c98c48fb2ff592d42847ff7",
+   "config/policy.yaml": "c15b1e5a93f8c3970f16323cd1a159638895ca303b72cedfc9726c5017b3f0c4",
+   "config/principals.yaml": "5cc22667674795878c7d46a1f746aa286906a1cb8ebdd322de12561a3e49173b",
+   "proof/experiments.toml": "87b8d6cee39109f80e91ccaa332889a4839236e31eee01e6de1f6022966a78fc",
+   "proof/preregistration.toml": "f575e67d867bd0a5d197186ed3f7747dc361e8e1c6f4b59f6fec558c6b54f2a3"
+  },
+  "scenario_fixture_sha256": "671b15051992a359f0a3b947e146a6172f1655faf428ab57fb1556ba8ac28ea6",
+  "code_changed_since_freeze": [],
+  "deviations": "prereg/DEVIATIONS.md"
+ },
+ "execution_profile": {
+  "classes": [
+   {
+    "class": "REAL",
+    "items": [
+     {
+      "text": "Approval artifact and action digest binding (canonical JSON, SHA-256)"
+     },
+     {
+      "text": "Approval state machine with compare-and-set transitions in SQLite; single-use consumption"
+     },
+     {
+      "text": "Approver authentication, eligibility and separation of duties; two-person quorum; escalation"
+     },
+     {
+      "text": "Expiry, deny and timeout handling"
+     },
+     {
+      "text": "Resume revalidation: identity, delegation, policy, resource state, approval validity, digest"
+     },
+     {
+      "text": "Idempotency keys, execution records and reconciliation after a crash"
+     },
+     {
+      "text": "Hash-chained audit and the 16-question reconstruction"
+     },
+     {
+      "text": "The three approval protocols (arms A, B, C) and the policy-enforcing gateway they share"
+     },
+     {
+      "text": "HTTP API and approval inbox (stdlib http.server), driven over real HTTP"
+     }
+    ]
+   },
+   {
+    "class": "SIMULATED",
+    "items": [
+     {
+      "text": "Datadog (one event), Kubernetes, logging, tracing and ITSM (hitl/enterprise.py) with an effects ledger"
+     },
+     {
+      "text": "The identity provider and identity context: principals, runtimes, the delegation, chat-user links (config/principals.yaml)"
+     },
+     {
+      "text": "The Slack approval channel: messages and button clicks as function calls"
+     },
+     {
+      "text": "Human waiting: the clock moves only when a scenario moves it"
+     },
+     {
+      "text": "The agent: a deterministic evidence correlator and a fixed plan in place of a model"
+     }
+    ]
+   },
+   {
+    "class": "INJECTED",
+    "items": [
+     {
+      "text": "Actions changed after approval; replays; ineligible approvers; a guest click; an agent approving itself"
+     },
+     {
+      "text": "World, identity and policy changes during the pause: hotfix, manual rollback, revoked delegation, disabled agent, policy v8, approver role removed"
+     },
+     {
+      "text": "Duplicate clicks and webhooks, a worker crash after commit, two racing resume workers"
+     },
+     {
+      "text": "Deny, silence, late approval, use after expiry; approval service and policy engine down; rollout failure; lost response"
+     }
+    ]
+   },
+   {
+    "class": "ARCHITECTURE",
+    "items": [
+     {
+      "text": "A durable workflow engine for long pauses (Temporal, Step Functions): the pause is a clock advance here"
+     },
+     {
+      "text": "Out-of-band approver authentication (OIDC CIBA), step-up and signed approval records"
+     },
+     {
+      "text": "Real Slack/Teams interactivity, a real IdP and a real cluster"
+     },
+     {
+      "text": "Multi-agent approval chains and AI control plane integration"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "name": "protocol experiments H1\u2013H9 under arms A, B, C, and the global assertions",
+    "experiments": [
+     "T3-R1",
+     "T3-R2",
+     "T3-R3",
+     "T3-R4",
+     "T3-R5",
+     "T3-R6",
+     "T3-R7",
+     "T3-R8",
+     "T3-R9",
+     "T3-R10"
+    ]
+   },
+   {
+    "name": "conformance and HTTP",
+    "experiments": [
+     "T3-R11",
+     "T3-R12"
+    ]
+   }
+  ]
+ },
+ "entrypoints": {
+  "verify": "uv run hitl verify",
+  "test": "uv run pytest",
+  "freeze": "uv run hitl freeze --note ...",
+  "proof": "uv run hitl proof",
+  "scenarios": "uv run hitl scenarios [H5c ...]",
+  "suite": "uv run hitl suite",
+  "serve": "uv run hitl serve",
+  "make": "make verify \u00b7 make test \u00b7 make proof"
+ },
+ "integrity": {
+  "sha256sums": "evidence/runs/2026-10-03-protocol/SHA256SUMS"
+ },
+ "config_sha256": {
+  "capabilities.yaml": "3511137a967fa82c5ec7047e794926852219c31b545b1b0be221b6e6abf66773",
+  "policy-v8.yaml": "1b626f48a0d181a97fed09b897cc58b36c03641f9c98c48fb2ff592d42847ff7",
+  "policy.yaml": "c15b1e5a93f8c3970f16323cd1a159638895ca303b72cedfc9726c5017b3f0c4",
+  "principals.yaml": "5cc22667674795878c7d46a1f746aa286906a1cb8ebdd322de12561a3e49173b"
+ },
+ "policy_fixture_sha256": {
+  "policy-v8.yaml": "1b626f48a0d181a97fed09b897cc58b36c03641f9c98c48fb2ff592d42847ff7",
+  "policy.yaml": "c15b1e5a93f8c3970f16323cd1a159638895ca303b72cedfc9726c5017b3f0c4"
+ },
+ "scenario_fixture_sha256": "671b15051992a359f0a3b947e146a6172f1655faf428ab57fb1556ba8ac28ea6",
+ "provenance": {
+  "manifest_origin": "built by hitl/proofpack.py from proof/manifest.toml, proof/FREEZE.json and the run",
+  "fields": {
+   "started_at": "recorded",
+   "completed_at": "recorded",
+   "environment": "recorded",
+   "source_commit": "unknown",
+   "benchmark": "recorded",
+   "preregistration": "proof/FREEZE.json",
+   "execution_profile": "frozen (proof/manifest.toml)"
+  }
+ }
+}

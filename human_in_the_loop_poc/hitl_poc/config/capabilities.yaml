@@ -1,0 +1,13 @@
+# Business capabilities (the capability layer).  The tier is what policy routes on.
+capabilities:
+  getDeploymentHealth:        {tier: read,       system: kubernetes}
+  getLogs:                    {tier: read,       system: logging}
+  getTraceSummary:            {tier: read,       system: tracing}
+  getDeploymentHistory:       {tier: read,       system: kubernetes}
+  getKnownIncidents:          {tier: read,       system: itsm}
+  correlateIncidentEvidence:  {tier: analyze,    system: runtime}
+  recommendRollback:          {tier: recommend,  system: runtime}
+  createIncident:             {tier: low_write,  system: itsm}
+  rollbackDeployment:         {tier: high_write, system: kubernetes, impact: "Production deployment change: replaces the running pods of the target service", recovery: "Roll forward to the from_version with the same capability (also approval-gated)"}
+  restartDeployment:          {tier: high_write, system: kubernetes, impact: "Restarts every pod of the target service", recovery: "None needed; pods return on the same version"}
+  deleteProductionNamespace:  {tier: prohibited, system: kubernetes}

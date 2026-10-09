@@ -1,0 +1,19 @@
+# Policy decision point for prod-change-policy.  Evaluated in code; the model never sees or edits this file.
+# A capability's tier decides the route.  Unknown capabilities and evaluation errors are DENY (fail closed).
+policy_id: prod-change-policy
+version: "7"
+
+tiers:
+  read:           {decision: ALLOW,             autonomy: "out of the loop"}
+  analyze:        {decision: ALLOW,             autonomy: "out of the loop"}
+  recommend:      {decision: ALLOW,             autonomy: "out of the loop"}
+  low_write:      {decision: ALLOW,             autonomy: "on the loop"}
+  high_write:     {decision: APPROVAL_REQUIRED, autonomy: "in the loop"}
+  prohibited:     {decision: DENY,              autonomy: "never automated"}
+
+approval:
+  required_role: production-approver   # who may decide a high_write proposal
+  ttl_s: 300                           # a proposal waits at most 5 minutes for a decision
+  separation_of_duties:
+    - requester_chain                  # no identity in the request chain (invoker, agent, runtime, on-behalf-of) may approve
+    - deployment_author                # the author of the deployment being rolled back may not approve its rollback

@@ -1,0 +1,74 @@
+{
+ "audit": [
+  {
+   "correlation_id": "cor-direct",
+   "hash": "6f5f0404074cb79d59f0c742daebdda1117eef08dacb19769a50e91305169d38",
+   "kind": "policy.evaluated",
+   "n": 1,
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "capability": "recommendRollback",
+    "decision": "ALLOW",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "rule": "P4-recommend",
+    "runtime": "svc.hitl-runtime",
+    "tier": "recommend"
+   },
+   "t": 1790690520.0,
+   "time": "2026-09-29T14:02:00Z"
+  },
+  {
+   "correlation_id": "cor-direct",
+   "hash": "d61fbec70b99d645b832566a5fcc99d8fcfeab6a762ef7b944fcdd7fc1a51e9b",
+   "kind": "capability.invoked",
+   "n": 2,
+   "prev": "6f5f0404074cb79d59f0c742daebdda1117eef08dacb19769a50e91305169d38",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "approval": null,
+    "arguments": {
+     "assessment": {
+      "from_version": "v4.18.0",
+      "signals": 3,
+      "to_version": "v4.17.2"
+     }
+    },
+    "attempts": 1,
+    "capability": "recommendRollback",
+    "executor": "svc.capability-gateway",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "runtime": "svc.hitl-runtime",
+    "target": {
+     "environment": "production",
+     "service": "payment-service"
+    }
+   },
+   "t": 1790690521.0,
+   "time": "2026-09-29T14:02:01Z"
+  }
+ ],
+ "audit_chain_intact": true,
+ "effects": [],
+ "spans": [
+  {
+   "attrs": {
+    "attempt": 1
+   },
+   "end": 1790690521.0,
+   "kind": "tool",
+   "name": "recommendRollback",
+   "parent": null,
+   "span_id": "sp-ab80b1308d",
+   "start": 1790690521.0,
+   "status": "ok",
+   "trace_id": "cor-direct"
+  }
+ ],
+ "test": "HITL-T03",
+ "transitions": []
+}

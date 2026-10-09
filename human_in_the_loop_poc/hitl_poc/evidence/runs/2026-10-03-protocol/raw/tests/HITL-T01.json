@@ -1,0 +1,71 @@
+{
+ "audit": [
+  {
+   "correlation_id": "cor-direct",
+   "hash": "6bd6a811c23308b868fe717470fc34bc834f9b4e0ecb87a12979aa16122b1c06",
+   "kind": "policy.evaluated",
+   "n": 1,
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "capability": "getDeploymentHealth",
+    "decision": "ALLOW",
+    "delegation": "dlg-incident-remediation",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "policy_decision_id": "pd-35dcff1f44",
+    "rule": "P4-read",
+    "runtime": "svc.hitl-runtime",
+    "tier": "read"
+   },
+   "t": 1790690520.0,
+   "time": "2026-09-29T14:02:00Z"
+  },
+  {
+   "correlation_id": "cor-direct",
+   "hash": "27c5b7888fcee37cd0776e395151d2cbe4e11f2b2b77e495e95b996c8a7bcb54",
+   "kind": "capability.invoked",
+   "n": 2,
+   "prev": "6bd6a811c23308b868fe717470fc34bc834f9b4e0ecb87a12979aa16122b1c06",
+   "proposal_id": null,
+   "record": {
+    "agent": "agent.incident-investigator@2.1.0",
+    "approval": null,
+    "arguments": {},
+    "attempts": 1,
+    "capability": "getDeploymentHealth",
+    "delegation": "dlg-incident-remediation",
+    "executor": "svc.capability-gateway",
+    "invoker": "svc.monitoring-webhook",
+    "on_behalf_of": "production-incident-platform",
+    "runtime": "svc.hitl-runtime",
+    "target": {
+     "environment": "production",
+     "service": "payment-service"
+    }
+   },
+   "t": 1790690521.0,
+   "time": "2026-09-29T14:02:01Z"
+  }
+ ],
+ "audit_chain_intact": true,
+ "effects": [],
+ "spans": [
+  {
+   "attrs": {
+    "attempt": 1
+   },
+   "end": 1790690521.0,
+   "kind": "tool",
+   "name": "getDeploymentHealth",
+   "parent": null,
+   "span_id": "sp-f14b14d236",
+   "start": 1790690521.0,
+   "status": "ok",
+   "trace_id": "cor-direct"
+  }
+ ],
+ "test": "HITL-T01",
+ "transitions": []
+}

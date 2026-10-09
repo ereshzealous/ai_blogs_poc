@@ -191,9 +191,4 @@ make docs    # both editions (Markdown, HTML, PDF) and the static Medium edition
 make qa    # publication scan: no local path, host name or address in the editions, results and README
 ```
 
-## More detail
-
-- [The technical deep dive (PDF)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/mcp_sprawl_poc/technical/mcp-tool-sprawl-technical.pdf)
-- [Lab (an HTML page: open evidence/lab-console.html after cloning)](https://github.com/ereshzealous/ai_blogs_poc/blob/main/mcp_sprawl_poc/evidence/lab-console.html)
-
 *Built by `series-start-here/tools/series_edition.py results F1` from the files named above. It computes nothing new.*
